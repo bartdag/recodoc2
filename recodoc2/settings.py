@@ -3,7 +3,7 @@ import os
 import sys
 
 HERE = os.path.dirname(__file__)                                                                                                                                  
-sys.path.append(os.path.join(HERE,'apps')) 
+sys.path.append(os.path.join(HERE, 'apps')) 
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
