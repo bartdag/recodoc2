@@ -17,6 +17,8 @@ class ProjectTest(TestCase):
         settings.PROJECT_FS_ROOT = settings.PROJECT_FS_ROOT_TEST
 
     def tearDown(self):
+        for project in Project.objects.all():
+            project.delete()
         clean_test_dir()
 
     def testCreateProjectLocal(self):
@@ -28,19 +30,12 @@ class ProjectTest(TestCase):
         create_project_db('Project 1', 'http://www.example1.com', 'project1')
         create_project_db('Project 2', 'http://www.example1.com', 'project2')
         self.assertEqual(2, Project.objects.count())
-        for project in Project.objects.all():
-            project.delete()
 
-    def testCreateProjectVersion(self):
+    def testCreateProjectRelease(self):
         create_project_db('Project 1', 'http://www.example1.com', 'project1')
         create_release_db('project1', '3.0', True)
         create_release_db('project1', '3.1')
         self.assertTrue(2, ProjectRelease.objects.count())
-        for version in ProjectRelease.objects.all():
-            version.delete()
-
-        for project in Project.objects.all():
-            project.delete()
 
     def testCreateProjectDBNonUnique(self):
         create_project_db('Project 1', 'http://www.example1.com', 'project1')
@@ -64,8 +59,6 @@ class ProjectTest(TestCase):
             self.assertTrue(True)
 
         self.assertEqual(1, Project.objects.count())
-        for project in Project.objects.all():
-            project.delete()
 
     def testListProjectsLocal(self):
         create_project_local('project1')
@@ -76,5 +69,3 @@ class ProjectTest(TestCase):
         create_project_db('Project 1', 'http://www.example1.com', 'project1')
         create_project_db('Project 2', 'http://www.example1.com', 'project2')
         self.assertEqual(2, len(list_projects_db()))
-        for project in Project.objects.all():
-            project.delete()

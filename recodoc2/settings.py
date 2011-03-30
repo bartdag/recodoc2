@@ -5,6 +5,8 @@ import sys
 HERE = os.path.dirname(__file__)                                                                                                                                  
 sys.path.append(os.path.join(HERE, 'apps')) 
 
+TESTDATA = os.path.join(HERE, 'testdata')
+
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
@@ -136,6 +138,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     'project',
+    'codebase',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )

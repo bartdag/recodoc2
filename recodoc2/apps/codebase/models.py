@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
-from project.models import Project, ProjectRelease, SourceElement
+from project.models import ProjectRelease, SourceElement
 
 
 LANGUAGES = [
@@ -201,7 +201,7 @@ class MethodElement(CodeElement):
 class ParameterElement(CodeElement):
     '''A method parameter with a type and a position in the method parameters
        list. The method is the attcontainer.'''
-    
+
     type_simple_name = models.CharField(max_length=500, null=True, blank=True)
     '''att.'''
 
@@ -215,7 +215,21 @@ class ParameterElement(CodeElement):
         return str(self.index) + ':' + self.type_fqn
 
     class Meta:
-        ordering = ['-index']
+        ordering = ['index']
+
+
+class MethodFamily(CodeElement):
+    '''A collection of overloaded methods.'''
+
+    methods = models.ManyToManyField(MethodElement, null=True, blank=True,
+            related_name='method_family')
+    '''Collection of overloaded methods. Should really be a foreign key of
+       MethodElement, but it was added later and maybe we may want to create
+       multiple families in the future (ah ah ah).'''
+
+    references = models.ManyToManyField('SingleCodeReference', null=True,
+            blank=True, related_name='method_family')
+    '''att.'''
 
 
 ### CODE-LIKE TERMS ###
@@ -223,15 +237,10 @@ class ParameterElement(CodeElement):
 class CodeSnippet(SourceElement):
     '''A structured blurb of text representing a code snippets (e.g., Java
       statements, part of an XML configuration file, etc.)'''
-    
-    language = models.CharField(max_length=2, null=True, blank=True, 
+
+    language = models.CharField(max_length=2, null=True, blank=True,
             choices=LANGUAGES, default='j')
     '''Probable language of the snippet (e.g., java, xml)'''
-
-#    detector_id = models.CharField(max_length=20, null=True, blank=True)
-    project_releases = models.ManyToManyField(ProjectRelease)
-    '''Code references may belong to many project releases depending on their
-       source (support channel = many potential releases)'''
 
     source = models.CharField(max_length=1, null=True, blank=True,
             choices=SOURCE_TYPE, default='d')
@@ -242,7 +251,7 @@ class CodeSnippet(SourceElement):
 
     index = models.IntegerField(null=True, blank=True, default=0)
     '''Used to identify a snippet in a container'''
-    
+
     # E.g., section, message
     local_content_type = models.ForeignKey(ContentType, null=True, blank=True,
             related_name='local_code_snippets')
@@ -251,7 +260,7 @@ class CodeSnippet(SourceElement):
             'local_object_id')
     '''Most precise context, i.e., message or section that contains the
        snippet.'''
-    
+
     # E.g., big section
     mid_content_type = models.ForeignKey(ContentType, null=True, blank=True,
             related_name='mid_code_snippets')
@@ -260,32 +269,28 @@ class CodeSnippet(SourceElement):
             'mid_object_id')
     '''Medium context, i.e., a top-level section that contains the
        snippet.'''
-    
+
     # E.g., big section
-    global_content_type = models.ForeignKey(ContentType,null=True, blank=True,
+    global_content_type = models.ForeignKey(ContentType, null=True, blank=True,
             related_name='global_code_snippets')
     global_object_id = models.PositiveIntegerField(null=True, blank=True)
     global_context = generic.GenericForeignKey('global_content_type',
             'global_object_id')
     '''Large context, i.e., thread or page that contains the snippet.'''
-    
+
     def __unicode__(self):
-        return "%s - %i" % (self.get_language_display(), self.pk)
-    
+        return "{0} - {1}".format(self.get_language_display(), self.pk)
+
     class Meta:
         ordering = ['index']
 
 
 class SingleCodeReference(SourceElement):
     '''A reference to a single code element.'''
-    
+
     content = models.TextField(null=True, blank=True)
     '''Textual content of the reference. Handle (custom format) if the code
        reference has been parsed from a snippet.'''
-
-    project_releases = models.ManyToManyField(ProjectRelease)
-    '''Code references may belong to many project releases depending on their
-       source (support channel = many potential releases)'''
 
     source = models.CharField(max_length=1, null=True, blank=True,
             choices=SOURCE_TYPE, default='d')
@@ -300,32 +305,27 @@ class SingleCodeReference(SourceElement):
        then the reference was inlined in English content.'''
 
     declaration = models.BooleanField(default=False)
-    '''Does the reference represents a declaration (e.g., class Foo is a 
+    '''Does the reference represents a declaration (e.g., class Foo is a
        declaration). Could be used to determine if a code reference belongs
        to an example or the real code base.'''
-    
+
     index = models.IntegerField(null=True, blank=True, default=0)
     '''Used to identify a snippet in a container'''
-    
-    linker = models.CharField(max_length=100, null=True, blank=True,
-            default="-1")
-    '''Indicates which linker (e.g., java, java-generic) recovered the link
-       between the code reference and the code element.'''
-    
+
     sentence = models.TextField(null=True, blank=True)
     '''Sentence (or line) in which the code reference was used.'''
-    
+
     paragraph = models.TextField(null=True, blank=True)
     '''Paragraph in which the code reference was used.'''
-    
-    parent_reference = models.ForeignKey('self',null=True,blank=True,
+
+    parent_reference = models.ForeignKey('self', null=True, blank=True,
             related_name='child_references')
     '''Reference from which this reference was extracted (e.g., when a
        reference may contain multiple code elements)'''
-    
-    child_index = models.IntegerField(null=True,blank=True,default=0)
+
+    child_index = models.IntegerField(null=True, blank=True, default=0)
     '''Reference order w.r.t. parent reference'''
-    
+
     # E.g., section, message
     local_content_type = models.ForeignKey(ContentType, null=True, blank=True,
             related_name='local_code_references')
@@ -334,7 +334,7 @@ class SingleCodeReference(SourceElement):
             'local_object_id')
     '''Most precise context, i.e., message or section that contains the
        reference.'''
-    
+
     # E.g., big section
     mid_content_type = models.ForeignKey(ContentType, null=True, blank=True,
             related_name='mid_code_references')
@@ -343,17 +343,95 @@ class SingleCodeReference(SourceElement):
             'mid_object_id')
     '''Medium context, i.e., a top-level section that contains the
        reference.'''
-    
+
     # E.g., big section
-    global_content_type = models.ForeignKey(ContentType,null=True, blank=True,
+    global_content_type = models.ForeignKey(ContentType, null=True, blank=True,
             related_name='global_code_references')
     global_object_id = models.PositiveIntegerField(null=True, blank=True)
     global_context = generic.GenericForeignKey('global_content_type',
             'global_object_id')
     '''Large context, i.e., thread or page that contains the reference.'''
-    
+
     def __unicode__(self):
-        return '%s - %s' % (self.content, str(self.pk))
-    
+        return '{0} - {1}'.format(self.content, str(self.pk))
+
+    class Meta:
+        ordering = ['index']
+
+
+### LINKS ###
+
+class ReleaseLinkSet(models.Model):
+    '''A set of potential links between a code reference and code elements
+       from a project release.'''
+
+    code_reference = models.ForeignKey(SingleCodeReference,
+            related_name='release_links')
+    '''att.'''
+
+    project_release = models.ForeignKey(ProjectRelease,
+            related_name='release_links')
+    '''att.'''
+
+
+class Filter(models.Model):
+    '''Linker filter used to filter and rank potential code elements.'''
+
+    filter_name = models.CharField(max_length=250)
+    '''att.'''
+
+    executed = models.BooleanField(default=True)
+    '''att.'''
+
+    activated = models.BooleanField(default=True)
+    '''att.'''
+
+    size_before = models.IntegerField(default=0)
+    '''Number of potential code elements before filtering.'''
+
+    size_after = models.IntegerField(default=0)
+    '''Number of potential code elements after filtering.'''
+
+    index = models.IntegerField(default=0)
+    '''Order of the filter'''
+
+    release_link_set = models.ForeignKey(ReleaseLinkSet, blank=True, null=True)
+    '''att.'''
+
+    def __unicode__(self):
+        return '{0} Executed: {1} Activated: {2} Before: {3} After: {4}'.\
+                format(self.filter_name, self.executed, self.activated,
+                       self.before, self.after)
+
+    class Meta:
+        ordering = ['index']
+
+
+class CodeElementLink(models.Model):
+    '''A link between a single code reference and a code element.'''
+
+    code_reference = models.ForeignKey(SingleCodeReference,
+            related_name='potential_links')
+    '''att.'''
+
+    code_element = models.ForeignKey(CodeElement,
+            related_name='potential_links')
+    '''att.'''
+
+    index = models.IntegerField(default=0)
+    '''0-based index. 0 = most probable link.'''
+
+    rationale = models.CharField(max_length=250)
+    '''Rationale of this link... often a filter name?'''
+
+    release_link_set = models.ForeignKey(ReleaseLinkSet, blank=True, null=True)
+    '''att.'''
+
+    first_link = models.OneToOneField(ReleaseLinkSet, blank=True, null=True,
+            related_name='first_link')
+    '''This attribute is only set when index=0. This is a shortcut to avoid
+       searching based on index and to enable complex queries based on the
+       first link.'''
+
     class Meta:
         ordering = ['index']

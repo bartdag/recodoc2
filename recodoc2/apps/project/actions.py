@@ -1,8 +1,9 @@
 from __future__ import unicode_literals
+import os
+import shutil
 from django.conf import settings
 from docutil.commands_util import mkdir_safe
 from project.models import Project, ProjectRelease
-import os
 
 CLONE_PATH = 'clone'
 DOC_PATH = 'doc'
@@ -24,6 +25,17 @@ def create_project_local(dir_name):
 def create_project_db(project_name, url, dir_name):
     project = Project(name=project_name, url=url, dir_name=dir_name)
     project.save()
+
+
+def delete_project_local(dir_name):
+    basepath = settings.PROJECT_FS_ROOT
+    project_path = os.path.join(basepath, dir_name)
+    shutil.rmtree(project_path)
+
+
+def delete_project_db(project_name):
+    project = Project.objects.get(name=project_name)
+    project.delete()
 
 
 def create_release_db(project_name, release_name, is_major=False):
