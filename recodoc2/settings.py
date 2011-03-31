@@ -5,7 +5,6 @@ import sys
 HERE = os.path.dirname(__file__)                                                                                                                                  
 sys.path.append(os.path.join(HERE, 'apps')) 
 
-TESTDATA = os.path.join(HERE, 'testdata')
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -128,6 +127,8 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+TEST_RUNNER = 'django-test-coverage.runner.run_tests'
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -137,6 +138,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    'docutil',
     'project',
     'codebase',
     # Uncomment the next line to enable admin documentation:
@@ -165,6 +167,13 @@ LOGGING = {
         },
     }
 }
+
+# RECODOC SETTINGS
+
+TESTDATA = os.path.join(HERE, 'testdata')
+
+CODE_PARSERS = {'':'', '':'', '':''}
+CUSTOM_CODE_PARSERS = {}
 
 try:
     from localsettings import *

@@ -6,10 +6,11 @@ import signal
 from py4j.java_gateway import JavaGateway
 from django.conf import settings
 from django.db import transaction
-from docutil.commands_util import mkdir_safe
-from project.models import Project, ProjectRelease
+from docutil.commands_util import mkdir_safe, import_clazz
+from docutil.progress_monitor import CLILockProgressMonitor
+from project.models import ProjectRelease
 from project.actions import CODEBASE_PATH
-from codebase.models import CodeBase, CodeElementKind
+from codebase.models import CodeBase, CodeElementKind, CodeElement
 
 
 PROJECT_FILE = '.project'
@@ -17,6 +18,8 @@ CLASSPATH_FILE = '.classpath'
 BIN_FOLDER = 'bin'
 SRC_FOLDER = 'src'
 LIB_FOLDER = 'lib'
+
+PARSERS = dict(settings.CODE_PARSER, **settings.CUSTOM_CODE_PARSER)
 
 
 def start_eclipse():
@@ -33,11 +36,11 @@ def stop_eclipse(pid=None):
     gateway = JavaGateway()
     try:
         gateway.entry_point.shutdown()
-    except:
+    except Exception:
         pass
     try:
         gateway.close()
-    except:
+    except Exception:
         pass
 
     if pid is not None:
@@ -236,3 +239,27 @@ def create_code_element_kinds():
     
     for kind in kinds:
         kind.save()
+
+
+def parse_code(pname, bname, release, parser_name, opt_input=None):
+    project_key = pname + bname + release
+    prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    codebase = CodeBase.objects.filter(project_release=prelease).\
+            filter(name=bname)[0]
+    
+    parser_cls_name = PARSERS[parser_name]
+    parser_cls = import_clazz(parser_cls_name)
+    parser = parser_cls(codebase, project_key, opt_input)
+    parser.parse(CLILockProgressMonitor())
+
+
+def clear_code_elements(pname, bname, release, parser_name='-1'):
+    prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    codebase = CodeBase.objects.filter(project_release=prelease).\
+            filter(name=bname)[0]
+    query = CodeElement.objects.filter(codebase=codebase)
+    if parser_name != '-1':
+        query = query.filter(parser=parser_name)
+    query.delete()
