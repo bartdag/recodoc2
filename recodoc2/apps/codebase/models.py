@@ -132,9 +132,15 @@ class CodeElement(models.Model):
     '''List of type attribute containers (suppose that self is a type
        attribute)'''
 
+    index = models.PositiveIntegerField(default=0)
+    '''att.'''
+
     parser = models.CharField(max_length=100, null=True, blank=True,
             default='-1')
     '''Parser that generated this code element (e.g., java, schema, dtd)'''
+
+    def parameters(self):
+        return ParameterElement.objects.filter(attcontainer=self)
 
     def human_string(self):
         human_string = self.fqn
@@ -168,6 +174,9 @@ class CodeElement(models.Model):
 
     def __unicode__(self):
         return self.human_string()
+
+    class Meta:
+        ordering = ['index']
 
 
 class FieldElement(CodeElement):
@@ -208,14 +217,12 @@ class ParameterElement(CodeElement):
     type_fqn = models.CharField(max_length=500, null=True, blank=True)
     '''att.'''
 
-    index = models.PositiveIntegerField(default=0)
-    '''att.'''
-
     def __unicode__(self):
         return str(self.index) + ':' + self.type_fqn
 
     class Meta:
         ordering = ['index']
+        order_with_respect_to = 'attcontainer'
 
 
 class MethodFamily(CodeElement):

@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 import subprocess
 import time
 import os
-import signal
 from py4j.java_gateway import JavaGateway
 from django.conf import settings
 from django.db import transaction
@@ -19,7 +18,7 @@ BIN_FOLDER = 'bin'
 SRC_FOLDER = 'src'
 LIB_FOLDER = 'lib'
 
-PARSERS = dict(settings.CODE_PARSER, **settings.CUSTOM_CODE_PARSER)
+PARSERS = dict(settings.CODE_PARSERS, **settings.CUSTOM_CODE_PARSERS)
 
 
 def start_eclipse():
@@ -32,42 +31,18 @@ def start_eclipse():
     return p.pid
 
 
-def stop_eclipse(pid=None):
+def stop_eclipse():
     gateway = JavaGateway()
     try:
-        gateway.entry_point.shutdown()
+        gateway.entry_point.closeEclipse()
+        time.sleep(1)
+        gateway.shutdown()
     except Exception:
         pass
     try:
         gateway.close()
     except Exception:
         pass
-
-    if pid is not None:
-        try:
-            pgid = os.getpgid(pid)
-            # Complicated loop to kill a child process...
-            # Cannot kill the group or it will kill itself...
-            # Cannot kill the pid because on Linux, it might
-            # not kill the child process (the jvm)
-            for temppid in os.listdir('/proc'):
-                if temppid.isdigit():
-                    ipid = int(temppid)
-                    # Hack that should work most of the time...
-                    if ipid > pid:
-                        temppgid = os.getpgid(pid)
-                        if temppgid == pgid:
-                            os.kill(pid, signal.SIGTERM)
-                            os.kill(ipid, signal.SIGTERM)
-                            break
-        except:
-            pass
-
-        # Should work on windows...
-        try:
-            os.kill(pid, signal.SIGTERM)
-        except:
-            pass
 
 
 def check_eclipse():
@@ -76,7 +51,7 @@ def check_eclipse():
     gateway = JavaGateway()
     try:
         success = gateway.entry_point.getServer().getListeningPort() > 0
-    except:
+    except Exception:
         success = False
 
     if success:
@@ -149,7 +124,8 @@ def create_code_local(pname, bname, release):
 
 
 def link_eclipse(pname, bname, release):
-    '''Add the Java Project created with create_code_local to the Eclipse workspace.'''
+    '''Add the Java Project created with create_code_local to the Eclipse
+       workspace.'''
     project_key = pname + bname + release
     codebase_path = get_codebase_path(pname, bname, release)
 
@@ -172,7 +148,8 @@ def link_eclipse(pname, bname, release):
 
 def list_code_db(pname):
     code_bases = []
-    for code_base in CodeBase.objects.filter(project_release__project__dir_name=pname):
+    for code_base in CodeBase.objects.\
+            filter(project_release__project__dir_name=pname):
         code_bases.append('{0}: {1} ({2})'.format(
             code_base.pk,
             code_base.project_release.project.dir_name,
@@ -193,16 +170,16 @@ def list_code_local(pname):
 @transaction.commit_on_success
 def create_code_element_kinds():
     kinds = []
-    
+
     #NonType
     kinds.append(CodeElementKind(kind='package', is_type=False))
-    
+
     # Type
     kinds.append(CodeElementKind(kind='class', is_type=True))
     kinds.append(CodeElementKind(kind='annotation', is_type=True))
     kinds.append(CodeElementKind(kind='enumeration', is_type=True))
 #    kinds.append(CodeElementKind(kind='interface', is_type = True))
-    
+
     # Members
     kinds.append(CodeElementKind(kind='method'))
     kinds.append(CodeElementKind(kind='method family'))
@@ -210,7 +187,7 @@ def create_code_element_kinds():
     kinds.append(CodeElementKind(kind='field'))
     kinds.append(CodeElementKind(kind='enumeration value', is_attribute=True))
     kinds.append(CodeElementKind(kind='annotation field', is_attribute=True))
-    
+
     # XML
     kinds.append(CodeElementKind(kind='xml type', is_type=True))
     kinds.append(CodeElementKind(kind='xml element'))
@@ -218,11 +195,12 @@ def create_code_element_kinds():
     kinds.append(CodeElementKind(kind='xml attribute value', is_value=True))
     kinds.append(CodeElementKind(kind='xml element type', is_type=True))
     kinds.append(CodeElementKind(kind='xml attribute type', is_type=True))
-    kinds.append(CodeElementKind(kind='xml attribute value type', is_type=True))
+    kinds.append(CodeElementKind(kind='xml attribute value type',
+        is_type=True))
     kinds.append(CodeElementKind(kind='property type', is_type=True))
     kinds.append(CodeElementKind(kind='property name'))
     kinds.append(CodeElementKind(kind='property value', is_value=True))
-    
+
     #Files
     kinds.append(CodeElementKind(kind='xml file', is_file=True))
     kinds.append(CodeElementKind(kind='ini file', is_file=True))
@@ -233,25 +211,33 @@ def create_code_element_kinds():
     kinds.append(CodeElementKind(kind='java file', is_file=True))
     kinds.append(CodeElementKind(kind='python file', is_file=True))
     kinds.append(CodeElementKind(kind='hbm file', is_file=True))
-    
+
     # Other
     kinds.append(CodeElementKind(kind='unknown'))
-    
+
     for kind in kinds:
         kind.save()
 
 
+@transaction.autocommit
 def parse_code(pname, bname, release, parser_name, opt_input=None):
+    '''
+
+    autocommit is necessary here to prevent goofs. Parsers can be
+    multi-threaded and transaction management in django uses thread local...
+    '''
     project_key = pname + bname + release
     prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
             filter(release=release)[0]
     codebase = CodeBase.objects.filter(project_release=prelease).\
             filter(name=bname)[0]
-    
+
     parser_cls_name = PARSERS[parser_name]
     parser_cls = import_clazz(parser_cls_name)
     parser = parser_cls(codebase, project_key, opt_input)
     parser.parse(CLILockProgressMonitor())
+
+    return codebase
 
 
 def clear_code_elements(pname, bname, release, parser_name='-1'):

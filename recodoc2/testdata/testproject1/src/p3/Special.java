@@ -1,8 +1,14 @@
 package p3;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class Special {
+public class Special implements Runnable, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5336115622680983855L;
 
 	public void method1() {
 		Runnable runner = new Runnable() {
@@ -18,6 +24,10 @@ public class Special {
 		public void method1(Map<String, Special> map) {
 
 		}
+	}
+	
+	public void run() {
+		
 	}
 }
 

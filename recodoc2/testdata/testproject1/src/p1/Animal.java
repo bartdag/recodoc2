@@ -6,6 +6,10 @@ import java.util.List;
 
 public interface Animal {
 	
+	public final static int MAX_AGE = 110;
+	
+	public final static String DEFAULT_NAME = "CHARLIE";
+	
 	String getName();
 	
 	void run();
@@ -21,4 +25,5 @@ public interface Animal {
 	void setChildren(List<Animal> children, List<String> names);
 	
 	String toString();
+	
 }
