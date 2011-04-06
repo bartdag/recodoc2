@@ -13,7 +13,8 @@ from codebase.models import CodeBase, CodeElementKind, CodeElement,\
 from codebase.actions import start_eclipse, stop_eclipse, check_eclipse,\
                              create_code_db, create_code_local, list_code_db,\
                              list_code_local, link_eclipse, get_codebase_path,\
-                             create_code_element_kinds, parse_code
+                             create_code_element_kinds, parse_code,\
+                             clear_code_elements
 from project.models import Project
 from project.actions import create_project_local, create_project_db,\
                             create_release_db
@@ -170,7 +171,7 @@ class CodeParserTest(TransactionTestCase):
         self.assertEqual(2,
                 CodeElement.objects.filter(simple_name='Application').count())
 
-        # Test hierarchy 
+        # Test hierarchy
         ce = CodeElement.objects.get(fqn='p1.AnimalException')
         # Nothing because the parent is not in the codebase
         # (java.lang.Exception)
@@ -200,13 +201,14 @@ class CodeParserTest(TransactionTestCase):
         self.assertEqual('method', ce.kind.kind)
         # Test container
         self.assertEqual('p1.BigCat', ce.containers.all()[0].fqn)
-        
+
         self.assertEqual('specials', ce.parameters().all()[3].simple_name)
         # Array info is stripped from type.
         self.assertEqual('byte', ce.parameters().all()[2].type_fqn)
         # Generic info is stripped from type
         self.assertEqual('java.util.List', ce.parameters().all()[3].type_fqn)
-        self.assertEqual('method parameter', ce.parameters().all()[3].kind.kind)
+        self.assertEqual('method parameter',
+                ce.parameters().all()[3].kind.kind)
 
         ce = CodeElement.objects.get(fqn='p1.Animal.getParents')
         self.assertEqual('java.util.Collection', ce.methodelement.return_fqn)
@@ -239,7 +241,8 @@ class CodeParserTest(TransactionTestCase):
         self.assertTrue(ce.kind.is_type)
         self.assertEqual('enumeration value',
                 ce.containees.all()[0].kind.kind)
-        self.assertEqual('p1.AnimalType', ce.containees.all()[0].fieldelement.type_fqn)
+        self.assertEqual('p1.AnimalType',
+                ce.containees.all()[0].fieldelement.type_fqn)
         simple_names = [v.simple_name for v in ce.containees.all()]
         self.assertTrue('NOT_SURE' in simple_names)
         self.assertEqual(3, len(simple_names))
@@ -248,7 +251,6 @@ class CodeParserTest(TransactionTestCase):
         self.assertEqual('enumeration', ce.kind.kind)
         self.assertTrue(ce.kind.is_type)
         simple_names = [v.simple_name for v in ce.containees.all()]
-        print(simple_names)
         self.assertTrue('SOFT' in simple_names)
         # Because it is private!
         self.assertTrue('SubAnimalType' not in simple_names)
@@ -264,6 +266,9 @@ class CodeParserTest(TransactionTestCase):
         self.assertEqual('java.lang.String', fooBar.fieldelement.type_fqn)
         self.assertEqual(6, ce.containees.count())
 
-
-
         self.assertEqual(106, codebase.code_elements.count())
+
+        clear_code_elements('project1', 'core', '3.0', 'xml')
+        self.assertEqual(106, codebase.code_elements.count())
+        clear_code_elements('project1', 'core', '3.0')
+        self.assertEqual(0, codebase.code_elements.count())
