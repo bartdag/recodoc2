@@ -2,6 +2,11 @@ from __future__ import unicode_literals
 from django.db import models
 
 
+class RecoDocError(Exception):
+    """Exception thrown when a problem occurs with Py4J."""
+    pass
+
+
 class Project(models.Model):
     '''A project.'''
 
@@ -85,3 +90,6 @@ class SourceElement(models.Model):
 
     index_to = models.PositiveIntegerField(default=0, null=True, blank=True)
     '''att.'''
+
+    class Meta:
+        abstract = True
