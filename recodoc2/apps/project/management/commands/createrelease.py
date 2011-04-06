@@ -12,7 +12,7 @@ class Command(NoArgsCommand):
             default='-1', help='Project unix name'),
         make_option('--release', action='store', dest='release',
             default='-1', help='Release Number'),
-        make_option('--is_major', action='store_true', dest='link',
+        make_option('--is_major', action='store_true', dest='is_major',
             default=False, help='Is it a major version'),
 
     )
@@ -22,4 +22,4 @@ class Command(NoArgsCommand):
     def handle_noargs(self, **options):
         create_release_db(smart_decode(options.get('pname')),
                           smart_decode(options.get('release')),
-                          smart_decode(options.get('link', False)))
+                          options.get('is_major'))
