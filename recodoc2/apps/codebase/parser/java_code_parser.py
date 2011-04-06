@@ -103,7 +103,7 @@ class CUWorker(Thread):
         self.enumeration_type = self.ASTNode.ENUM_DECLARATION
         self.method_type = self.ASTNode.METHOD_DECLARATION
         self.field_type = self.ASTNode.FIELD_DECLARATION
-        self.enumeration_value_type = self.ASTNode.ENUM_CONSTANT_DECLARATION
+        #self.enumeration_value_type = self.ASTNode.ENUM_CONSTANT_DECLARATION
         self.annotation_field_type = \
                 self.ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION
 

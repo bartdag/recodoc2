@@ -182,6 +182,14 @@ class CodeParserTest(TransactionTestCase):
         self.assertTrue('p1.p2.Tag' in fqns)
         self.assertTrue('p1.p2.Tag2' in fqns)
 
+        # Test internal classes
+        ce = CodeElement.objects.get(fqn='p3.Special.InnerSpecial')
+        self.assertEqual('InnerSpecial', ce.simple_name)
+        self.assertEqual('p3.Special', ce.containers.all()[0].fqn)
+        self.assertEqual('method1', ce.containees.all()[0].simple_name)
+        self.assertEqual('p3.Special.InnerSpecial.method1',
+                ce.containees.all()[0].fqn)
+
         ### Test some Methods and Parameters ###
         ce = CodeElement.objects.get(fqn='p1.BigCat.doSomething')
         method = ce.methodelement
@@ -226,7 +234,36 @@ class CodeParserTest(TransactionTestCase):
         self.assertEqual('p1.Cat', ce.containers.all()[0].fqn)
 
         ### Test some Enumerations ###
+        ce = CodeElement.objects.get(fqn='p1.AnimalType')
+        self.assertEqual('enumeration', ce.kind.kind)
+        self.assertTrue(ce.kind.is_type)
+        self.assertEqual('enumeration value',
+                ce.containees.all()[0].kind.kind)
+        self.assertEqual('p1.AnimalType', ce.containees.all()[0].fieldelement.type_fqn)
+        simple_names = [v.simple_name for v in ce.containees.all()]
+        self.assertTrue('NOT_SURE' in simple_names)
+        self.assertEqual(3, len(simple_names))
+
+        ce = CodeElement.objects.get(fqn='p1.SubAnimalType')
+        self.assertEqual('enumeration', ce.kind.kind)
+        self.assertTrue(ce.kind.is_type)
+        simple_names = [v.simple_name for v in ce.containees.all()]
+        print(simple_names)
+        self.assertTrue('SOFT' in simple_names)
+        # Because it is private!
+        self.assertTrue('SubAnimalType' not in simple_names)
+        self.assertTrue('getOther' in simple_names)
+        self.assertTrue('other' not in simple_names)
+        self.assertEqual(3, len(simple_names))
 
         ### Test some Annotations ###
+        ce = CodeElement.objects.get(fqn='p1.AnimalTag')
+        self.assertEqual('annotation', ce.kind.kind)
+        self.assertEqual('annotation field', ce.containees.all()[0].kind.kind)
+        fooBar = ce.containees.filter(simple_name='fooBar').all()[0]
+        self.assertEqual('java.lang.String', fooBar.fieldelement.type_fqn)
+        self.assertEqual(6, ce.containees.count())
+
+
 
         self.assertEqual(106, codebase.code_elements.count())

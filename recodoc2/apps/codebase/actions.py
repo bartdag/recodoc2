@@ -185,7 +185,7 @@ def create_code_element_kinds():
     kinds.append(CodeElementKind(kind='method family'))
     kinds.append(CodeElementKind(kind='method parameter', is_attribute=True))
     kinds.append(CodeElementKind(kind='field'))
-    kinds.append(CodeElementKind(kind='enumeration value', is_attribute=True))
+    kinds.append(CodeElementKind(kind='enumeration value'))
     kinds.append(CodeElementKind(kind='annotation field', is_attribute=True))
 
     # XML
