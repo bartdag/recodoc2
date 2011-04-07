@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import os
 import urllib2
 import urlparse
 import logging
@@ -16,7 +17,8 @@ class GenericSyncer(object):
 
     links = etree.XPath("//a")
     imgs = etree.XPath("//img")
-    logger = logging.getLogger("docs.syncer.GenericSyncer")
+    avoid_ext = {'java', 'txt', 'zip', 'tar.gz', 'tar.bz', 'rar'}
+    logger = logging.getLogger("recodoc.doc.syncer.generic_syncer.GenericSyncer")
 
     def __init__(self, input_urls, output_url, scope, prefix_avoid=None,
             suffix_avoid=None):
@@ -76,7 +78,7 @@ class GenericSyncer(object):
         local_url = self.make_copy(get_url_without_hash(url))
 
         local_page = urllib2.urlopen(local_url)
-        parser = etree.HTMLParser(encoding=get_encoding(local_page))
+        parser = etree.HTMLParser(encoding=get_encoding(local_page, local_url))
         tree = etree.parse(local_page, parser)
 
         links = self.process_page_links(tree, local_url, url)
@@ -129,6 +131,12 @@ class GenericSyncer(object):
                     should_avoid = True
                     break
 
+        if not should_avoid:
+            for avoid in self.avoid_ext:
+                if link.endswith(avoid):
+                    should_avoid = True
+                    break
+
         return should_avoid
 
     def in_scope(self, link):
@@ -156,13 +164,14 @@ class GenericSyncer(object):
             if 'href' in attributes:
                 href = attributes['href']
                 link_url = get_url_without_hash(urlparse.urljoin(url, href))
-                local_url_to = get_sanitized_url(get_local_url(self.output_url, link_url))
+                local_url_to = get_local_url(self.output_url, link_url)
+                local_url_to = get_sanitized_url(local_url_to)
                 link = DocumentLink(link_url, local_url_to)
                 links.append(link)
             else:
                 continue
         return links
-    
+
     def process_page_imgs(self, tree, url):
         img_tags = self.imgs(tree)
         for img_tag in img_tags:
@@ -175,4 +184,22 @@ class GenericSyncer(object):
                 else:
                     continue
             except:
-                self.logger.exception('This image could not be downloaded: %s in %s' % (urlparse.urljoin(url, src) , url))
+                self.logger.exception('This image could not be downloaded: {0}'
+                ' in {1}'.format(urlparse.urljoin(url, src), url))
+
+
+class SingleURLSyncer(GenericSyncer):
+    def __init__(self, input_url, output_url):
+        input_url = get_sanitized_url(input_url)
+        output_url = get_sanitized_url(output_url)
+
+        if input_url.endswith('/'):
+            scope_url = input_url
+        else:
+            (scope_url, _) = os.path.split(input_url)
+            scope_url += '/'
+
+        super(SingleURLSyncer, self).__init__(
+                input_urls=input_url,
+                output_url=output_url,
+                scope=[scope_url])

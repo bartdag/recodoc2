@@ -112,8 +112,9 @@ class Section(SourceElement):
 class DocumentStatus(object):
     '''Contains the page that have been downloaded. Used by the syncer.
        Persisted in a pickle file, not in the db'''
-    def __init__(self, syncer):
+    def __init__(self, syncer, input_url):
         self.syncer = syncer
+        self.input_url = input_url
 
         # Key: page local url, then an instance of DocumentPage.
         self.pages = {}

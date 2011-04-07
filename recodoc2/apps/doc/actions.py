@@ -19,12 +19,12 @@ def get_doc_path(pname, dname=None, release=None, root=False):
     return doc_path
 
 
-def create_doc_local(pname, dname, release, syncer):
+def create_doc_local(pname, dname, release, syncer, input_url=None):
     doc_key = dname + release
     doc_path = get_doc_path(pname, dname, release)
     mkdir_safe(doc_path)
 
-    model = DocumentStatus(syncer=syncer)
+    model = DocumentStatus(syncer=syncer, input_url=input_url)
     dump_model(model, pname, DOC_PATH, doc_key)
 
 
@@ -54,10 +54,10 @@ def list_doc_local(pname):
 
 
 def sync_doc(pname, dname, release):
-    doc_key = pname + release
+    doc_key = dname + release
     doc_path = get_doc_path(pname, dname, release)
     model = load_model(pname, DOC_PATH, doc_key)
-    syncer = import_clazz(model.syncer)(doc_path)
+    syncer = import_clazz(model.syncer)(model.input_url, doc_path)
     pages = syncer.sync()
     model.pages = pages
     dump_model(model, pname, DOC_PATH, doc_key)

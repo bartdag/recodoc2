@@ -27,7 +27,7 @@ REFERERS = ["http://www.google.com", "http://www.yahoo.com", "http://www.bing.co
 MAX_DOWNLOAD_RETRY = 2
 MODEL_FILE = 'model.pkl'
 
-logger = logging.getLogger("docutil.commands_util")
+logger = logging.getLogger("recodoc.docutil.commands_util")
 
 
 def simple_decorator(decorator):
@@ -176,7 +176,13 @@ def get_encoding(request, url):
     if is_local(url):
         return 'utf8'
     else:
-        return request.headers['content-type'].split('charset=')[-1]
+        headers = request.headers['content-type']
+        logger.debug("HEADER {0}".format(headers))
+        index = headers.find('charset')
+        if index > -1:
+            return headers.split('charset=')[-1]
+        else:
+            return 'utf8'
 
 
 def download_file(file_from_path, file_to_path, force=False, binary=False,
