@@ -141,15 +141,12 @@ class GenericSyncer(object):
 
     def in_scope(self, link):
         # We don't want to make a google of ourselves...
-        in_scope = len(self.scope) != 0
+        in_scope = False
         url = link.url
 
         for scope_item in self.scope:
             if url.startswith(scope_item):
-                if self._should_avoid(url):
-                    in_scope = False
-                    break
-                else:
+                if not self._should_avoid(url):
                     in_scope = True
                     break
 
@@ -198,6 +195,8 @@ class SingleURLSyncer(GenericSyncer):
         else:
             (scope_url, _) = os.path.split(input_url)
             scope_url += '/'
+
+        GenericSyncer.logger.debug('SCOPE: {0}'.format(scope_url))
 
         super(SingleURLSyncer, self).__init__(
                 input_urls=input_url,

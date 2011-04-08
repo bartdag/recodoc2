@@ -7,6 +7,7 @@ import urllib2
 import logging
 import shutil
 import codecs
+from itertools import izip_longest
 from django.db import transaction
 from django.conf import settings
 
@@ -201,9 +202,13 @@ def download_file(file_from_path, file_to_path, force=False, binary=False,
         else:
             file_from = get_file_from_real_browser(url)
 
-        file_to = codecs.open(file_to_path, 'w', encoding='utf8')
-        logger.info('Downloading {0} to {1} in mode {2}'.format(url,
-            file_to_path, 'w'))
+        if binary:
+            file_to = open(file_to_path, 'wb')
+        else:
+            file_to = codecs.open(file_to_path, 'w', encoding='utf8')
+
+        logger.info('Downloading {0} to {1} in mode binary? {2}'.format(url,
+            file_to_path, binary))
         if not binary:
             encoding = get_encoding(file_from, url)
             content = unicode(file_from.read(), encoding)
@@ -213,7 +218,12 @@ def download_file(file_from_path, file_to_path, force=False, binary=False,
         else:
             shutil.copyfileobj(file_from, file_to)
     except:
-        logger.exception('Error while downloading a file')
+        logger.exception('Error while downloading a file: {0}'.format(
+            url))
         if os.path.exists(file_to_path):
             os.remove(file_to_path)
         raise RecoDocError('Error downloading {0}'.format(url))
+
+
+def chunk_it(l, chunks):
+    return list(zip(*izip_longest(*[iter(l)]*chunks)))

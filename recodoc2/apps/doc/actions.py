@@ -1,13 +1,15 @@
 from __future__ import unicode_literals
 import os
 from django.conf import settings
+from django.db import transaction
 
+from docutil.progress_monitor import CLIProgressMonitor
 from docutil.commands_util import mkdir_safe, dump_model, load_model,\
     import_clazz
 from project.models import ProjectRelease
 from project.actions import DOC_PATH
-from doc.models import DocumentStatus, Document
-
+from doc.models import DocumentStatus, Document, Page, Section
+from doc.parser.generic_parser import parse
 
 def get_doc_path(pname, dname=None, release=None, root=False):
     if root:
@@ -28,7 +30,7 @@ def create_doc_local(pname, dname, release, syncer, input_url=None):
     dump_model(model, pname, DOC_PATH, doc_key)
 
 
-def create_doc_db(pname, dname, release, url, parser, syncer):
+def create_doc_db(pname, dname, release, url, syncer, parser):
     prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
             filter(release=release)[0]
     document = Document(title=dname, project_release=prelease, url=url,
@@ -61,3 +63,29 @@ def sync_doc(pname, dname, release):
     pages = syncer.sync()
     model.pages = pages
     dump_model(model, pname, DOC_PATH, doc_key)
+
+
+def clear_doc_elements(pname, dname, release):
+    prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    document = Document.objects.filter(project_release=prelease).\
+            filter(title=dname)[0]
+    query = Section.objects.filter(document=document)
+    print('Deleting %i sections' % query.count())
+    for section in query.all():
+        section.code_references.all().delete()
+        section.code_snippets.all().delete()
+        section.delete()
+    Page.objects.filter(document=document).delete()
+
+
+@transaction.autocommit
+def parse_doc(pname, dname, release):
+    prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    document = Document.objects.filter(project_release=prelease).\
+            filter(title=dname)[0]
+    doc_key = dname + release
+    model = load_model(pname, DOC_PATH, doc_key)
+    progress_monitor = CLIProgressMonitor()
+    parse(document, model.pages, progress_monitor)

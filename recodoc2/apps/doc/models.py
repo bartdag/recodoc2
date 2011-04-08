@@ -41,6 +41,9 @@ class Page(models.Model):
     file_path = models.CharField(max_length=500, null=True, blank=True)
     '''att.'''
 
+    xpath = models.CharField(max_length=500, null=True, blank=True)
+    '''att.'''
+
     document = models.ForeignKey(Document, null=True, blank=True,
             related_name='pages')
     '''att.'''
