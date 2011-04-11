@@ -3,6 +3,8 @@ from django.test import TestCase
 from docutil.java_util import clean_java_name
 import docutil.url_util as uu
 import docutil.commands_util as cc
+import docutil.str_util as su
+import docutil.cache_util as cu
 
 
 class JavaUtilTest(TestCase):
@@ -97,3 +99,77 @@ class UrlUtilTest(TestCase):
             '/home/bart/doc/foo/bar/bar__root.html')
         self.assertEqual(uu.get_local_url('/home/bart/doc',
             'http://doc.com/'), '/home/bart/doc/root__root.html')
+
+
+class StrUtilTest(TestCase):
+    def test_tokenize(self):
+        inputs = [
+        ('Foo', ['Foo']),
+        ('foo', ['foo']),
+        ('fooBar', ['foo', 'Bar']),
+        ('BarFooBaz', ['Bar', 'Foo', 'Baz']),
+        ]
+
+        for i in inputs:
+            self.assertEqual(i[1], su.tokenize(i[0]))
+
+
+def func1():
+    return 3
+
+
+def func2(arg1, arg2):
+    return su.smart_decode(arg1 + arg2)
+
+
+class CacheUtilTest(TestCase):
+    def setUp(self):
+        cu.clear_cache()
+        cu.reset_cache_stats()
+
+    def tearDown(self):
+        cu.clear_cache()
+        cu.reset_cache_stats()
+
+    def test_empty_cache(self):
+        self.assertEqual(3, cu.get_value(
+            'p', 'k', func1, None))
+        self.assertEqual('6', cu.get_value(
+            'p', 'k2', func2, [1, 5]))
+        self.assertEqual(2, cu.cache_miss)
+        self.assertEqual(2, cu.cache_total)
+
+    def test_cache_hit(self):
+        self.assertEqual(3, cu.get_value(
+            'p', 'k', func1, None))
+        self.assertEqual('6', cu.get_value(
+            'p', 'k2', func2, [1, 5]))
+        self.assertEqual(3, cu.get_value(
+            'p', 'k', func1, None))
+        self.assertEqual('6', cu.get_value(
+            'p', 'k2', func2, [1, 5]))
+        self.assertEqual(3, cu.get_value(
+            'p', 'k', func1, None))
+        self.assertEqual('6', cu.get_value(
+            'p', 'k2', func2, [1, 5]))
+        self.assertEqual(2, cu.cache_miss)
+        self.assertEqual(6, cu.cache_total)
+
+    def test_cache_clear(self):
+        self.assertEqual(3, cu.get_value(
+            'p', 'k', func1, None))
+        self.assertEqual('6', cu.get_value(
+            'p', 'k2', func2, [1, 5]))
+        self.assertEqual(3, cu.get_value(
+            'p', 'k', func1, None))
+        self.assertEqual('6', cu.get_value(
+            'p', 'k2', func2, [1, 5]))
+
+        cu.clear_cache()
+        
+        self.assertEqual(3, cu.get_value(
+            'p', 'k', func1, None))
+        self.assertEqual('6', cu.get_value(
+            'p', 'k2', func2, [1, 5]))
+        self.assertEqual(4, cu.cache_miss)
+        self.assertEqual(6, cu.cache_total)

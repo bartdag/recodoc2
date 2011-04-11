@@ -14,7 +14,7 @@ from codebase.actions import start_eclipse, stop_eclipse, check_eclipse,\
                              create_code_db, create_code_local, list_code_db,\
                              list_code_local, link_eclipse, get_codebase_path,\
                              create_code_element_kinds, parse_code,\
-                             clear_code_elements
+                             clear_code_elements, get_project_code_words
 from project.models import Project
 from project.actions import create_project_local, create_project_db,\
                             create_release_db
@@ -144,6 +144,20 @@ class CodeParserTest(TransactionTestCase):
     def tearDown(self):
         Project.objects.all().delete()
         CodeElementKind.objects.all().delete()
+
+    @transaction.autocommit
+    def testCodeWords(self):
+        create_code_db('project1', 'core', '3.0')
+
+        parse_code('project1', 'core', '3.0', 'java')
+
+        code_words =\
+            get_project_code_words(Project.objects.get(dir_name='project1'))
+
+        self.assertTrue('rootapplication' in code_words)
+        self.assertTrue('tag2' in code_words)
+        self.assertTrue('dog' not in code_words)
+        self.assertEqual(10, len(code_words))
 
     @transaction.autocommit
     def testJavaCodeParser(self):

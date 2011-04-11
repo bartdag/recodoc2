@@ -2,9 +2,13 @@ from __future__ import unicode_literals
 import subprocess
 import time
 import os
+import logging
+import enchant
 from py4j.java_gateway import JavaGateway
 from django.conf import settings
 from django.db import transaction
+from docutil.str_util import tokenize
+from docutil.cache_util import get_value, get_codebase_key
 from docutil.commands_util import mkdir_safe, import_clazz
 from docutil.progress_monitor import CLILockProgressMonitor
 from project.models import ProjectRelease
@@ -19,6 +23,13 @@ SRC_FOLDER = 'src'
 LIB_FOLDER = 'lib'
 
 PARSERS = dict(settings.CODE_PARSERS, **settings.CUSTOM_CODE_PARSERS)
+
+PREFIX_CODEBASE_CODE_WORDS = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
+                                'cb_codewords'])
+PREFIX_PROJECT_CODE_WORDS = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
+                                'project_codewords'])
+
+logger = logging.getLogger("recodoc.codebase.actions")
 
 
 def start_eclipse():
@@ -249,3 +260,51 @@ def clear_code_elements(pname, bname, release, parser_name='-1'):
     if parser_name != '-1':
         query = query.filter(parser=parser_name)
     query.delete()
+
+
+def compute_code_words(codebase):
+    d = enchant.Dict('en-US')
+    
+    elements = CodeElement.objects.\
+            filter(codebase=codebase).\
+            filter(kind__is_type=True).\
+            iterator()
+
+    code_words = set()
+    for element in elements:
+        simple_name = element.simple_name
+        tokens = tokenize(simple_name)
+        if len(tokens) > 1:
+            code_words.add(simple_name.lower())
+        else:
+            simple_name = simple_name.lower()
+            if not d.check(simple_name):
+                code_words.add(simple_name)
+    
+    logger.debug('Computed {0} code words for codebase {1}'.format(
+        len(code_words), str(codebase)))
+                
+    return code_words
+
+
+def compute_project_code_words(codebases):
+    code_words = set()
+    for codebase in codebases:
+        code_words.update(
+                get_value(PREFIX_CODEBASE_CODE_WORDS,
+                    get_codebase_key(codebase),
+                    compute_code_words,
+                    [codebase])
+                )
+    return code_words
+
+
+def get_project_code_words(project):
+    codebases = CodeBase.objects.filter(project_release__project=project).all()
+    return get_value(
+            PREFIX_PROJECT_CODE_WORDS,
+            project.pk,
+            compute_project_code_words,
+            [codebases]
+            )
+
