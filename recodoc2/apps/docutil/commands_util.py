@@ -7,6 +7,7 @@ import urllib2
 import logging
 import shutil
 import codecs
+import chardet
 from itertools import izip_longest
 from django.db import transaction
 from django.conf import settings
@@ -173,17 +174,12 @@ def get_file_from_real_browser(url):
     return file_from
 
 
-def get_encoding(request, url):
-    if is_local(url):
-        return 'utf8'
+def get_encoding(content):
+    encodings = chardet.detect(content)
+    if 'encoding' in encodings:
+        return encodings['encoding']
     else:
-        headers = request.headers['content-type']
-        logger.debug("HEADER {0}".format(headers))
-        index = headers.find('charset')
-        if index > -1:
-            return headers.split('charset=')[-1]
-        else:
-            return 'utf8'
+        return 'utf8'
 
 
 def download_file(file_from_path, file_to_path, force=False, binary=False,
@@ -210,8 +206,9 @@ def download_file(file_from_path, file_to_path, force=False, binary=False,
         logger.info('Downloading {0} to {1} in mode binary? {2}'.format(url,
             file_to_path, binary))
         if not binary:
-            encoding = get_encoding(file_from, url)
-            content = unicode(file_from.read(), encoding)
+            content = file_from.read()
+            encoding = get_encoding(content)
+            content = unicode(content, encoding)
             file_to.write(content)
             file_from.close()
             file_to.close()

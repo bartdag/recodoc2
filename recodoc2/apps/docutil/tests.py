@@ -1,10 +1,51 @@
 from __future__ import unicode_literals
+import os
+from lxml import etree
 from django.test import TestCase
+from django.conf import settings
 from docutil.java_util import clean_java_name
 import docutil.url_util as uu
 import docutil.commands_util as cc
 import docutil.str_util as su
 import docutil.cache_util as cu
+import docutil.etree_util as eu
+
+
+class EtreeUtilTest(TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.test_doc = os.path.join(settings.TESTDATA, 'httpclient402doc',
+            'connmgmt.html')
+        page = open(self.test_doc)
+        content = page.read()
+        page.close()
+        encoding = cc.get_encoding(content)
+        self.parser = etree.HTMLParser(remove_comments=True, encoding=encoding)
+        self.tree = etree.fromstring(content, self.parser)
+        
+    def test_xpathlist(self):
+        xpathlist = eu.XPathList(['//h1[1]', '//title[1]', '//h2[1]'])
+        element = xpathlist.get_element(self.tree)
+        self.assertEqual('title', element.tag)
+        self.assertEqual('Chapter 2. Connection management',
+                xpathlist.get_text(element))
+        self.assertEqual('Chapter 2. Connection management',
+                xpathlist.get_text_from_parent(self.tree))
+        self.assertEqual(1, len(xpathlist.get_elements(self.tree)))
+
+    def text_xpath(self):
+        xpath = eu.SingleXPath('//div[@class="section"]')
+        self.assertEqual(12, len(xpath.get_elements(self.tree)))
+        self.assertEqual('2.2. Connection persistence',
+                xpath.get_text_from_parent(self.tree, 1))
+
+    def test_hierarchy(self):
+        xpath = eu.HierarchyXPath('//div[@class="chapter"]',
+                'div[@class="section"]')
+        text = xpath.get_text_from_parent(self.tree) 
+        self.assertEqual(39, len(text.split()))
+        element = xpath.get_element(self.tree)
+        self.assertEqual(2, len(xpath.get_element_as_list(element)))
 
 
 class JavaUtilTest(TestCase):
@@ -27,9 +68,10 @@ class CommandsUtilTest(TestCase):
         url = 'http://www.infobart.com/index.php/about/'
         file_from = \
             cc.get_file_from(url)
-        encoding = cc.get_encoding(file_from, url)
-        self.assertEqual(encoding, 'UTF-8')
-        self.assertTrue(len(file_from.read()) > 0)
+        content = file_from.read()
+        encoding = cc.get_encoding(content)
+        self.assertEqual(encoding, 'utf-8')
+        self.assertTrue(len(content) > 0)
         file_from.close()
 
 

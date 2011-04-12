@@ -1,0 +1,120 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;10.&nbsp;DAO support</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><!--Begin Google Analytics code--><script xmlns="http://www.w3.org/TR/xhtml1/transitional" type="text/javascript"> 
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        </script><script xmlns="http://www.w3.org/TR/xhtml1/transitional" type="text/javascript"> 
+            var pageTracker = _gat._getTracker("UA-2728886-3");
+            pageTracker._setDomainName("none");
+            pageTracker._setAllowLinker(true);
+            pageTracker._trackPageview();
+        </script><!--End Google Analytics code--><link rel="home" href="index.html" title="The Spring Framework - Reference Documentation"><link rel="up" href="spring-middle-tier.html" title="Part&nbsp;II.&nbsp;Middle Tier Data Access"><link rel="previous" href="transaction.html" title="Chapter&nbsp;9.&nbsp;Transaction management"><link rel="next" href="jdbc.html" title="Chapter&nbsp;11.&nbsp;Data access using JDBC"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://www.springframework.org/" title="The Spring Framework"><img style="border:none;" src="images/xdev-spring_logo.jpg"></a><a style="border:none;" href="http://www.springsource.com/" title="SpringSource"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/springsource-banner-rhs.png"></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="dao"></a>Chapter&nbsp;10.&nbsp;DAO support</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="dao-introduction"></a>10.1.&nbsp;Introduction</h2></div></div><div></div></div><p>
+			The Data Access Object (DAO) support in Spring is aimed at
+			making it easy to work with data access technologies like
+			JDBC, Hibernate or JDO in a consistent way. This allows one
+			to switch between the aforementioned persistence technologies
+			fairly easily and it also allows one to code without worrying
+			about catching exceptions that are specific to each technology.
+		</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="dao-exceptions"></a>10.2.&nbsp;Consistent exception hierarchy</h2></div></div><div></div></div><p>
+			Spring provides a convenient translation from technology-specific
+			exceptions like <tt class="classname">SQLException</tt> to its own
+			exception class hierarchy with the
+			<tt class="classname">DataAccessException</tt> as the root exception.
+			These exceptions wrap the original exception so there is never
+			any risk that one might lose any information as to what might
+			have gone wrong.
+		</p><p>
+			In addition to JDBC exceptions, Spring can also wrap Hibernate-specific
+			exceptions, converting them from proprietary, checked exceptions
+			(in the case of versions of Hibernate prior to Hibernate 3.0), to
+			a set of focused runtime exceptions (the same is true for JDO and
+			JPA exceptions). This allows one to handle most persistence exceptions,
+			which are non-recoverable, only in the appropriate layers, without
+			having annoying boilerplate catch-and-throw blocks and exception
+			declarations in one's DAOs. (One can still trap and handle exceptions
+			anywhere one needs to though.) As mentioned above, JDBC exceptions
+			(including database-specific dialects) are also converted to the
+			same hierarchy, meaning that one can perform some operations with
+			JDBC within a consistent programming model.
+		</p><p>
+			The above holds true for the various template classes in Springs
+			support for various ORM frameworks. If one uses the interceptor-based
+			classes then the application must care about handling
+			<tt class="classname">HibernateExceptions</tt> and
+			<tt class="classname">JDOExceptions</tt> itself, preferably via delegating
+			to <tt class="classname">SessionFactoryUtils</tt>'
+			<tt class="methodname">convertHibernateAccessException(..)</tt> or
+			<tt class="methodname">convertJdoAccessException</tt> methods respectively.
+			These methods convert the exceptions to ones that are compatible
+			with the exceptions in the <tt class="literal">org.springframework.dao</tt>
+			exception hierarchy. As <tt class="classname">JDOExceptions</tt> are
+			unchecked, they can simply get thrown too, sacrificing generic DAO
+			abstraction in terms of exceptions though.
+		</p><p>
+			The exception hierarchy that Spring provides can be seen below.
+			(Please note that the class hierarchy detailed in the image
+			shows only a subset of the entire
+			<tt class="classname">DataAccessException</tt> hierarchy.)
+		</p><div class="mediaobject" align="center"><img src="images/DataAccessException.gif" align="middle"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="dao-abstract-superclasses"></a>10.3.&nbsp;Consistent abstract classes for DAO support</h2></div></div><div></div></div><p>
+			To make it easier to work with a variety of data access technologies
+			such as JDBC, JDO and Hibernate in a consistent way, Spring provides
+			a set of <tt class="literal">abstract</tt> DAO classes that one can extend.
+			These abstract classes have methods for providing the data source and
+			any other configuration settings that are specific to the relevant
+			data-access technology.
+		</p><div class="itemizedlist"><ul type="disc"><li><p>
+					<tt class="classname">JdbcDaoSupport</tt> - superclass for JDBC data
+					access objects. Requires a <tt class="interfacename">DataSource</tt>
+					to be provided; in turn, this class provides a 
+					<tt class="classname">JdbcTemplate</tt> instance initialized from the
+					supplied <tt class="interfacename">DataSource</tt> to subclasses.
+				</p></li><li><p>
+					<tt class="classname">HibernateDaoSupport</tt> - superclass for
+					Hibernate data access objects. Requires a
+					<tt class="interfacename">SessionFactory</tt> to be provided;
+					in turn, this class provides a
+					<tt class="classname">HibernateTemplate</tt> instance initialized
+					from the supplied <tt class="interfacename">SessionFactory</tt>
+					to subclasses. Can alternatively be initialized directly via a
+					<tt class="classname">HibernateTemplate</tt>, to reuse the latters
+					settings like <tt class="interfacename">SessionFactory</tt>,
+					flush mode, exception translator, and so forth.
+				</p></li><li><p>
+					<tt class="classname">JdoDaoSupport</tt> - super class for JDO data
+					access objects. Requires a
+					<tt class="interfacename">PersistenceManagerFactory</tt>
+					to be provided; in turn, this class provides a
+					<tt class="classname">JdoTemplate</tt> instance initialized from the
+					supplied <tt class="interfacename">PersistenceManagerFactory</tt>
+					to subclasses.
+				</p></li><li><p>
+					<tt class="classname">JpaDaoSupport</tt> - super class for JPA data
+					access objects. Requires a
+					<tt class="interfacename">EntityManagerFactory</tt> to be provided;
+					in turn, this class provides a <tt class="classname">JpaTemplate</tt>
+					instance initialized from the supplied
+					<tt class="interfacename">EntityManagerFactory</tt> to subclasses.
+				</p></li></ul></div></div></div><!--Begin LoopFuse code--><script xmlns="http://www.w3.org/TR/xhtml1/transitional" src="http://loopfuse.net/webrecorder/js/listen.js" type="text/javascript"></script><script xmlns="http://www.w3.org/TR/xhtml1/transitional" type="text/javascript"> 
+            _lf_cid = "LF_48be82fa";
+            _lf_remora();
+        </script><!--End LoopFuse code--><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="transaction.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="jdbc.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;9.&nbsp;Transaction management&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://www.springsource.com/" title="SpringSource">Sponsored by SpringSource</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;11.&nbsp;Data access using JDBC</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

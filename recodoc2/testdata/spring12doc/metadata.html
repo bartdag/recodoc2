@@ -1,0 +1,394 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;9.&nbsp;Source Level Metadata Support</title><link rel="stylesheet" href="../styles/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><link rel="home" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="up" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="previous" href="transaction.html" title="Chapter&nbsp;8.&nbsp;Transaction management"><link rel="next" href="dao.html" title="Chapter&nbsp;10.&nbsp;DAO support"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;9.&nbsp;Source Level Metadata Support</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="transaction.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="dao.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="metadata"></a>Chapter&nbsp;9.&nbsp;Source Level Metadata Support</h2></div></div><div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="metadata-concepts"></a>9.1.&nbsp;Source-level metadata</h2></div></div><div></div></div><p><span class="authorinitials">Source-level metadata</span> is the
+    addition of <span class="emphasis"><em>attributes</em></span> or
+    <span class="emphasis"><em>annotations</em></span> to program elements: usually, classes
+    and/or methods.</p><p>For example, we might add metadata to a class as follows:</p><pre class="programlisting">/**
+ * Normal comments
+ * @@org.springframework.transaction.interceptor.DefaultTransactionAttribute()
+ */
+public class PetStoreImpl implements PetStoreFacade, OrderService {</pre><p>We could add metadata to a method as follows:</p><pre class="programlisting">/**
+ * Normal comments
+ * @@org.springframework.transaction.interceptor.RuleBasedTransactionAttribute()
+ * @@org.springframework.transaction.interceptor.RollbackRuleAttribute(Exception.class)
+ * @@org.springframework.transaction.interceptor.NoRollbackRuleAttribute("ServletException")
+ */
+public void echoException(Exception ex) throws Exception {
+    ....
+}</pre><p>Both of these examples use Jakarta Commons Attributes syntax.</p><p>Source-level metadata was introduced to the mainstream by XDoclet
+    (in the Java world) and by the release of Microsoft's .NET platform, which
+    uses source-level attributes to control transactions, pooling and other
+    behavior.</p><p>The value in this approach has been recognized in the J2EE
+    community. For example, it's much less verbose than the traditional XML
+    deployment descriptors exclusively used by EJB. While it is desirable to
+    externalize some things from program source code, some important
+    enterprise settings--notably transaction characteristics--arguably belong
+    in program source. Contrary to the assumptions of the EJB spec, it seldom
+    makes sense to modify the transactional characteristics of a method
+    (although parameters like transaction timeouts might change!).</p><p>Although metadata attributes are typically used mainly by framework
+    infrastructure to describe the services application classes require, it
+    should also be possible for metadata attributes to be queried at runtime.
+    This is a key distinction from solutions such as XDoclet, which primarily
+    view metadata as a way of generating code such as EJB artefacts.</p><p>There are a number of solutions in this space, including:</p><div class="itemizedlist"><ul type="disc"><li><p><span class="bold"><b>Standard Java Annotations</b></span>: the
+        standard Java metadata implementation (developed as JSR-175 and
+        available in Java 5. Spring already supports specific Java 5
+        Annotations for transactional demarcation, and for JMX. But we need a
+        solution for Java 1.4 and even 1.3 too.</p></li><li><p><span class="bold"><b>XDoclet</b></span>: well-established
+        solution, primarily intended for code generation</p></li><li><p>Various <span class="bold"><b>open source attribute
+        implementations</b></span>, for Java 1.3 and 1.4, of which Commons
+        Attributes appears to be the most promising. All these require a
+        special pre- or post-compilation step.</p></li></ul></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="metadata-spring"></a>9.2.&nbsp;Spring's metadata support</h2></div></div><div></div></div><p>In keeping with its provision of abstractions over important
+    concepts, Spring provides a facade to metadata implementations, in the
+    form of the <tt class="literal">org.springframework.metadata.Attributes</tt>
+    interface.</p><p>Such a facade adds value for several reasons:</p><div class="itemizedlist"><ul type="disc"><li><p>Java 5 provides metadata support at language level, there will
+          still be value in providing such an abstraction:</p><div class="itemizedlist"><ul type="circle"><li><p>Java 5 metadata is static. It is associated with a class
+              at compile time, and cannot be changed in a deployed
+              environment. There is a need for hierarchical metadata,
+              providing the ability to override certain attribute values in
+              deployment--for example, in an XML file.</p></li><li><p>Java 5 metadata is returned through the Java reflection
+              API. This makes it impossible to mock during test time. Spring
+              provides a simple interface to allow this.</p></li><li><p>There will be a need for metadata support in 1.3 and 1.4
+              applications for at least two years. Spring aims to provide
+              working solutions <span class="emphasis"><em>now</em></span>; forcing the use of
+              Java 5 is not an option in such an important area.</p></li></ul></div></li><li><p>Current metadata APIs, such as Commons Attributes (used by
+          Spring 1.0-1.2) are hard to test. Spring provides a simple metadata
+          interface that is much easier to mock.</p></li></ul></div><p>The Spring <tt class="literal">Attributes</tt> interface looks like
+    this:</p><pre class="programlisting">public interface Attributes {
+
+    Collection getAttributes(Class targetClass);
+
+    Collection getAttributes(Class targetClass, Class filter);
+
+    Collection getAttributes(Method targetMethod);
+
+    Collection getAttributes(Method targetMethod, Class filter);
+
+    Collection getAttributes(Field targetField);
+
+    Collection getAttributes(Field targetField, Class filter);
+}</pre><p>This is a lowest common denominator interface. JSR-175 offers more
+    capabilities than this, such as attributes on method arguments. As of
+    Spring 1.0, Spring aims to provide the subset of metadata required to
+    provide effective declarative enterprise services a la EJB or .NET, on
+    Java 1.3+. As of Spring 1.2, analogous JSR-175 annotations are supported
+    on JDK 1.5, as direct alternative to Commons Attributes.</p><p>Note that this interface offers <tt class="literal">Object</tt>
+    attributes, like .NET. This distinguishes it from attribute systems such
+    as that of Nanning Aspects and JBoss 4 (as of DR2), which offer only
+    <tt class="literal">String</tt> attributes. There is a significant advantage in
+    supporting <tt class="literal">Object</tt> attributes. It enables attributes to
+    participate in class hierarchies and enables attributes to react
+    intelligently to their configuration parameters.</p><p>In most attribute providers, attribute classes will be configured
+    via constructor arguments or JavaBean properties. Commons Attributes
+    supports both.</p><p>As with all Spring abstraction APIs, <tt class="literal">Attributes</tt>
+    is an interface. This makes it easy to mock attribute implementations for
+    unit tests.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="metadata-commons"></a>9.3.&nbsp;Integration with Jakarta Commons Attributes</h2></div></div><div></div></div><p>Presently Spring supports only Jakarta Commons Attributes out of the
+    box, although it is easy to provide implementations of the
+    <tt class="literal">org.springframework.metadata.Attributes</tt> interface for
+    other metadata providers.</p><p><span class="bold"><b>Commons Attributes 2.1</b></span> (<a href="http://jakarta.apache.org/commons/attributes/" target="_top">http://jakarta.apache.org/commons/attributes/</a>)
+    is a capable attributes solution. It supports attribute configuration via
+    constructor arguments and JavaBean properties, which offers better
+    self-documentation in attribute definitions. (Support for JavaBean
+    properties was added at the request of the Spring team.)</p><p>We've already seen two examples of Commons Attributes attributes
+    definitions. In general, we will need to express:</p><div class="itemizedlist"><ul type="disc"><li><p><span class="emphasis"><em>The name of the attribute class</em></span>. This can
+        be an FQN, as shown above. If the relevant attribute class has already
+        been imported, the FQN isn't required. It's also possible to specify
+        "attribute packages" in attribute compiler configuration.</p></li><li><p><span class="emphasis"><em>Any necessary parameterization,</em></span> via
+        constructor arguments or JavaBean properties</p></li></ul></div><p>Bean properties look as follows:</p><pre class="programlisting">/**
+ * @@MyAttribute(myBooleanJavaBeanProperty=true)
+ */</pre><p>It's possible to combine constructor arguments and JavaBean
+    properties (as in Spring IoC).</p><p>Because, unlike Java 1.5 attributes, Commons Attributes is not
+    integrated with the Java language, it is necessary to run a special
+    <span class="emphasis"><em>attribute compilation</em></span> step as part of the build
+    process.</p><p>To run Commons Attributes as part of the build process, you will
+    need to do the following.</p><p>1. Copy the necessary library Jars to
+    <tt class="literal">$ANT_HOME/lib</tt>. Four Jars are required, and all are
+    distributed with Spring:</p><div class="itemizedlist"><ul type="disc"><li><p>The Commons Attributes compiler Jar and API Jar</p></li><li><p>xjavadoc.jar, from XDoclet</p></li><li><p>commons-collections.jar, from Jakarta Commons</p></li></ul></div><p>2. Import the Commons Attributes ant tasks into your project build
+    script, as follows:</p><pre class="programlisting">&lt;taskdef resource="org/apache/commons/attributes/anttasks.properties"/&gt;</pre><p>3. Next, define an attribute compilation task, which will use the
+    Commons Attributes attribute-compiler task to "compile" the attributes in
+    the source. This process results in the generation of additional sources,
+    to a location specified by the destdir attribute. Here we show the use of
+    a temporary directory:</p><pre class="programlisting">&lt;target name="compileAttributes"&gt;
+
+  &lt;attribute-compiler destdir="${commons.attributes.tempdir}"&gt;
+    &lt;fileset dir="${src.dir}" includes="**/*.java"/&gt;
+  &lt;/attribute-compiler&gt;
+
+&lt;/target&gt;</pre><p>The compile target that runs Javac over the sources should depend on
+    this attribute compilation task, and must also compile the generated
+    sources, which we output to our destination temporary directory. If there
+    are syntax errors in your attribute definitions, they will normally be
+    caught by the attribute compiler. However, if the attribute definitions
+    are syntactically plausible, but specify invalid types or class names, the
+    compilation of the generated attribute classes may fail. In this case, you
+    can look at the generated classes to establish the cause of the
+    problem.</p><i><span class="remark">Commons Attributes also provides Maven support. Please refer to
+    Commons Attributes documentation for further information.</span></i><p>While this attribute compilation process may look complex, in fact
+    it's a one-off cost. Once set up, attribute compilation is incremental, so
+    it doesn't usually noticeably slow the build process. And once the
+    compilation process is set up, you may find that use of attributes as
+    described in this chapter can save you a lot of time in other
+    areas.</p><p>If you require attribute indexing support (only currently required
+    by Spring for attribute-targeted web controllers, discussed below), you
+    will need an additional step, which must be performed on a Jar file of
+    your compiled classes. In this, optional, step, Commons Attributes will
+    create an index of all the attributes defined on your sources, for
+    efficient lookup at runtime. This step looks as follows:</p><pre class="programlisting">&lt;attribute-indexer jarFile="myCompiledSources.jar"&gt;
+    
+  &lt;classpath refid="master-classpath"/&gt;
+
+&lt;/attribute-indexer&gt;</pre><i><span class="remark">See the /attributes directory of the Spring jPetStore sample
+    application for an example of this build process. You can take the build
+    script it contains and modify it for your own projects.</span></i><p>If your unit tests depend on attributes, try to express the
+    dependency on the Spring Attributes abstraction, rather than Commons
+    Attributes. Not only is this more portable--for example, your tests will
+    still work if you switch to Java 1.5 attributes in future--it simplifies
+    testing. Commons Attributes is a static API, while Spring provides a
+    metadata interface that you can easily mock.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="metadata-uses"></a>9.4.&nbsp;Metadata and Spring AOP autoproxying</h2></div></div><div></div></div><p>The most important uses of metadata attributes are in conjunction
+    with Spring AOP. This provides a .NET-like programming model, where
+    declarative services are automatically provided to application objects
+    that declare metadata attributes. Such metadata attributes can be
+    supported out of the box by the framework, as in the case of declarative
+    transaction management, or can be custom.</p><p>There is widely held to be a synergy between AOP and metadata
+    attributes.</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e6526"></a>9.4.1.&nbsp;Fundamentals</h3></div></div><div></div></div><p>This builds on the Spring AOP autoproxy functionality.
+      Configuration might look like this:</p><pre class="programlisting">&lt;bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/&gt;
+
+&lt;bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor"&gt;
+  &lt;property name="transactionInterceptor" ref="txInterceptor"/&gt;
+&lt;/bean&gt;
+
+&lt;bean id="txInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor"&gt;
+  &lt;property name="transactionManager" ref="transactionManager"/&gt;
+  &lt;property name="transactionAttributeSource"&gt;
+    &lt;bean class="org.springframework.transaction.interceptor.AttributesTransactionAttributeSource"&gt;
+      &lt;property name="attributes" ref="attributes"/&gt;
+    &lt;/bean&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="attributes" class="org.springframework.metadata.commons.CommonsAttributes"/&gt;</pre><p>The basic concepts here should be familiar from the discussion of
+      autoproxying in the AOP chapter.</p><p>The most important bean definitions are those the auto-proxy creator
+      and the advisor. Note that the actual bean names are not important;
+			what matters is their class.</p><p>The bean definition of class
+      <tt class="literal">org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator</tt>
+      will automatically advise ("auto-proxy") all bean instances in the
+      current factory based on matching Advisor implementations. This class
+      knows nothing about attributes, but relies on Advisors' pointcuts
+      matching. The pointcuts do know about attributes.</p><p>Thus we simply need an AOP advisor that will provide declarative
+      transaction management based on attributes.</p><p>It's possible to add arbitrary custom Advisor implementations as
+      well, and they will also be evaluated and applied automatically. (You
+      can use Advisors whose pointcuts match on criteria besides attributes in
+      the same autoproxy configuration, if necessary.)</p><p>Finally, the <tt class="literal">attributes</tt> bean is the Commons
+      Attributes Attributes implementation. Replace with another
+      implementation of <tt class="literal">org.springframework.metadata.Attributes
+      </tt>to source attributes from a different source.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="metadata-tx"></a>9.4.2.&nbsp;Declarative transaction management</h3></div></div><div></div></div><p>The commonest use of source-level attributes it to provide
+      declarative transaction management a la .NET. Once the bean definitions
+      shown above are in place, you can define any number of application
+      objects requiring declarative transactions. Only those classes or
+      methods with transaction attributes will be given transaction advice.
+      You need to do nothing except define the required transaction
+      attributes.</p><p><span class="emphasis"><em>Unlike</em></span> in .NET, you can specify transaction
+      attributes at either class or method level. Class-level attributes, if
+      specified, will be "inherited" by all methods. Method attributes will
+      wholly override any class-level attributes.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="metadata-pool"></a>9.4.3.&nbsp;Pooling</h3></div></div><div></div></div><p>Again, as with .NET, you can enable pooling behavior via
+      class-level attributes. Spring can apply this behavior to any POJO. You
+      simply need to specify a pooling attribute, as follows, in the business
+      object to be pooled:</p><pre class="programlisting"> /** 
+ * @@org.springframework.aop.framework.autoproxy.target.PoolingAttribute(10)
+ * @author Rod Johnson
+ */
+public class MyClass {</pre><p>You'll need the usual autoproxy
+      infrastructure configuration. You then need to specify a pooling
+      <tt class="literal">TargetSourceCreator</tt>, as follows. Because pooling
+      affects the creation of the target, we can't use a regular advice. Note
+      that pooling will apply even if there are no advisors applicable to the
+      class, if that class has a pooling attribute.</p><pre class="programlisting">&lt;bean id="poolingTargetSourceCreator"
+  class="org.springframework.aop.framework.autoproxy.metadata.AttributesPoolingTargetSourceCreator"&gt;
+  &lt;property name="attributes" ref="attributes"/&gt;
+&lt;/bean&gt;</pre><p>The relevant autoproxy bean definition needs to specify a list of
+      "custom target source creators", including the Pooling target source
+      creator. We could modify the example shown above to include this
+      property as follows:</p><pre class="programlisting">&lt;bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"&gt;
+  &lt;property name="customTargetSourceCreators"&gt;
+    &lt;list&gt;
+      &lt;ref bean="poolingTargetSourceCreator"/&gt;
+    &lt;/list&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p>As with the use of metadata in Spring in general, this is a
+      one-off cost: once setup is out of the way, it's very easy to use
+      pooling for additional business objects.</p><i><span class="remark">It's arguable that the need for pooling is rare, so there's
+      seldom a need to apply pooling to a large number of business objects.
+      Hence this feature does not appear to be used often.</span></i><p>Please see the Javadoc for the
+      <tt class="literal">org.springframework.aop.framework.autoproxy</tt> package
+      for more details. It's possible to use a different pooling
+      implementation than Commons Pool with minimal custom coding.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="metadata-arbitrary"></a>9.4.4.&nbsp;Custom metadata</h3></div></div><div></div></div><p>We can even go beyond the capabilities of .NET metadata
+      attributes, because of the flexibility of the underlying autoproxying
+      infrastructure.</p><p>We can define custom attributes, to provide any kind of
+      declarative behavior. To do this, you need to:</p><div class="itemizedlist"><ul type="disc"><li><p>Define your custom attribute class</p></li><li><p>Define a Spring AOP Advisor with a pointcut that fires on the
+          presence of this custom attribute.</p></li><li><p>Add that Advisor as a bean definition to an application
+          context with the generic autoproxy infrastructure in place.</p></li><li><p>Add attributes to your POJOs.</p></li></ul></div><p>There are several potential areas you might want to do this, such
+      as custom declarative security, or possibly caching.</p><i><span class="remark">This is a powerful mechanism which can significantly reduce
+      configuration effort in some projects. However, remember that it does
+      rely on AOP under the covers. The more Advisors you have in play, the
+      more complex your runtime configuration will be.</span></i><i><span class="remark">(If you want to see what advice applies to any object, try
+      casting a reference to org.springframework.aop.framework.Advised. This
+      will enable you to examine the Advisors.)</span></i></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e6619"></a>9.5.&nbsp;Using attributes to minimize MVC web tier configuration</h2></div></div><div></div></div><p>The other main use of Spring metadata as of 1.0 is to provide an
+    option to simplify Spring MVC web configuration.</p><p>Spring MVC offers flexible <span class="emphasis"><em>handler mappings</em></span>:
+    mappings from incoming request to controller (or other handler) instance.
+    Normally handler mappings are configured in the
+    <tt class="literal">xxxx-servlet.xml</tt> file for the relevant Spring
+    DispatcherServlet.</p><p>Holding these mappings in the DispatcherServlet configuration file
+    is normally A Good Thing. It provides maximum flexibility. In
+    particular:</p><div class="itemizedlist"><ul type="disc"><li><p>The controller instance is explicitly managed by Spring IoC,
+          through an XML bean definition</p></li><li><p>The mapping is external to the controller, so the same
+          controller instance could be given multiple mappings in the same
+          DispatcherServlet context or reused in a different
+          configuration.</p></li><li><p>Spring MVC is able to support mappings based on any criteria,
+          rather than merely the request URL-to-controller mappings available
+          in most other frameworks.</p></li></ul></div><p>However, this does mean that for each controller we typically need
+    both a handler mapping (normally in a handler mapping XML bean definition)
+    and an XML mapping for the controller itself.</p><p>Spring offers a simpler approach based on source-level attributes,
+    which is an attractive option in simpler scenarios.</p><i><span class="remark">The approach described in this section is best suited to
+    relatively simple MVC scenarios. It sacrifices some of the power of Spring
+    MVC, such as the ability to use the same controller with different
+    mappings, and the ability to base mappings on something other than request
+    URL.</span></i><p>In this approach, controllers are marked with one or more
+    class-level metadata attributes, each specifying one URL they should be
+    mapped to.</p><p>The following examples show the approach. In each case, we have a
+    controller that depends on a business object of type Cruncher. As usual,
+    this dependency will be resolved by Dependency Injection. The Cruncher
+    must be available through a bean definition in the relevant
+    DispatcherServlet XML file, or a parent context.</p><p>We attach an attribute to the controller class specifying the URL
+    that should map to it. We can express the dependency through a JavaBean
+    property or a constructor argument. This dependency must be resolvable by
+    autowiring: that is, there must be exactly one business object of type
+    Cruncher available in the context.</p><pre class="programlisting">/**
+ * Normal comments here
+ * @author Rod Johnson
+ * @@org.springframework.web.servlet.handler.metadata.PathMap("/bar.cgi")
+ */
+public class BarController extends AbstractController {
+
+    private Cruncher cruncher;
+
+    public void setCruncher(Cruncher cruncher) {
+        this.cruncher = cruncher;
+    }
+
+    protected ModelAndView handleRequestInternal(
+            HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+        System.out.println("Bar Crunching c and d =" + 
+            cruncher.concatenate("c", "d"));
+        return new ModelAndView("test");
+    }
+
+}</pre><p>For this auto-mapping to work, we need to add the following to the
+    relevant <tt class="literal">xxxx-servlet.xml</tt> file, specifying the
+    attributes handler mapping. This special handler mapping can handle any
+    number of controllers with attributes as shown above. The bean id
+    ("commonsAttributesHandlerMapping") is not important. The type is what
+    matters:</p><pre class="programlisting">&lt;bean id="commonsAttributesHandlerMapping"      
+    class="org.springframework.web.servlet.handler.metadata.CommonsPathMapHandlerMapping"/&gt;</pre><p>We <span class="emphasis"><em>do not </em></span>currently need an Attributes bean
+    definition, as in the above example, because this class works directly
+    with the Commons Attributes API, not via the Spring metadata
+    abstraction.</p><p>We now need no XML configuration for each controller. Controllers
+    are automatically mapped to the specified URL(s). Controllers benefit from
+    IoC, using Spring's autowiring capability. For example, the dependency
+    expressed in the "cruncher" bean property of the simple controller shown
+    above is automatically resolved in the current web application context.
+    Both Setter and Constructor Dependency Injection are available, each with
+    zero configuration.</p><p>An example of Constructor Injection, also showing multiple URL
+    paths:</p><pre class="programlisting">/**
+* Normal comments here
+* @author Rod Johnson
+* 
+* @@org.springframework.web.servlet.handler.metadata.PathMap("/foo.cgi")
+* @@org.springframework.web.servlet.handler.metadata.PathMap("/baz.cgi")
+*/
+public class FooController extends AbstractController {
+
+    private Cruncher cruncher;
+
+    public FooController(Cruncher cruncher) {
+        this.cruncher = cruncher;
+    }
+
+    protected ModelAndView handleRequestInternal(
+            HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+        return new ModelAndView("test");
+    }
+
+}</pre><p>This approach has the following benefits:</p><div class="itemizedlist"><ul type="disc"><li><p>Significantly reduced volume of configuration. Each time we add
+        a controller we need add <span class="emphasis"><em>no</em></span> XML configuration. As
+        with attribute-driven transaction management, once the basic
+        infrastructure is in place, it is very easy to add more application
+        classes.</p></li><li><p>We retain much of the power of Spring IoC to configure
+        controllers.</p></li></ul></div><p>This approach has the following limitations:</p><div class="itemizedlist"><ul type="disc"><li><p>One-off cost in more complex build process. We need an attribute
+        compilation step and an attribute indexing step. However, once in
+        place, this should not be an issue.</p></li><li><p>Currently Commons Attributes only, although support for other
+        attribute providers may be added in future.</p></li><li><p>Only "autowiring by type" dependency injection is supported for
+        such controllers. However, this still leaves them far in advance of
+        Struts Actions (with no IoC support from the framework) and, arguably,
+        WebWork Actions (with only rudimentary IoC support) where IoC is
+        concerned.</p></li><li><p>Reliance on automagical IoC resolution may be confusing.</p></li></ul></div><p>Because autowiring by type means there must be exactly one
+    dependency of the specified type, we need to be careful if we use AOP. In
+    the common case using TransactionProxyFactoryBean, for example, we end up
+    with <span class="emphasis"><em>two</em></span> implementations of a business interface such
+    as Cruncher: the original POJO definition, and the transactional AOP
+    proxy. This won't work, as the owning application context can't resolve
+    the type dependency unambiguously. The solution is to use AOP
+    autoproxying, setting up the autoproxy infrastructure so that there is
+    only one implementation of Cruncher defined, and that implementation is
+    automatically advised. Thus this approach works well with
+    attribute-targeted declarative services as described above. As the
+    attributes compilation process must be in place to handle the web
+    controller targeting, this is easy to set up.</p><p>Unlike other metadata functionality, there is currently only a
+    Commons Attributes implementation available:
+    org.springframework.web.servlet.handler.metadata.CommonsPathMapHandlerMapping.
+    This limitation is due to the fact that not only do we need attribute
+    compilation, we need attribute <span class="emphasis"><em>indexing</em></span>: the ability
+    to ask the attributes API for all classes with the PathMap attribute.
+    Indexing is not currently offered on the
+    <tt class="literal">org.springframework.metadata.Attributes</tt> abstraction
+    interface, although it may be in future. (If you want to add support for
+    another attributes implementation--which must support indexing--you can
+    easily extend the <tt class="literal">AbstractPathMapHandlerMapping</tt>
+    superclass of <tt class="literal">CommonsPathMapHandlerMapping</tt>,
+    implementing the two protected abstract methods to use your preferred
+    attributes API.)</p><p>Thus we need two additional steps in the build process: attribute
+    compilation and attribute indexing. Use of the attribute indexer task was
+    shown above. Note that Commons Attributes presently requires a Jar file as
+    input to indexing.</p><i><span class="remark">If you begin with a handler metadata mapping approach, it is
+    possible to switch at any point to a classic Spring XML mapping approach.
+    So you don't close off this option. For this reason, I find that I often
+    start a web application using metadata mapping.</span></i></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e6729"></a>9.6.&nbsp;Other uses of metadata attributes</h2></div></div><div></div></div><p>Other uses of metadata attributes appear to be growing in
+    popularity. As of Spring 1.2, metadata attributes for JMX exposure are
+    supported, through both Commons Attributes (on JDK 1.3+) and JSR-175
+    annotations (on JDK 1.5).</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e6734"></a>9.7.&nbsp;Adding support for additional metadata APIs</h2></div></div><div></div></div><p>Should you wish to provide support for another metadata API it is
+    easy to do so.</p><p>Simply implement the
+    <tt class="literal">org.springframework.metadata.Attributes</tt> interface as a
+    facade for your metadata API. You can then include this object in your
+    bean definitions as shown above.</p><p>All framework services that use metadata, such as AOP
+    metadata-driven autoproxying, will then automatically be able to use your
+    new metadata provider.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="transaction.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="dao.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;8.&nbsp;Transaction management&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;10.&nbsp;DAO support</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

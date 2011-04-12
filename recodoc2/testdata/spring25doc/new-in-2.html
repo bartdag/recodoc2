@@ -1,0 +1,388 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;2.&nbsp;What's new in Spring 2.0 and 2.5?</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><!--Begin Google Analytics code--><script xmlns="http://www.w3.org/TR/xhtml1/transitional" type="text/javascript"> 
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        </script><script xmlns="http://www.w3.org/TR/xhtml1/transitional" type="text/javascript"> 
+            var pageTracker = _gat._getTracker("UA-2728886-3");
+            pageTracker._setDomainName("none");
+            pageTracker._setAllowLinker(true);
+            pageTracker._trackPageview();
+        </script><!--End Google Analytics code--><link rel="home" href="index.html" title="The Spring Framework - Reference Documentation"><link rel="up" href="index.html" title="The Spring Framework - Reference Documentation"><link rel="previous" href="introduction.html" title="Chapter&nbsp;1.&nbsp;Introduction"><link rel="next" href="spring-core.html" title="Part&nbsp;I.&nbsp;Core Technologies"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://www.springframework.org/" title="The Spring Framework"><img style="border:none;" src="images/xdev-spring_logo.jpg"></a><a style="border:none;" href="http://www.springsource.com/" title="SpringSource"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/springsource-banner-rhs.png"></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="new-in-2"></a>Chapter&nbsp;2.&nbsp;What's new in Spring 2.0 and 2.5?</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="new-in-2-intro"></a>2.1.&nbsp;Introduction</h2></div></div><div></div></div><p>If you have been using the Spring Framework for some time, you will
+    be aware that Spring has undergone two major revisions: Spring 2.0,
+    released in October 2006, and Spring 2.5, released in November 2007.</p><div class="sidebar"><a name="new-in-2-intro-java"></a><p class="title"><b>Java SE and Java EE Support</b></p><p>The Spring Framework continues to be compatible with all versions
+      of Java since (and including) Java 1.4.2. This means that Java 1.4.2,
+      Java 5 and Java 6 are supported, although some advanced functionality of
+      the Spring Framework will not be available to you if you are committed to
+      using Java 1.4.2. Spring 2.5 introduces dedicated support for Java 6,
+      after Spring 2.0's in-depth support for Java 5 throughout the
+      framework.</p><p>Furthermore, Spring remains compatible with J2EE 1.3 and higher,
+      while at the same time introducing dedicated support for Java EE 5. This
+      means that Spring can be consistently used on application servers such
+      as BEA WebLogic 8.1, 9.0, 9.2 and 10, IBM WebSphere 5.1, 6.0, 6.1 and 7,
+      Oracle OC4J 10.1.3 and 11, JBoss 3.2, 4.0, 4.2 and 5.0, as well as Tomcat
+      4.1, 5.0, 5.5 and 6.0, Jetty 4.2, 5.1 and 6.1, Resin 2.1, 3.0 and 3.1
+      and GlassFish V1 and V2.</p><p><span class="emphasis"><em>NOTE: We generally recommend using the most recent
+			version of each application server generation. In particular,
+			make sure you are using BEA WebLogic 8.1 SP6 or higher and
+			WebSphere 6.0.2.19 / 6.1.0.9 or higher, respectively, when using
+			those WebLogic and WebSphere generations with Spring 2.5.</em></span></p></div><p>This chapter is a guide to the new and improved features of Spring
+    2.0 and 2.5. It is intended to provide a high-level summary so that
+    seasoned Spring architects and developers can become immediately familiar
+    with the new Spring 2.x functionality. For more in-depth information on
+    the features, please refer to the corresponding sections hyperlinked from
+    within this chapter.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="new-in-2-ioc"></a>2.2.&nbsp;The Inversion of Control (IoC) container</h2></div></div><div></div></div><p>One of the areas that contains a considerable number of 2.0
+    and 2.5 improvements is Spring's IoC container.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-ioc-scopes"></a>2.2.1.&nbsp;New bean scopes</h3></div></div><div></div></div><p>Previous versions of Spring had IoC container level support for
+      exactly two distinct bean scopes (singleton and prototype). Spring 2.0
+      improves on this by not only providing a number of additional scopes
+      depending on the environment in which Spring is being deployed (for
+      example, request and session scoped beans in a web environment), but
+      also by providing integration points so that Spring users can create
+      their own scopes.</p><p>It should be noted that although the underlying (and internal)
+      implementation for singleton- and prototype-scoped beans has been
+      changed, this change is totally transparent to the end user... no
+      existing configuration needs to change, and no existing configuration
+      will break.</p><p>Both the new and the original scopes are detailed in the section
+      entitled <a href="beans.html#beans-factory-scopes" title="3.4.&nbsp;Bean scopes">Section&nbsp;3.4, &#8220;Bean scopes&#8221;</a>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-ioc-configuration"></a>2.2.2.&nbsp;Easier XML configuration</h3></div></div><div></div></div><p>Spring XML configuration is now even easier, thanks to the advent
+      of the new XML configuration syntax based on XML Schema. If you want to
+      take advantage of the new tags that Spring provides (and the Spring team
+      certainly suggest that you do because they make configuration less
+      verbose and easier to read), then do read the section entitled <a href="xsd-config.html" title="Appendix&nbsp;A.&nbsp;XML Schema-based configuration">Appendix&nbsp;A, <i>XML Schema-based configuration</i></a>.</p><p>On a related note, there is a new, updated DTD for Spring 2.0 that
+      you may wish to reference if you cannot take advantage of the XML
+      Schema-based configuration. The DOCTYPE declaration is included below
+      for your convenience, but the interested reader should definitely read
+      the <tt class="filename">'spring-beans-2.0.dtd'</tt> DTD included in the
+      <tt class="filename">'dist/resources'</tt> directory of the
+      Spring 2.5 distribution.</p><pre class="programlisting">&lt;!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+		  "http://www.springframework.org/dtd/spring-beans-2.0.dtd"&gt;</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-ioc-custom-configuration"></a>2.2.3.&nbsp;Extensible XML authoring</h3></div></div><div></div></div><p>Not only is XML configuration easier to write, it is now also
+      extensible.</p><p>What 'extensible' means in this context is that you, as an
+      application developer, or (more likely) as a third party framework or
+      product vendor, can write custom tags that other developers can then
+      plug into their own Spring configuration files. This allows you to have
+      your own domain specific language (the term is used loosely here) of
+      sorts be reflected in the specific configuration of your own
+      components.</p><p>Implementing custom Spring tags may not be of interest to every
+      single application developer or enterprise architect using Spring in
+      their own projects. We expect third-party vendors to be highly
+      interested in developing custom configuration tags for use in Spring
+      configuration files.</p><p>The extensible configuration mechanism is documented in <a href="extensible-xml.html" title="Appendix&nbsp;B.&nbsp;Extensible XML authoring">Appendix&nbsp;B, <i>Extensible XML authoring</i></a>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-ioc-annotations"></a>2.2.4.&nbsp;Annotation-driven configuration</h3></div></div><div></div></div><p>Spring 2.0 introduced support for various annotations for
+      configuration purposes, such as <tt class="interfacename">@Transactional</tt>,
+      <tt class="interfacename">@Required</tt> and <tt class="interfacename">@PersistenceContext</tt>
+      /<tt class="interfacename">@PersistenceUnit</tt>.</p><p>Spring 2.5 introduces support for a complete set of configuration
+      annotations: <tt class="interfacename">@Autowired</tt> in combination
+      with support for the JSR-250 annotations <tt class="interfacename">@Resource</tt>,
+      <tt class="interfacename">@PostConstruct</tt> and <tt class="interfacename">@PreDestroy</tt>
+      .</p><p>Annotation-driven bean configuration is discussed in <a href="beans.html#beans-annotation-config" title="3.11.&nbsp;Annotation-based configuration">Section&nbsp;3.11, &#8220;Annotation-based configuration&#8221;</a>. Check out annotation support
+      for Spring MVC as well: <a href="new-in-2.html#new-in-2-web-annotations" title="2.5.3.&nbsp;Annotation-based controllers">Section&nbsp;2.5.3, &#8220;Annotation-based controllers&#8221;</a></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-ioc-component-scanning"></a>2.2.5.&nbsp;Autodetecting components in the classpath</h3></div></div><div></div></div><p>Spring 2.5 introduces support component scanning: autodetecting
+      annotated components in the classpath. Typically, such component classes
+      will be annotated with stereotypes such as <tt class="interfacename">@Component</tt>,
+      <tt class="interfacename">@Repository</tt>, <tt class="interfacename">@Service</tt>,
+      <tt class="interfacename">@Controller</tt>. Depending on the application
+      context configuration, such component classes will be autodetected and
+      turned into Spring bean definitions, not requiring explicit configuration
+      for each such bean.</p><p>Annotation-driven bean configuration is discussed in <a href="beans.html#beans-stereotype-annotations" title="3.12.1.&nbsp;@Component and further stereotype&#xA;      annotations">Section&nbsp;3.12.1, &#8220;@Component and further stereotype
+      annotations&#8221;</a>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="new-in-2-aop"></a>2.3.&nbsp;Aspect Oriented Programming (AOP)</h2></div></div><div></div></div><p>Spring 2.0 has a much improved AOP offering. The Spring AOP
+    framework itself is markedly easier to configure in XML, and significantly
+    less verbose as a result; and Spring 2.0 integrates with the AspectJ
+    pointcut language and @AspectJ aspect declaration style. The chapter
+    entitled <a href="aop.html" title="Chapter&nbsp;6.&nbsp;Aspect Oriented Programming with Spring">Chapter&nbsp;6, <i>Aspect Oriented Programming with Spring</i></a> is dedicated to describing this new
+    support.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-aop-configuration"></a>2.3.1.&nbsp;Easier AOP XML configuration</h3></div></div><div></div></div><p>Spring 2.0 introduces new schema support for defining aspects
+      backed by regular Java objects. This support takes advantage of the
+      AspectJ pointcut language and offers fully typed advice (i.e. no more
+      casting and <tt class="literal">Object[]</tt> argument manipulation). Details
+      of this support can be found in the section entitled <a href="aop.html#aop-schema" title="6.3.&nbsp;Schema-based AOP support">Section&nbsp;6.3, &#8220;Schema-based AOP support&#8221;</a>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-aop-aspectj"></a>2.3.2.&nbsp;Support for @AspectJ aspects</h3></div></div><div></div></div><p>Spring 2.0 also supports aspects defined using the @AspectJ
+      annotations. These aspects can be shared between AspectJ and Spring AOP,
+      and require (honestly!) only some simple configuration. Said support for
+      @AspectJ aspects is discussed in <a href="aop.html#aop-ataspectj" title="6.2.&nbsp;@AspectJ support">Section&nbsp;6.2, &#8220;@AspectJ support&#8221;</a>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-aop-bean-pointcuts"></a>2.3.3.&nbsp;Support for bean name pointcut element</h3></div></div><div></div></div><p>Spring 2.5 introduces support for the <tt class="literal">bean(...)</tt>
+      pointcut element, matching specific named beans according to Spring-defined
+      bean names. See <a href="aop.html#aop-pointcuts-designators" title="6.2.3.1.&nbsp;Supported Pointcut Designators">Section&nbsp;6.2.3.1, &#8220;Supported Pointcut Designators&#8221;</a> for details.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-aop-load-time-weaving"></a>2.3.4.&nbsp;Support for AspectJ load-time weaving</h3></div></div><div></div></div><p>Spring 2.5 introduces explicit support AspectJ load-time weaving,
+      as alternative to the proxy-based AOP framework. The new
+      <tt class="literal">context:load-time-weaver</tt> configuration element
+      automatically activates AspectJ aspects as defined in AspectJ's
+      <tt class="literal">META-INF/aop.xml</tt> descriptor, applying them to the
+      current application context through registering a transformer with the
+      underlying ClassLoader. Note that this only works in environments with
+      class transformation support. Check out <a href="aop.html#aop-aj-ltw" title="6.8.4.&nbsp;Load-time weaving with AspectJ in the Spring Framework">Section&nbsp;6.8.4, &#8220;Load-time weaving with AspectJ in the Spring Framework&#8221;</a>
+      for the capabilities and limitations.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="new-in-2-middle-tier"></a>2.4.&nbsp;The Middle Tier</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-middle-tier-transaction-configuration"></a>2.4.1.&nbsp;Easier configuration of declarative transactions in XML</h3></div></div><div></div></div><p>The way that transactions are configured in Spring 2.0 has been
+      changed significantly. The previous 1.2.x style of configuration
+      continues to be valid (and supported), but the new style is markedly
+      less verbose and is the recommended style. Spring 2.0 also ships with an
+      AspectJ aspects library that you can use to make pretty much any object
+      transactional - even objects not created by the Spring IoC container.</p><p>Spring 2.5 supports convenient annotation-driven transaction
+      management in combination with load-time weaving, through the use of
+      <tt class="literal">context:load-time-weaver</tt> in combination with
+      <tt class="literal">tx:annotation-driven mode="aspectj"</tt>.</p><p>The chapter entitled <a href="transaction.html" title="Chapter&nbsp;9.&nbsp;Transaction management">Chapter&nbsp;9, <i>Transaction management</i></a> contains all
+      of the details.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-middle-tier-websphere"></a>2.4.2.&nbsp;Full WebSphere transaction management support</h3></div></div><div></div></div><p>Spring 2.5 explicitly supports IBM's WebSphere Application Server,
+      in particular with respect to WebSphere's transaction manager.
+      Transaction suspension is now fully supported through the use of
+      WebSphere's new <tt class="interfacename">UOWManager</tt> API, which
+      is available on WAS 6.0.2.19+ and 6.0.1.9+.</p><p>So if you run a Spring-based application on the WebSphere
+      Application Server, we highly recommend to use Spring 2.5's
+      <tt class="classname">WebSphereUowTransactionManager</tt> as your
+      <tt class="interfacename">PlatformTransactionManager</tt> of choice.
+      This is also IBM's official recommendation.</p><p>For automatic detection of the underlying JTA-based transaction
+      platform, consider the use of Spring 2.5's new
+      <tt class="literal">tx:jta-transaction-manager</tt> configuration element.
+      This will autodetect BEA WebLogic and IBM WebSphere, registering the
+      appropriate <tt class="interfacename">PlatformTransactionManager</tt>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-middle-tier-jpa"></a>2.4.3.&nbsp;JPA</h3></div></div><div></div></div><p>Spring 2.0 ships with a JPA abstraction layer that is similar in
+      intent to Spring's JDBC abstraction layer in terms of scope and general
+      usage patterns.</p><p>If you are interested in using a JPA-implementation as the
+      backbone of your persistence layer, the section entitled <a href="orm.html#orm-jpa" title="12.6.&nbsp;JPA">Section&nbsp;12.6, &#8220;JPA&#8221;</a> is dedicated to detailing Spring's support and
+      value-add in this area.</p><p>Spring 2.5 upgrades its OpenJPA support to OpenJPA 1.0,
+      with support for advanced features such as savepoints.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-middle-tier-async-jms"></a>2.4.4.&nbsp;Asynchronous JMS</h3></div></div><div></div></div><p>Prior to Spring 2.0, Spring's JMS offering was limited to sending
+      messages and the <span class="emphasis"><em>synchronous</em></span> receiving of messages.
+      This functionality (encapsulated in the
+      <tt class="classname">JmsTemplate</tt> class) is great, but it doesn't
+      address the requirement for the <span class="emphasis"><em>asynchronous</em></span>
+      receiving of messages.</p><p>Spring 2.0 now ships with full support for the reception of
+      messages in an asynchronous fashion, as detailed in the section entitled
+      <a href="jms.html#jms-asynchronousMessageReception" title="19.4.2.&nbsp;Asynchronous Reception - Message-Driven POJOs">Section&nbsp;19.4.2, &#8220;Asynchronous Reception - Message-Driven POJOs&#8221;</a>.</p><p>As of Spring 2.5, the JCA style of setting up asynchronous
+      message listeners is supported as well, through the
+      <tt class="classname">GenericMessageEndpointManager</tt> facility.
+      This is an alternative to the standard JMS listener facility, allowing
+      closer integration with message brokers such as ActiveMQ and JORAM.
+      See <a href="jms.html#jms-jca-message-endpoint-manager" title="19.5.&nbsp;Support for JCA Message Endpoints">Section&nbsp;19.5, &#8220;Support for JCA Message Endpoints&#8221;</a>.</p><p>Spring 2.5 also introduces an XML namespace for simplifying JMS
+      configuration, offering concise configuration of a large numbers of
+      listeners. This namespace supports both the standard JMS listener facility
+      as well as the JCA setup style, with minimal changes in the configuration.
+      See <a href="jms.html#jms-namespace" title="19.6.&nbsp;JMS Namespace Support">Section&nbsp;19.6, &#8220;JMS Namespace Support&#8221;</a>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-middle-tier-jdbc"></a>2.4.5.&nbsp;JDBC</h3></div></div><div></div></div><p>There are some small (but nevertheless notable) new classes in the
+      Spring Framework's JDBC support library. The first, <a href="jdbc.html#jdbc-NamedParameterJdbcTemplate" title="11.2.2.&nbsp;NamedParameterJdbcTemplate"><tt class="classname">NamedParameterJdbcTemplate</tt></a>,
+      provides support for programming JDBC statements using named parameters
+      (as opposed to programming JDBC statements using only classic
+      placeholder (<tt class="literal">'?'</tt>) arguments.</p><p>Another of the new classes, the <a href="jdbc.html#jdbc-SimpleJdbcTemplate" title="11.2.3.&nbsp;SimpleJdbcTemplate"><tt class="classname">SimpleJdbcTemplate</tt></a>,
+      is aimed at making using the <tt class="classname">JdbcTemplate</tt> even
+      easier to use when you are developing against Java 5+ (Tiger).</p><p>Spring 2.5 significantly extends the functionality of
+      <tt class="classname">SimpleJdbcTemplate</tt> and introduces
+      <tt class="classname">SimpleJdbcCall</tt> and <tt class="classname">SimpleJdbcInsert</tt>
+      operation objects.
+      </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="new-in-2-web"></a>2.5.&nbsp;The Web Tier</h2></div></div><div></div></div><p>The web tier support has been <span class="emphasis"><em>substantially</em></span>
+    improved and expanded in Spring 2.0, with annotation-based controllers
+    introduced in Spring 2.5.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-web-convention"></a>2.5.1.&nbsp;Sensible defaulting in Spring MVC</h3></div></div><div></div></div><p>For a lot of projects, sticking to established conventions and
+      having reasonable defaults is just what the projects need... this theme
+      of convention-over-configuration now has explicit support in Spring MVC.
+      What this means is that if you establish a set of naming conventions for
+      your <tt class="literal">Controllers</tt> and views, you can
+      <span class="emphasis"><em>substantially</em></span> cut down on the amount of XML
+      configuration that is required to setup handler mappings, view
+      resolvers, <tt class="classname">ModelAndView</tt> instances, etc. This is a
+      great boon with regards to rapid prototyping, and can also lend a degree
+      of (always good-to-have) consistency across a codebase.</p><p>Spring MVC's convention-over-configuration support is detailed in
+      the section entitled <a href="mvc.html#mvc-coc" title="13.10.&nbsp;Convention over configuration">Section&nbsp;13.10, &#8220;Convention over configuration&#8221;</a></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-web-portlet"></a>2.5.2.&nbsp;Portlet framework</h3></div></div><div></div></div><p>Spring 2.0 ships with a Portlet framework that is conceptually
+      similar to the Spring MVC framework. Detailed coverage of the Spring
+      Portlet framework can be found in the section entitled <a href="portlet.html" title="Chapter&nbsp;16.&nbsp;Portlet MVC Framework">Chapter&nbsp;16, <i>Portlet MVC Framework</i></a>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-web-annotations"></a>2.5.3.&nbsp;Annotation-based controllers</h3></div></div><div></div></div><p>Spring 2.5 introduces an annotation-based programming model for MVC
+      controllers, using annotations such as <tt class="interfacename">@RequestMapping</tt>,
+      <tt class="interfacename">@RequestParam</tt>, <tt class="interfacename">@ModelAttribute</tt>,
+      etc. This annotation support is available for both Servlet MVC and Portlet
+      MVC. Controllers implemented in this style do not have to extend specific 
+      base classes or implement specific interfaces. Furthermore, they do not 
+      usually have direct dependencies on Servlet or Portlet API's, although 
+      they can easily get access to Servlet or Portlet facilities if desired.
+      For further details, see <a href="mvc.html#mvc-annotation" title="13.11.&nbsp;Annotation-based controller configuration">Section&nbsp;13.11, &#8220;Annotation-based controller configuration&#8221;</a>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-web-form-tags"></a>2.5.4.&nbsp;A form tag library for Spring MVC</h3></div></div><div></div></div><p>A rich JSP tag library for Spring MVC was <span class="emphasis"><em>the</em></span>
+      JIRA issue that garnered the most votes from Spring users (by a wide
+      margin).</p><p>Spring 2.0 ships with a full featured JSP tag library that makes
+      the job of authoring JSP pages much easier when using Spring MVC; the
+      Spring team is confident it will satisfy all of those developers who
+      voted for the issue on JIRA. The new tag library is itself covered in
+      the section entitled <a href="view.html#view-jsp-formtaglib" title="14.2.4.&nbsp;Using Spring's form tag library">Section&nbsp;14.2.4, &#8220;Using Spring's form tag library&#8221;</a>, and a quick
+      reference to all of the new tags can be found in the appendix entitled
+      <a href="spring-form.tld.html" title="Appendix&nbsp;E.&nbsp;spring-form.tld">Appendix&nbsp;E, <i>spring-form.tld</i></a>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-web-tiles2"></a>2.5.5.&nbsp;Tiles 2 support</h3></div></div><div></div></div><p>Spring 2.5 ships support for Tiles 2, the next generation of the
+      popular Tiles templating framework. This supersedes Spring's former support
+      for Tiles 1, as included in Struts 1.x. See <a href="view.html#view-tiles" title="14.3.&nbsp;Tiles">Section&nbsp;14.3, &#8220;Tiles&#8221;</a>
+      for details.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-web-jsf12"></a>2.5.6.&nbsp;JSF 1.2 support</h3></div></div><div></div></div><p>Spring 2.5 supports JSF 1.2, providing a JSF 1.2 variant of Spring's
+      <tt class="classname">DelegatingVariableResolver</tt> in the form of the new
+      <tt class="classname">SpringBeanFacesELResolver</tt>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-web-jaxws"></a>2.5.7.&nbsp;JAX-WS support</h3></div></div><div></div></div><p>Spring 2.5 fully supports JAX-WS 2.0/2.1, as included in Java 6 and Java EE 5.
+      JAX-WS is the successor of JAX-RPC, allowing access to WSDL/SOAP-based web
+      services as well as JAX-WS style exposure of web services.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="new-in-2-other"></a>2.6.&nbsp;Everything else</h2></div></div><div></div></div><p>This final section outlines all of the other new and improved Spring
+    2.0/2.5 features and functionality.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-other-dynamic-language-support"></a>2.6.1.&nbsp;Dynamic language support</h3></div></div><div></div></div><p>Spring 2.0 introduced support for beans written in languages other
+      than Java, with the currently supported dynamic languages being JRuby,
+      Groovy and BeanShell. This dynamic language support is comprehensively
+      detailed in the section entitled <a href="dynamic-language.html" title="Chapter&nbsp;24.&nbsp;Dynamic language support">Chapter&nbsp;24, <i>Dynamic language support</i></a>.</p><p>Spring 2.5 refines the dynamic languages support with autowiring
+      and support for the recently released JRuby 1.0.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-other-testing"></a>2.6.2.&nbsp;Enhanced testing support</h3></div></div><div></div></div><p>Spring 2.5 introduces the <span class="emphasis"><em>Spring TestContext
+      Framework</em></span> which provides annotation-driven unit and integration
+      testing support that is agnostic of the actual testing framework in use.
+      The same techniques and annotation-based configuration used in, for
+      example, a JUnit 3.8 environment can also be applied to tests written with
+      JUnit 4.4, TestNG, etc.</p><p>In addition to providing generic and extensible testing
+      infrastructure, the <span class="emphasis"><em>Spring TestContext Framework</em></span>
+      provides out-of-the-box support for Spring-specific integration testing
+      functionality such as <a href="testing.html#testcontext-ctx-management" title="8.3.7.2.&nbsp;Context management and caching">context
+      management and caching</a>, <a href="testing.html#testcontext-fixture-di" title="8.3.7.3.&nbsp;Dependency Injection of test fixtures">dependency injection of test
+      fixtures</a>, and <a href="testing.html#testcontext-tx" title="8.3.7.4.&nbsp;Transaction management">transactional test
+      management</a> with default rollback semantics.</p><p>To discover how this new testing support can assist you with writing
+      unit and integration tests, consult <a href="testing.html#testcontext-framework" title="8.3.7.&nbsp;Spring TestContext Framework">Section&nbsp;8.3.7, &#8220;Spring TestContext Framework&#8221;</a>
+      of the revised testing chapter.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-other-jmx"></a>2.6.3.&nbsp;JMX support</h3></div></div><div></div></div><p>The Spring Framework 2.0 has support for
+      <tt class="literal">Notifications</tt>; it is also possible to exercise
+      declarative control over the registration behavior of MBeans with an
+      <tt class="literal">MBeanServer</tt>.</p><div class="itemizedlist"><ul type="disc"><li><a href="jmx.html#jmx-notifications" title="20.7.&nbsp;Notifications">Section&nbsp;20.7, &#8220;Notifications&#8221;</a></li><li><a href="jmx.html#jmx-exporting-registration-behavior" title="20.2.5.&nbsp;Controlling the registration behavior">Section&nbsp;20.2.5, &#8220;Controlling the registration behavior&#8221;</a></li></ul></div><p>Furthermore, Spring 2.5 provides a
+      <a href="jmx.html#jmx-context-mbeanexport" title="20.4.3.&nbsp;The <context:mbean-export/&gt; element"><tt class="literal">context:mbean-export</tt></a>
+      configuration element for convenient registration of annotated bean classes,
+      detecting Spring's <tt class="interfacename">@ManagedResource</tt> annotation.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-other-jca"></a>2.6.4.&nbsp;Deploying a Spring application context as JCA adapter</h3></div></div><div></div></div><p>Spring 2.5 supports the deployment of a Spring application context
+      as JCA resource adapter, packaged as a JCA RAR file. This allows headless
+      application modules to be deployed into J2EE servers, getting access to
+      all the server's infrastructure e.g. for executing scheduled tasks,
+      listening for incoming messages, etc.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-other-taskexecutor"></a>2.6.5.&nbsp;Task scheduling</h3></div></div><div></div></div><p>Spring 2.0 offers an abstraction around the scheduling of tasks.
+      For the interested developer, the section entitled <a href="scheduling.html#scheduling-task-executor" title="23.4.&nbsp;The Spring TaskExecutor abstraction">Section&nbsp;23.4, &#8220;The Spring TaskExecutor abstraction&#8221;</a> contains all of the
+      details.</p><p>The <tt class="interfacename">TaskExecutor</tt> abstraction is used
+      throughout the framework itself as well, e.g. for the asynchronous JMS support.
+      In Spring 2.5, it is also used in the JCA environment support.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-other-java5"></a>2.6.6.&nbsp;Java 5 (Tiger) support</h3></div></div><div></div></div><p>Find below pointers to documentation describing some of the new
+      Java 5 support in Spring 2.0 and 2.5.</p><div class="itemizedlist"><ul type="disc"><li><a href="beans.html#beans-annotation-config" title="3.11.&nbsp;Annotation-based configuration">Section&nbsp;3.11, &#8220;Annotation-based configuration&#8221;</a></li><li><a href="metadata.html#metadata-annotations-required" title="25.3.1.&nbsp;@Required">Section&nbsp;25.3.1, &#8220;@Required&#8221;</a></li><li><a href="transaction.html#transaction-declarative-annotations" title="9.5.6.&nbsp;Using @Transactional">Section&nbsp;9.5.6, &#8220;Using @Transactional&#8221;</a></li><li><a href="jdbc.html#jdbc-SimpleJdbcTemplate" title="11.2.3.&nbsp;SimpleJdbcTemplate">Section&nbsp;11.2.3, &#8220;SimpleJdbcTemplate&#8221;</a></li><li><a href="orm.html#orm-jpa" title="12.6.&nbsp;JPA">Section&nbsp;12.6, &#8220;JPA&#8221;</a></li><li><a href="aop.html#aop-ataspectj" title="6.2.&nbsp;@AspectJ support">Section&nbsp;6.2, &#8220;@AspectJ support&#8221;</a></li><li><a href="aop.html#aop-atconfigurable" title="6.8.1.&nbsp;Using AspectJ to dependency inject domain objects with&#xA;      Spring">Section&nbsp;6.8.1, &#8220;Using AspectJ to dependency inject domain objects with
+      Spring&#8221;</a></li></ul></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="new-in-2-migrating"></a>2.7.&nbsp;Migrating to Spring 2.5</h2></div></div><div></div></div><p>This final section details issues that may arise during any
+    migration from Spring 1.2/2.0 to Spring 2.5.</p><p>Upgrading to Spring 2.5 from a Spring 2.0.x application should
+    simply be a matter of dropping the Spring 2.5 jar into the appropriate
+    location in your application's directory structure. We highly recommend
+    upgrading to Spring 2.5 from any Spring 2.0 application that runs on
+    JDK 1.4.2 or higher, in particular when running on Java 5 or higher,
+    leveraging the significant configuration conveniences and performance
+    improvements that Spring 2.5 has to offer.</p><p>Whether an upgrade from Spring 1.2.x will be as seamless depends on
+    how much of the Spring APIs you are using in your code. Spring 2.0
+    removed pretty much all of the classes and methods previously marked
+    as deprecated in the Spring 1.2.x codebase, so if you have been using
+    such classes and methods, you will of course have to use alternative
+    classes and methods (some of which are summarized below).</p><p>With regards to configuration, Spring 1.2.x style XML configuration
+    is 100%, satisfaction-guaranteed compatible with the Spring 2.5 library.
+    Of course if you are still using the Spring 1.2.x DTD, then you won't be
+    able to take advantage of some of the new Spring 2.0 functionality (such
+    as <a href="new-in-2.html#new-in-2-ioc-scopes" title="2.2.1.&nbsp;New bean scopes">scopes</a> and <a href="new-in-2.html#new-in-2-aop-configuration" title="2.3.1.&nbsp;Easier AOP XML configuration">easier AOP</a> and <a href="new-in-2.html#new-in-2-middle-tier-transaction-configuration" title="2.4.1.&nbsp;Easier configuration of declarative transactions in XML">transaction
+    configuration</a>), but nothing will blow up.</p><p>The suggested migration strategy is to drop in the Spring 2.5 jar(s)
+    to benefit from the improved code present in the release (bug fixes,
+    optimizations, etc.). You can then, on an incremental basis, choose to
+    start using the new Spring 2.5 features and configuration. For example,
+    you could choose to start configuring just your aspects in the new Spring
+    2 style; it is perfectly valid to have 90% of your configuration using
+    the old-school Spring 1.2.x configuration (which references the 1.2.x
+    DTD), and have the other 10% using the new Spring 2 configuration (which
+    references the 2.0/2.5 DTD or XSD). Bear in mind that you are not forced to
+    upgrade your XML configuration should you choose to drop in the Spring 2.5
+    libraries.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="new-in-2-migrating-changes"></a>2.7.1.&nbsp;Changes</h3></div></div><div></div></div><p>For a comprehensive list of changes, consult the
+      <tt class="filename">'changelog.txt'</tt> file that is located in the top
+      level directory of the Spring Framework distribution.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="new-in-2-migrating-jdk"></a>2.7.1.1.&nbsp;Supported JDK versions</h4></div></div><div></div></div><p>As of Spring 2.5, support for JDK 1.3 has been removed,
+        following Sun's official deprecation of JDK 1.3 in late 2006.
+        If you haven't done so already, upgrade to JDK 1.4.2 or higher.</p><p>If you need to stick with an application server that only supports
+        JDK 1.3, such as WebSphere 4.0 or 5.0, we recommend using the
+        Spring Framework version 2.0.7/2.0.8 which still supports JDK 1.3.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="new-in-2-migrating-packaging"></a>2.7.1.2.&nbsp;Jar packaging in Spring 2.5</h4></div></div><div></div></div><p>As of Spring 2.5, Spring Web MVC is no longer part of the
+        <tt class="filename">'spring.jar'</tt> file. Spring MVC
+        can be found in <tt class="filename">'spring-webmvc.jar'</tt>
+        and <tt class="filename">'spring-webmvc-portlet.jar'</tt>
+        in the <tt class="literal">lib/modules</tt> directory of the distribution.
+        Furthermore, the Struts 1.x support has been factored out into
+        <tt class="filename">'spring-webmvc-struts.jar'</tt>.</p><p><span class="emphasis"><em>Note: The commonly used Spring's <tt class="classname">DispatcherServlet</tt>
+        is part of Spring's Web MVC framework.</em></span> As a consequence,
+        you need to add <tt class="filename">'spring-webmvc.jar'</tt>
+        (or <tt class="filename">'spring-webmvc-portlet/struts.jar'</tt>)
+        to a <tt class="filename">'spring.jar'</tt> scenario,
+        even if you are just using <tt class="classname">DispatcherServlet</tt>
+        for remoting purposes (e.g. exporting Hessian or HTTP invoker services).</p><p>Spring 2.0's <tt class="filename">'spring-jmx.jar'</tt>
+        and <tt class="filename">'spring-remoting.jar'</tt> have been
+        merged into Spring 2.5's <tt class="filename">'spring-context.jar'</tt>
+        (for the JMX and non-HTTP remoting support) and partly into
+        <tt class="filename">'spring-web.jar'</tt>
+        (for the HTTP remoting support).</p><p>Spring 2.0's <tt class="filename">'spring-support.jar'</tt>
+        has been renamed to <tt class="filename">'spring-context-support.jar'</tt>,
+        expressing the actual support relationship more closely.
+        <tt class="filename">'spring-portlet.jar'</tt> has been
+        renamed to <tt class="filename">'spring-webmvc-portlet.jar'</tt>,
+        since it is technically a submodule of Spring's Web MVC framework.
+        Analogously, <tt class="filename">'spring-struts.jar'</tt>
+        has been renamed to <tt class="filename">'spring-webmvc-struts.jar'</tt>.
+        </p><p>Spring 2.0's <tt class="filename">'spring-jdo.jar'</tt>,
+        <tt class="filename">'spring-jpa.jar'</tt>,
+        <tt class="filename">'spring-hibernate3.jar'</tt>,
+        <tt class="filename">'spring-toplink.jar'</tt>
+        and <tt class="filename">'spring-ibatis.jar'</tt>
+        have been combined into Spring 2.5's coarse-granular
+        <tt class="filename">'spring-orm.jar'</tt>.</p><p>Spring 2.5's <tt class="filename">'spring-test.jar'</tt>
+        supersedes the previous <tt class="filename">'spring-mock.jar'</tt>,
+        indicating the stronger focus on the test context framework.
+        Note that <tt class="filename">'spring-test.jar'</tt>
+        contains everything <tt class="filename">'spring-mock.jar'</tt>
+        contained in previous Spring versions; hence it can be used as a
+        straightforward replacement for unit and integration testing purposes.</p><p>Spring 2.5's <tt class="filename">'spring-tx.jar'</tt>
+        supersedes the previous <tt class="filename">'spring-dao.jar'</tt>
+        and <tt class="filename">'spring-jca.jar'</tt> files,
+        indicating the stronger focus on the transaction framework.</p><p>Spring 2.5 ships its framework jars as OSGi-compliant bundles
+        out of the box. This facilitates use of Spring in OSGi environments,
+        not requiring custom packaging anymore.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="new-in-2-migrating-xml-configuration"></a>2.7.1.3.&nbsp;XML configuration</h4></div></div><div></div></div><p>Spring 2.0 ships with XSDs that describe Spring's XML metadata
+        format in a much richer fashion than the DTD that shipped with
+        previous versions. The old DTD is still fully supported, but if
+        possible you are encouraged to reference the XSD files at the top of
+        your bean definition files.</p><p>One thing that has changed in a (somewhat) breaking fashion is
+        the way that bean scopes are defined. If you are using the Spring 1.2
+        DTD you can continue to use the <tt class="literal">'singleton'</tt>
+        attribute. You can however choose to <a href="new-in-2.html#new-in-2-ioc-configuration" title="2.2.2.&nbsp;Easier XML configuration">reference the new Spring 2.0
+        DTD</a> which does not permit the use of the
+        <tt class="literal">'singleton'</tt> attribute, but rather uses the
+        <tt class="literal">'scope'</tt> attribute to define the bean lifecycle
+        scope.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="new-in-2-migrating-deprecated"></a>2.7.1.4.&nbsp;Deprecated classes and methods</h4></div></div><div></div></div><p>A number of classes and methods that previously were marked as
+        <tt class="literal">@deprecated</tt> have been removed from the Spring 2.0
+        codebase. The Spring team decided that the 2.0 release marked a fresh
+        start of sorts, and that any deprecated 'cruft' was better excised now
+        instead of continuing to haunt the codebase for the foreseeable
+        future.</p><p>As mentioned previously, for a comprehensive list of changes,
+        consult the <tt class="filename">'changelog.txt'</tt> file that is located
+        in the top level directory of the Spring Framework distribution.</p><p>The following classes/interfaces have been removed as of Spring
+        2.0:</p><div class="itemizedlist"><ul type="disc"><li><p><tt class="interfacename">ResultReader</tt> : Use the
+            <tt class="interfacename">RowMapper</tt> interface instead.</p></li><li><p><tt class="classname">BeanFactoryBootstrap</tt> : Consider using
+            a <tt class="interfacename">BeanFactoryLocator</tt> or a custom
+            bootstrap class instead.</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="new-in-2-migrating-ojb"></a>2.7.1.5.&nbsp;Apache OJB</h4></div></div><div></div></div><p>As of Spring 2.0, support for Apache OJB was <span class="emphasis"><em>totally
+        removed</em></span> from the main Spring source tree. The Apache OJB
+        integration library is still available, but can be found in its new
+        home in the <a href="https://springmodules.dev.java.net/" target="_top">Spring
+        Modules project</a>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="new-in-2-migrating-ibatis"></a>2.7.1.6.&nbsp;iBATIS</h4></div></div><div></div></div><p>Please note that support for iBATIS SQL Maps 1.3 has been removed.
+        If you haven't done so already, upgrade to iBATIS SQL Maps 2.3.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="new-in-2-migrating-hibernate"></a>2.7.1.7.&nbsp;Hibernate</h4></div></div><div></div></div><p>As of Spring 2.5, support for Hibernate 2.1 and Hibernate 3.0
+        has been removed. If you haven't done so already, upgrade to
+        Hibernate 3.1 or higher.</p><p>If you need to stick with Hibernate 2.1 or 3.0 for the time
+        being, we recommend to keep using the Spring Framework version
+        2.0.7/2.0.8 which still supports those versions of Hibernate.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="new-in-2-migrating-jdo"></a>2.7.1.8.&nbsp;JDO</h4></div></div><div></div></div><p>As of Spring 2.5, support for JDO 1.0 has been removed.
+        If you haven't done so already, upgrade to JDO 2.0 or higher.</p><p>If you need to stick with JDO 1.0 for the time being,
+        we recommend to keep using the Spring Framework version
+        2.0.7/2.0.8 which still supports that version of JDO.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="new-in-2-migrating-UrlFilenameViewController"></a>2.7.1.9.&nbsp;<tt class="classname">UrlFilenameViewController</tt></h4></div></div><div></div></div><p>Since Spring 2.0, the view name that is determined by the
+        <tt class="classname">UrlFilenameViewController</tt> now takes into
+        account the nested path of the request. This is a breaking change
+        from the original contract of the
+        <tt class="classname">UrlFilenameViewController</tt>, and means that if
+        you are upgrading from Spring 1.x to Spring 2.x and you are using this
+        class you <span class="emphasis"><em>might</em></span> have to change your Spring Web
+        MVC configuration slightly. Refer to the class level Javadocs of the
+        <tt class="classname">UrlFilenameViewController</tt> to see examples of
+        the new contract for view name determination.</p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="new-in-2-other-applications"></a>2.8.&nbsp;Updated sample applications</h2></div></div><div></div></div><p>A number of the sample applications have also been updated to
+    showcase the new and improved features of Spring 2.0. So do take the time
+    to investigate them. The aforementioned sample applications can be found
+    in the <tt class="filename">'samples'</tt> directory of the
+    full Spring distribution
+    (<tt class="filename">'spring-with-dependencies.[zip|tar.gz]'</tt>).</p><p>Spring 2.5 features revised versions of the PetClinic and PetPortal sample
+    applications, reengineered from the ground up for leveraging Spring 2.5's
+    annotation configuration features. It also uses Java 5 autoboxing, generics,
+    varargs and the enhanced for loop. A Java 5 or 6 SDK is now required to build and
+    run the sample. Check out PetClinic and PetPortal to get an impression of what
+    Spring 2.5 has to offer!</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="new-in-2-other-documentation"></a>2.9.&nbsp;Improved documentation</h2></div></div><div></div></div><p>The Spring reference documentation has also substantially been
+    updated to reflect all of the above features new in Spring 2.0 and 2.5. 
+    While every effort has been made to ensure that there are no errors in this
+    documentation, some errors may nevertheless have crept in. If you do spot
+    any typos or even more serious errors, and you can spare a few cycles
+    during lunch, please do bring the error to the attention of the Spring
+    team by <a href="http://opensource.atlassian.com/projects/spring/" target="_top">raising an
+    issue</a>.</p><p>Special thanks to Arthur Loder for his tireless proofreading of the
+    Spring Framework reference documentation and JavaDocs.</p></div></div><!--Begin LoopFuse code--><script xmlns="http://www.w3.org/TR/xhtml1/transitional" src="http://loopfuse.net/webrecorder/js/listen.js" type="text/javascript"></script><script xmlns="http://www.w3.org/TR/xhtml1/transitional" type="text/javascript"> 
+            _lf_cid = "LF_48be82fa";
+            _lf_remora();
+        </script><!--End LoopFuse code--><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="introduction.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="spring-core.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;1.&nbsp;Introduction&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://www.springsource.com/" title="SpringSource">Sponsored by SpringSource</a></span></td><td width="40%" align="right" valign="top">&nbsp;Part&nbsp;I.&nbsp;Core Technologies</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

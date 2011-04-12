@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 14. Batch processing</title><link rel="stylesheet" href="css/hibernate.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="up" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="prev" href="events.html" title="Chapter 13. Interceptors and events"/><link rel="next" href="queryhql.html" title="Chapter 15. HQL: The Hibernate Query Language"/><link rel="copyright" href="Legal_Notice.html" title="Legal Notice"/></head><body><p id="title"><a href="http://www.hibernate.org" class="site_href"><strong>Hibernate.org</strong></a><a href="http://hibernate.org/Documentation/DocumentationOverview" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="events.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="queryhql.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="batch"/>Chapter 14. Batch processing</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="batch.html#batch-inserts">14.1. Batch inserts</a></span></dt><dt><span class="section"><a href="batch.html#batch-update">14.2. Batch updates</a></span></dt><dt><span class="section"><a href="batch.html#batch-statelesssession">14.3. The StatelessSession interface</a></span></dt><dt><span class="section"><a href="batch.html#batch-direct">14.4. DML-style operations</a></span></dt></dl></div><p>
+        A naive approach to inserting 100,000 rows in the database using Hibernate might 
+        look like this:
+    </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Session</span><!-- <br/> --><span class="java_plain">&nbsp;session&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sessionFactory</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">openSession</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_keyword">for</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_type">int</span><span class="java_plain">&nbsp;i</span><span class="java_operator">=</span><span class="java_literal">0</span><span class="java_separator">;</span><span class="java_plain">&nbsp;i</span><span class="java_operator">&lt;</span><span class="java_literal">100000</span><span class="java_separator">;</span><span class="java_plain">&nbsp;i</span><span class="java_operator">++</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Customer</span><span class="java_plain">&nbsp;customer&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">Customer</span><span class="java_separator">(.....);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">save</span><span class="java_separator">(</span><span class="java_plain">customer</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">tx</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">session</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span></pre><p>
+        This would fall over with an <code class="literal">OutOfMemoryException</code> somewhere 
+        around the 50,000th row. That is because Hibernate caches all the newly inserted 
+        <code class="literal">Customer</code> instances in the session-level cache. In this chapter 
+	we will show you how to avoid this problem.
+    </p><p>
+        
+        If you are undertaking batch processing you will need to enable the use of
+        JDBC batching.  This is absolutely essential if you want to achieve optimal performance.
+	Set the JDBC batch size to a reasonable number (10-50, for example):
+    </p><pre class="programlisting">hibernate.jdbc.batch_size 20</pre><p><a id="disablebatching"/>
+        Hibernate disables insert batching at the JDBC level transparently if you
+        use an <code class="literal">identity</code> identifier generator.
+    </p><p>
+        You can also do this kind of work in a process where interaction with 
+        the second-level cache is completely disabled:
+    </p><pre class="programlisting">hibernate.cache.use_second_level_cache false</pre><p>
+        However, this is not absolutely necessary, since we can explicitly set the
+        <code class="literal">CacheMode</code> to disable interaction with the second-level cache.
+    </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="batch-inserts"/>14.1. Batch inserts</h2></div></div></div><p>
+            When making new objects persistent <code class="literal">flush()</code> and 
+            then <code class="literal">clear()</code> the session regularly in order to control the size of
+            the first-level cache.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Session</span><!-- <br/> --><span class="java_plain">&nbsp;session&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sessionFactory</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">openSession</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;</span>
+<!--  --><br/><span class="java_keyword">for</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_type">int</span><span class="java_plain">&nbsp;i</span><span class="java_operator">=</span><span class="java_literal">0</span><span class="java_separator">;</span><span class="java_plain">&nbsp;i</span><span class="java_operator">&lt;</span><span class="java_literal">100000</span><span class="java_separator">;</span><span class="java_plain">&nbsp;i</span><span class="java_operator">++</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Customer</span><span class="java_plain">&nbsp;customer&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">Customer</span><span class="java_separator">(.....);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">save</span><span class="java_separator">(</span><span class="java_plain">customer</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;i&nbsp;</span><span class="java_operator">%</span><span class="java_plain">&nbsp;</span><span class="java_literal">20</span><span class="java_plain">&nbsp;</span><span class="java_operator">==</span><span class="java_plain">&nbsp;</span><span class="java_literal">0</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_literal">20</span><span class="java_separator">,</span><span class="java_plain">&nbsp;same&nbsp;as&nbsp;the&nbsp;JDBC&nbsp;batch&nbsp;size</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">flush&nbsp;a&nbsp;batch&nbsp;of&nbsp;inserts&nbsp;and&nbsp;release&nbsp;memory</span><span class="java_operator">:</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">flush</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">clear</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;</span>
+<!--  --><br/><span class="java_plain">tx</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">session</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span></pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="batch-update"/>14.2. Batch updates</h2></div></div></div><p>
+            For retrieving and updating data, the same ideas apply. In addition, you need to 
+            use <code class="literal">scroll()</code> to take advantage of server-side cursors for 
+            queries that return many rows of data.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Session</span><!-- <br/> --><span class="java_plain">&nbsp;session&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sessionFactory</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">openSession</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;</span>
+<!--  --><br/><span class="java_type">ScrollableResults</span><span class="java_plain">&nbsp;customers&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">getNamedQuery</span><span class="java_separator">(</span><span class="java_literal">&quot;GetCustomers&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setCacheMode</span><span class="java_separator">(</span><span class="java_type">CacheMode</span><span class="java_separator">.</span><span class="java_plain">IGNORE</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">scroll</span><span class="java_separator">(</span><span class="java_type">ScrollMode</span><span class="java_separator">.</span><span class="java_plain">FORWARD_ONLY</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">int</span><span class="java_plain">&nbsp;count</span><span class="java_operator">=</span><span class="java_literal">0</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_keyword">while</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;customers</span><span class="java_separator">.</span><span class="java_plain">next</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Customer</span><span class="java_plain">&nbsp;customer&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Customer</span><span class="java_separator">)</span><span class="java_plain">&nbsp;customers</span><span class="java_separator">.</span><span class="java_plain">get</span><span class="java_separator">(</span><span class="java_literal">0</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;customer</span><span class="java_separator">.</span><span class="java_plain">updateStuff</span><span class="java_separator">(...);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_operator">++</span><span class="java_plain">count&nbsp;</span><span class="java_operator">%</span><span class="java_plain">&nbsp;</span><span class="java_literal">20</span><span class="java_plain">&nbsp;</span><span class="java_operator">==</span><span class="java_plain">&nbsp;</span><span class="java_literal">0</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">flush&nbsp;a&nbsp;batch&nbsp;of&nbsp;updates&nbsp;and&nbsp;release&nbsp;memory</span><span class="java_operator">:</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">flush</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">clear</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;</span>
+<!--  --><br/><span class="java_plain">tx</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">session</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span></pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="batch-statelesssession"/>14.3. The StatelessSession interface</h2></div></div></div><p>
+            Alternatively, Hibernate provides a command-oriented API that can be used for 
+            streaming data to and from the database in the form of detached objects. A 
+            <code class="literal">StatelessSession</code> has no persistence context associated
+            with it and does not provide many of the higher-level life cycle semantics.
+            In particular, a stateless session does not implement a first-level cache nor
+            interact with any second-level or query cache. It does not implement 
+            transactional write-behind or automatic dirty checking. Operations performed
+            using a stateless session never cascade to associated instances. Collections 
+            are ignored by a stateless session. Operations performed via a stateless session 
+            bypass Hibernate's event model and interceptors. Due to the lack of a first-level cache, 
+	    Stateless sessions are vulnerable to data aliasing effects. A stateless
+            session is a lower-level abstraction that is much closer to the underlying JDBC.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">StatelessSession</span><!-- <br/> --><span class="java_plain">&nbsp;session&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sessionFactory</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">openStatelessSession</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;</span>
+<!--  --><br/><span class="java_type">ScrollableResults</span><span class="java_plain">&nbsp;customers&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">getNamedQuery</span><span class="java_separator">(</span><span class="java_literal">&quot;GetCustomers&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">scroll</span><span class="java_separator">(</span><span class="java_type">ScrollMode</span><span class="java_separator">.</span><span class="java_plain">FORWARD_ONLY</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_keyword">while</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;customers</span><span class="java_separator">.</span><span class="java_plain">next</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Customer</span><span class="java_plain">&nbsp;customer&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Customer</span><span class="java_separator">)</span><span class="java_plain">&nbsp;customers</span><span class="java_separator">.</span><span class="java_plain">get</span><span class="java_separator">(</span><span class="java_literal">0</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;customer</span><span class="java_separator">.</span><span class="java_plain">updateStuff</span><span class="java_separator">(...);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">update</span><span class="java_separator">(</span><span class="java_plain">customer</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;</span>
+<!--  --><br/><span class="java_plain">tx</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">session</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span></pre><p>
+            In this code example, the <code class="literal">Customer</code> instances returned
+            by the query are immediately detached. They are never associated with any persistence
+            context.
+        </p><p>
+            The <code class="literal">insert(), update()</code> and <code class="literal">delete()</code> operations
+            defined by the <code class="literal">StatelessSession</code> interface are considered to be
+            direct database row-level operations. They result in the immediate execution of a SQL
+            <code class="literal">INSERT, UPDATE</code> or <code class="literal">DELETE</code> respectively. 
+            They have different semantics to the <code class="literal">save(), saveOrUpdate()</code> 
+            and <code class="literal">delete()</code> operations defined by the <code class="literal">Session</code> 
+            interface.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="batch-direct"/>14.4. DML-style operations</h2></div></div></div><p>
+            As already discussed, automatic and transparent object/relational mapping is concerned
+            with the management of the object state. The object state is available in memory. This means that manipulating data directly in the database (using the SQL <code class="literal">Data Manipulation Language</code>
+            (DML) the statements: <code class="literal">INSERT</code>, <code class="literal">UPDATE</code>, <code class="literal">DELETE</code>)
+            will not affect in-memory state. However, Hibernate provides methods
+            for bulk SQL-style DML statement execution that is performed through the
+            Hibernate Query Language (<a class="link" href="queryhql.html" title="Chapter 15. HQL: The Hibernate Query Language">HQL</a>).
+        </p><p>
+            The pseudo-syntax for <code class="literal">UPDATE</code> and <code class="literal">DELETE</code> statements
+            is: <code class="literal">( UPDATE | DELETE ) FROM? EntityName (WHERE where_conditions)?</code>.  
+	    </p><p>
+	Some points to note:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    In the from-clause, the FROM keyword is optional
+                </p></li><li><p>
+                    There can only be a single entity named in the from-clause. It can, however, be
+                    aliased.  If the entity name is aliased, then any property references must
+                    be qualified using that alias. If the entity name is not aliased, then it is
+                    illegal for any property references to be qualified.
+                </p></li><li><p>
+                    No <a class="link" href="queryhql.html#queryhql-joins-forms" title="15.4. Forms of join syntax">joins</a>, either implicit or explicit,
+	                can be specified in a bulk HQL query.  Sub-queries can be used in the where-clause, where
+	                the subqueries themselves may contain joins.
+                </p></li><li><p>
+                    The where-clause is also optional.
+                </p></li></ul></div><p>
+            As an example, to execute an HQL <code class="literal">UPDATE</code>, use the
+            <code class="literal">Query.executeUpdate()</code> method. The method is named for
+            those familiar with JDBC's <code class="literal">PreparedStatement.executeUpdate()</code>:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Session</span><!-- <br/> --><span class="java_plain">&nbsp;session&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sessionFactory</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">openSession</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_type">String</span><span class="java_plain">&nbsp;hqlUpdate&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;update&nbsp;Customer&nbsp;c&nbsp;set&nbsp;c.name&nbsp;=&nbsp;:newName&nbsp;where&nbsp;c.name&nbsp;=&nbsp;:oldName&quot;</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;or&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;hqlUpdate&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;update&nbsp;Customer&nbsp;set&nbsp;name&nbsp;=&nbsp;:newName&nbsp;where&nbsp;name&nbsp;=&nbsp;:oldName&quot;</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_type">int</span><span class="java_plain">&nbsp;updatedEntities&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;s</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span><span class="java_plain">&nbsp;hqlUpdate&nbsp;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setString</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;newName&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;newName&nbsp;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setString</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;oldName&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;oldName&nbsp;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">executeUpdate</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">tx</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">session</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span></pre><p>
+            In keeping with the EJB3 specification, HQL <code class="literal">UPDATE</code> statements, by default, do not effect the
+            <a class="link" href="mapping.html#mapping-declaration-version" title="5.1.9. Version (optional)">version</a>
+            or the <a class="link" href="mapping.html#mapping-declaration-timestamp" title="5.1.10. Timestamp (optional)">timestamp</a> property values
+            for the affected entities. However,
+            you can force Hibernate to reset the <code class="literal">version</code> or
+            <code class="literal">timestamp</code> property values through the use of a <code class="literal">versioned update</code>.
+            This is achieved by adding the <code class="literal">VERSIONED</code> keyword after the <code class="literal">UPDATE</code>
+            keyword.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Session</span><!-- <br/> --><span class="java_plain">&nbsp;session&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sessionFactory</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">openSession</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">String</span><span class="java_plain">&nbsp;hqlVersionedUpdate&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;update&nbsp;versioned&nbsp;Customer&nbsp;set&nbsp;name&nbsp;=&nbsp;:newName&nbsp;where&nbsp;name&nbsp;=&nbsp;:oldName&quot;</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_type">int</span><span class="java_plain">&nbsp;updatedEntities&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;s</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span><span class="java_plain">&nbsp;hqlUpdate&nbsp;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setString</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;newName&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;newName&nbsp;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setString</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;oldName&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;oldName&nbsp;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">executeUpdate</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">tx</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">session</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span></pre><p>
+            Custom version types, <code class="literal">org.hibernate.usertype.UserVersionType</code>,
+            are not allowed in conjunction with a <code class="literal">update versioned</code> statement.
+        </p><p>
+            To execute an HQL <code class="literal">DELETE</code>, use the same <code class="literal">Query.executeUpdate()</code>
+            method:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Session</span><!-- <br/> --><span class="java_plain">&nbsp;session&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sessionFactory</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">openSession</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_type">String</span><span class="java_plain">&nbsp;hqlDelete&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;delete&nbsp;Customer&nbsp;c&nbsp;where&nbsp;c.name&nbsp;=&nbsp;:oldName&quot;</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;or&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;hqlDelete&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;delete&nbsp;Customer&nbsp;where&nbsp;name&nbsp;=&nbsp;:oldName&quot;</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_type">int</span><span class="java_plain">&nbsp;deletedEntities&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;s</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span><span class="java_plain">&nbsp;hqlDelete&nbsp;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setString</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;oldName&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;oldName&nbsp;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">executeUpdate</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">tx</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">session</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span></pre><p>
+            The <code class="literal">int</code> value returned by the <code class="literal">Query.executeUpdate()</code>
+            method indicates the number of entities effected by the operation.  This may or may not
+            correlate to the number of rows effected in the database.  An HQL bulk operation might result in
+            multiple actual SQL statements being executed (for joined-subclass, for example).  The returned
+            number indicates the number of actual entities affected by the statement.  Going back to the
+            example of joined-subclass, a delete against one of the subclasses may actually result
+            in deletes against not just the table to which that subclass is mapped, but also the "root"
+            table and potentially joined-subclass tables further down the inheritance hierarchy.
+        </p><p>
+            The pseudo-syntax for <code class="literal">INSERT</code> statements is:
+            <code class="literal">INSERT INTO EntityName properties_list select_statement</code>.  Some
+            points to note:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    Only the INSERT INTO ... SELECT ... form is supported; not the INSERT INTO ... VALUES ... form.
+                </p><p>
+                    The properties_list is analogous to the <code class="literal">column specification</code>
+                    in the SQL <code class="literal">INSERT</code> statement.  For entities involved in mapped
+                    inheritance, only properties directly defined on that given class-level can be
+                    used in the properties_list.  Superclass properties are not allowed and subclass
+                    properties do not make sense.  In other words, <code class="literal">INSERT</code>
+                    statements are inherently non-polymorphic.
+                </p></li><li><p>
+                    select_statement can be any valid HQL select query, with the caveat that the return types
+                    must match the types expected by the insert.  Currently, this is checked during query
+                    compilation rather than allowing the check to relegate to the database. 
+                    This might, however, cause problems between Hibernate <code class="literal">Type</code>s which are
+                    <span class="emphasis"><em>equivalent</em></span> as opposed to <span class="emphasis"><em>equal</em></span>.  This might cause
+                    issues with mismatches between a property defined as a <code class="literal">org.hibernate.type.DateType</code>
+                    and a property defined as a <code class="literal">org.hibernate.type.TimestampType</code>, even though the
+                    database might not make a distinction or might be able to handle the conversion.
+                </p></li><li><p>
+                    For the id property, the insert statement gives you two options.  You can either
+                    explicitly specify the id property in the properties_list, in which case its value
+                    is taken from the corresponding select expression, or omit it from the properties_list,
+                    in which case a generated value is used.  This latter option is only available when
+                    using id generators that operate in the database; attempting to use this option with
+                    any "in memory" type generators will cause an exception during parsing.  
+                    For the purposes of this discussion, in-database generators are considered to be
+                    <code class="literal">org.hibernate.id.SequenceGenerator</code> (and its subclasses) and
+                    any implementers of <code class="literal">org.hibernate.id.PostInsertIdentifierGenerator</code>.
+                    The most notable exception here is <code class="literal">org.hibernate.id.TableHiLoGenerator</code>,
+                    which cannot be used because it does not expose a selectable way to get its values.
+                </p></li><li><p>
+                    For properties mapped as either <code class="literal">version</code> or <code class="literal">timestamp</code>,
+                    the insert statement gives you two options.  You can either specify the property in the
+                    properties_list, in which case its value is taken from the corresponding select expressions,
+                    or omit it from the properties_list, in which case the <code class="literal">seed value</code> defined
+                    by the <code class="literal">org.hibernate.type.VersionType</code> is used.
+                </p></li></ul></div><p>
+            The following is an example of an HQL <code class="literal">INSERT</code> statement execution:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Session</span><!-- <br/> --><span class="java_plain">&nbsp;session&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sessionFactory</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">openSession</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_type">String</span><span class="java_plain">&nbsp;hqlInsert&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;insert&nbsp;into&nbsp;DelinquentAccount&nbsp;(id,&nbsp;name)&nbsp;select&nbsp;c.id,&nbsp;c.name&nbsp;from&nbsp;Customer&nbsp;c&nbsp;where&nbsp;...&quot;</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_type">int</span><span class="java_plain">&nbsp;createdEntities&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;s</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span><span class="java_plain">&nbsp;hqlInsert&nbsp;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">executeUpdate</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">tx</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">session</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span></pre></div></div><HR xmlns=""/><a xmlns="" href="legalnotice.html"><p xmlns="http://www.w3.org/1999/xhtml" class="copyright">Copyright © 2004 Red Hat, Inc.</p></a><ul class="docnav"><li class="previous"><a accesskey="p" href="events.html"><strong>Prev</strong>Chapter 13. Interceptors and events</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="queryhql.html"><strong>Next</strong>Chapter 15. HQL: The Hibernate Query Language</a></li></ul></body></html>

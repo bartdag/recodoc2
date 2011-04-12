@@ -1,0 +1,64 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;10.&nbsp;DAO support</title><link rel="stylesheet" href="../styles/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><link rel="home" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="up" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="previous" href="metadata.html" title="Chapter&nbsp;9.&nbsp;Source Level Metadata Support"><link rel="next" href="jdbc.html" title="Chapter&nbsp;11.&nbsp;Data Access using JDBC"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;10.&nbsp;DAO support</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="metadata.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="jdbc.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="dao"></a>Chapter&nbsp;10.&nbsp;DAO support</h2></div></div><div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="dao-introduction"></a>10.1.&nbsp;Introduction</h2></div></div><div></div></div><p>The DAO (Data Access Object) support in Spring is primarily aimed at
+    making it easy to work with data access technologies like JDBC, Hibernate
+    or JDO in a standardized way. This allows you to switch between them
+    fairly easily and it also allows you to code without worrying about
+    catching exceptions that are specific to each technology.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="dao-exceptions"></a>10.2.&nbsp;Consistent Exception Hierarchy</h2></div></div><div></div></div><p>Spring provides a convenient translation from technology specific
+    exceptions like <tt class="literal">SQLException</tt> to its own exception
+    hierarchy with the <tt class="literal">DataAccessException</tt> as the root
+    exception. These exceptions wrap the original exception so there is never
+    any risk that you would lose any information as to what might have gone
+    wrong.</p><p>In addition to JDBC exceptions, Spring can also wrap Hibernate
+    exceptions, converting them from proprietary, checked exceptions, to a set
+    of abstracted runtime exceptions. The same is true for JDO exceptions.
+    This allows you to handle most persistence exceptions, which are
+    non-recoverable, only in the appropriate layers, without annoying
+    boilerplate catches/throws, and exception declarations. You can still trap
+    and handle exceptions anywhere you need to. As we mentioned above, JDBC
+    exceptions (including DB specific dialects) are also converted to the same
+    hierarchy, meaning that you can perform some operations with JDBC within a
+    consistent programming model.</p><p>The above is true for the Template versions of the ORM access
+    framework. If you use the Interceptor based classes then the application
+    must care about handling HibernateExceptions and JDOExceptions itself,
+    preferably via delegating to <tt class="literal">SessionFactoryUtils</tt>'
+    <tt class="literal">convertHibernateAccessException</tt> or
+    <tt class="literal">convertJdoAccessException</tt> methods respectively. These
+    methods converts the exceptions to ones that are compatible with the
+    org.springframework.dao exception hierarchy. As JDOExceptions are
+    unchecked, they can simply get thrown too, sacrificing generic DAO
+    abstraction in terms of exceptions though.</p><p>The exception hierarchy that Spring uses is outlined in the
+    following graph:</p><div class="mediaobject"><img src="images/DataAccessException.gif"></div><p></p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e6784"></a>10.3.&nbsp;Consistent Abstract Classes for DAO Support</h2></div></div><div></div></div><p>To make it easier to work with a variety of data access technologies
+    like JDBC, JDO and Hibernate in a consistent way, Spring provides a set of
+    abstract DAO classes that you can extend. These abstract classes has
+    methods for setting the data source and any other configuration settings
+    that are specific to the technology you currently are using.</p><p>Dao Support classes:</p><div class="itemizedlist"><ul type="disc"><li><p><tt class="literal">JdbcDaoSupport</tt> - super class for JDBC data
+        access objects. Requires a DataSource to be set, providing a
+        JdbcTemplate based on it to subclasses.</p></li><li><p><tt class="literal">HibernateDaoSupport</tt> - super class for
+        Hibernate data access objects. Requires a SessionFactory to be set,
+        providing a HibernateTemplate based on it to subclasses. Can
+        alternatively be initialized directly via a HibernateTemplate, to
+        reuse the latter's settings like SessionFactory, flush mode, exception
+        translator, etc.</p></li><li><p><tt class="literal">JdoDaoSupport</tt> - super class for JDO data
+        access objects. Requires a PersistenceManagerFactory to be set,
+        providing a JdoTemplate based on it to subclasses.</p></li></ul></div><p></p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="metadata.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="jdbc.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;9.&nbsp;Source Level Metadata Support&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;11.&nbsp;Data Access using JDBC</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

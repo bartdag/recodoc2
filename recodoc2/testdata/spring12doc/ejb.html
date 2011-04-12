@@ -1,0 +1,239 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;17.&nbsp;Accessing and implementing EJBs</title><link rel="stylesheet" href="../styles/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><link rel="home" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="up" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="previous" href="remoting.html" title="Chapter&nbsp;16.&nbsp;Remoting and web services using Spring"><link rel="next" href="jms.html" title="Chapter&nbsp;18.&nbsp;JMS"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;17.&nbsp;Accessing and implementing EJBs</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="remoting.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="jms.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="ejb"></a>Chapter&nbsp;17.&nbsp;Accessing and implementing EJBs</h2></div></div><div></div></div><p>As a lightweight container, Spring is often considered an EJB
+  replacement. We do believe that for many if not most applications and use
+  cases, Spring as a container, combined with its rich supporting
+  functionality in the area of transactions, ORM and JDBC access, is a better
+  choice than implementing equivalent functionality via an EJB container and
+  EJBs.</p><p>However, it is important to note that using Spring does not prevent
+  you from using EJBs. In fact, Spring makes it much easier to access EJBs and
+  implement EJBs and functionality within them. Additionally, using Spring to
+  access services provided by EJBs allows the implementation of those services
+  to later transparently be switched between local EJB, remote EJB, or POJO
+  (plain java object) variants, without the client code client code having to
+  be changed.</p><p>In this chapter, we look at how Spring can help you access and
+  implement EJBs. Spring provides particular value when accessing stateless
+  session beans (SLSBs), so we'll begin by discussing this.</p><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="ejb-access"></a>17.1.&nbsp;Accessing EJBs</h2></div></div><div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="ejb-access-concepts"></a>17.1.1.&nbsp;Concepts</h3></div></div><div></div></div><p>To invoke a method on a local or remote stateless session bean,
+      client code must normally perform a JNDI lookup to obtain the (local or
+      remote) EJB Home object, then use a 'create' method call on that object
+      to obtain the actual (local or remote) EJB object. One or more methods
+      are then invoked on the EJB.</p><p>To avoid repeated low-level code, many EJB applications use the
+      Service Locator and Business Delegate patterns. These are better than
+      spraying JNDI lookups throughout client code, but their usual
+      implementations have significant disadvantages. For example:</p><div class="itemizedlist"><ul type="disc"><li><p>Typically code using EJBs depends on Service Locator or
+          Business Delegate singletons, making it hard to test</p></li><li><p>In the case of the Service Locator pattern used without a
+          Business Delegate, application code still ends up having to invoke
+          the create() method on an EJB home, and deal with the resulting
+          exceptions. Thus it remains tied to the EJB API and the complexity
+          of the EJB programming model.</p></li><li><p>Implementing the Business Delegate pattern typically results
+          in significant code duplication, where we have to write numerous
+          methods that simply call the same method on the EJB.</p></li></ul></div><p>The Spring approach is to allow the creation and use of proxy
+      objects, normally configured inside a Spring ApplicationContext or
+      BeanFactory, which act as code-less business delegates. You do not need
+      to write another Service Locator, another JNDI lookup, or duplicate
+      methods in a hand-coded Business Delegate unless you&#8217;re adding real
+      value.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="ejb-access-local"></a>17.1.2.&nbsp;Accessing local SLSBs</h3></div></div><div></div></div><p>Assume that we have a web controller that needs to use a local
+      EJB. We&#8217;ll follow best practice and use the EJB Business Methods
+      Interface pattern, so that the EJB&#8217;s local interface extends a non
+      EJB-specific business methods interface. Let&#8217;s call this business
+      methods interface MyComponent.</p><pre class="programlisting">public interface MyComponent {
+    ...
+}</pre><p>(One of the main reasons to the Business Methods Interface pattern
+      is to ensure that synchronization between method signatures in local
+      interface and bean implementation class is automatic. Another reason is
+      that it later makes it much easier for us to switch to a POJO (plain
+      java object) implementation of the service if it makes sense to do so)
+      Of course we&#8217;ll also need to implement the local home interface and
+      provide a bean implementation class that implements SessionBean and the
+      MyComponent business methods interface. Now the only Java coding we&#8217;ll
+      need to do to hook up our web tier controller to the EJB implementation
+      is to expose a setter method of type MyComponent on the controller. This
+      will save the reference as an instance variable in the
+      controller:</p><pre class="programlisting">private MyComponent myComponent;
+
+public void setMyComponent(MyComponent myComponent) {
+    this.myComponent = myComponent;
+}</pre><p>We can subsequently use this instance variable in any business
+      method in the controller. Now assuming we are obtaining our controller
+      object out of a Spring ApplicationContext or BeanFactory, we can in the
+      same context configure a
+      <tt class="literal">LocalStatelessSessionProxyFactoryBean</tt> instance, which
+      will be EJB proxy object. The configuration of the proxy, and setting of
+      the <tt class="literal">myComponent</tt> property of the controller is done
+      with a configuration entry such as:</p><pre class="programlisting">&lt;bean id="myComponent"
+      class="org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean"&gt;
+  &lt;property name="jndiName" value="myComponent"/&gt;
+  &lt;property name="businessInterface" value="com.mycom.MyComponent"/&gt;
+&lt;/bean&gt;
+
+&lt;bean id="myController" class="com.mycom.myController"&gt;
+  &lt;property name="myComponent" ref="myComponent"/&gt;
+&lt;/bean&gt;</pre><p>There&#8217;s a lot of magic happening behind the scenes, courtesy of
+      the Spring AOP framework, although you aren&#8217;t forced to work with AOP
+      concepts to enjoy the results. The <tt class="literal">myComponent</tt> bean
+      definition creates a proxy for the EJB, which implements the business
+      method interface. The EJB local home is cached on startup, so there&#8217;s
+      only a single JNDI lookup. Each time the EJB is invoked, the proxy
+      invokes the create() method on the local EJB and invokes the
+      corresponding business method on the EJB.</p><p>The <tt class="literal">myController</tt> bean definition sets the
+      <tt class="literal">myController</tt> property of the controller class to this
+      proxy.</p><p>This EJB access mechanism delivers huge simplification of
+      application code: The web tier code (or other EJB client code) has no
+      dependence on the use of EJB. If we want to replace this EJB reference
+      with a POJO or a mock object or other test stub, we could simply change
+      the myComponent bean definition without changing a line of Java code.
+      Additionally, we haven&#8217;t had to write a single line of JNDI lookup or
+      other EJB plumbing code as part of our application.</p><p>Benchmarks and experience in real applications indicate that the
+      performance overhead of this approach (which involves reflective
+      invocation of the target EJB) is minimal, and undetectable in typical
+      use. Remember that we don&#8217;t want to make fine-grained calls to EJBs
+      anyway, as there&#8217;s a cost associated with the EJB infrastructure in the
+      application server.</p><p>There is one caveat with regards to the JNDI lookup. In a bean
+      container, this class is normally best used as a singleton (there simply
+      is no reason to make it a prototype). However, if that bean container
+      pre-instantiates singletons (as do the XML ApplicationContext variants)
+      you may have a problem if the bean container is loaded before the EJB
+      container loads the target EJB. That is because the JNDI lookup will be
+      performed in the init method of this class and cached, but the EJB will
+      not have been bound at the target location yet. The solution is to not
+      pre-instantiate this factory object, but allow it to be created on first
+      use. In the XML containers, this is controlled via the
+      <tt class="literal">lazy-init</tt> attribute.</p><p>Although this will not be of interest to the majority of Spring
+      users, those doing programmatic AOP work with EJBs may want to look at
+      <tt class="literal">LocalSlsbInvokerInterceptor</tt>.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="ejb-access-remote"></a>17.1.3.&nbsp;Accessing remote SLSBs</h3></div></div><div></div></div><p>Accessing remote EJBs is essentially identical to accessing local
+      EJBs, except that the
+      <tt class="literal">SimpleRemoteStatelessSessionProxyFactoryBean</tt> is used.
+      Of course, with or without Spring, remote invocation semantics apply; a
+      call to a method on an object in another VM in another computer does
+      sometimes have to be treated differently in terms of usage scenarios and
+      failure handling.</p><p>Spring's EJB client support adds one more advantage over the
+      non-Spring approach. Normally it is problematic for EJB client code to
+      be easily switched back and forth between calling EJBs locally or
+      remotely. This is because the remote interface methods must declare that
+      they throw <tt class="literal">RemoteException</tt>, and client code must deal
+      with this, while the local interface methods don't. Client code
+      written for local EJBs which needs to be moved to remote EJBs
+      typically has to be modified to add handling for the remote exceptions,
+      and client code written for remote EJBs which needs to be moved to local
+      EJBs, can either stay the same but do a lot of unnecessary handling of
+      remote exceptions, or needs to be modified to remove that code. With the
+      Spring remote EJB proxy, you can instead not declare any thrown
+      <tt class="literal">RemoteException</tt> in your Business Method Interface and
+      implementing EJB code, have a remote interface which is identical except
+      that it does throw <tt class="literal">RemoteException</tt>, and rely on the
+      proxy to dynamically treat the two interfaces as if they were the same.
+      That is, client code does not have to deal with the checked
+      <tt class="literal">RemoteException</tt> class. Any actual
+      <tt class="literal">RemoteException</tt> that is thrown during the EJB
+      invocation will be re-thrown as the non-checked
+      <tt class="literal">RemoteAccessException</tt> class, which is a subclass of
+      <tt class="literal">RuntimeException</tt>. The target service can then be
+      switched at will between a local EJB or remote EJB (or even plain Java
+      object) implementation, without the client code knowing or caring. Of
+      course, this is optional; there is nothing stopping you from declaring
+      <tt class="literal">RemoteExceptions</tt> in your business interface.</p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="ejb-implementation"></a>17.2.&nbsp;Using Spring convenience EJB implementation classes</h2></div></div><div></div></div><p>Spring also provides convenience classes to help you implement EJBs.
+    These are designed to encourage the good practice of putting business
+    logic behind EJBs in POJOs, leaving EJBs responsible for transaction
+    demarcation and (optionally) remoting.</p><p>To implement a Stateless or Stateful session bean, or Message Driven
+    bean, you derive your implementation class from
+    <tt class="literal">AbstractStatelessSessionBean</tt>,
+    <tt class="literal">AbstractStatefulSessionBean</tt>, and
+    <tt class="literal">AbstractMessageDrivenBean</tt>/<tt class="literal">AbstractJmsMessageDrivenBean</tt>,
+    respectively.</p><p>Consider an example Stateless Session bean which actually delegates
+    the implementation to a plain java service object. We have the business
+    interface:</p><pre class="programlisting">public interface MyComponent {
+    public void myMethod(...);
+    ...
+}</pre><p>We have the plain java implementation object:</p><pre class="programlisting">public class MyComponentImpl implements MyComponent {
+    public String myMethod(...) {
+        ...
+    }
+    ...
+}</pre><p>And finally the Stateless Session Bean itself:</p><pre class="programlisting">public class MyComponentEJB extends AbstractStatelessSessionBean
+        implements MyComponent {
+
+    MyComponent _myComp;
+
+    /**
+     * Obtain our POJO service object from the BeanFactory/ApplicationContext
+     * @see org.springframework.ejb.support.AbstractStatelessSessionBean#onEjbCreate()
+     */
+    protected void onEjbCreate() throws CreateException {
+        _myComp = (MyComponent) getBeanFactory().getBean(
+            ServicesConstants.CONTEXT_MYCOMP_ID);
+    }
+
+    // for business method, delegate to POJO service impl.
+    public String myMethod(...) {
+        return _myComp.myMethod(...);
+    }
+    ...
+}</pre><p>The Spring EJB support base classes will by default create and load
+    a BeanFactory (or in this case, its ApplicationContext subclass) as part
+    of their lifecycle, which is then available to the EJB (for example, as
+    used in the code above to obtain the POJO service object). The loading is
+    done via a strategy object which is a subclass of
+    <tt class="literal">BeanFactoryLocator</tt>. The actual implementation of
+    <tt class="literal">BeanFactoryLocator</tt> used by default is
+    <tt class="literal">ContextJndiBeanFactoryLocator</tt>, which creates the
+    ApplicationContext from a resource locations specified as a JNDI
+    environment variable (in the case of the EJB classes, at
+    <tt class="literal">java:comp/env/ejb/BeanFactoryPath</tt>). If there is a need
+    to change the BeanFactory/ApplicationContext loading strategy, the default
+    <tt class="literal">BeanFactoryLocator</tt> implementation used may be overridden
+    by calling the <tt class="literal">setBeanFactoryLocator()</tt> method, either
+    in <tt class="literal">setSessionContext()</tt>, or in the actual constructor of
+    the EJB. Please see the JavaDocs for more details.</p><p>As described in the JavaDocs, Stateful Session beans expecting to be
+    passivated and reactivated as part of their lifecycle, and which use a
+    non-serializable BeanFactory/ApplicationContext instance (which is the
+    normal case) will have to manually call
+    <tt class="literal">unloadBeanFactory()</tt> and
+    <tt class="literal">loadBeanFactory</tt> from <tt class="literal">ejbPassivate</tt>
+    and <tt class="literal">ejbActivate</tt>, respectively, to unload and reload the
+    BeanFactory on passivation and activation, since it can not be saved by
+    the EJB container.</p><p>The default usage of
+    <tt class="literal">ContextJndiBeanFactoryLocator</tt> to load an
+    ApplicationContext for the use of the EJB is adequate for some situations.
+    However, it is problematic when the ApplicationContext is loading a number
+    of beans, or the initialization of those beans is time consuming or memory
+    intensive (such as a Hibernate SessionFactory initialization, for
+    example), since every EJB will have their own copy. In this case, the user
+    may want to override the default
+    <tt class="literal">ContextJndiBeanFactoryLocator</tt> usage and use another
+    <tt class="literal">BeanFactoryLocator </tt>variant, such as
+    <tt class="literal">ContextSingleton<tt class="literal">BeanFactoryLocator</tt>e</tt>,
+    which can load and use a shared BeanFactory or ApplicationContext to be
+    used by multiple EJBs or other clients. Doing this is relatively simple,
+    by adding code similar to this to the EJB:</p><pre class="programlisting">   /**
+    * Override default BeanFactoryLocator implementation
+    * 
+    * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)
+    */
+   public void setSessionContext(SessionContext sessionContext) {
+       super.setSessionContext(sessionContext);
+       setBeanFactoryLocator(ContextSingletonBeanFactoryLocator.getInstance());
+       setBeanFactoryLocatorKey(ServicesConstants.PRIMARY_CONTEXT_ID);
+   }</pre><p>Please see the respective JavaDocs for
+    <tt class="literal">BeanFactoryLocator</tt> and
+    <tt class="literal">ContextSingleton<tt class="literal">BeanFactoryLocator</tt>e</tt>
+    for more information on their usage.</p><p></p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="remoting.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="jms.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;16.&nbsp;Remoting and web services using Spring&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;18.&nbsp;JMS</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

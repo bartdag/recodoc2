@@ -1,0 +1,724 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;20.&nbsp;JCA CCI</title><link rel="stylesheet" href="../styles/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><link rel="home" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="up" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="previous" href="jmx.html" title="Chapter&nbsp;19.&nbsp;JMX Support"><link rel="next" href="mail.html" title="Chapter&nbsp;21.&nbsp;Sending Email with Spring mail abstraction layer"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;20.&nbsp;JCA CCI</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="jmx.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="mail.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="cci"></a>Chapter&nbsp;20.&nbsp;JCA CCI</h2></div></div><div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e14400"></a>20.1.&nbsp;Introduction</h2></div></div><div></div></div><p>J2EE provides a specification to standardize access to EIS: JCA
+    (Java Connector Architecture). This specification is divided into several
+    different parts:</p><div class="itemizedlist"><ul type="disc"><li><p>SPI (Service provider interfaces) that the connector provider
+        must implement. These interfaces constitute a resource adapter which
+        can be deployed on a J2EE application server. In such a scenario, the
+        server manages connection pooling, transaction and security (managed
+        mode). The application server is also responsible for managing the
+        configuration, which is held outside the client application. A connector
+        can be used without an application server as well; in thid case, the
+        application must configure it directly (non-managed mode).</p></li><li><p>CCI (Common Client Interface) that an application can use to
+        interact with the connector and thus communicate with an EIS. An API
+        for local transaction demarcation is provided as well.</p></li></ul></div><p>The aim of the Spring CCI support is to provide classes to access
+    a CCI connector in typical Spring style, leveraging's Spring general
+    resource and transaction management facilities.</p><p><span class="emphasis"><em>Important note</em></span>: The client side of connectors
+    doesn't alway use CCI. Some connectors expose their own APIs, only
+    providing JCA resource adapter to use the system contracts of a J2EE
+    container (connection pooling, global transactions, security). Spring
+    does not offer special support for such connector-specific APIs.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e14418"></a>20.2.&nbsp;Configuring CCI</h2></div></div><div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e14421"></a>20.2.1.&nbsp;Connector configuration</h3></div></div><div></div></div><p>The base resource to use JCA CCI is the
+      <tt class="literal">ConnectionFactory</tt> interface. The connector used
+      must provide an implementation of this interface.</p><p>To use your connector, you can deploy it on your application
+      server and fetch the <tt class="literal">ConnectionFactory</tt> from the
+      server's JNDI environment (managed mode). The connector must be
+      packaged as a RAR file (resource adapter archive) and contain a
+      <tt class="filename">ra.xml</tt> file to describe its deployment
+			characteristics. The actual name of the resource is specified when
+      you deploy it. To access it within Spring, simply use Spring's
+      <tt class="literal">JndiObjectFactoryBean</tt> to fetch the factory
+      by its JNDI name.</p><p>Another way to use a connector is to embed it in your application
+      (non-managed mode), not using an application server to deploy and
+      configure it. Spring offers the possibility to configure a connector
+      as a bean, through a provided <tt class="literal">FactoryBean</tt>
+      (<tt class="literal">LocalConnectionFactoryBean</tt>). In this manner,
+      you only need the connector library in the classpath (no RAR file and
+      no <tt class="filename">ra.xml</tt> descriptor needed). The library must
+      be extracted from the connector's RAR file, if necessary.</p><p>Once you got access to your <tt class="literal">ConnectionFactory</tt>
+      instance, you can inject it into your components. These components can
+      either be coded against the plain CCI API or leverage Spring's support
+      classes for CCI access (e.g. CciTemplate).</p><p><span class="emphasis"><em>Important note</em></span>: When you use a connector in
+      non-managed mode, you can't use global transactions because the resource
+      is never enlisted / delisted in the current global transaction of the
+      current thread. The resource is simply not aware of any global J2EE
+			transactions that might be running.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e14460"></a>20.2.2.&nbsp;ConnectionFactory configuration in Spring</h3></div></div><div></div></div><p>In order to make connections to the EIS, you need to obtain a
+      <tt class="literal">ConnectionFactory</tt> from the application server if
+      you are in a managed mode, or directly from Spring if you are in a
+      non-managed mode.</p><p>In a managed mode, you access it from JNDI; its properties will
+      be configured in the application server.</p><pre class="programlisting">&lt;bean id="eciConnectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean"&gt;
+  &lt;property name="jndiName"&gt;
+    &lt;value&gt;eis/cicseci&lt;/value&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p>In non-managed mode, you must configure the ConnectionFactory
+      you want to use in the configuration of Spring as a JavaBean. The
+      <tt class="literal">LocalConnectionFactoryBean</tt> class offers this
+      setup style, passing in the <tt class="literal">ManagedConnectionFactory</tt>
+      implementation of your connector, exposing the application-level
+			CCI <tt class="literal">ConnectionFactory</tt>.</p><pre class="programlisting">&lt;bean id="eciManagedConnectionFactory" class="com.ibm.connector2.cics.ECIManagedConnectionFactory"&gt;
+  &lt;property name="serverName"&gt;&lt;value&gt;TXSERIES&lt;/value&gt;&lt;/property&gt;
+  &lt;property name="connectionURL"&gt;&lt;value&gt;tcp://localhost/&lt;/value&gt;&lt;/property&gt;
+  &lt;property name="portNumber"&gt;&lt;value&gt;2006&lt;/value&gt;&lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="eciConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean"&gt;
+  &lt;property name="managedConnectionFactory"&gt;
+    &lt;ref local="eciManagedConnectionFactory"/&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p><span class="emphasis"><em>Important note</em></span>: You can't directly instantiate
+			a specific <tt class="literal">ConnectionFactory</tt>. You need to go through
+      the corresponding implementation of the
+		 <tt class="literal">ManagedConnectionFactory</tt> interface for your
+      connector. This interface is part of the JCA SPI specification.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e14495"></a>20.2.3.&nbsp;Configuring CCI connections</h3></div></div><div></div></div><p>JCA CCI allow the developer to configure the connections to the
+      EIS using the <tt class="literal">ConnectionSpec</tt> implementation of your
+      connector. In order to configure its properties, you need to wrap the
+      target connection factory with a dedicated adapter,
+      <tt class="literal">ConnectionSpecConnectionFactoryAdapter</tt>. So, the
+      dedicated <tt class="literal">ConnectionSpec</tt> can be configured with the
+      property <tt class="literal">connectionSpec</tt> (as an inner bean).</p><p>This property is not mandatory because the CCI
+      <tt class="literal">ConnectionFactory</tt> interface defines two different
+      methods to obtain a CCI connection. Some of the
+		  <tt class="literal">ConnectionSpec</tt> properties can often be configured
+			in the application server (in managed mode) or on the corresponding local
+		  <tt class="literal">ManagedConnectionFactory</tt> implementation.</p><pre class="programlisting">public interface ConnectionFactory implements Serializable, Referenceable {
+  ...
+  Connection getConnection() throws ResourceException;
+  Connection getConnection(ConnectionSpec connectionSpec) throws ResourceException;
+  ...
+}</pre><p>Spring provided a <tt class="literal">ConnectionSpecConnectionFactoryAdapter</tt>
+      that allows for specifying a <tt class="literal">ConnectionSpec</tt> instance
+      to use for all operations on a given factory. If the adapter's
+			<tt class="literal">connectionSpec</tt> property is specified, the adapter
+      uses the <tt class="literal">getConnection</tt> variant without argument,
+      else the one with the <tt class="literal">ConnectionSpec</tt> argument.</p><pre class="programlisting">&lt;bean id="managedConnectionFactory"
+    class="com.sun.connector.cciblackbox.CciLocalTxManagedConnectionFactory"&gt;
+  &lt;property name="connectionURL"&gt;
+    &lt;value&gt;jdbc:hsqldb:hsql://localhost:9001&lt;/value&gt;
+  &lt;/property&gt;
+  &lt;property name="driverName"&gt;&lt;value&gt;org.hsqldb.jdbcDriver&lt;/value&gt;&lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="targetConnectionFactory"
+    class="org.springframework.jca.support.LocalConnectionFactoryBean"&gt;
+  &lt;property name="managedConnectionFactory"&gt;
+    &lt;ref local="managedConnectionFactory"/&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="connectionFactory"
+    class="org.springframework.jca.cci.connection.ConnectionSpecConnectionFactoryAdapter"&gt;
+  &lt;property name="targetConnectionFactory"&gt;
+    &lt;ref bean="targetConnectionFactory"/&gt;
+  &lt;/property&gt;
+  &lt;property name="connectionSpec"&gt;
+    &lt;bean class="com.sun.connector.cciblackbox.CciConnectionSpec"&gt;
+      &lt;property name="user"&gt;&lt;value&gt;sa&lt;/value&gt;&lt;/property&gt;
+      &lt;property name="password"&gt;&lt;value/&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e14544"></a>20.2.4.&nbsp;Using a single CCI connection</h3></div></div><div></div></div><p>If you want to use a single CCI connection, Spring provides a further
+      <tt class="literal">ConnectionFactory</tt> adapter to manage this. The
+      <tt class="literal">SingleConnectionFactory</tt> adapter will open a single
+      connection lazily and close it when this bean is destroyed at application
+      shutdown. This class will expose special <tt class="literal">Connection</tt>
+      proxies that behave accordingly, all sharing the same underlying physical
+			connection.</p><pre class="programlisting">&lt;bean id="eciManagedConnectionFactory"
+    class="com.ibm.connector2.cics.ECIManagedConnectionFactory"&gt;
+  &lt;property name="serverName"&gt;&lt;value&gt;TEST&lt;/value&gt;&lt;/property&gt;
+  &lt;property name="connectionURL"&gt;&lt;value&gt;tcp://localhost/&lt;/value&gt;&lt;/property&gt;
+  &lt;property name="portNumber"&gt;&lt;value&gt;2006&lt;/value&gt;&lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="targetEciConnectionFactory"
+    class="org.springframework.jca.support.LocalConnectionFactoryBean"&gt;
+  &lt;property name="managedConnectionFactory"&gt;
+    &lt;ref local="eciManagedConnectionFactory"/&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="eciConnectionFactory"
+    class="org.springframework.jca.cci.connection.SingleConnectionFactory"&gt;
+  &lt;property name="targetConnectionFactory"&gt;
+    &lt;ref local="targetEciConnectionFactory"/&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p><span class="emphasis"><em>Important note</em></span>: This
+      <tt class="literal">ConnectionFactory</tt> adapter cannot directly be
+      configured with a <tt class="literal">ConnectionSpec</tt>. Use an
+      intermediary <tt class="literal">ConnectionSpecConnectionFactoryAdapter</tt>
+      that the <tt class="literal">SingleConnectionFactory</tt> talks to
+      if you require a single connection for a specific
+      <tt class="literal">ConnectionSpec</tt>.</p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e14579"></a>20.3.&nbsp;Using Spring's CCI access support</h2></div></div><div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e14582"></a>20.3.1.&nbsp;Record conversion</h3></div></div><div></div></div><p>One of the aims of the JCA CCI support is to provide convenient
+			facilities for manipulating CCI records. The developer can specify the
+      strategy to create records and extract datas from records, for use
+      with Spring's CciTemplate. The following interfaces will configure the
+      strategy to use input and output records if you don't want to work
+      with records directly in your application.</p><p>In order to create an input <tt class="literal">Record</tt>, the
+      developer can use a dedicated implementation of the
+      <tt class="literal">RecordCreator</tt> interface.</p><pre class="programlisting">public interface RecordCreator {
+
+  Record createRecord(RecordFactory recordFactory) throws ResourceException, DataAccessException;
+}</pre><p>As you can see, the <tt class="literal">createRecord</tt> method
+      receives a <tt class="literal">RecordFactory</tt> instance as parameter,
+			which corresponds to the RecordFactory of the
+		  <tt class="literal">ConnectionFactory</tt> used. This reference can be
+			used to create <tt class="literal">IndexedRecord</tt> or
+      <tt class="literal">MappedRecord</tt> instances. The following sample
+      shows how to use the <tt class="literal">RecordCreator</tt> interface
+      and indexed/mapped records.</p><pre class="programlisting">public class MyRecordCreator implements RecordCreator {
+
+  public Record createRecord(RecordFactory recordFactory) throws ResourceException {
+    IndexedRecord input = recordFactory.createIndexedRecord("input");
+    input.add(new Integer(id));
+    return input;
+  }
+};</pre><p>An output <tt class="literal">Record</tt> can be used to receive
+      data back from the EIS. Hence, a specific implementation of the
+      <tt class="literal">RecordExtractor</tt> interface can be passed to
+      Spring's CciTemplate for extracting data from the output
+      <tt class="literal">Record</tt>.</p><pre class="programlisting">public interface RecordExtractor {
+
+  Object extractData(Record record) throws ResourceException, SQLException, DataAccessException;
+}</pre><p>The following sample shows how to use the RecordExtractor.</p><pre class="programlisting">public class MyRecordExtractor implements RecordExtractor {
+
+  public Object extractData(Record record) throws ResourceException {
+    CommAreaRecord commAreaRecord = (CommAreaRecord) record;
+    String str = new String(commAreaRecord.toByteArray());
+    String field1 = string.substring(0,6);
+    String field2 = string.substring(6,1);
+    return new OutputObject(Long.parseLong(field1), field2);
+  }
+};</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e14636"></a>20.3.2.&nbsp;CciTemplate</h3></div></div><div></div></div><p>This is the central class of the core CCI support package
+      (<tt class="literal">org.springframework.jca.cci.core</tt>). It simplifies
+      the use of CCI since it handles the creation and release of resources.
+      This helps to avoid common errors like forgetting to always close the
+      connection. It cares for the lifecycle of connection and interaction
+			objects, letting application code focus on generating input records
+      from application data and extracting application data from output
+      records.</p><p>The JCA CCI specification defines two distinct methods to call
+      operations on an EIS. The CCI <tt class="literal">Interaction</tt>
+      interface provides two execute method signatures:</p><pre class="programlisting">public interface javax.resource.cci.Interaction {
+  ...
+  boolean execute(InteractionSpec spec, Record input, Record output) throws ResourceException;
+
+  Record execute(InteractionSpec spec, Record input) throws ResourceException;
+  ...
+}</pre><p>Depending on the template method called, <tt class="literal">CciTemplate</tt>
+      will know which <tt class="literal">execute</tt> method to call on the interaction.
+      In any case, a correctly initialized <tt class="literal">InteractionSpec</tt>
+      instance is mandatory.</p><p><tt class="literal">CciTemplate.execute</tt> can be used in two ways:</p><div class="itemizedlist"><ul type="disc"><li><p>With direct <tt class="literal">Record</tt> arguments. In this case,
+          you simply need to pass the CCI input record in, and the returned object
+          be the corresponding CCI output record.</p></li><li><p>With application objects, using record mapping. In this case,
+          you need to provide corresponding <tt class="literal">RecordCreator</tt>
+				  and <tt class="literal">RecordExtractor</tt> instances.
+          </p></li></ul></div><p>With the first approach, the following methods of the template
+      will be used. These methods directly correspond to those on the
+      <tt class="literal">Interaction</tt> interface.</p><pre class="programlisting">public class CciTemplate implements CciOperations {
+  ...
+  public Record execute(InteractionSpec spec, Record inputRecord)
+      throws DataAccessException { ... }
+
+  public void execute(InteractionSpec spec, Record inputRecord, Record outputRecord)
+      throws DataAccessException { ... }
+  ...
+}</pre><p>With the second approach, we need to specify the record creation
+      and record extraction strategies as arguments. The interfaces used
+      are those describe in the previous section on record conversion.
+      The corresponding <tt class="literal">CciTemplate</tt> methods are the
+      following:</p><pre class="programlisting">public class CciTemplate implements CciOperations {
+  ...
+  public Record execute(InteractionSpec spec, RecordCreator inputCreator)
+      throws DataAccessException { ... }
+
+  public Object execute(InteractionSpec spec, Record inputRecord, RecordExtractor outputExtractor)
+      throws DataAccessException { ... }
+
+  public Object execute(InteractionSpec spec, RecordCreator creator, RecordExtractor extractor)
+      throws DataAccessException { ... }
+  ...
+}</pre><p>Unless the <tt class="literal">outputRecordCreator</tt> property is
+      set on the template (see the following section), every method will call
+      the corresponding <tt class="literal">execute</tt> method of the CCI
+      <tt class="literal">Interaction</tt> with two parameters:
+      <tt class="literal">InteractionSpec</tt> and input <tt class="literal">Record</tt>,
+			receiving an output <tt class="literal">Record</tt> as return value.
+			</p><p><tt class="literal">CciTemplate</tt> also provides methods to create
+			<tt class="literal">IndexRecord</tt> and <tt class="literal">MappedRecord</tt>
+      outside a <tt class="literal">RecordCreator</tt> implementation, through
+      its <tt class="literal">createIndexRecord</tt> and
+      <tt class="literal">createMappedRecord</tt> methods. This can be used
+			within DAO implementations to create <tt class="literal">Record</tt>
+			instances to pass into corresponding
+      <tt class="literal">CciTemplate.execute</tt> methods.</p><pre class="programlisting">public class CciTemplate implements CciOperations {
+  ...
+  public IndexedRecord createIndexedRecord(String name) throws DataAccessException { ... }
+
+  public MappedRecord createMappedRecord(String name) throws DataAccessException { ... }
+  ...
+}</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e14743"></a>20.3.3.&nbsp;DAO support</h3></div></div><div></div></div><p>Spring's CCI support provides a abstract class for DAOs,
+      supporting injection of a <tt class="literal">ConnectionFactory</tt>
+      or a <tt class="literal">CciTemplate</tt> instances. The name of the
+      class is <tt class="literal">CciDaoSupport</tt>: It provides simple
+      <tt class="literal">setConnectionFactory</tt> and
+      <tt class="literal">setCciTemplate</tt> methods. Internally, this
+      class will create a <tt class="literal">CciTemplate</tt> instance
+      for a passed-in <tt class="literal">ConnectionFactory</tt>, exposing
+      it to concrete data access implementations in subclasses.</p><pre class="programlisting">public abstract class CciDaoSupport {
+  ...
+  public void setConnectionFactory(ConnectionFactory connectionFactory) { ... }
+  public ConnectionFactory getConnectionFactory() { ... }
+
+  public void setCciTemplate(CciTemplate cciTemplate) { ... }
+  public CciTemplate getCciTemplate() { ... }
+  ...
+}</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="automatic-output-generation"></a>20.3.4.&nbsp;Automatic output record generation</h3></div></div><div></div></div><p>If the connector used only supports the
+			<tt class="literal">Interaction.execute</tt> method with input and output
+      records as parameters (that is, it requires the desired output record
+      to be passed in instead of returning an appropriate output record),
+      you can set the <tt class="literal">outputRecordCreator</tt> property of the
+      <tt class="literal">CciTemplate</tt> to automatically generate an output
+      record to be filled by the JCA connector when the response is received.
+      This record will be then returned to the caller of the template.</p><p>This property simply holds an implementation of the
+      <tt class="literal">RecordCreator</tt> interface, used for that purpose.
+      The <tt class="literal">RecordCreator</tt> interface has already been
+      discussed in a previous section. The <tt class="literal">outputRecordCreator</tt>
+      property must be directly specified on the <tt class="literal">CciTemplate</tt>.
+      This could be done in the application code:</p><pre class="programlisting">cciTemplate.setOutputRecordCreator(new EciOutputRecordCreator());
+</pre><p>or in the Spring configuration, if the <tt class="literal">CciTemplate</tt>
+      is configured as a dedicated bean instance:</p><pre class="programlisting">&lt;bean id="eciOutputRecordCreator" class="eci.EciOutputRecordCreator"/&gt;
+
+&lt;bean id="cciTemplate" class="org.springframework.jca.cci.core.CciTemplate"&gt;
+  &lt;property name="connectionFactory"&gt;
+    &lt;ref local="eciConnectionFactory"/&gt;
+  &lt;/property&gt;
+  &lt;property name="outputRecordCreator"&gt;
+    &lt;ref local="eciOutputRecordCreator"/&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p><tt class="literal">Note</tt>: As the <tt class="literal">CciTemplate</tt>
+      class is thread-safe, it will usually be configured as a shared instance.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="template-summary"></a>20.3.5.&nbsp;Summary</h3></div></div><div></div></div><p>The following table summarizes the mechanism of the
+      <tt class="literal">CciTemplate</tt> class and the corresponding methods
+      called on the CCI <tt class="literal">Interaction</tt> interface:</p><div class="table"><a name="d0e14826"></a><p class="title"><b>Table&nbsp;20.1.&nbsp;Usage of Interaction execute methods</b></p><table summary="Usage of Interaction execute methods" border="1"><colgroup><col><col><col></colgroup><thead><tr><th align="center">CciTemplate method signature</th><th align="center">CciTemplate outputRecordCreator
+                property</th><th align="center">execute method called on the CCI
+                Interaction</th></tr></thead><tbody><tr><td align="center">Record execute(InteractionSpec,
+                Record)</td><td align="center">not set</td><td align="center">Record execute(InteractionSpec,
+                Record)</td></tr><tr><td align="center">Record execute(InteractionSpec,
+                Record)</td><td align="center">set</td><td align="center">boolean execute(InteractionSpec, Record,
+                Record)</td></tr><tr><td align="center">void execute(InteractionSpec, Record,
+                Record)</td><td align="center">not set</td><td align="center">void execute(InteractionSpec, Record,
+                Record)</td></tr><tr><td align="center">void execute(InteractionSpec, Record,
+                Record)</td><td align="center">set</td><td align="center">void execute(InteractionSpec, Record,
+                Record)</td></tr><tr><td align="center">Record execute(InteractionSpec,
+                RecordCreator)</td><td align="center">not set</td><td align="center">Record execute(InteractionSpec,
+                Record)</td></tr><tr><td align="center">Record execute(InteractionSpec,
+                RecordCreator)</td><td align="center">set</td><td align="center">void execute(InteractionSpec, Record,
+                Record)</td></tr><tr><td align="center">Record execute(InteractionSpec, Record,
+                RecordExtractor)</td><td align="center">not set</td><td align="center">Record execute(InteractionSpec,
+                Record)</td></tr><tr><td align="center">Record execute(InteractionSpec, Record,
+                RecordExtractor)</td><td align="center">set</td><td align="center">void execute(InteractionSpec, Record,
+                Record)</td></tr><tr><td align="center">Record execute(InteractionSpec,
+                RecordCreator, RecordExtractor)</td><td align="center">not set</td><td align="center">Record execute(InteractionSpec,
+                Record)</td></tr><tr><td align="center">Record execute(InteractionSpec,
+                RecordCreator, RecordExtractor)</td><td align="center">set</td><td align="center">void execute(InteractionSpec, Record,
+                Record)</td></tr></tbody></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e14909"></a>20.3.6.&nbsp;Using a CCI Connection and Interaction directly</h3></div></div><div></div></div><p><tt class="literal">CciTemplate</tt> also offers the possibility to
+      work directly with CCI connections and interactions, in the same manner
+      as <tt class="literal">JdbcTemplate</tt> and <tt class="literal">JmsTemplate</tt>.
+      This is useful when you want to perform multiple operations on a CCI
+      connection or interaction, for example.</p><p>The interface <tt class="literal">ConnectionCallback</tt> provides a
+      CCI <tt class="literal">Connection</tt> as argument, in order to perform
+      custom operations on it, plus the CCI <tt class="literal">ConnectionFactory</tt>
+      which the <tt class="literal">Connection</tt> was created with. The latter
+      can be useful for example to get an associated <tt class="literal">RecordFactory</tt>
+      instance and create indexed/mapped records, for example.</p><pre class="programlisting">public interface ConnectionCallback {
+
+  Object doInConnection(Connection connection, ConnectionFactory connectionFactory)
+      throws ResourceException, SQLException, DataAccessException;
+}</pre><p>The interface <tt class="literal">InteractionCallback</tt> provides
+      the CCI <tt class="literal">Interaction</tt>, in order to perform custom
+      operations on it, plus the corresponding CCI <tt class="literal">ConnectionFactory</tt>.
+			</p><pre class="programlisting">public interface InteractionCallback {
+
+  Object doInInteraction(Interaction interaction, ConnectionFactory connectionFactory)
+      throws ResourceException, SQLException, DataAccessException;
+}</pre><p><tt class="literal">Note</tt>: <tt class="literal">InteractionSpec</tt> objects
+      can either be shared across multiple template calls and newly created
+      inside every callback method. This is completely up to the DAO implementation.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e14961"></a>20.3.7.&nbsp;Example for CciTemplate usage</h3></div></div><div></div></div><p>In this section, the usage of the <tt class="literal">CciTemplate</tt>
+      will be shown to acces to a CICS with ECI mode, with the IBM CICS ECI
+      connector.</p><p>Firstly, some initializations on the CCI
+      <tt class="literal">InteractionSpec</tt> must be done to specify which CICS
+      program to access and how to interact with it.</p><pre class="programlisting">ECIInteractionSpec interactionSpec = new ECIInteractionSpec();
+interactionSpec.setFunctionName("MYPROG");
+interactionSpec.setInteractionVerb(ECIInteractionSpec.SYNC_SEND_RECEIVE);</pre><p>Then the program can use CCI via Spring's template and specify
+      mappings between custom objects and CCI <tt class="literal">Records</tt>.</p><pre class="programlisting">public class MyDaoImpl extends CciDaoSupport implements MyDao {
+
+  public OutputObject getData(InputObject input) {
+    ECIInteractionSpec interactionSpec = ...;
+
+    OutputObject output = (ObjectOutput) getCciTemplate().execute(interactionSpec,
+        new RecordCreator() {
+          public Record createRecord(RecordFactory recordFactory) throws ResourceException {
+            return new CommAreaRecord(input.toString().getBytes());
+          }
+        },
+        new RecordExtractor() {
+          public Object extractData(Record record) throws ResourceException {
+            CommAreaRecord commAreaRecord = (CommAreaRecord)record;
+            String str = new String(commAreaRecord.toByteArray());
+            String field1 = string.substring(0,6);
+            String field2 = string.substring(6,1);
+            return new OutputObject(Long.parseLong(field1), field2);
+          }
+        });
+
+    return output;
+  }
+}</pre><p>As discussed previously, callbacks can be used to work
+      directly on CCI connections or interactions.</p><pre class="programlisting">public class MyDaoImpl extends CciDaoSupport implements MyDao {
+
+  public OutputObject getData(InputObject input) {
+    ObjectOutput output = (ObjectOutput) getCciTemplate().execute(
+        new ConnectionCallback() {
+          public Object doInConnection(Connection connection, ConnectionFactory factory)
+              throws ResourceException {
+            ...
+          }
+        });
+    }
+    return output;
+  }
+}</pre><p><span class="emphasis"><em>Important note</em></span>: With a ConnectionCallback,
+      the <tt class="literal">Connection</tt> used will be managed and closed by
+			the <tt class="literal">CciTemplate</tt>, but any interactions created
+      on the connection must be managed by the callback implementation.</p><p>For a more specific callback, you can implement an
+			<tt class="literal">InteractionCallback</tt>. The passed-in
+			<tt class="literal">Interaction</tt> will be managed and closed by the
+			<tt class="literal">CciTemplate</tt> in this case.</p><pre class="programlisting">public class MyDaoImpl extends CciDaoSupport implements MyDao {
+
+  public String getData(String input) {
+    ECIInteractionSpec interactionSpec = ...;
+
+    String output = (String) getCciTemplate().execute(interactionSpec,
+        new InteractionCallback() {
+          public Object doInInteraction(Interaction interaction, ConnectionFactory factory)
+              throws ResourceException {
+            Record input = new CommAreaRecord(inputString.getBytes());
+            Record output = new CommAreaRecord();
+            interaction.execute(holder.getInteractionSpec(), input, output);
+            return new String(output.toByteArray());
+          }
+        });
+
+    return output;
+  }
+}</pre><p>For the examples above, the corresponding configuration of the
+      involved Spring beans could look like this in non-managed mode:</p><pre class="programlisting">&lt;bean id="managedConnectionFactory" class="com.ibm.connector2.cics.ECIManagedConnectionFactory"&gt;
+  &lt;property name="serverName"&gt;&lt;value&gt;TXSERIES&lt;/value&gt;&lt;/property&gt;
+  &lt;property name="connectionURL"&gt;&lt;value&gt;local:&lt;/value&gt;&lt;/property&gt;
+  &lt;property name="userName"&gt;&lt;value&gt;CICSUSER&lt;/value&gt;&lt;/property&gt;
+  &lt;property name="password"&gt;&lt;value&gt;CICS&lt;/value&gt;&lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="connectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean"&gt;
+  &lt;property name="managedConnectionFactory"&gt;
+    &lt;ref local="managedConnectionFactory"/&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="component" class="mypackage.MyDaoImpl"&gt;
+  &lt;property name="connectionFactory"&gt;&lt;ref local="connectionFactory"/&gt;&lt;/property&gt;
+&lt;/bean&gt;</pre><p>In managed mode (that is, in a J2EE environment), the configuration
+			could look as follows:</p><pre class="programlisting">&lt;bean id="connectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean"&gt;
+  &lt;property name="jndiName"&gt;&lt;value&gt;eis/cicseci&lt;/value&gt;&lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="component" class="MyDaoImpl"&gt;
+  &lt;property name="connectionFactory"&gt;&lt;ref local="connectionFactory"/&gt;&lt;/property&gt;
+&lt;/bean&gt;</pre></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e15018"></a>20.4.&nbsp;Modeling CCI access as operation objects</h2></div></div><div></div></div><p>The <tt class="literal">org.springframework.jca.cci.object</tt> package
+    contains support classes that allow you to access the EIS in a different
+    style: through reusable operation objects, analogous to Spring's JDBC
+    operation objects (see JDBC chapter). This will usually encapsulate the
+    CCI API: an application-level input object will be passed to the operation
+    object, so it can construct the input record and then convert the received
+    record data to an application-level output object and return it.</p><p><span class="emphasis"><em>Note</em></span>: This approach is internally based on the
+		<tt class="literal">CciTemplate</tt> class and the <tt class="literal">RecordCreator</tt>
+     / <tt class="literal">RecordExtractor</tt> interfaces, reusing the machinery of
+     Spring's core CCI support.</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e15039"></a>20.4.1.&nbsp;MappingRecordOperation</h3></div></div><div></div></div><p><tt class="literal">MappingRecordOperation</tt> essentially performs the
+      same work as <tt class="literal">CciTemplate</tt>, but represents a specific,
+      pre-configured operation as an object. It provides two template methods
+      to specify how to convert an input object to a input record, and how to
+      convert an output record to an output object (record mapping):</p><div class="itemizedlist"><ul type="disc"><li><p><tt class="literal">createInputRecord</tt> to specify how to
+          convert an input object to an input <tt class="literal">Record</tt></p></li><li><p><tt class="literal">extractOutputData</tt> to specify how to
+          extract an output object from an output <tt class="literal">Record</tt></p></li></ul></div><p>Here are the signatures of these methods:</p><pre class="programlisting">public abstract class MappingRecordOperation extends EisOperation {
+  ...
+  protected abstract Record createInputRecord(RecordFactory recordFactory, Object inputObject)
+      throws ResourceException, DataAccessException { ... }
+
+  protected abstract Object extractOutputData(Record outputRecord)
+      throws ResourceException, SQLException, DataAccessException { ... }
+  ...
+}</pre><p>Thereafter, in order to execute an EIS operation, you need to use
+      a single execute method, passing in an application-level input object
+			and receiving an application-level output object as result:</p><pre class="programlisting">public abstract class MappingRecordOperation extends EisOperation {
+  ...
+  public Object execute(Object inputObject) throws DataAccessException {
+  ...
+}</pre><p>As you can see, contrary to the <tt class="literal">CciTemplate</tt> class,
+			this <tt class="literal">execute</tt> method does not have an
+			<tt class="literal">InteractionSpec</tt> as argument. Instead, the
+			<tt class="literal">InteractionSpec</tt> is global to the operation.
+			The following constructor must be used to instantiate an operation
+      object with a specific <tt class="literal">InteractionSpec</tt>:</p><pre class="programlisting">InteractionSpec spec = ...;
+MyMappingRecordOperation eisOperation = new MyMappingRecordOperation(getConnectionFactory(), spec);
+...
+</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e15091"></a>20.4.2.&nbsp;MappingCommAreaOperation</h3></div></div><div></div></div><p>Some connectors use records based on a COMMAREA which represents
+      an array of bytes containing parameters to send to the EIS and data
+      returned by it. Spring provides a special operation class for working
+      directly on COMMAREA rather than on records. The
+      <tt class="literal">MappingCommAreaOperation</tt> class extends the
+      <tt class="literal">MappingRecordOperation</tt> class to provide such special
+      COMMAREA support. It implicitly uses the <tt class="literal">CommAreaRecord</tt>
+      class as input and output record type, and provides two new methods to
+      convert an input object into an input COMMAREA and the output COMMAREA
+      into an output object.</p><pre class="programlisting">public abstract class MappingCommAreaOperation extends MappingRecordOperation {
+  ...
+  protected abstract byte[] objectToBytes(Object inObject)
+      throws IOException, DataAccessException;
+
+  protected abstract Object bytesToObject(byte[] bytes)
+      throws IOException, DataAccessException;
+  ...
+}</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e15107"></a>20.4.3.&nbsp;Automatic output record generation</h3></div></div><div></div></div><p>As every <tt class="literal">MappingRecordOperation</tt> subclass is
+      based on CciTemplate internally, the same way to automatically generate
+      output records as with <tt class="literal">CciTemplate</tt> is available.
+			Every operation object provides a corresponding
+      <tt class="literal">setOutputRecordCreator</tt> method. For further information,
+			see <a href="cci.html#automatic-output-generation" title="20.3.4.&nbsp;Automatic output record generation">the previous
+      "automatic output record generation" section</a>.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e15124"></a>20.4.4.&nbsp;Summary</h3></div></div><div></div></div><p>The operation object approach uses records in the same manner
+      as the <tt class="literal">CciTemplate</tt> class.</p><div class="table"><a name="d0e15132"></a><p class="title"><b>Table&nbsp;20.2.&nbsp;Usage of Interaction execute methods</b></p><table summary="Usage of Interaction execute methods" border="1"><colgroup><col><col><col></colgroup><thead><tr><th align="center">MappingRecordOperation method
+                signature</th><th align="center">MappingRecordOperarion
+                outputRecordCreator property</th><th align="center">execute method called on the CCI
+                Interaction</th></tr></thead><tbody><tr><td align="center">Object execute(Object)</td><td align="center">not set</td><td align="center">Record execute(InteractionSpec,
+                Record)</td></tr><tr><td align="center">Object execute(Object)</td><td align="center">set</td><td align="center">boolean execute(InteractionSpec, Record,
+                Record)</td></tr></tbody></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e15159"></a>20.4.5.&nbsp;Example for MappingRecordOperation usage</h3></div></div><div></div></div><p>In this section, the usage of the
+      <tt class="literal">MappingRecordOperation</tt> will be shown to access a
+      database with the Blackbox CCI connector.</p><p><tt class="literal">Note</tt>: The original version of this connector
+      is provided by the J2EE SDK (version 1.3), available from Sun.</p><p>Firstly, some initializations on the CCI
+      <tt class="literal">InteractionSpec</tt> must be done to specify which SQL
+      request to execute. In this sample, we directly define the way to
+      convert the parameters of the request to a CCI record and the way to
+      convert the CCI result record to an instance of the
+      <tt class="literal">Person</tt> class.</p><pre class="programlisting">public class PersonMappingOperation extends MappingRecordOperation {
+
+  public PersonMappingOperation(ConnectionFactory connectionFactory) {
+    setConnectionFactory(connectionFactory);
+    CciInteractionSpec interactionSpec = new CciConnectionSpec();
+    interactionSpec.setSql("select * from person where person_id=?");
+    setInteractionSpec(interactionSpec);
+  }
+
+  protected Record createInputRecord(RecordFactory recordFactory, Object inputObject)
+      throws ResourceException {
+    Integer id = (Integer) inputObject;
+    IndexedRecord input = recordFactory.createIndexedRecord("input");
+    input.add(new Integer(id));
+    return input;
+  }
+
+  protected Object extractOutputData(Record outputRecord)
+      throws ResourceException, SQLException {
+    ResultSet rs = (ResultSet) outputRecord;
+    Person person = null;
+    if (rs.next()) {
+      Person person = new Person();
+      person.setId(rs.getInt("person_id"));
+      person.setLastName(rs.getString("person_last_name"));
+      person.setFirstName(rs.getString("person_first_name"));
+    }
+    return person;
+  }
+}</pre><p>Then the application can execute the operation object, with the
+      person identifier as argument. Note that operation object could be
+			set up as shared instance, as it is thread-safe.</p><pre class="programlisting">public class MyDaoImpl extends CciDaoSupport implements MyDao {
+
+  public Person getPerson(int id) {
+    PersonMappingOperation query = new PersonMappingOperation(getConnectionFactory());
+    Person person = (Person) query.execute(new Integer(id));
+    return person;
+  }
+}</pre><p>The corresponding configuration of Spring beans could look
+      as follows in non-managed mode:</p><pre class="programlisting">&lt;bean id="managedConnectionFactory"
+    class="com.sun.connector.cciblackbox.CciLocalTxManagedConnectionFactory"&gt;
+  &lt;property name="connectionURL"&gt;
+    &lt;value&gt;jdbc:hsqldb:hsql://localhost:9001&lt;/value&gt;
+  &lt;/property&gt;
+  &lt;property name="driverName"&gt;&lt;value&gt;org.hsqldb.jdbcDriver&lt;/value&gt;&lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="targetConnectionFactory"
+    class="org.springframework.jca.support.LocalConnectionFactoryBean"&gt;
+  &lt;property name="managedConnectionFactory"&gt;
+    &lt;ref local="managedConnectionFactory"/&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="connectionFactory"
+    class="org.springframework.jca.cci.connection.ConnectionSpecConnectionFactoryAdapter"&gt;
+  &lt;property name="targetConnectionFactory"&gt;
+    &lt;ref bean="targetConnectionFactory"/&gt;
+  &lt;/property&gt;
+  &lt;property name="connectionSpec"&gt;
+    &lt;bean class="com.sun.connector.cciblackbox.CciConnectionSpec"&gt;
+      &lt;property name="user"&gt;&lt;value&gt;sa&lt;/value&gt;&lt;/property&gt;
+      &lt;property name="password"&gt;&lt;value/&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="component" class="MyDaoImpl"&gt;
+  &lt;property name="connectionFactory"&gt;&lt;ref local="connectionFactory"/&gt;&lt;/property&gt;
+&lt;/bean&gt;</pre><p>In managed mode (that is, in a J2EE environment), the configuration
+			could look as follows:</p><pre class="programlisting">&lt;bean id="targetConnectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean"&gt;
+  &lt;property name="jndiName"&gt;&lt;value&gt;eis/blackbox&lt;/value&gt;&lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="connectionFactory"
+    class="org.springframework.jca.cci.connection.ConnectionSpecConnectionFactoryAdapter"&gt;
+  &lt;property name="targetConnectionFactory"&gt;
+    &lt;ref bean="targetConnectionFactory"/&gt;
+  &lt;/property&gt;
+  &lt;property name="connectionSpec"&gt;
+    &lt;bean class="com.sun.connector.cciblackbox.CciConnectionSpec"&gt;
+      &lt;property name="user"&gt;&lt;value&gt;sa&lt;/value&gt;&lt;/property&gt;
+      &lt;property name="password"&gt;&lt;value/&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="component" class="MyDaoImpl"&gt;
+  &lt;property name="connectionFactory"&gt;&lt;ref local="connectionFactory"/&gt;&lt;/property&gt;
+&lt;/bean&gt;</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e15193"></a>20.4.6.&nbsp;Example for MappingCommAreaOperation usage</h3></div></div><div></div></div><p>In this section, the usage of the
+      <tt class="literal">MappingCommAreaOperation</tt> will be shown: accessing
+      a CICS with ECI mode with the IBM CICS ECI connector.</p><p>Firstly, the CCI <tt class="literal">InteractionSpec</tt> needs to be
+      initialized to specify which CICS program to access and how to interact
+      with it.</p><pre class="programlisting">public abstract class EciMappingOperation extends MappingCommAreaOperation {
+
+  public EciMappingOperation(ConnectionFactory connectionFactory, String programName) {
+    setConnectionFactory(connectionFactory);
+    ECIInteractionSpec interactionSpec = new ECIInteractionSpec(),
+    interactionSpec.setFunctionName(programName);
+    interactionSpec.setInteractionVerb(ECIInteractionSpec.SYNC_SEND_RECEIVE);
+    interactionSpec.setCommareaLength(30);
+    setInteractionSpec(interactionSpec);
+    setOutputRecordCreator(new EciOutputRecordCreator());
+  }
+
+  private static class EciOutputRecordCreator implements RecordCreator {
+    public Record createRecord(RecordFactory recordFactory) throws ResourceException {
+      return new CommAreaRecord();
+    }
+  }
+}</pre><p>The abstract <tt class="literal">EciMappingOperation</tt> class can
+      then be subclassed to specify mappings between custom objects and
+			<tt class="literal">Records</tt>.</p><pre class="programlisting">public class MyDaoImpl extends CciDaoSupport implements MyDao {
+
+  public OutputObject getData(Integer id) {
+    EciMappingOperation query = new EciMappingOperation(getConnectionFactory(), "MYPROG") {
+      protected abstract byte[] objectToBytes(Object inObject) throws IOException {
+        Integer id = (Integer) inObject;
+        return String.valueOf(id);
+      }
+      protected abstract Object bytesToObject(byte[] bytes) throws IOException;
+        String str = new String(bytes);
+        String field1 = str.substring(0,6);
+        String field2 = str.substring(6,1);
+        String field3 = str.substring(7,1);
+        return new OutputObject(field1, field2, field3);
+      }
+    });
+
+    return (OutputObject) query.execute(new Integer(id));
+  }
+}</pre><p>The corresponding configuration of Spring beans could look
+			as follows in non-managed mode:</p><pre class="programlisting">&lt;bean id="managedConnectionFactory" class="com.ibm.connector2.cics.ECIManagedConnectionFactory"&gt;
+  &lt;property name="serverName"&gt;&lt;value&gt;TXSERIES&lt;/value&gt;&lt;/property&gt;
+  &lt;property name="connectionURL"&gt;&lt;value&gt;local:&lt;/value&gt;&lt;/property&gt;
+  &lt;property name="userName"&gt;&lt;value&gt;CICSUSER&lt;/value&gt;&lt;/property&gt;
+  &lt;property name="password"&gt;&lt;value&gt;CICS&lt;/value&gt;&lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="connectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean"&gt;
+  &lt;property name="managedConnectionFactory"&gt;
+    &lt;ref local="managedConnectionFactory"/&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="component" class="MyDaoImpl"&gt;
+  &lt;property name="connectionFactory"&gt;&lt;ref local="connectionFactory"/&gt;&lt;/property&gt;
+&lt;/bean&gt;</pre><p>In managed mode (that is, in a J2EE environment), the configuration
+			could look as follows:</p><pre class="programlisting">&lt;bean id="connectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean"&gt;
+  &lt;property name="jndiName"&gt;&lt;value&gt;eis/cicseci&lt;/value&gt;&lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="component" class="MyDaoImpl"&gt;
+  &lt;property name="connectionFactory"&gt;&lt;ref local="connectionFactory"/&gt;&lt;/property&gt;
+&lt;/bean&gt;</pre></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e15226"></a>20.5.&nbsp;Transactions</h2></div></div><div></div></div><p>JCA specifies several levels of transaction suppot for resource adapters.
+    The kind of transactions that your resource adapter supports is specified
+    in its <tt class="filename">ra.xml</tt> file. There are essentially three options:
+    none (for example with CICS EPI connector), local transactions (for
+    example with CICS ECI connector), global transactions (for example with
+    IMS connector).</p><pre class="programlisting">&lt;connector&gt;
+  ...
+  &lt;resourceadapter&gt;
+    ...
+    &lt;!-- transaction-support&gt;NoTransaction&lt;/transaction-support --&gt;
+    &lt;!-- transaction-support&gt;LocalTransaction&lt;/transaction-support --&gt;
+    &lt;transaction-support&gt;XATransaction&lt;/transaction-support&gt;
+    ...
+  &lt;resourceadapter&gt;
+  ...
+&lt;connector&gt;</pre><p>For global transactions, you can use Spring's generic transaction
+		infrastructure to demarcate transactions, with JtaTransactionManager as
+		backend (delegating to the J2EE server's distributed transaction coordinator
+		underneath).</p><p>For local transactions on a single CCI <tt class="literal">ConnectionFactory</tt>,
+    Spring provides a specific transaction management strategy for CCI, analogous
+    to the <tt class="literal">DataSourceTransactionManager</tt> for JDBC. The CCI API
+    defines a local transaction object and corresponding local transaction
+		demarcation methods. Spring's <tt class="literal">CciLocalTransactionManager</tt>
+    executes such local CCI transactions, fully compliant with Spring's generic
+    <tt class="literal">PlatformTransactionManager</tt> abstraction.</p><pre class="programlisting">&lt;bean id="eciConnectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean"&gt;
+  &lt;property name="jndiName"&gt;
+    &lt;value&gt;eis/cicseci&lt;/value&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="eciTransactionManager"
+    class="org.springframework.jca.cci.connection.CciLocalTransactionManager"&gt;
+  &lt;property name="connectionFactory"&gt;
+    &lt;ref local="eciConnectionFactory" /&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p>Both transaction strategies can be used with any of Spring's
+    transaction demarcation facilities, be it declarative or programmatic.
+    This is a consequence of Spring's generic
+    <tt class="literal">PlatformTransactionManager</tt> abstraction, which
+		decouples transaction demarcation from the actual execution strategy.
+		Simply switch between <tt class="literal">JtaTransactionManager</tt> and
+		<tt class="literal">CciLocalTransactionManager</tt> as needed, keeping
+		your transaction demarcation as-is.</p><p>For more information on Spring's transaction facilities, see the
+		<a href="transaction.html" title="Chapter&nbsp;8.&nbsp;Transaction management">transaction management chapter</a>.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="jmx.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="mail.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;19.&nbsp;JMX Support&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;21.&nbsp;Sending Email with Spring mail abstraction layer</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

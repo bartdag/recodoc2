@@ -1,0 +1,295 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;5.&nbsp;PropertyEditors, data binding, validation and the BeanWrapper</title><link rel="stylesheet" href="../styles/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><link rel="home" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="up" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="previous" href="resources.html" title="Chapter&nbsp;4.&nbsp;Abstracting Access to Low-Level Resources"><link rel="next" href="aop.html" title="Chapter&nbsp;6.&nbsp;Spring AOP: Aspect Oriented Programming with Spring"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;5.&nbsp;PropertyEditors, data binding, validation and the BeanWrapper</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="resources.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="aop.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="validation"></a>Chapter&nbsp;5.&nbsp;PropertyEditors, data binding, validation and the BeanWrapper</h2></div></div><div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="validation-introduction"></a>5.1.&nbsp;Introduction</h2></div></div><div></div></div><p>The big question is whether or not validation should be considered
+    <span class="emphasis"><em>business logic</em></span>. There are pros and cons for both
+    answers, and Spring offers a design for validation (and data binding) that
+    does not exclude either one of them. Validation should specifically not be
+    tied to the web tier, should be easy to localize and it should be
+    possible to plug in any validator available. Considering the above, Spring
+    has come up with a <tt class="literal">Validator</tt> interface that's both
+    basic and usable in every layer of an application.</p><p>Data binding is useful for allowing user input to be dynamically
+    bound to the domain model of an application (or whatever objects you use
+    to process user input). Spring provides the so-called
+    <tt class="literal">DataBinder</tt> to do exactly that. The Validator and the
+    DataBinder make up the <tt class="literal">validation</tt> package, which is
+    primarily used in but not limited to the MVC framework.</p><p>The <tt class="literal">BeanWrapper</tt> is a fundamental concept in the
+    Spring Framework and is used in a lot of places. However, you probably
+    will not ever have the need to use the BeanWrapper directly. Because this
+    is reference documentation however, we felt that some explanation might be
+    right. We're explaining the BeanWrapper in this chapter since if you were
+    going to use it at all, you would probably do that when trying to bind
+    data to objects, which is strongly related to the BeanWrapper.</p><p>Spring uses PropertyEditors all over the place. The concept of a
+    PropertyEditor is part of the JavaBeans specification. Just as the
+    BeanWrapper, it's best to explain the use of PropertyEditors in this
+    chapter as well, since it's closely related to the BeanWrapper and the
+    DataBinder.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="validation-databinding"></a>5.2.&nbsp;Binding data using the <tt class="literal">DataBinder</tt></h2></div></div><div></div></div><p>The DataBinder builds on top of the BeanWrapper<sup>[<a name="d0e3100" href="#ftn.d0e3100">2</a>]</sup>.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="beans-beans"></a>5.3.&nbsp;Bean manipulation and the <tt class="literal">BeanWrapper</tt></h2></div></div><div></div></div><p>The <tt class="literal">org.springframework.beans</tt> package adheres to
+    the JavaBeans standard provided by Sun. A JavaBean is simply a class with
+    a default no-argument constructor, which follows a naming conventions
+    where a property named <tt class="literal">prop</tt> has a setter
+    <tt class="literal">setProp(...)</tt> and a getter <tt class="literal">getProp()</tt>.
+    For more information about JavaBeans and the specification, please refer
+    to Sun's website (<a href="http://java.sun.com/products/javabeans/" target="_top">java.sun.com/products/javabeans</a>).</p><p>One quite important concept of the beans package is the
+    <tt class="literal">BeanWrapper</tt> interface and its corresponding
+    implementation (<tt class="literal">BeanWrapperImpl</tt>). As quoted from the
+    JavaDoc, the BeanWrapper offers functionality to set and get property
+    values (individually or in bulk), get property descriptors, and to query
+    properties to determine if they are readable or writable. Also, the
+    BeanWrapper offers support for nested properties, enabling the setting of
+    properties on sub-properties to an unlimited depth. Then, the BeanWrapper
+    supports the ability to add standard JavaBeans
+    <tt class="literal">PropertyChangeListeners</tt> and
+    <tt class="literal">VetoableChangeListeners</tt>, without the need for
+    supporting code in the target class. Last but not least, the BeanWrapper
+    provides support for the setting of indexed properties. The BeanWrapper
+    usually isn't used by application code directly, but by the
+    <tt class="literal">DataBinder</tt> and the
+    <tt class="literal">BeanFactory</tt>.</p><p>The way the BeanWrapper works is partly indicated by its name:
+    <span class="emphasis"><em>it wraps a bean</em></span> to perform actions on that bean, like
+    setting and retrieving properties.</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="beans-beans-conventions"></a>5.3.1.&nbsp;Setting and getting basic and nested properties</h3></div></div><div></div></div><p>Setting and getting properties is done using the
+      <tt class="literal">setPropertyValue(s)</tt> and
+      <tt class="literal">getPropertyValue(s)</tt> methods that both come with a
+      couple of overloaded variants. They're all described in more detail in
+      the JavaDoc Spring comes with. What's important to know is that there
+      are a couple of conventions for indicating properties of an object. A
+      couple of examples: </p><div class="table"><a name="d0e3165"></a><p class="title"><b>Table&nbsp;5.1.&nbsp;Examples of properties</b></p><table summary="Examples of properties" border="1"><colgroup><col><col></colgroup><thead><tr><th>Expression</th><th>Explanation</th></tr></thead><tbody><tr><td><tt class="literal">name</tt></td><td>Indicates the property <tt class="literal">name</tt>
+                corresponding to the methods <tt class="literal">getName()</tt> or
+                <tt class="literal">isName()</tt> and
+                <tt class="literal">setName()</tt></td></tr><tr><td><tt class="literal">account.name</tt></td><td>Indicates the nested property <tt class="literal">name</tt>
+                of the property <tt class="literal">account</tt> corresponding e.g.
+                to the methods <tt class="literal">getAccount().setName()</tt> or
+                <tt class="literal">getAccount().getName()</tt></td></tr><tr><td><tt class="literal">account[2]</tt></td><td>Indicates the <span class="emphasis"><em>third</em></span> element of the
+                indexed property <tt class="literal">account</tt>. Indexed
+                properties can be of type <tt class="literal">array</tt>,
+                <tt class="literal">list</tt> or other <span class="emphasis"><em>naturally
+                ordered</em></span> collection</td></tr><tr><td><tt class="literal">account[COMPANYNAME]</tt></td><td>Indicates the value of the map entry indexed by the key
+                <span class="emphasis"><em>COMPANYNAME</em></span> of the Map property
+                <tt class="literal">account</tt></td></tr></tbody></table></div><p>Below you'll find some examples of working with the BeanWrapper to
+      get and set properties.</p><p><span class="emphasis"><em>Note: this part is not important to you if you're not
+      planning to work with the BeanWrapper directly. If you're just using the
+      <tt class="literal">DataBinder</tt> and the <tt class="literal">BeanFactory</tt> and
+      their out-of-the-box implementation, you should skip ahead to the
+      section about <tt class="literal">PropertyEditors</tt>.</em></span></p><p>Consider the following two classes: </p><pre class="programlisting">public class Company {
+    private String name;
+    private Employee managingDirector;
+
+    public String getName()	{ 
+        return this.name; 
+    }
+    public void setName(String name) { 
+        this.name = name; 
+    } 
+    public Employee getManagingDirector() { 
+        return this.managingDirector; 
+    }
+    public void setManagingDirector(Employee managingDirector) {
+        this.managingDirector = managingDirector;
+    }
+}</pre><p> </p><pre class="programlisting">public class Employee {
+    private float salary;
+
+    public float getSalary() {
+        return salary;
+    }
+    public void setSalary(float salary) {
+        this.salary = salary;
+    }
+}</pre><p>The following code snippets show some examples of how to retrieve
+      and manipulate some of the properties of instantiated
+      <tt class="literal">Companies</tt> and <tt class="literal">Employees</tt>:
+      </p><pre class="programlisting">Company c = new Company();
+BeanWrapper bwComp = BeanWrapperImpl(c);
+// setting the company name...
+bwComp.setPropertyValue("name", "Some Company Inc.");
+// ... can also be done like this:
+PropertyValue v = new PropertyValue("name", "Some Company Inc.");
+bwComp.setPropertyValue(v);
+
+// ok, let's create the director and tie it to the company:
+Employee jim = new Employee();
+BeanWrapper bwJim = BeanWrapperImpl(jim);
+bwJim.setPropertyValue("name", "Jim Stravinsky");
+bwComp.setPropertyValue("managingDirector", jim);
+
+// retrieving the salary of the managingDirector through the company
+Float salary = (Float)bwComp.getPropertyValue("managingDirector.salary");</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="beans-beans-conversion"></a>5.3.2.&nbsp;Built-in <tt class="literal">PropertyEditors</tt>, converting
+      types</h3></div></div><div></div></div><p>Spring heavily uses the concept of
+      <tt class="literal">PropertyEditors</tt>. Sometimes it might be handy to be
+      able to represent properties in a different way than the object itself.
+      For example, a date can be represented in a human readable way, while
+      we're still able to convert the human readable form back to the original
+      date (or even better: convert any date entered in a human readable form,
+      back to Date objects). This behavior can be achieved by
+      <span class="emphasis"><em>registering custom editors</em></span>, of type
+      <tt class="literal">java.beans.PropertyEditor</tt>. Registering custom editors
+      on a BeanWrapper or alternately in a specific Application Context as
+      mentioned in the previous chapter, gives it the knowledge of how to
+      convert properties to the desired type. Read more about PropertyEditors
+      in the JavaDoc of the <tt class="literal">java.beans</tt> package provided by
+      Sun.</p><p>A couple of examples where property editing is used in Spring
+      </p><div class="itemizedlist"><ul type="disc" compact><li><p><span class="emphasis"><em>setting properties on beans</em></span> is done
+            using PropertyEditors. When mentioning
+            <tt class="literal">java.lang.String</tt> as the value of a property of
+            some bean you're declaring in XML file, Spring will (if the setter
+            of the corresponding property has a Class-parameter) use the
+            <tt class="literal">ClassEditor</tt> to try to resolve the parameter to
+            a Class object</p></li><li><p><span class="emphasis"><em>parsing HTTP request parameters</em></span> in
+            Spring's MVC framework is done using all kinds of PropertyEditors
+            that you can manually bind in all subclasses of the
+            <tt class="literal">CommandController</tt></p></li></ul></div><p>Spring has a number of built-in PropertyEditors to make life easy.
+      Each of those is listed below and they are all located in the
+      <tt class="literal">org.springframework.beans.propertyeditors</tt> package.
+      Most, but not all (as indicated below), are registered by default by
+      BeanWrapperImpl. Where the property editor is configurable in some
+      fashion, you can of course still register your own variant to override
+      the default one: </p><div class="table"><a name="d0e3321"></a><p class="title"><b>Table&nbsp;5.2.&nbsp;Built-in PropertyEditors</b></p><table summary="Built-in PropertyEditors" border="1"><colgroup><col><col></colgroup><thead><tr><th>Class</th><th>Explanation</th></tr></thead><tbody><tr><td><tt class="literal">ByteArrayPropertyEditor</tt></td><td>Editor for byte arrays. Strings will simply be
+                converted to their corresponding byte representations.
+                Registered by default by BeanWrapperImpl.</td></tr><tr><td><tt class="literal">ClassEditor</tt></td><td>Parses Strings representing classes to actual classes
+                and the other way around. When a class is not found, an
+                IllegalArgumentException is thrown. Registered by default by
+                BeanWrapperImpl.</td></tr><tr><td><tt class="literal">CustomBooleanEditor</tt></td><td>Customizable property editor for Boolean properties.
+                Registered by default by BeanWrapperImpl, but, can be
+                overridden by registering custom instance of it as custom
+                editor.</td></tr><tr><td><tt class="literal">CustomCollectionEditor</tt></td><td>Property editor for Collections, converting any source Collection
+                to a given target Collection type.</td></tr><tr><td><tt class="literal">CustomDateEditor</tt></td><td>Customizable property editor for java.util.Date,
+                supporting a custom DateFormat. NOT registered by default. Must
+                be user registered as needed with appropriate format.</td></tr><tr><td><tt class="literal">CustomNumberEditor</tt></td><td>Customizable property editor for any Number subclass
+                like Integer, Long, Float, Double. Registered by default by
+                BeanWrapperImpl, but, can be overridden by registering custom
+                instance of it as custom editor.</td></tr><tr><td><tt class="literal">FileEditor</tt></td><td>Capable of resolving Strings to
+                <tt class="literal">java.io.File</tt> objects. Registered by default by
+                BeanWrapperImpl. </td></tr><tr><td><tt class="literal">InputStreamEditor</tt></td><td>One-way property editor, capable of taking a text
+                string and producing (via an intermediate ResourceEditor and
+                Resource) an InputStream, so InputStream properties may be
+                directly set as Strings. Note that the default usage
+                will not close the InputStream for you! Registered by default
+                by BeanWrapperImpl.</td></tr><tr><td><tt class="literal">LocaleEditor</tt></td><td>Capable of resolving Strings to
+                <tt class="literal">Locale</tt> objects and vice versa (the String
+                format is [language]_[country]_[variant], which is the same
+                thing the toString() method of Locale provides). Registered by
+                default by BeanWrapperImpl.</td></tr><tr><td><tt class="literal">PropertiesEditor</tt></td><td>Capable of converting Strings (formatted using the
+                format as defined in the Javadoc for the java.lang.Properties
+                class) to <tt class="literal">Properties</tt> objects. Registered by
+                default by BeanWrapperImpl.</td></tr><tr><td><tt class="literal">StringArrayPropertyEditor</tt></td><td>Capable of resolving a comma-delimited list of String
+                to a String-array and vice versa. Registered by default by
+                BeanWrapperImpl.</td></tr><tr><td><tt class="literal">StringTrimmerEditor</tt></td><td>Property editor that trims Strings. Optionally allows
+                transforming an empty string into a null value. NOT registered
+                by default. Must be user registered as needed.</td></tr><tr><td><tt class="literal">URLEditor</tt></td><td>Capable of resolving a String representation of a URL
+                to an actual <tt class="literal">URL</tt> object. Registered by
+                default by BeanWrapperImpl.</td></tr></tbody></table></div><p>Spring uses the
+      <tt class="literal">java.beans.PropertyEditorManager</tt> to set the
+      search path for property editors that might be needed. The search path
+      also includes <tt class="literal">sun.bean.editors</tt>, which includes
+      PropertyEditors for Font, Color and all the primitive types. Note also
+      that the standard JavaBeans infrastructure will automatically discover
+      PropertyEditors (without you having to register them) if they are in the
+      same package as the class they handle, and have the same name as that
+      class, with 'Editor' appended.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="beans-beans-other"></a>5.3.3.&nbsp;Other features worth mentioning</h3></div></div><div></div></div><p>Besides the features you've seen in the previous sections there a
+      couple of features that might be interesting to you, though not worth an
+      entire section. </p><div class="itemizedlist"><ul type="disc" compact><li><p><span class="emphasis"><em>determining readability and
+            writability</em></span>: using the <tt class="literal">isReadable()</tt>
+            and <tt class="literal">isWritable()</tt> methods, you can determine
+            whether or not a property is readable or writable</p></li><li><p><span class="emphasis"><em>retrieving PropertyDescriptors</em></span>: using
+            <tt class="literal">getPropertyDescriptor(String)</tt> and
+            <tt class="literal">getPropertyDescriptors()</tt> you can retrieve
+            objects of type <tt class="literal">java.beans.PropertyDescriptor</tt>,
+            that might come in handy sometimes</p></li></ul></div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="validator"></a>5.4.&nbsp;Validation using Spring's Validator interface</h2></div></div><div></div></div><p>
+			Spring's features a Validator interface you can use to validate objects.
+			The Validator interface, is pretty straightforward and works using with
+			a so-called Errors object. In other words, while validating, validators
+			will report validation failures to the Errors object.
+		</p><p>
+			As said already, the Validator interface is pretty straightforward, just
+			as implementing one yourself. Let's consider a small data object:
+			</p><pre class="programlisting">
+public class Person {
+  private String name;
+  private int age;
+
+  // the usual suspects: getters and setters
+}</pre><p>
+		</p><p>
+			Using the <tt class="literal">org.springframework.validation.Validator</tt>
+			interface we're going to provide validation behavior for the <tt class="literal">Person</tt>
+			class. This is the Validator interface:
+			</p><div class="itemizedlist"><ul type="disc" compact><li><p><tt class="literal">supports(Class)</tt> - indicates whether or not this validator
+					supports the given object</p><p><tt class="literal">validate(Object, org.springframework.validation.Errors)</tt> - 
+					validates the given object and in case of validation errors, put registers
+					those with the given Errors object</p></li></ul></div><p>
+		</p><p>
+			Implementing a validator is fairly straightforward, especially when you know of the 
+			<tt class="literal">ValidationUtils</tt> Spring also provides. Let's review 
+			how a validator is created:
+			</p><pre class="programlisting">
+public class PersonValidator implements Validator {
+	
+	public boolean supports(Class clzz) {
+		return Person.class.equals(clzz);
+	}
+	
+	public void validate(Object obj, Errors e) {
+		ValidationUtils.rejectIfEmpty(e, "name", "name.empty");
+		Person p = (Person)obj;
+		if (p.getAge() &lt; 0) {
+			e.rejectValue("age", "negativevalue");
+		} else if (p.getAge() &gt; 110) {
+			e.rejectValue("age", "tooold");
+		}
+	}
+}</pre><p>
+			As you can see, the ValidationUtils is used to reject the name
+			property. Have a look at the JavaDoc for ValidationUtils to see
+			what functionality it provides besides the example we gave just now.
+		</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="validation-errors"></a>5.5.&nbsp;The Errors interface</h2></div></div><div></div></div><p>
+			Validation errors are reported to the Errors object passed to the validator.
+			In case of Spring Web MVC you can use <tt class="literal">spring:bind</tt> tags to
+			inspect the error messages, but of course you can also inspect the errors
+			object yourself. The methods it offers are pretty straightforward. More information
+			can be found in the JavaDoc.
+		</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="validation-conversion"></a>5.6.&nbsp;Resolving codes to error messages</h2></div></div><div></div></div><p>
+			We've talked about databinding and validation. Outputting messages corresponding to 
+			validation errors is the last thing we need to discuss. In the example we've shown
+			above, we rejected the <tt class="literal">name</tt> and the <tt class="literal">age</tt> field.
+			If, using a <tt class="literal">MessageSource</tt>, we're going to output the error messages
+			we will do so using the error code we've given when rejecting the field ('name' and 'age'
+			in this case). When you call (either directly, or indirectly, using for example the 
+			<tt class="literal">ValidationUtils</tt> class) <tt class="literal">rejectValue</tt> or one of
+			the other <tt class="literal">reject</tt> method from the Errors interface, the underlying 
+			implementation will not only register the code, you've passed in, but also a number of
+			additional error codes. What error codes it registers is determined by the
+			<tt class="literal">MessageCodesResolver</tt> that is used.
+			By default, the <tt class="literal">DefaultMessageCodesResolver</tt> is used, which for example
+			not only register a message with the code you gave, but also messages that include the 
+			field name you passed to the reject method. So in case you reject a field using
+			<tt class="literal">rejectValue("age", "tooold")</tt>, apart from the <tt class="literal">tooold</tt> code,
+			Spring will also register <tt class="literal">tooold.age</tt> and <tt class="literal">tooold.age.int</tt>
+			(so the first will include the field name and the second will include the type of the field).
+		</p><p>
+			More information on the MessageCodesResolver and the default strategy can be found online with the JavaDocs for
+			<a href="http://www.springframework.org/docs/api/org/springframework/validation/MessageCodesResolver.html" target="_top">
+				MessageCodesResolver
+			</a> and 
+			<a href="http://www.springframework.org/docs/api/org/springframework/validation/DefaultMessageCodesResolver.html" target="_top">
+				DefaultMessageCodesResolver
+			</a> respectively. 
+		</p></div><div class="footnotes"><br><hr width="100" align="left"><div class="footnote"><p><sup>[<a name="ftn.d0e3100" href="#d0e3100">2</a>] </sup>See <a href="beans.html" title="Chapter&nbsp;3.&nbsp;Beans, BeanFactory and the ApplicationContext">the beans chapter</a> for more
+        information</p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="resources.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="aop.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;4.&nbsp;Abstracting Access to Low-Level Resources&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;6.&nbsp;Spring AOP: Aspect Oriented Programming with Spring</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

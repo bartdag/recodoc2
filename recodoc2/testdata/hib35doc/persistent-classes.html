@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 4. Persistent Classes</title><link rel="stylesheet" href="css/hibernate.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="up" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="prev" href="session-configuration.html" title="Chapter 3. Configuration"/><link rel="next" href="mapping.html" title="Chapter 5. Basic O/R Mapping"/><link rel="copyright" href="Legal_Notice.html" title="Legal Notice"/></head><body><p id="title"><a href="http://www.hibernate.org" class="site_href"><strong>Hibernate.org</strong></a><a href="http://hibernate.org/Documentation/DocumentationOverview" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="session-configuration.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="mapping.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="persistent-classes"/>Chapter 4. Persistent Classes</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="persistent-classes.html#persistent-classes-pojo">4.1. A simple POJO example</a></span></dt><dd><dl><dt><span class="section"><a href="persistent-classes.html#persistent-classes-pojo-constructor">4.1.1. Implement a no-argument constructor</a></span></dt><dt><span class="section"><a href="persistent-classes.html#persistent-classes-pojo-identifier">4.1.2. Provide an identifier property (optional)</a></span></dt><dt><span class="section"><a href="persistent-classes.html#persistent-classes-pojo-final">4.1.3. Prefer non-final classes (optional)</a></span></dt><dt><span class="section"><a href="persistent-classes.html#persistent-classes-pojo-accessors">4.1.4. Declare accessors and mutators for persistent fields (optional)</a></span></dt></dl></dd><dt><span class="section"><a href="persistent-classes.html#persistent-classes-inheritance">4.2. Implementing inheritance</a></span></dt><dt><span class="section"><a href="persistent-classes.html#persistent-classes-equalshashcode">4.3. Implementing equals() and hashCode()</a></span></dt><dt><span class="section"><a href="persistent-classes.html#persistent-classes-dynamicmodels">4.4. Dynamic models</a></span></dt><dt><span class="section"><a href="persistent-classes.html#persistent-classes-tuplizers">4.5. Tuplizers</a></span></dt><dt><span class="section"><a href="persistent-classes.html#persistent-classes-entity-name-resolver">4.6. EntityNameResolvers</a></span></dt></dl></div><p>
+        Persistent classes are classes in an application that implement the entities
+        of the business problem (e.g. Customer and Order in an E-commerce application).
+        Not all instances of a persistent class are considered to be in the persistent 
+        state. For example, an instance can instead be transient or detached.
+    </p><p>
+        Hibernate works best if these classes follow some simple rules, also known
+        as the Plain Old Java Object (POJO) programming model. However, none of these
+        rules are hard requirements. Indeed, Hibernate3 assumes very little about
+        the nature of your persistent objects. You can express a domain model in other 
+        ways (using trees of <code class="literal">Map</code> instances, for example).
+    </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="persistent-classes-pojo"/>4.1. A simple POJO example</h2></div></div></div><p>
+            Most Java applications require a persistent class representing felines. For example:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_keyword">package</span><!-- <br/> --><span class="java_plain">&nbsp;eg</span><!-- <br/> --><span class="java_separator">;</span>
+<!--  --><br/><span class="java_keyword">import</span><span class="java_plain">&nbsp;java</span><span class="java_separator">.</span><span class="java_plain">util</span><span class="java_separator">.</span><span class="java_type">Set</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_keyword">import</span><span class="java_plain">&nbsp;java</span><span class="java_separator">.</span><span class="java_plain">util</span><span class="java_separator">.</span><span class="java_type">Date</span><span class="java_separator">;</span>
+</span>
+<!--  --><br/><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_keyword">class</span><span class="java_plain">&nbsp;</span><span class="java_type">Cat</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">Long</span><span class="java_plain">&nbsp;id</span><span class="java_separator">;</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;identifier</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">Date</span><span class="java_plain">&nbsp;birthdate</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">Color</span><span class="java_plain">&nbsp;color</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">char</span><span class="java_plain">&nbsp;sex</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">float</span><span class="java_plain">&nbsp;weight</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">int</span><span class="java_plain">&nbsp;litterId</span><span class="java_separator">;</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">Cat</span><span class="java_plain">&nbsp;mother</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">Set</span><span class="java_plain">&nbsp;kittens&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">HashSet</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setId</span><span class="java_separator">(</span><span class="java_type">Long</span><span class="java_plain">&nbsp;id</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">id</span><span class="java_operator">=</span><span class="java_plain">id</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">Long</span><span class="java_plain">&nbsp;getId</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;id</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setBirthdate</span><span class="java_separator">(</span><span class="java_type">Date</span><span class="java_plain">&nbsp;date</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;birthdate&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;date</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">Date</span><span class="java_plain">&nbsp;getBirthdate</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;birthdate</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setWeight</span><span class="java_separator">(</span><span class="java_type">float</span><span class="java_plain">&nbsp;weight</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">weight&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;weight</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">float</span><span class="java_plain">&nbsp;getWeight</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;weight</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">Color</span><span class="java_plain">&nbsp;getColor</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;color</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setColor</span><span class="java_separator">(</span><span class="java_type">Color</span><span class="java_plain">&nbsp;color</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">color&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;color</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setSex</span><span class="java_separator">(</span><span class="java_type">char</span><span class="java_plain">&nbsp;sex</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">sex</span><span class="java_operator">=</span><span class="java_plain">sex</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">char</span><span class="java_plain">&nbsp;getSex</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;sex</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setLitterId</span><span class="java_separator">(</span><span class="java_type">int</span><span class="java_plain">&nbsp;id</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">litterId&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;id</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">int</span><span class="java_plain">&nbsp;getLitterId</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;litterId</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setMother</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_plain">&nbsp;mother</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">mother&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;mother</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">Cat</span><span class="java_plain">&nbsp;getMother</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;mother</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setKittens</span><span class="java_separator">(</span><span class="java_type">Set</span><span class="java_plain">&nbsp;kittens</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">kittens&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;kittens</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">Set</span><span class="java_plain">&nbsp;getKittens</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;kittens</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;addKitten&nbsp;not&nbsp;needed&nbsp;by&nbsp;</span><span class="java_type">Hibernate</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;addKitten</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_plain">&nbsp;kitten</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kitten</span><span class="java_separator">.</span><span class="java_plain">setMother</span><span class="java_separator">(</span><span class="java_keyword">this</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;kitten</span><span class="java_separator">.</span><span class="java_plain">setLitterId</span><span class="java_separator">(</span><span class="java_plain">&nbsp;kittens</span><span class="java_separator">.</span><span class="java_plain">size</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span><span class="java_plain">&nbsp;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kittens</span><span class="java_separator">.</span><span class="java_plain">add</span><span class="java_separator">(</span><span class="java_plain">kitten</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_separator">}</span></pre><p>
+            The four main rules of persistent classes are explored in more detail in the following sections.
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="persistent-classes-pojo-constructor"/>4.1.1. Implement a no-argument constructor</h3></div></div></div><p>
+                <code class="literal">Cat</code> has a no-argument constructor. All persistent classes must 
+                have a default constructor (which can be non-public) so that Hibernate can instantiate 
+                them using <code class="literal">Constructor.newInstance()</code>. It is recommended that you have a 
+                default constructor with at least <span class="emphasis"><em>package</em></span> visibility for runtime proxy 
+                generation in Hibernate.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="persistent-classes-pojo-identifier"/>4.1.2. Provide an identifier property (optional)</h3></div></div></div><p>
+                <code class="literal">Cat</code> has a property called <code class="literal">id</code>. This property 
+                maps to the primary key column of a database table. The property might have been called
+                anything, and its type might have been any primitive type, any primitive "wrapper" 
+                type, <code class="literal">java.lang.String</code> or <code class="literal">java.util.Date</code>. If 
+                your legacy database table has composite keys, you can use a user-defined class 
+                with properties of these types (see the section on composite identifiers later in the chapter.)
+            </p><p>
+                The identifier property is strictly optional. You can leave them off and let Hibernate 
+                keep track of object identifiers internally. We do not recommend this, however.
+            </p><p>
+                In fact, some functionality is available only to classes that declare an
+                identifier property:
+            </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                        Transitive reattachment for detached objects (cascade update or cascade
+                        merge) - see <a class="xref" href="objectstate.html#objectstate-transitive" title="10.11. Transitive persistence">Section 10.11, “Transitive persistence”</a>
+                    </p></li><li><p>
+                        <code class="literal">Session.saveOrUpdate()</code>
+                    </p></li><li><p>
+                        <code class="literal">Session.merge()</code>
+                    </p></li></ul></div><p>
+                We recommend that you declare consistently-named identifier properties on persistent
+                classes and that you use a nullable (i.e., non-primitive) type.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="persistent-classes-pojo-final"/>4.1.3. Prefer non-final classes (optional)</h3></div></div></div><p>
+                A central feature of Hibernate, <span class="emphasis"><em>proxies</em></span>, depends upon the
+                persistent class being either non-final, or the implementation of an interface
+                that declares all public methods.
+            </p><p>
+                You can persist <code class="literal">final</code> classes that do not implement an interface
+                with Hibernate. You will not, however, be able to use proxies for lazy association fetching which
+                will ultimately limit your options for performance tuning.
+            </p><p>
+                You should also avoid declaring <code class="literal">public final</code> methods on the 
+                non-final classes. If you want to use a class with a <code class="literal">public final</code> 
+                method, you must explicitly disable proxying by setting <code class="literal">lazy="false"</code>.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="persistent-classes-pojo-accessors"/>4.1.4. Declare accessors and mutators for persistent fields (optional)</h3></div></div></div><p>
+                <code class="literal">Cat</code> declares accessor methods for all its persistent fields.
+                Many other ORM tools directly persist instance variables. It is 
+                better to provide an indirection between the relational schema and internal
+                data structures of the class. By default, Hibernate persists JavaBeans style 
+                properties and recognizes method names of the form <code class="literal">getFoo</code>, 
+                <code class="literal">isFoo</code> and <code class="literal">setFoo</code>. If required, you can switch to direct 
+                field access for particular properties.
+            </p><p>
+                Properties need <span class="emphasis"><em>not</em></span> be declared public - Hibernate can
+                persist a property with a default, <code class="literal">protected</code> or 
+                <code class="literal">private</code> get / set pair.
+            </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="persistent-classes-inheritance"/>4.2. Implementing inheritance</h2></div></div></div><p>
+            A subclass must also observe the first and second rules. It inherits its
+            identifier property from the superclass, <code class="literal">Cat</code>. For example:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_keyword">package</span><!-- <br/> --><span class="java_plain">&nbsp;eg</span><!-- <br/> --><span class="java_separator">;</span>
+</span>
+<!--  --><br/><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_keyword">class</span><span class="java_plain">&nbsp;</span><span class="java_type">DomesticCat</span><span class="java_plain">&nbsp;</span><span class="java_keyword">extends</span><span class="java_plain">&nbsp;</span><span class="java_type">Cat</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;name</span><span class="java_separator">;</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;getName</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;name</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">protected</span><span class="java_plain">&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setName</span><span class="java_separator">(</span><span class="java_type">String</span><span class="java_plain">&nbsp;name</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">name</span><span class="java_operator">=</span><span class="java_plain">name</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_separator">}</span></pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="persistent-classes-equalshashcode"/>4.3. Implementing <code class="literal">equals()</code> and <code class="literal">hashCode()</code></h2></div></div></div><p>
+            You have to override the <code class="literal">equals()</code> and <code class="literal">hashCode()</code>
+            methods if you: 
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    intend to put instances of persistent classes in a <code class="literal">Set</code>
+                    (the recommended way to represent many-valued associations); 
+                    <span class="emphasis"><em>and</em></span>
+                </p></li><li><p>
+                    intend to use reattachment of detached instances
+                </p></li></ul></div><p>
+            Hibernate guarantees equivalence of persistent identity (database row) and Java identity
+            only inside a particular session scope. When you mix instances retrieved in
+            different sessions, you must implement <code class="literal">equals()</code> and
+            <code class="literal">hashCode()</code> if you wish to have meaningful semantics for
+            <code class="literal">Set</code>s.
+        </p><p>
+            The most obvious way is to implement <code class="literal">equals()</code>/<code class="literal">hashCode()</code>
+            by comparing the identifier value of both objects. If the value is the same, both must
+            be the same database row, because they are equal. If both are added to a <code class="literal">Set</code>,
+            you will only have one element in the <code class="literal">Set</code>). Unfortunately, you cannot use that
+            approach with generated identifiers. Hibernate will only assign identifier values to objects 
+            that are persistent; a newly created instance will not have any identifier value. Furthermore,
+            if an instance is unsaved and currently in a <code class="literal">Set</code>, saving it will assign
+            an identifier value to the object. If <code class="literal">equals()</code> and <code class="literal">hashCode()</code>
+            are based on the identifier value, the hash code would change, breaking the contract of the
+            <code class="literal">Set</code>. See the Hibernate website for a full discussion of this problem. This is not 
+	    a Hibernate issue, but normal Java semantics of object identity and equality.
+        </p><p>
+            It is recommended that you implement <code class="literal">equals()</code> and <code class="literal">hashCode()</code>
+            using <span class="emphasis"><em>Business key equality</em></span>. Business key equality means that the
+            <code class="literal">equals()</code> method compares only the properties that form the business
+            key. It is a key that would identify our instance in the real world (a
+            <span class="emphasis"><em>natural</em></span> candidate key):
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_keyword">public</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">{</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">...</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">boolean</span><span class="java_plain">&nbsp;equals</span><span class="java_separator">(</span><span class="java_type">Object</span><span class="java_plain">&nbsp;other</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_keyword">this</span><span class="java_plain">&nbsp;</span><span class="java_operator">==</span><span class="java_plain">&nbsp;other</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;</span><span class="java_literal">true</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_operator">!</span><span class="java_separator">(</span><span class="java_plain">other&nbsp;</span><span class="java_keyword">instanceof</span><span class="java_plain">&nbsp;</span><span class="java_type">Cat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;</span><span class="java_literal">false</span><span class="java_separator">;</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">final</span><span class="java_plain">&nbsp;</span><span class="java_type">Cat</span><span class="java_plain">&nbsp;cat&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;other</span><span class="java_separator">;</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_operator">!</span><span class="java_plain">cat</span><span class="java_separator">.</span><span class="java_plain">getLitterId</span><span class="java_separator">().</span><span class="java_plain">equals</span><span class="java_separator">(</span><span class="java_plain">&nbsp;getLitterId</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;</span><span class="java_literal">false</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_operator">!</span><span class="java_plain">cat</span><span class="java_separator">.</span><span class="java_plain">getMother</span><span class="java_separator">().</span><span class="java_plain">equals</span><span class="java_separator">(</span><span class="java_plain">&nbsp;getMother</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;</span><span class="java_literal">false</span><span class="java_separator">;</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;</span><span class="java_literal">true</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">int</span><span class="java_plain">&nbsp;hashCode</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">int</span><span class="java_plain">&nbsp;result</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;getMother</span><span class="java_separator">().</span><span class="java_plain">hashCode</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_literal">29</span><span class="java_plain">&nbsp;</span><span class="java_operator">*</span><span class="java_plain">&nbsp;result&nbsp;</span><span class="java_operator">+</span><span class="java_plain">&nbsp;getLitterId</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;result</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_separator">}</span></pre><p>
+            A business key does not have to be as solid as a database
+            primary key candidate (see <a class="xref" href="transactions.html#transactions-basics-identity" title="12.1.3. Considering object identity">Section 12.1.3, “Considering object identity”</a>).
+            Immutable or unique properties are usually good
+            candidates for a business key.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="persistent-classes-dynamicmodels"/>4.4. Dynamic models</h2></div></div></div><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="note"><h2>Note</h2><p>
+	 <span class="emphasis"><em>The following features are currently considered
+            experimental and may change in the near future.</em></span>
+	      
+	</p></div><p>
+            Persistent entities do not necessarily have to be represented as POJO classes
+            or as JavaBean objects at runtime. Hibernate also supports dynamic models
+            (using <code class="literal">Map</code>s of <code class="literal">Map</code>s at runtime) and the
+            representation of entities as DOM4J trees. With this approach, you do not
+            write persistent classes, only mapping files.
+        </p><p>
+            By default, Hibernate works in normal POJO mode. You can set a default entity
+            representation mode for a particular <code class="literal">SessionFactory</code> using the
+            <code class="literal">default_entity_mode</code> configuration option (see
+            <a class="xref" href="session-configuration.html#configuration-optional-properties" title="Table 3.3. Hibernate Configuration Properties">Table 3.3, “Hibernate Configuration Properties”</a>).
+        </p><p>
+            The following examples demonstrate the representation using <code class="literal">Map</code>s.
+            First, in the mapping file an <code class="literal">entity-name</code> has to be declared
+            instead of, or in addition to, a class name:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">entity-name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Customer&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;long&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;ID&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">generator</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sequence&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">id</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;name&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;NAME&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;string&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;address&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;ADDRESS&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;string&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">many-to-one</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;organization&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;ORGANIZATION_ID&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Organization&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">bag</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;orders&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">inverse</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">lazy</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;false&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">cascade</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;all&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;CUSTOMER_ID&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Order&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">bag</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+
+            Even though associations are declared using target class names,
+            the target type of associations can also be a dynamic entity instead
+            of a POJO.
+        </p><p>
+            After setting the default entity mode to <code class="literal">dynamic-map</code>
+            for the <code class="literal">SessionFactory</code>, you can, at runtime, work with
+            <code class="literal">Map</code>s of <code class="literal">Map</code>s:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Session</span><!-- <br/> --><span class="java_plain">&nbsp;s&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;openSession</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;s</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Create</span><span class="java_plain">&nbsp;a&nbsp;customer</span>
+<!--  --><br/><span class="java_type">Map</span><span class="java_plain">&nbsp;david&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">HashMap</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">david</span><span class="java_separator">.</span><span class="java_plain">put</span><span class="java_separator">(</span><span class="java_literal">&quot;name&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;David&quot;</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Create</span><span class="java_plain">&nbsp;an&nbsp;organization</span>
+<!--  --><br/><span class="java_type">Map</span><span class="java_plain">&nbsp;foobar&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">HashMap</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">foobar</span><span class="java_separator">.</span><span class="java_plain">put</span><span class="java_separator">(</span><span class="java_literal">&quot;name&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;Foobar&nbsp;Inc.&quot;</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Link</span><span class="java_plain">&nbsp;both</span>
+<!--  --><br/><span class="java_plain">david</span><span class="java_separator">.</span><span class="java_plain">put</span><span class="java_separator">(</span><span class="java_literal">&quot;organization&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;foobar</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Save</span><span class="java_plain">&nbsp;both</span>
+<!--  --><br/><span class="java_plain">s</span><span class="java_separator">.</span><span class="java_plain">save</span><span class="java_separator">(</span><span class="java_literal">&quot;Customer&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;david</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">s</span><span class="java_separator">.</span><span class="java_plain">save</span><span class="java_separator">(</span><span class="java_literal">&quot;Organization&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;foobar</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_plain">tx</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">s</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span></pre><p>
+            One of the main advantages of dynamic mapping is quick turnaround time for prototyping,
+            without the need for entity class implementation. However, you lose compile-time
+            type checking and will likely deal with many exceptions at runtime. As a result of
+            the Hibernate mapping, the database schema can easily be normalized and sound,
+            allowing to add a proper domain model implementation on top later on.
+        </p><p>
+            Entity representation modes can also be set on a per <code class="literal">Session</code>
+            basis:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Session</span><!-- <br/> --><span class="java_plain">&nbsp;dynamicSession&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;pojoSession</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">getSession</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">EntityMode</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">MAP</span><!-- <br/> --><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Create</span><span class="java_plain">&nbsp;a&nbsp;customer</span>
+<!--  --><br/><span class="java_type">Map</span><span class="java_plain">&nbsp;david&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">HashMap</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">david</span><span class="java_separator">.</span><span class="java_plain">put</span><span class="java_separator">(</span><span class="java_literal">&quot;name&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;David&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">dynamicSession</span><span class="java_separator">.</span><span class="java_plain">save</span><span class="java_separator">(</span><span class="java_literal">&quot;Customer&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;david</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_separator">...</span>
+<!--  --><br/><span class="java_plain">dynamicSession</span><span class="java_separator">.</span><span class="java_plain">flush</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">dynamicSession</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">()</span>
+<!--  --><br/><span class="java_separator">...</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Continue</span><span class="java_plain">&nbsp;on&nbsp;pojoSession</span>
+</pre><p>
+            Please note that the call to <code class="literal">getSession()</code> using an
+            <code class="literal">EntityMode</code> is on the <code class="literal">Session</code> API, not the
+            <code class="literal">SessionFactory</code>. That way, the new <code class="literal">Session</code>
+            shares the underlying JDBC connection, transaction, and other context
+            information. This means you do not have to call <code class="literal">flush()</code>
+            and <code class="literal">close()</code> on the secondary <code class="literal">Session</code>, and
+            also leave the transaction and connection handling to the primary unit of work.
+        </p><p>
+            More information about the XML representation capabilities can be found
+            in <a class="xref" href="xml.html" title="Chapter 19. XML Mapping">Chapter 19, <i>XML Mapping</i></a>.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="persistent-classes-tuplizers"/>4.5. Tuplizers</h2></div></div></div><p>
+            <code class="literal">org.hibernate.tuple.Tuplizer</code>, and its sub-interfaces, are responsible
+            for managing a particular representation of a piece of data given that representation's
+            <code class="literal">org.hibernate.EntityMode</code>.  If a given piece of data is thought of as
+            a data structure, then a tuplizer is the thing that knows how to create such a data structure
+            and how to extract values from and inject values into such a data structure.  For example,
+            for the POJO entity mode, the corresponding tuplizer knows how create the POJO through its
+            constructor. It also knows how to access the POJO properties using the defined property accessors.
+        </p><p> 
+	    There are two high-level types of Tuplizers, represented by the
+            <code class="literal">org.hibernate.tuple.entity.EntityTuplizer</code> and <code class="literal">org.hibernate.tuple.component.ComponentTuplizer</code>
+            interfaces.  <code class="literal">EntityTuplizer</code>s are responsible for managing the above mentioned
+            contracts in regards to entities, while <code class="literal">ComponentTuplizer</code>s do the same for
+            components.
+        </p><p>
+            Users can also plug in their own tuplizers.  Perhaps you require that a <code class="literal">java.util.Map</code>
+            implementation other than <code class="literal">java.util.HashMap</code> be used while in the
+            dynamic-map entity-mode. Or perhaps you need to define a different proxy generation strategy
+            than the one used by default.  Both would be achieved by defining a custom tuplizer
+            implementation.  Tuplizer definitions are attached to the entity or component mapping they
+            are meant to manage.  Going back to the example of our customer entity:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">entity-name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Customer&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_comment">&lt;!--</span><span class="xml_plain"></span><br />
+<span class="xml_comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Override&nbsp;the&nbsp;dynamic-map&nbsp;entity-mode</span><span class="xml_plain"></span><br />
+<span class="xml_comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tuplizer&nbsp;for&nbsp;the&nbsp;customer&nbsp;entity</span><span class="xml_plain"></span><br />
+<span class="xml_comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">tuplizer</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">entity-mode</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;dynamic-map&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;CustomMapTuplizerImpl&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;long&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;ID&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">generator</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sequence&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">id</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_comment">&lt;!--&nbsp;other&nbsp;properties&nbsp;--&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">public&nbsp;class&nbsp;CustomMapTuplizerImpl</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;extends&nbsp;org.hibernate.tuple.entity.DynamicMapEntityTuplizer&nbsp;{</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;override&nbsp;the&nbsp;buildInstantiator()&nbsp;method&nbsp;to&nbsp;plug&nbsp;in&nbsp;our&nbsp;custom&nbsp;map...</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;final&nbsp;Instantiator&nbsp;buildInstantiator(</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;org.hibernate.mapping.PersistentClass&nbsp;mappingInfo)&nbsp;{</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;new&nbsp;CustomMapInstantiator(&nbsp;mappingInfo&nbsp;);</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;}</span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;static&nbsp;final&nbsp;class&nbsp;CustomMapInstantiator</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;extends&nbsp;org.hibernate.tuple.DynamicMapInstantitor&nbsp;{</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;override&nbsp;the&nbsp;generateMap()&nbsp;method&nbsp;to&nbsp;return&nbsp;our&nbsp;custom&nbsp;map...</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;final&nbsp;Map&nbsp;generateMap()&nbsp;{</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;new&nbsp;CustomMap();</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;}</span><br />
+<span class="xml_plain">}</span><br />
+</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="persistent-classes-entity-name-resolver"/>4.6. EntityNameResolvers</h2></div></div></div><p>
+            The <code class="interfacename">org.hibernate.EntityNameResolver</code> interface is a contract for resolving the
+            entity name of a given entity instance.  The interface defines a single method <code class="methodname">resolveEntityName</code>
+            which is passed the entity instance and is expected to return the appropriate entity name (null is allowed and
+            would indicate that the resolver does not know how to resolve the entity name of the given entity instance).
+            Generally speaking, an <code class="interfacename">org.hibernate.EntityNameResolver</code> is going to be most
+            useful in the case of dynamic models.  One example might be using proxied interfaces as your domain model.  The
+            hibernate test suite has an example of this exact style of usage under the
+            <span class="package">org.hibernate.test.dynamicentity.tuplizer2</span>.  Here is some of the code from that package
+            for illustration.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"></span>
+<!--  --><br/><span class="java_javadoc_comment">/**</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*&nbsp;A&nbsp;very&nbsp;trivial&nbsp;JDK&nbsp;Proxy&nbsp;InvocationHandler&nbsp;implementation&nbsp;where&nbsp;we&nbsp;proxy&nbsp;an&nbsp;interface&nbsp;as</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*&nbsp;the&nbsp;domain&nbsp;model&nbsp;and&nbsp;simply&nbsp;store&nbsp;persistent&nbsp;state&nbsp;in&nbsp;an&nbsp;internal&nbsp;Map.&nbsp;&nbsp;This&nbsp;is&nbsp;an&nbsp;extremely</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*&nbsp;trivial&nbsp;example&nbsp;meant&nbsp;only&nbsp;for&nbsp;illustration.</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*/</span>
+<!--  --><br/><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_keyword">final</span><span class="java_plain">&nbsp;</span><span class="java_keyword">class</span><span class="java_plain">&nbsp;</span><span class="java_type">DataProxyHandler</span><span class="java_plain">&nbsp;</span><span class="java_keyword">implements</span><span class="java_plain">&nbsp;</span><span class="java_type">InvocationHandler</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;entityName</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">HashMap</span><span class="java_plain">&nbsp;data&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">HashMap</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">DataProxyHandler</span><span class="java_separator">(</span><span class="java_type">String</span><span class="java_plain">&nbsp;entityName</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">Serializable</span><span class="java_plain">&nbsp;id</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">entityName&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;entityName</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data</span><span class="java_separator">.</span><span class="java_plain">put</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;Id&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;id&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">Object</span><span class="java_plain">&nbsp;invoke</span><span class="java_separator">(</span><span class="java_type">Object</span><span class="java_plain">&nbsp;proxy</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">Method</span><span class="java_plain">&nbsp;method</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">Object</span><span class="java_separator">[]</span><span class="java_plain">&nbsp;args</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_keyword">throws</span><span class="java_plain">&nbsp;</span><span class="java_type">Throwable</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;methodName&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;method</span><span class="java_separator">.</span><span class="java_plain">getName</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;methodName</span><span class="java_separator">.</span><span class="java_plain">startsWith</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;set&quot;</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;propertyName&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;methodName</span><span class="java_separator">.</span><span class="java_plain">substring</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">3</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data</span><span class="java_separator">.</span><span class="java_plain">put</span><span class="java_separator">(</span><span class="java_plain">&nbsp;propertyName</span><span class="java_separator">,</span><span class="java_plain">&nbsp;args</span><span class="java_separator">[</span><span class="java_literal">0</span><span class="java_separator">]</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">else</span><span class="java_plain">&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;methodName</span><span class="java_separator">.</span><span class="java_plain">startsWith</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;get&quot;</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;propertyName&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;methodName</span><span class="java_separator">.</span><span class="java_plain">substring</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">3</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;data</span><span class="java_separator">.</span><span class="java_plain">get</span><span class="java_separator">(</span><span class="java_plain">&nbsp;propertyName&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">else</span><span class="java_plain">&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;toString&quot;</span><span class="java_separator">.</span><span class="java_plain">equals</span><span class="java_separator">(</span><span class="java_plain">&nbsp;methodName&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;entityName&nbsp;</span><span class="java_operator">+</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;#&quot;</span><span class="java_plain">&nbsp;</span><span class="java_operator">+</span><span class="java_plain">&nbsp;data</span><span class="java_separator">.</span><span class="java_plain">get</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;Id&quot;</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">else</span><span class="java_plain">&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;hashCode&quot;</span><span class="java_separator">.</span><span class="java_plain">equals</span><span class="java_separator">(</span><span class="java_plain">&nbsp;methodName&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">Integer</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">hashCode</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;</span><span class="java_literal">null</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;getEntityName</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;entityName</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">HashMap</span><span class="java_plain">&nbsp;getData</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;data</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_javadoc_comment">/**</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*/</span>
+<!--  --><br/><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_keyword">class</span><span class="java_plain">&nbsp;</span><span class="java_type">ProxyHelper</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_keyword">static</span><span class="java_plain">&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;extractEntityName</span><span class="java_separator">(</span><span class="java_type">Object</span><span class="java_plain">&nbsp;object</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Our</span><span class="java_plain">&nbsp;custom&nbsp;java</span><span class="java_separator">.</span><span class="java_plain">lang</span><span class="java_separator">.</span><span class="java_plain">reflect</span><span class="java_separator">.</span><span class="java_type">Proxy</span><span class="java_plain">&nbsp;instances&nbsp;actually&nbsp;bundle</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;their&nbsp;appropriate&nbsp;entity&nbsp;name</span><span class="java_separator">,</span><span class="java_plain">&nbsp;so&nbsp;we&nbsp;simply&nbsp;extract&nbsp;it&nbsp;from&nbsp;there</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_keyword">this</span><span class="java_plain">&nbsp;represents&nbsp;one&nbsp;of&nbsp;our&nbsp;proxies</span><span class="java_separator">;</span><span class="java_plain">&nbsp;otherwise</span><span class="java_separator">,</span><span class="java_plain">&nbsp;we&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;</span><span class="java_literal">null</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_type">Proxy</span><span class="java_separator">.</span><span class="java_plain">isProxyClass</span><span class="java_separator">(</span><span class="java_plain">&nbsp;object</span><span class="java_separator">.</span><span class="java_plain">getClass</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">InvocationHandler</span><span class="java_plain">&nbsp;handler&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_type">Proxy</span><span class="java_separator">.</span><span class="java_plain">getInvocationHandler</span><span class="java_separator">(</span><span class="java_plain">&nbsp;object&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_type">DataProxyHandler</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">.</span><span class="java_plain">isAssignableFrom</span><span class="java_separator">(</span><span class="java_plain">&nbsp;handler</span><span class="java_separator">.</span><span class="java_plain">getClass</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">DataProxyHandler</span><span class="java_plain">&nbsp;myHandler&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_type">DataProxyHandler</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;handler</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;myHandler</span><span class="java_separator">.</span><span class="java_plain">getEntityName</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;</span><span class="java_literal">null</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;various&nbsp;other&nbsp;utility&nbsp;methods&nbsp;</span><span class="java_separator">....</span>
+</span>
+<!--  --><br/><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_javadoc_comment">/**</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*&nbsp;The&nbsp;EntityNameResolver&nbsp;implementation.</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*&nbsp;IMPL&nbsp;NOTE&nbsp;:&nbsp;An&nbsp;EntityNameResolver&nbsp;really&nbsp;defines&nbsp;a&nbsp;strategy&nbsp;for&nbsp;how&nbsp;entity&nbsp;names&nbsp;should&nbsp;be</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*&nbsp;resolved.&nbsp;&nbsp;Since&nbsp;this&nbsp;particular&nbsp;impl&nbsp;can&nbsp;handle&nbsp;resolution&nbsp;for&nbsp;all&nbsp;of&nbsp;our&nbsp;entities&nbsp;we&nbsp;want&nbsp;to</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*&nbsp;take&nbsp;advantage&nbsp;of&nbsp;the&nbsp;fact&nbsp;that&nbsp;SessionFactoryImpl&nbsp;keeps&nbsp;these&nbsp;in&nbsp;a&nbsp;Set&nbsp;so&nbsp;that&nbsp;we&nbsp;only&nbsp;ever</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*&nbsp;have&nbsp;one&nbsp;instance&nbsp;registered.&nbsp;&nbsp;Why?&nbsp;&nbsp;Well,&nbsp;when&nbsp;it&nbsp;comes&nbsp;time&nbsp;to&nbsp;resolve&nbsp;an&nbsp;entity&nbsp;name,</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*&nbsp;Hibernate&nbsp;must&nbsp;iterate&nbsp;over&nbsp;all&nbsp;the&nbsp;registered&nbsp;resolvers.&nbsp;&nbsp;So&nbsp;keeping&nbsp;that&nbsp;number&nbsp;down</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*&nbsp;helps&nbsp;that&nbsp;process&nbsp;be&nbsp;as&nbsp;speedy&nbsp;as&nbsp;possible.&nbsp;&nbsp;Hence&nbsp;the&nbsp;equals&nbsp;and&nbsp;hashCode&nbsp;impls</span>
+<!--  --><br/><span class="java_javadoc_comment">&nbsp;*/</span>
+<!--  --><br/><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_keyword">class</span><span class="java_plain">&nbsp;</span><span class="java_type">MyEntityNameResolver</span><span class="java_plain">&nbsp;</span><span class="java_keyword">implements</span><span class="java_plain">&nbsp;</span><span class="java_type">EntityNameResolver</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_keyword">static</span><span class="java_plain">&nbsp;</span><span class="java_keyword">final</span><span class="java_plain">&nbsp;</span><span class="java_type">MyEntityNameResolver</span><span class="java_plain">&nbsp;INSTANCE&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">MyEntityNameResolver</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;resolveEntityName</span><span class="java_separator">(</span><span class="java_type">Object</span><span class="java_plain">&nbsp;entity</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;</span><span class="java_type">ProxyHelper</span><span class="java_separator">.</span><span class="java_plain">extractEntityName</span><span class="java_separator">(</span><span class="java_plain">&nbsp;entity&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">boolean</span><span class="java_plain">&nbsp;equals</span><span class="java_separator">(</span><span class="java_type">Object</span><span class="java_plain">&nbsp;obj</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;getClass</span><span class="java_separator">().</span><span class="java_plain">equals</span><span class="java_separator">(</span><span class="java_plain">&nbsp;obj</span><span class="java_separator">.</span><span class="java_plain">getClass</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">int</span><span class="java_plain">&nbsp;hashCode</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;getClass</span><span class="java_separator">().</span><span class="java_plain">hashCode</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_keyword">class</span><span class="java_plain">&nbsp;</span><span class="java_type">MyEntityTuplizer</span><span class="java_plain">&nbsp;</span><span class="java_keyword">extends</span><span class="java_plain">&nbsp;</span><span class="java_type">PojoEntityTuplizer</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">MyEntityTuplizer</span><span class="java_separator">(</span><span class="java_type">EntityMetamodel</span><span class="java_plain">&nbsp;entityMetamodel</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">PersistentClass</span><span class="java_plain">&nbsp;mappedEntity</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">super</span><span class="java_separator">(</span><span class="java_plain">&nbsp;entityMetamodel</span><span class="java_separator">,</span><span class="java_plain">&nbsp;mappedEntity&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">EntityNameResolver</span><span class="java_separator">[]</span><span class="java_plain">&nbsp;getEntityNameResolvers</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">EntityNameResolver</span><span class="java_separator">[]</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span><span class="java_plain">&nbsp;</span><span class="java_type">MyEntityNameResolver</span><span class="java_separator">.</span><span class="java_plain">INSTANCE&nbsp;</span><span class="java_separator">};</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;determineConcreteSubclassEntityName</span><span class="java_separator">(</span><span class="java_type">Object</span><span class="java_plain">&nbsp;entityInstance</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">SessionFactoryImplementor</span><span class="java_plain">&nbsp;factory</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;entityName&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_type">ProxyHelper</span><span class="java_separator">.</span><span class="java_plain">extractEntityName</span><span class="java_separator">(</span><span class="java_plain">&nbsp;entityInstance&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;entityName&nbsp;</span><span class="java_operator">==</span><span class="java_plain">&nbsp;</span><span class="java_literal">null</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entityName&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">super</span><span class="java_separator">.</span><span class="java_plain">determineConcreteSubclassEntityName</span><span class="java_separator">(</span><span class="java_plain">&nbsp;entityInstance</span><span class="java_separator">,</span><span class="java_plain">&nbsp;factory&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;entityName</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">...</span>
+<!--  --><br/><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></pre><p>
+            In order to register an <code class="interfacename">org.hibernate.EntityNameResolver</code> users must either:
+            </p><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="orderedlist"><ol><li><p>
+                        Implement a custom <a class="link" href="persistent-classes.html#persistent-classes-tuplizers" title="4.5. Tuplizers">Tuplizer</a>, implementing
+                        the <code class="methodname">getEntityNameResolvers</code> method.
+                    </p></li><li><p>
+                        Register it with the <code class="classname">org.hibernate.impl.SessionFactoryImpl</code> (which is the
+                        implementation class for <code class="interfacename">org.hibernate.SessionFactory</code>) using the
+                        <code class="methodname">registerEntityNameResolver</code> method.
+                    </p></li></ol></div><p>
+        </p></div></div><HR xmlns=""/><a xmlns="" href="legalnotice.html"><p xmlns="http://www.w3.org/1999/xhtml" class="copyright">Copyright © 2004 Red Hat, Inc.</p></a><ul class="docnav"><li class="previous"><a accesskey="p" href="session-configuration.html"><strong>Prev</strong>Chapter 3. Configuration</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="mapping.html"><strong>Next</strong>Chapter 5. Basic O/R Mapping</a></li></ul></body></html>

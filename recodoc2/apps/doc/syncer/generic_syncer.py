@@ -78,13 +78,14 @@ class GenericSyncer(object):
         local_url = self.make_copy(get_url_without_hash(url))
 
         local_page = urllib2.urlopen(local_url)
-        parser = etree.HTMLParser(encoding=get_encoding(local_page, local_url))
-        tree = etree.parse(local_page, parser)
+        content = local_page.read()
+        local_page.close()
+        parser = etree.HTMLParser(encoding=get_encoding(content))
+        tree = etree.fromstring(content, parser)
 
         links = self.process_page_links(tree, local_url, url)
         self.process_page_imgs(tree, url)
 
-        local_page.close()
         page = DocumentPage(url, local_url, links)
 
         return page

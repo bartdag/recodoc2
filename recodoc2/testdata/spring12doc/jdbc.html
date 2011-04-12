@@ -1,0 +1,503 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;11.&nbsp;Data Access using JDBC</title><link rel="stylesheet" href="../styles/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><link rel="home" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="up" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="previous" href="dao.html" title="Chapter&nbsp;10.&nbsp;DAO support"><link rel="next" href="orm.html" title="Chapter&nbsp;12.&nbsp;Data Access using O/R Mappers"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;11.&nbsp;Data Access using JDBC</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="dao.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="orm.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="jdbc"></a>Chapter&nbsp;11.&nbsp;Data Access using JDBC</h2></div></div><div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="jdbc-introduction"></a>11.1.&nbsp;Introduction</h2></div></div><div></div></div><p>The JDBC abstraction framework provided by Spring consists of four
+    different packages <tt class="literal">core</tt>, <tt class="literal">datasource</tt>,
+    <tt class="literal">object</tt>, and <tt class="literal">support</tt>.</p><p>The <tt class="literal">org.springframework.jdbc.core</tt> package
+    contains the JdbcTemplate class and its various callback interfaces, plus
+    a variety of related classes.</p><p>The <tt class="literal">org.springframework.jdbc.datasource</tt> package
+    contains a utility class for easy DataSource access, and various simple
+    DataSource implementations that can be used for testing and running
+    unmodified JDBC code outside of a J2EE container. The utility class
+    provides static methods to obtain connections from JNDI and to close
+    connections if necessary. It has support for thread-bound connections,
+    e.g. for use with DataSourceTransactionManager.</p><p>Next, the <tt class="literal">org.springframework.jdbc.object</tt> package
+    contains classes that represent RDBMS queries, updates, and stored
+    procedures as thread safe, reusable objects. This approach is modeled by
+    JDO, although of course objects returned by queries are
+    &#8220;<span class="quote">disconnected</span>&#8221; from the database. This higher level of JDBC
+    abstraction depends on the lower-level abstraction in the
+    <tt class="literal">org.springframework.jdbc.core</tt> package.</p><p>Finally the <tt class="literal">org.springframework.jdbc.support</tt>
+    package is where you find the <tt class="literal">SQLException</tt> translation
+    functionality and some utility classes.</p><p>Exceptions thrown during JDBC processing are translated to
+    exceptions defined in the <tt class="literal">org.springframework.dao</tt>
+    package. This means that code using the Spring JDBC abstraction layer does
+    not need to implement JDBC or RDBMS-specific error handling. All
+    translated exceptions are unchecked giving you the option of catching the
+    exceptions that you can recover from while allowing other exceptions to be
+    propagated to the caller.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="jdbc-core"></a>11.2.&nbsp;Using the JDBC Core classes to control basic JDBC processing and
+    error handling</h2></div></div><div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-JdbcTemplate"></a>11.2.1.&nbsp;JdbcTemplate</h3></div></div><div></div></div><p>This is the central class in the JDBC core package. It simplifies
+      the use of JDBC since it handles the creation and release of resources.
+      This helps to avoid common errors like forgetting to always close the
+      connection. It executes the core JDBC workflow like statement creation
+      and execution, leaving application code to provide SQL and extract
+      results. This class executes SQL queries, update statements or stored
+      procedure calls, imitating iteration over ResultSets and extraction of
+      returned parameter values. It also catches JDBC exceptions and
+      translates them to the generic, more informative, exception hierarchy
+      defined in the <tt class="literal">org.springframework.dao</tt>
+      package.</p><p>Code using this class only need to implement callback interfaces,
+      giving them a clearly defined contract. The
+      <tt class="literal">PreparedStatementCreator</tt> callback interface creates a
+      prepared statement given a Connection provided by this class, providing
+      SQL and any necessary parameters. The same is true for the
+      <tt class="literal">CallableStatementCreator</tt> interface which creates
+      callable statement. The <tt class="literal">RowCallbackHandler</tt> interface
+      extracts values from each row of a ResultSet.</p><p>This class can be used within a service implementation via direct
+      instantiation with a DataSource reference, or get prepared in an
+      application context and given to services as bean reference. Note: The
+      DataSource should always be configured as a bean in the application
+      context, in the first case given to the service directly, in the second
+      case to the prepared template. Because this class is parameterizable by
+      the callback interfaces and the SQLExceptionTranslator interface, it
+      isn't necessary to subclass it. All SQL issued by this class is
+      logged.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e6886"></a>11.2.2.&nbsp;DataSource</h3></div></div><div></div></div><p>In order to work with data from a database, we need to obtain a
+      connection to the database. The way Spring does this is through a
+      <tt class="literal">DataSource</tt>. A <tt class="literal">DataSource</tt> is part
+      of the JDBC specification and can be seen as a generalized connection
+      factory. It allows a container or a framework to hide connection pooling
+      and transaction management issues from the application code. As a
+      developer, you don't need to know any details about how to connect to
+      the database, that is the responsibility for the administrator that sets
+      up the datasource. You will most likely have to fulfill both roles while
+      you are developing and testing you code though, but you will not
+      necessarily have to know how the production data source is
+      configured.</p><p>When using Spring's JDBC layer, you can either obtain a data
+      source from JNDI or you can configure your own, using an implementation
+      that is provided in the Spring distribution. The latter comes in handy
+      for unit testing outside of a web container. We will use the
+      <tt class="literal">DriverManagerDataSource</tt> implementation for this
+      section but there are several additional implementations that will be
+      covered later on. The <tt class="literal">DriverManagerDataSource</tt> works
+      the same way that you probably are used to work when you obtain a JDBC
+      connection. You have to specify the fully qualified class name of the
+      JDBC driver that you are using so that the
+      <tt class="literal">DriverManager</tt> can load the driver class. Then you
+      have to provide a url that varies between JDBC drivers. You have to
+      consult the documentation for your driver for the correct value to use
+      here. Finally you must provide a username and a password that will be
+      used to connect to the database. Here is an example of how to configure
+      a <tt class="literal">DriverManagerDataSource:</tt></p><pre class="programlisting">DriverManagerDataSource dataSource = new DriverManagerDataSource();
+dataSource.setDriverClassName( "org.hsqldb.jdbcDriver");
+dataSource.setUrl( "jdbc:hsqldb:hsql://localhost:");
+dataSource.setUsername( "sa");
+dataSource.setPassword( ""); </pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-SQLExceptionTranslator"></a>11.2.3.&nbsp;SQLExceptionTranslator</h3></div></div><div></div></div><p><tt class="literal">SQLExceptionTranslator</tt> is an interface to be
+      implemented by classes that can translate between SQLExceptions and our
+      data access strategy-agnostic
+      <tt class="literal">org.springframework.dao.DataAccessException</tt>.</p><p>Implementations can be generic (for example, using SQLState codes
+      for JDBC) or proprietary (for example, using Oracle error codes) for
+      greater precision.</p><p><tt class="literal">SQLErrorCodeSQLExceptionTranslator</tt> is the
+      implementation of SQLExceptionTranslator that is used by default. This
+      implementation uses specific vendor codes. More precise than
+      <tt class="literal">SQLState</tt> implementation, but vendor specific. The
+      error code translations are based on codes held in a JavaBean type class
+      named <tt class="literal">SQLErrorCodes</tt>. This class is created and
+      populated by an <tt class="literal">SQLErrorCodesFactory</tt> which as the
+      name suggests is a factory for creating <tt class="literal">SQLErrorCodes</tt>
+      based on the contents of a configuration file named
+      "sql-error-codes.xml". This file is populated with vendor codes and
+      based on the DatabaseProductName taken from the DatabaseMetaData, the
+      codes for the current database are used.</p><p>The <tt class="literal">SQLErrorCodeSQLExceptionTranslator</tt> applies
+      the following matching rules:</p><div class="itemizedlist"><ul type="disc" compact><li><p>Try custom translation implemented by any subclass. Note
+            that this class is concrete and is typically used itself, in which
+            case this rule doesn't apply.</p></li><li><p>Apply error code matching. Error codes are obtained from the
+            SQLErrorCodesFactory by default. This looks up error codes from
+            the classpath and keys into them from the database name from the
+            database metadata.</p></li><li><p>Use the fallback translator. SQLStateSQLExceptionTranslator
+            is the default fallback translator.</p></li></ul></div><p><tt class="literal">SQLErrorCodeSQLExceptionTranslator</tt> can be
+      extended the following way: </p><pre class="programlisting">public class MySQLErrorCodesTranslator extends SQLErrorCodeSQLExceptionTranslator {
+    protected DataAccessException customTranslate(String task, String sql, SQLException sqlex) {
+        if (sqlex.getErrorCode() == -12345)
+            return new DeadlockLoserDataAccessException(task, sqlex);
+        return null;
+    }
+}</pre><p>In this example the specific error code '-12345' is
+      translated and any other errors are simply left to be translated by the
+      default translator implementation. To use this custom translator, it is
+      necessary to pass it to the <tt class="literal">JdbcTemplate</tt> using the
+      method <tt class="literal">setExceptionTranslator</tt> and to use this
+      <tt class="literal">JdbcTemplate</tt> for all of the data access processing
+      where this translator is needed. Here is an example of how this custom
+      translator can be used: </p><pre class="programlisting">// create a JdbcTemplate and set data source 
+JdbcTemplate jt = new JdbcTemplate(); 
+jt.setDataSource(dataSource); 
+// create a custom translator and set the datasource for the default translation lookup 
+MySQLErrorCodesTransalator tr = new MySQLErrorCodesTransalator(); 
+tr.setDataSource(dataSource); 
+jt.setExceptionTranslator(tr); 
+// use the JdbcTemplate for this SqlUpdate 
+SqlUpdate su = new SqlUpdate(); 
+su.setJdbcTemplate(jt); 
+su.setSql("update orders set shipping_charge = shipping_charge * 1.05"); 
+su.compile(); 
+su.update();</pre><p>The custom translator is passed a data source
+      because we still want the default translation to look up the error codes
+      in <tt class="literal">sql-error-codes.xml</tt>.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e6977"></a>11.2.4.&nbsp;Executing Statements</h3></div></div><div></div></div><p>To execute an SQL statement, there is very little code needed. All
+      you need is a <tt class="literal">DataSource</tt> and a
+      <tt class="literal">JdbcTemplate</tt>. Once you have that, you can use a
+      number of convenience methods that are provided with the
+      <tt class="literal">JdbcTemplate</tt>. Here is a short example showing what
+      you need to include for a minimal but fully functional class that
+      creates a new table.</p><pre class="programlisting">import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+public class ExecuteAStatement {
+
+    private JdbcTemplate jt;
+    private DataSource dataSource;
+
+    public void doExecute() {
+        jt = new JdbcTemplate(dataSource);
+        jt.execute("create table mytable (id integer, name varchar(100))"); 
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+}</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e6993"></a>11.2.5.&nbsp;Running Queries</h3></div></div><div></div></div><p>In addition to the execute methods, there is a large number of
+      query methods. Some of these methods are intended to be used for queries
+      that return a single value. Maybe you want to retrieve a count or a
+      specific value from one row. If that is the case then you can use
+      <tt class="literal">queryForInt</tt>,<tt class="literal">queryForLong</tt> or
+      <tt class="literal">queryForObject</tt>. The latter will convert the returned
+      JDBC Type to the Java class that is passed in as an argument. If the
+      type conversion is invalid, then an
+      <tt class="literal">InvalidDataAccessApiUsageException</tt> will be thrown.
+      Here is an example that contains two query methods, one for an
+      <tt class="literal">int</tt> and one that queries for a
+      <tt class="literal">String</tt>.</p><pre class="programlisting">import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+public class RunAQuery {
+
+    private JdbcTemplate jt;
+    private DataSource dataSource;
+  
+    public int getCount() {
+        jt = new JdbcTemplate(dataSource);
+        int count = jt.queryForInt("select count(*) from mytable");
+        return count;
+    }
+
+    public String getName() {
+        jt = new JdbcTemplate(dataSource);
+        String name = (String) jt.queryForObject("select name from mytable", String.class);
+        return name;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+}</pre><p>In addition to the single results query methods there are several
+      methods that return a List with an entry for each row that the query
+      returned. The most generic one is <tt class="literal">queryForList</tt> which
+      returns a <tt class="literal">List</tt> where each entry is a
+      <tt class="literal">Map</tt> with each entry in the map representing the
+      column value for that row. If we add a method to the above example to
+      retrieve a list of all the rows, it would look like this:</p><pre class="programlisting">    public List getList() {
+        jt = new JdbcTemplate(dataSource);
+        List rows = jt.queryForList("select * from mytable");
+        return rows;
+    }</pre><p>The list returned would look something like this:
+      <tt class="literal">[{name=Bob, id=1}, {name=Mary, id=2}].</tt></p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e7035"></a>11.2.6.&nbsp;Updating the database</h3></div></div><div></div></div><p>There are also a number of update methods that you can use. I will
+      show an example where we update a column for a certain primary key. In
+      this example I am using an SQL statement that has place holders for row
+      parameters. Most of the query and update methods have this
+      functionality. The parameter values are passed in as an array of
+      objects.</p><pre class="programlisting">import javax.sql.DataSource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+
+public class ExecuteAnUpdate {
+
+    private JdbcTemplate jt;
+    private DataSource dataSource;
+
+    public void setName(int id, String name) {
+        jt = new JdbcTemplate(dataSource);
+        jt.update("update mytable set name = ? where id = ?", new Object[] {name, new Integer(id)});
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+}</pre><p></p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="jdbc-datasource"></a>11.3.&nbsp;Controlling how we connect to the database</h2></div></div><div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-DataSourceUtils"></a>11.3.1.&nbsp;DataSourceUtils</h3></div></div><div></div></div><p>Helper class that provides static methods to obtain connections
+      from JNDI and close connections if necessary. Has support for
+      thread-bound connections, e.g. for use with
+      <tt class="literal">DataSourceTransactionManager</tt>.</p><p>Note: The <tt class="literal">getDataSourceFromJndi</tt> methods are
+      targeted at applications that do not use a bean factory or application
+      context. With the latter, it is preferable to preconfigure your beans or
+      even <tt class="literal"><tt class="literal">JdbcTemplate</tt></tt> instances in the
+      factory: <tt class="literal">JndiObjectFactoryBean</tt> can be used to fetch a
+      <tt class="literal"><tt class="literal">DataSource</tt></tt> from JNDI and give the
+      <tt class="literal"><tt class="literal">DataSource</tt></tt> bean reference to other
+      beans. Switching to another
+      <tt class="literal"><tt class="literal">DataSource</tt></tt> is just a matter of
+      configuration then: You can even replace the definition of the
+      <tt class="literal">FactoryBean</tt> with a non-JNDI
+      <tt class="literal"><tt class="literal">DataSource</tt></tt>!</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-SmartDataSource"></a>11.3.2.&nbsp;SmartDataSource</h3></div></div><div></div></div><p>Interface to be implemented by classes that can provide a
+      connection to a relational database. Extends the
+      <tt class="literal">javax.sql.DataSource</tt> interface to allow classes using
+      it to query whether or not the connection should be closed after a given
+      operation. This can sometimes be useful for efficiency, if we know that
+      we want to reuse a connection.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-AbstractDataSource"></a>11.3.3.&nbsp;AbstractDataSource</h3></div></div><div></div></div><p>Abstract base class for Spring's <tt class="literal">DataSource</tt>
+      implementations, taking care of the "uninteresting" glue. This is the
+      class you would extend if you are writing your own
+      <tt class="literal">DataSource</tt> implementation.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-SingleConnectionDataSource"></a>11.3.4.&nbsp;SingleConnectionDataSource</h3></div></div><div></div></div><p>Implementation of <tt class="literal">SmartDataSource</tt> that wraps a
+      single connection which is not closed after use. Obviously, this is not
+      multi-threading capable.</p><p>If client code will call close in the assumption of a pooled
+      connection, like when using persistence tools, set
+      <tt class="literal">suppressClose</tt> to true. This will return a
+      close-suppressing proxy instead of the physical connection. Be aware
+      that you will not be able to cast this to a native Oracle Connection or
+      the like anymore.</p><p>This is primarily a test class. For example, it enables easy
+      testing of code outside an application server, in conjunction with a
+      simple JNDI environment. In contrast to
+      <tt class="literal">DriverManagerDataSource</tt>, it reuses the same
+      connection all the time, avoiding excessive creation of physical
+      connections.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-DriverManagerDataSource"></a>11.3.5.&nbsp;DriverManagerDataSource</h3></div></div><div></div></div><p>Implementation of <tt class="literal">SmartDataSource</tt> that
+      configures a plain old JDBC Driver via bean properties, and returns a
+      new connection every time.</p><p>This is Potentially useful for test or standalone environments
+      outside of a J2EE container, either as a <tt class="literal">DataSource</tt>
+      bean in a respective ApplicationContext, or in conjunction with a simple
+      JNDI environment. Pool-assuming <tt class="literal">Connection.close()</tt>
+      calls will simply close the connection, so any DataSource-aware
+      persistence code should work. However, using JavaBean style connection
+      pools such as commons-dbcp is so easy, even in a test environment, that
+      it is almost always preferable to use such a connection pool over
+      <tt class="literal">DriverManagerDataSource</tt>.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-TransactionAwareDataSourceProxy"></a>11.3.6.&nbsp;TransactionAwareDataSourceProxy</h3></div></div><div></div></div><p>This is a proxy for a target <tt class="literal">DataSource</tt>, which
+      wraps that target <tt class="literal">DataSource</tt> to add awareness of
+      Spring-managed transactions. In this respect it is similar to a
+      transactional JNDI <tt class="literal">DataSource</tt> as provided by a J2EE
+      server.</p><p>It should almost never be necessary or desireable to use this
+      class, except when existing code exists which must be called and passed
+      a standard JDBC <tt class="literal">DataSource</tt> interface implementation.
+      In this case, it's possible to still have this code be usable, but
+      participating in Spring managed transactions. It is generally preferable
+      to write your own new code using the higher level abstractions for
+      resource management, such as <tt class="literal">JdbcTemplate</tt> or
+      <tt class="literal">DataSourceUtils</tt>.</p><p>See the <tt class="literal">TransactionAwareDataSourceProxy</tt>
+      Javadocs for more details.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-DataSourceTransactionManager"></a>11.3.7.&nbsp;DataSourceTransactionManager</h3></div></div><div></div></div><p>PlatformTransactionManager implementation for single JDBC data
+      sources. Binds a JDBC connection from the specified data source to the
+      thread, potentially allowing for one thread connection per data
+      source.</p><p>Application code is required to retrieve the JDBC connection via
+      <tt class="literal">DataSourceUtils.getConnection(DataSource)</tt> instead of
+      J2EE's standard <tt class="literal">DataSource.getConnection</tt>. This is
+      recommended anyway, as it throws unchecked
+      <tt class="literal">org.springframework.dao</tt> exceptions instead of checked
+      <tt class="literal">SQLException</tt>. All framework classes like
+      <tt class="literal">JdbcTemplate</tt> use this strategy implicitly. If not
+      used with this transaction manager, the lookup strategy behaves exactly
+      like the common one - it can thus be used in any case.</p><p>Supports custom isolation levels, and timeouts that get applied as
+      appropriate JDBC statement query timeouts. To support the latter,
+      application code must either use <tt class="literal">JdbcTemplate</tt> or call
+      <tt class="literal">DataSourceUtils.applyTransactionTimeout</tt> method for
+      each created statement.</p><p>This implementation can be used instead of
+      <tt class="literal">JtaTransactionManager</tt> in the single resource case, as
+      it does not require the container to support JTA. Switching between both
+      is just a matter of configuration, if you stick to the required
+      connection lookup pattern. Note that JTA does not support custom
+      isolation levels!</p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="jdbc-object"></a>11.4.&nbsp;Modeling JDBC operations as Java objects</h2></div></div><div></div></div><p>The <tt class="literal">org.springframework.jdbc.object</tt> package
+    contains the classes that allow you to access the database in a more
+    object oriented manner. You can execute queries and get the results back
+    as a list containing business objects with the relational column data
+    mapped to the properties of the business object. You can also execute
+    stored procedures and run update, delete and insert statements.</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-SqlQuery"></a>11.4.1.&nbsp;SqlQuery</h3></div></div><div></div></div><p>Reusable thread safe object to represent an SQL query. Subclasses
+      must implement the newResultReader() method to provide an object that
+      can save the results while iterating over the ResultSet. This class is
+      rarely used directly since the <tt class="literal">MappingSqlQuery</tt>, that
+      extends this class, provides a much more convenient implementation for
+      mapping rows to Java classes. Other implementations that extend
+      <tt class="literal">SqlQuery</tt> are
+      <tt class="literal">MappingSqlQueryWithParameters</tt> and
+      <tt class="literal">UpdatableSqlQuery</tt>.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-MappingSqlQuery"></a>11.4.2.&nbsp;MappingSqlQuery</h3></div></div><div></div></div><p><tt class="literal">MappingSqlQuery</tt> is a reusable query in which
+      concrete subclasses must implement the abstract
+      <tt class="literal">mapRow(ResultSet, int)</tt> method to convert each row of
+      the JDBC <tt class="literal">ResultSet</tt> into an object.</p><p>Of all the <tt class="literal">SqlQuery</tt> implementations, this is
+      the one used most often and it is also the one that is the easiest to
+      use.</p><p>Here is a brief example of a custom query that maps the data from
+      the customer table to a Java object called Customer.</p><pre class="programlisting">private class CustomerMappingQuery extends MappingSqlQuery {
+
+    public CustomerMappingQuery(DataSource ds) {
+        super(ds, "SELECT id, name FROM customer WHERE id = ?");
+        super.declareParameter(new SqlParameter("id", Types.INTEGER));
+        compile();
+    }
+
+    public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
+        Customer cust = new Customer();
+        cust.setId((Integer) rs.getObject("id"));
+        cust.setName(rs.getString("name"));
+        return cust;
+    } 
+  }</pre><p>We provide a constructor for this customer query that takes the
+      <tt class="literal">DataSource</tt> as the only parameter. In this constructor
+      we call the constructor on the superclass with the
+      <tt class="literal">DataSource</tt> and the SQL that should be executed to
+      retrieve the rows for this query. This SQL will be used to create a
+      <tt class="literal">PreparedStatement</tt> so it may contain place holders for
+      any parameters to be passed in during execution. Each parameter must be
+      declared using the <tt class="literal">declareParameter</tt> method passing in
+      an <tt class="literal">SqlParameter</tt>. The <tt class="literal">SqlParameter</tt>
+      takes a name and the JDBC type as defined in
+      <tt class="literal">java.sql.Types</tt>. After all parameters have been
+      defined we call the <tt class="literal">compile</tt> method so the statement
+      can be prepared and later be executed.</p><p>Let's take a look at the code where this custom query is
+      instantiated and executed:</p><pre class="programlisting">    public Customer getCustomer(Integer id) {
+        CustomerMappingQuery custQry = new CustomerMappingQuery(dataSource); 
+        Object[] parms = new Object[1];
+        parms[0] = id;
+        List customers = custQry.execute(parms);
+        if (customers.size() &gt; 0)
+            return (Customer) customers.get(0);
+        else
+            return null;
+    }</pre><p>The method in this example retrieves the customer with the id that
+      is passed in as the only parameter. After creating an instance of the
+      <tt class="literal">CustomerMappingQuery</tt> class we create an array of
+      objects that will contain all parameters that are passed in. In this
+      case there is only one parameter and it is passed in as an
+      <tt class="literal">Integer</tt>. Now we are ready to execute the query using
+      this array of parameters and we get a <tt class="literal">List</tt> that
+      contains a <tt class="literal">Customer</tt> object for each row that was
+      returned for our query. In this case it will only be one entry if there
+      was a match.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-SqlUpdate"></a>11.4.3.&nbsp;SqlUpdate</h3></div></div><div></div></div><p>RdbmsOperation subclass representing a SQL update. Like a query,
+      an update object is reusable. Like all RdbmsOperation objects, an update
+      can have parameters and is defined in SQL.</p><p>This class provides a number of update() methods analogous to the
+      execute() methods of query objects.</p><p>This class is concrete. Although it can be subclassed (for example
+      to add a custom update method) it can easily be parameterized by setting
+      SQL and declaring parameters.</p><pre class="programlisting">import java.sql.Types;
+
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.object.SqlUpdate;
+
+public class UpdateCreditRating extends SqlUpdate {
+
+    public UpdateCreditRating(DataSource ds) {
+        setDataSource(ds);
+        setSql("update customer set credit_rating = ? where id = ?");
+        declareParameter(new SqlParameter(Types.NUMERIC));
+        declareParameter(new SqlParameter(Types.NUMERIC));
+        compile();
+    }
+
+    /**
+     * @param id for the Customer to be updated
+     * @param rating the new value for credit rating
+     * @return number of rows updated
+     */
+    public int run(int id, int rating) {
+        Object[] params =
+            new Object[] {
+                new Integer(rating),
+                new Integer(id)};
+        return update(params);
+    }
+}</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-StoredProcedure"></a>11.4.4.&nbsp;StoredProcedure</h3></div></div><div></div></div><p>Superclass for object abstractions of RDBMS stored procedures.
+      This class is abstract and its execute methods are protected, preventing
+      use other than through a subclass that offers tighter typing.</p><p>The inherited sql property is the name of the stored procedure in
+      the RDBMS. Note that JDBC 3.0 introduces named parameters, although the
+      other features provided by this class are still necessary in JDBC
+      3.0.</p><p>Here is an example of a program that calls a function sysdate()
+      that comes with any Oracle database. To use the stored procedure
+      functionality you have to create a class that extends
+      <tt class="literal">StoredProcedure</tt>. There are no input parameters, but
+      there is an output parameter that is declared as a date using the class
+      <tt class="literal">SqlOutParameter</tt>. The <tt class="literal">execute()</tt>
+      method returns a map with an entry for each declared output parameter
+      using the parameter name as the key.</p><pre class="programlisting">import java.sql.Types;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.datasource.*;
+import org.springframework.jdbc.object.StoredProcedure;
+
+public class TestStoredProcedure {
+
+    public static void main(String[] args)  {
+        TestStoredProcedure t = new TestStoredProcedure();
+        t.test();
+        System.out.println("Done!");
+    }
+    
+    void test() {
+        DriverManagerDataSource ds = new DriverManagerDataSource();
+        ds.setDriverClassName("oracle.jdbc.OracleDriver");
+        ds.setUrl("jdbc:oracle:thin:@localhost:1521:mydb");
+        ds.setUsername("scott");
+        ds.setPassword("tiger");
+
+        MyStoredProcedure sproc = new MyStoredProcedure(ds);
+        Map res = sproc.execute();
+        printMap(res);
+    }
+
+    private class MyStoredProcedure extends StoredProcedure {
+        public static final String SQL = "sysdate";
+
+        public MyStoredProcedure(DataSource ds) {
+            setDataSource(ds);
+            setFunction(true);
+            setSql(SQL);
+            declareParameter(new SqlOutParameter("date", Types.DATE));
+            compile();
+        }
+
+        public Map execute() {
+            Map out = execute(new HashMap());
+            return out;
+        }
+
+    }
+
+    private static void printMap(Map r) {
+        Iterator i = r.entrySet().iterator();
+        while (i.hasNext()) {
+            System.out.println((String) i.next().toString());  
+        }
+    }
+}</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="jdbc-SqlFunction"></a>11.4.5.&nbsp;SqlFunction</h3></div></div><div></div></div><p>SQL "function" wrapper for a query that returns a single row of
+      results. The default behavior is to return an int, but that can be
+      overridden by using the methods with an extra return type parameter.
+      This is similar to using the <tt class="literal">queryForXxx</tt> methods of
+      the <tt class="literal">JdbcTemplate</tt>. The advantage with
+      <tt class="literal">SqlFunction</tt> is that you don't have to create the
+      <tt class="literal">JdbcTemplate</tt>, it is done behind the scenes.</p><p>This class is intended to use to call SQL functions that return a
+      single result using a query like "select user()" or "select sysdate from
+      dual". It is not intended for calling more complex stored functions or
+      for using a <tt class="literal">CallableStatement</tt> to invoke a stored
+      procedure or stored function. Use <tt class="literal">StoredProcedure</tt> or
+      <tt class="literal">SqlCall</tt> for this type of processing.</p><p>This is a concrete class, which there is normally no need to
+      subclass. Code using this package can create an object of this type,
+      declaring SQL and parameters, and then invoke the appropriate run method
+      repeatedly to execute the function. Here is an example of retrieving the
+      count of rows from a table:</p><pre class="programlisting">    public int countRows() {
+        SqlFunction sf = new SqlFunction(dataSource, "select count(*) from mytable");
+        sf.compile();
+        return sf.run();
+    }</pre><p></p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="dao.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="orm.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;10.&nbsp;DAO support&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;12.&nbsp;Data Access using O/R Mappers</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

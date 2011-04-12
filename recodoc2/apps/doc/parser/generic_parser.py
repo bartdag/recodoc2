@@ -1,18 +1,22 @@
 from __future__ import unicode_literals
 import os
-import codecs
+import logging
 from multiprocessing.pool import Pool
 from traceback import print_exc
 from lxml import etree
 from django.db import transaction, connection
 from django.conf import settings
-from docutil.etree_util import XTEXT, get_word_count
+from docutil.etree_util import XTEXT, get_word_count, XPathList, SingleXPath,\
+        HierarchyXPath
 from docutil.url_util import get_relative_url
-from docutil.commands_util import chunk_it, import_clazz
+from docutil.commands_util import chunk_it, import_clazz, get_encoding
 from docutil.progress_monitor import NullProgressMonitor
+from codebase.actions import get_project_code_words
 from doc.models import Document, Page, Section
 
 DEFAULT_POOL_SIZE = 4
+
+logger = logging.getLogger("recodoc.doc.parser")
 
 @transaction.autocommit
 def sub_process_parse(pinput):
@@ -83,7 +87,7 @@ class GenericParser(object):
     xbody = etree.XPath("//body[1]")
     '''Page body'''
 
-    xtitle = etree.XPath("//h1[1]")
+    xtitles = XPathList(['//h1[1]', '//title[1]', '//h2[1]'])
     '''Page title'''
 
     def __init__(self, document_pk):
@@ -106,14 +110,17 @@ class GenericParser(object):
 
     def _build_code_words(self, load):
         # Build code words and put it in self.load
-        pass
+        load.code_words = \
+            get_project_code_words(self.document.project_release.project)
 
     def _process_page(self, page, load):
-        parser = etree.HTMLParser(remove_comments=True, encoding='utf8')
         page_path = os.path.join(settings.PROJECT_FS_ROOT, page.file_path)
-        page_file = codecs.open(page_path, encoding='utf8')
-        load.tree = etree.parse(page_file, parser)
+        page_file = open(page_path)
+        content = page_file.read()
         page_file.close()
+        encoding = get_encoding(content)
+        parser = etree.HTMLParser(remove_comments=True, encoding=encoding)
+        load.tree = etree.fromstring(content, parser)
         
         page.title = self._process_page_title(page, load)
         
@@ -126,11 +133,16 @@ class GenericParser(object):
         self._process_sections(page, load)
 
     def _process_page_title(self, page, load):
-        pass
+        title = self.xtitles.get_text_from_parent(load.tree)
+        if not title:
+            title = 'Default Title'
+            logger.warning('No title for page {0}'.format(page.file_path))
 
     def _process_init_page(self, page, load):
         pass
 
     def _process_sections(page, load):
-        pass
+        sections = []
+        sections_number = {}
+
 

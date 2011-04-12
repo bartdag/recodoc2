@@ -1,0 +1,960 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;14.&nbsp;Integrating view technologies</title><link rel="stylesheet" href="../styles/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><link rel="home" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="up" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="previous" href="mvc.html" title="Chapter&nbsp;13.&nbsp;Web MVC framework"><link rel="next" href="webintegration.html" title="Chapter&nbsp;15.&nbsp;Integrating with other web frameworks"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;14.&nbsp;Integrating view technologies</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="mvc.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="webintegration.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="view"></a>Chapter&nbsp;14.&nbsp;Integrating view technologies</h2></div></div><div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-introduction"></a>14.1.&nbsp;Introduction</h2></div></div><div></div></div><p>One of the areas in which Spring excels is in the separation of view
+    technologies from the rest of the MVC framework. For example, deciding to
+    use Velocity or XSLT in place of an existing JSP is primarily a matter of
+    configuration. This chapter covers the major view technologies that work
+    with Spring and touches briefly on how to add new ones. This chapter
+    assumes you are already familiar with <a href="mvc.html#mvc-viewresolver" title="13.5.&nbsp;Views and resolving them">Section&nbsp;13.5, &#8220;Views and resolving them&#8221;</a>
+    which covers the basics of how views in general are coupled to the MVC
+    framework.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-jsp"></a>14.2.&nbsp;JSP &amp; JSTL</h2></div></div><div></div></div><p>Spring provides a couple of out-of-the-box solutions for JSP and
+    JSTL views. Using JSP or JSTL is done using a normal viewresolver defined
+    in the WebApplicationContext. Furthermore, of course you need to write
+    some JSPs that will actually render the view. This part describes some of
+    the additional features Spring provides to facilitate JSP
+    development.</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jsp-resolver"></a>14.2.1.&nbsp;View resolvers</h3></div></div><div></div></div><p>Just as with any other view technology you're integrating with
+      Spring, for JSPs you'll need a view resolver that will resolve your
+      views. The most commonly used view resolvers when developing with JSPs
+      are the <tt class="literal">InternalResourceViewResolver</tt> and the
+      <tt class="literal">ResourceBundleViewResolver</tt>. Both are declared in the
+      WebApplicationContext:</p><pre class="programlisting"># The ResourceBundleViewResolver:
+&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.ResourceBundleViewResolver"&gt;
+  &lt;property name="basename" value="views"/&gt;
+&lt;/bean&gt;
+
+# And a sample properties file is uses (views.properties in WEB-INF/classes):
+welcome.class=org.springframework.web.servlet.view.JstlView
+welcome.url=/WEB-INF/jsp/welcome.jsp
+
+productList.class=org.springframework.web.servlet.view.JstlView
+productList.url=/WEB-INF/jsp/productlist.jsp</pre><p>As you can see, the ResourceBundleViewResolver needs a properties
+      file defining the view names mapped to 1) a class and 2) a URL. With a
+      ResourceBundleViewResolver you can mix different types of views using
+      only one resolver.</p><pre class="programlisting">&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
+  &lt;property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/&gt;
+  &lt;property name="prefix" value="/WEB-INF/jsp/"/&gt;
+  &lt;property name="suffix" value=".jsp"/&gt;
+&lt;/bean&gt;</pre><p>The InternalResourceBundleViewResolver can be configured for using
+      JSPs as described above. As a best practice, we strongly encourage
+      placing your JSP files in a a directory under the WEB-INF directory, so
+      there can be no direct access by clients.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jsp-jstl"></a>14.2.2.&nbsp;'Plain-old' JSPs versus JSTL</h3></div></div><div></div></div><p>When using Java Standard Tag Library you must use a special view
+      class, the <tt class="literal">JstlView</tt>, as JSTL needs some preparation
+      before things such as the i18N features will work.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jsp-tags"></a>14.2.3.&nbsp;Additional tags facilitating development</h3></div></div><div></div></div><p>Spring provides data binding of request parameters to command
+      objects as described in earlier chapters. To facilitate the development
+      of JSP pages in combination with those data binding features, Spring
+      provides a few tags that make things even easier. All Spring tags have
+      <span class="emphasis"><em>html escaping</em></span> features to enable or disable
+      escaping of characters.</p><p>The tag library descriptor (TLD) is included in the
+      <tt class="literal">spring.jar</tt> as well in the distribution itself. More
+      information about the individual tags can be found online: <a href="http://www.springframework.org/docs/taglib/index.html" target="_top">http://www.springframework.org/docs/taglib/index.html</a>.</p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-tiles"></a>14.3.&nbsp;Tiles</h2></div></div><div></div></div><p>It is possible to integrate Tiles - just as any other view
+    technology - in web applications using Spring. The following describes in
+    a broad way how to do this.</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-tiles-dependencies"></a>14.3.1.&nbsp;Dependencies</h3></div></div><div></div></div><p>To be able to use Tiles you have to have a couple of additional
+      dependencies included in your project. The following is the list of
+      dependencies you need.</p><div class="itemizedlist"><ul type="disc" compact><li><p><tt class="literal">Struts version 1.1 or higher</tt></p></li><li><p><tt class="literal">Commons BeanUtils</tt></p></li><li><p><tt class="literal">Commons Digester</tt></p></li><li><p><tt class="literal">Commons Lang</tt></p></li><li><p><tt class="literal">Commons Logging</tt></p></li></ul></div><p>These dependencies are all available in the Spring distribution.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-tiles-integrate"></a>14.3.2.&nbsp;How to integrate Tiles</h3></div></div><div></div></div><p>To be able to use Tiles, you have to configure it using files
+      containing definitions (for basic information on definitions and other
+      Tiles concepts, please have a look at <a href="http://jakarta.apache.org/struts" target="_top">http://jakarta.apache.org/struts</a>). In Spring this is done
+      using the <tt class="literal">TilesConfigurer</tt>. Have a look at the
+      following piece of example ApplicationContext configuration:
+      </p><pre class="programlisting">&lt;bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles.TilesConfigurer"&gt;
+  &lt;property name="factoryClass" value="org.apache.struts.tiles.xmlDefinition.I18nFactorySet"/&gt;
+  &lt;property name="definitions"&gt;
+    &lt;list&gt;
+      &lt;value&gt;/WEB-INF/defs/general.xml&lt;/value&gt;
+      &lt;value&gt;/WEB-INF/defs/widgets.xml&lt;/value&gt;
+      &lt;value&gt;/WEB-INF/defs/administrator.xml&lt;/value&gt;
+      &lt;value&gt;/WEB-INF/defs/customer.xml&lt;/value&gt;
+      &lt;value&gt;/WEB-INF/defs/templates.xml&lt;/value&gt;
+    &lt;/list&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p>As you can see, there are five files containing definitions, which
+      are all located in the WEB-INF/defs directory. At initialization of the
+      WebApplicationContext, the files will be loaded and the
+      definitionsfactory defined by the
+      <tt class="literal">factoryClass</tt>-property is initialized. After that has
+      been done, the tiles includes in the definition files can be used as
+      views within your Spring web application. To be able to use the views
+      you have to have a <tt class="literal">ViewResolver</tt> just as with any
+      other view technology used with Spring. Below you can find two
+      possibilities, the <tt class="literal">InternalResourceViewResolver</tt> and
+      the <tt class="literal">ResourceBundleViewResolver</tt>.</p><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-tiles-internal"></a>14.3.2.1.&nbsp;<tt class="literal">InternalResourceViewResolver</tt></h4></div></div><div></div></div><p>The InternalResourceViewResolver instantiates the given
+        <tt class="literal">viewClass</tt> for each view it has to resolve.
+        </p><pre class="programlisting">&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
+  &lt;property name="requestContextAttribute" value="requestContext"/&gt;
+  &lt;property name="viewClass" value="org.springframework.web.servlet.view.tiles.TilesView"/&gt;
+&lt;/bean&gt;</pre></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-tiles-resource"></a>14.3.2.2.&nbsp;<tt class="literal">ResourceBundleViewResolver</tt></h4></div></div><div></div></div><p>The ResourceBundleViewResolver has to be provided with a
+        property file containing viewnames and viewclasses the resolver can
+        use: </p><pre class="programlisting">&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.ResourceBundleViewResolver"&gt;
+  &lt;property name="basename" value="views"/&gt;
+&lt;/bean&gt;</pre><pre class="programlisting">    ...
+welcomeView.class=org.springframework.web.servlet.view.tiles.TilesView
+welcomeView.url=welcome (&lt;b&gt;this is the name of a definition&lt;/b&gt;)
+
+vetsView.class=org.springframework.web.servlet.view.tiles.TilesView
+vetsView.url=vetsView (&lt;b&gt;again, this is the name of a definition&lt;/b&gt;)
+
+findOwnersForm.class=org.springframework.web.servlet.view.JstlView
+findOwnersForm.url=/WEB-INF/jsp/findOwners.jsp
+...</pre><p> As you can see, when using the
+        ResourceBundleViewResolver, you can mix view using different view
+        technologies.</p></div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-velocity"></a>14.4.&nbsp;Velocity &amp; FreeMarker</h2></div></div><div></div></div><p><a href="http://jakarta.apache.org/velocity" target="_top">Velocity</a> and
+    <a href="http://www.freemarker.org" target="_top">FreeMarker</a> are two
+    templating languages that can both be used as view technologies within
+    Spring MVC applications. The languages are quite similar and serve similar
+    needs and so are considered together in this section. For semantic and
+    syntactic differences between the two languages, see the <a href="http://www.freemarker.org" target="_top">FreeMarker</a> web site.</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-velocity-dependencies"></a>14.4.1.&nbsp;Dependencies</h3></div></div><div></div></div><p>Your web application will need to include
+      <tt class="literal">velocity-1.x.x.jar</tt> or
+      <tt class="literal">freemarker-2.x.jar</tt> in order to work with Velocity or
+      FreeMarker respectively and <tt class="literal">commons-collections.jar</tt>
+      needs also to be available for Velocity. Typically they are included in
+      the <tt class="literal">WEB-INF/lib</tt> folder where they are guaranteed to
+      be found by a J2EE server and added to the classpath for your
+      application. It is of course assumed that you already have the
+      <tt class="literal">spring.jar</tt> in your <tt class="literal">WEB-INF/lib</tt>
+      folder too! The latest stable velocity, freemarker and commons
+      collections jars are supplied with the Spring framework and can be
+      copied from the relevant <tt class="literal">/lib/</tt> sub-directories. If
+      you make use of Spring's dateToolAttribute or numberToolAttribute in
+      your Velocity views, you will also need to include the
+      <tt class="literal">velocity-tools-generic-1.x.jar</tt></p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-velocity-contextconfig"></a>14.4.2.&nbsp;Context configuration</h3></div></div><div></div></div><p>A suitable configuration is initialized by adding the relevant
+      configurer bean definition to your *-servlet.xml as shown below:</p><pre class="programlisting">&lt;!--
+  This bean sets up the Velocity environment for us based on a root path for templates.
+  Optionally, a properties file can be specified for more control over the Velocity
+  environment, but the defaults are pretty sane for file based template loading.
+--&gt;
+&lt;bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer"&gt;
+  &lt;property name="resourceLoaderPath" value="/WEB-INF/velocity/"/&gt;
+&lt;/bean&gt;
+
+&lt;!--
+  View resolvers can also be configured with ResourceBundles or XML files. If you need
+  different view resolving based on Locale, you have to use the resource bundle resolver.
+--&gt;
+&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver"&gt;
+  &lt;property name="cache" value="true"/&gt;
+  &lt;property name="prefix" value=""/&gt;
+  &lt;property name="suffix" value=".vm"/&gt;
+&lt;/bean&gt;</pre><pre class="programlisting">&lt;!-- freemarker config --&gt;
+&lt;bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer"&gt;
+  &lt;property name="templateLoaderPath" value="/WEB-INF/freemarker/"/&gt;
+&lt;/bean&gt;
+
+&lt;!--
+  View resolvers can also be configured with ResourceBundles or XML files. If you need
+  different view resolving based on Locale, you have to use the resource bundle resolver.
+--&gt;
+&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver"&gt;
+  &lt;property name="cache" value="true"/&gt;
+  &lt;property name="prefix" value=""/&gt;
+  &lt;property name="suffix" value=".ftl"/&gt;
+&lt;/bean&gt;</pre><p><span class="emphasis"><em>NB: For non web-apps add a
+      <tt class="literal">VelocityConfigurationFactoryBean</tt> or a
+      <tt class="literal">FreeMarkerConfigurationFactoryBean</tt> to your
+      application context definition file.</em></span></p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-velocity-createtemplates"></a>14.4.3.&nbsp;Creating templates</h3></div></div><div></div></div><p>Your templates need to be stored in the directory specified by the
+      <tt class="literal">*Configurer</tt> bean shown above in <a href="view.html#view-velocity-contextconfig" title="14.4.2.&nbsp;Context configuration">Section&nbsp;14.4.2, &#8220;Context configuration&#8221;</a> This document does not cover
+      details of creating templates for the two languages - please see their
+      relevant websites for information. If you use the view resolvers
+      highlighted, then the logical view names relate to the template file
+      names in similar fashion to
+      <tt class="literal">InternalResourceViewResolver</tt> for JSP's. So if your
+      controller returns a ModelAndView object containing a view name of
+      "welcome" then the resolvers will look for the
+      <tt class="literal">/WEB-INF/freemarker/welcome.ftl</tt> or
+      <tt class="literal">/WEB-INF/velocity/welcome.vm</tt> template as
+      appropriate.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-velocity-advancedconfig"></a>14.4.4.&nbsp;Advanced configuration</h3></div></div><div></div></div><p>The basic configurations highlighted above will be suitable for
+      most application requirements, however additional configuration options
+      are available for when unusual or advanced requirements dictate.</p><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-velocity-example-velocityproperties"></a>14.4.4.1.&nbsp;velocity.properties</h4></div></div><div></div></div><p>This file is completely optional, but if specified, contains the
+        values that are passed to the Velocity runtime in order to configure
+        velocity itself. Only required for advanced configurations, if you
+        need this file, specify its location on the
+        <tt class="literal">VelocityConfigurer</tt> bean definition above.</p><pre class="programlisting">&lt;bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer"&gt;
+  &lt;property name="configLocation value="/WEB-INF/velocity.properties"/&gt;
+&lt;/bean&gt;</pre><p>Alternatively, you can specify velocity properties directly in
+        the bean definition for the Velocity config bean by replacing the
+        "configLocation" property with the following inline properties.</p><pre class="programlisting">&lt;bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer"&gt;
+  &lt;property name="velocityProperties"&gt;
+    &lt;props&gt;
+      &lt;prop key="resource.loader"&gt;file&lt;/prop&gt;
+      &lt;prop key="file.resource.loader.class"&gt;
+        org.apache.velocity.runtime.resource.loader.FileResourceLoader
+      &lt;/prop&gt;
+      &lt;prop key="file.resource.loader.path"&gt;${webapp.root}/WEB-INF/velocity&lt;/prop&gt;
+      &lt;prop key="file.resource.loader.cache"&gt;false&lt;/prop&gt;
+    &lt;/props&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p>Refer to the <a href="http://www.springframework.org/docs/api/org/springframework/ui/velocity/VelocityEngineFactory.html" target="_top">API
+        documentation</a> for Spring configuration of Velocity, or the
+        Velocity documentation for examples and definitions of the
+        <tt class="literal">velocity.properties</tt> file itself.</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e10678"></a>14.4.4.2.&nbsp;FreeMarker</h4></div></div><div></div></div><p>FreeMarker 'Settings' and 'SharedVariables' can be passed
+        directly to the FreeMarker <tt class="literal">Configuration</tt> object
+        managed by Spring by setting the appropriate bean properties on the
+        <tt class="literal">FreeMarkerConfigurer</tt> bean. The
+        <tt class="literal">freemarkerSettings</tt> property requires a
+        <tt class="literal">java.util.Properties</tt> object and the
+        <tt class="literal">freemarkerVariables</tt> property requires a
+        <tt class="literal">java.util.Map</tt>.</p><pre class="programlisting">&lt;bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer"&gt;
+  &lt;property name="templateLoaderPath" value="/WEB-INF/freemarker/"/&gt;
+  &lt;property name="freemarkerVariables"&gt;
+    &lt;map&gt;
+      &lt;entry key="xml_escape" ref="fmXmlEscape"/&gt;
+    &lt;/map&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape"/&gt;</pre><p>See the FreeMarker documentation for details of settings and
+        variables as they apply to the <tt class="literal">Configuration</tt>
+        object.</p></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-velocity-forms"></a>14.4.5.&nbsp;Bind support and form handling</h3></div></div><div></div></div><p>Spring provides a tag library for use in JSP's that contains
+      (amongst other things) a <tt class="literal">&lt;spring:bind&gt;</tt> tag.
+      This tag primarily enables forms to display values from form backing
+      objects and to show the results of failed validations from a
+      <tt class="literal">Validator</tt> in the web or business tier. From version
+      1.1, Spring now has support for the same functionality in both Velocity
+      and FreeMarker, with additional convenience macros for generating form
+      input elements themselves.</p><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-velocity-validation"></a>14.4.5.1.&nbsp;the bind macros</h4></div></div><div></div></div><p>A standard set of macros are maintained within the
+        <tt class="literal">spring.jar</tt> file for both languages, so they are
+        always available to a suitably configured application. However they
+        can only be used if your view sets the bean property
+        <tt class="literal">exposeSpringMacroHelpers</tt> to <tt class="literal">true</tt>
+        . The same property can be set on
+        <tt class="literal">VelocityViewResolver</tt> or
+        <tt class="literal">FreeMarkerViewResolver</tt> too if you happen to be
+        using it, in which case all of your views will inherit the value from
+        it. Note that this property is <span class="bold"><b>not
+        required</b></span> for any aspect of HTML form handling <span class="bold"><b>except</b></span> where you wish to take advantage of the
+        Spring macros. Below is an example of a view.properties file showing
+        correct configuration of such a view for either language;</p><pre class="programlisting">personFormV.class=org.springframework.web.servlet.view.velocity.VelocityView
+personFormV.url=personForm.vm
+personFormV.exposeSpringMacroHelpers=true</pre><pre class="programlisting">personFormF.class=org.springframework.web.servlet.view.freemarker.FreeMarkerView
+personFormF.url=personForm.ftl
+personFormF.exposeSpringMacroHelpers=true</pre><p>Some of the macros defined in the Spring libraries are
+        considered internal (private) but no such scoping exists in the macro
+        definitions making all macros visible to calling code and user
+        templates. The following sections concentrate only on the macros you
+        need to be directly calling from within your templates. If you wish to
+        view the macro code directly, the files are called spring.vm /
+        spring.ftl and are in the packages
+        <tt class="literal">org.springframework.web.servlet.view.velocity</tt> or
+        <tt class="literal">org.springframework.web.servlet.view.freemarker</tt>
+        respectively.</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-velocity-validationmessages"></a>14.4.5.2.&nbsp;simple binding</h4></div></div><div></div></div><p>In your html forms (vm / ftl templates) that act as the
+        'formView' for a Spring form controller, you can use code similar to
+        the following to bind to field values and display error messages for
+        each input field in similar fashion to the JSP equivalent. Note that
+        the name of the command object is "command" by default, but can be
+        overridden in your MVC configuration by setting the 'commandName' bean
+        property on your form controller. Example code is shown below for the
+        <tt class="literal">personFormV</tt> and <tt class="literal">personFormF</tt>
+        views configured earlier;</p><pre class="programlisting">&lt;!-- velocity macros are automatically available --&gt;
+&lt;html&gt;
+...
+&lt;form action="" method="POST"&gt;
+  Name: 
+  #springBind( "command.name" )
+  &lt;input type="text" 
+    name="${status.expression}" 
+    value="$!status.value" /&gt;&lt;br&gt;
+  #foreach($error in $status.errorMessages) &lt;b&gt;$error&lt;/b&gt; &lt;br&gt; #end
+  &lt;br&gt;
+  ... 
+  &lt;input type="submit" value="submit"/&gt;
+&lt;/form&gt;
+...
+&lt;/html&gt;</pre><pre class="programlisting">&lt;!-- freemarker macros have to be imported into a namespace.  We strongly
+recommend sticking to 'spring' --&gt;
+&lt;#import "spring.ftl" as spring /&gt;
+&lt;html&gt;
+...
+&lt;form action="" method="POST"&gt;
+  Name: 
+  &lt;@spring.bind "command.name" /&gt; 
+  &lt;input type="text" 
+    name="${spring.status.expression}" 
+    value="${spring.status.value?default("")}" /&gt;&lt;br&gt;
+  &lt;#list spring.status.errorMessages as error&gt; &lt;b&gt;${error}&lt;/b&gt; &lt;br&gt; &lt;/#list&gt;
+  &lt;br&gt;
+  ... 
+  &lt;input type="submit" value="submit"/&gt;
+&lt;/form&gt;
+...
+&lt;/html&gt;</pre><p><tt class="literal">#springBind</tt> /
+        <tt class="literal">&lt;@spring.bind&gt;</tt> requires a 'path' argument
+        which consists of the name of your command object (it will be
+        'command' unless you changed it in your FormController properties)
+        followed by a period and the name of the field on the command object
+        you wish to bind to. Nested fields can be used too such as
+        "command.address.street". The <tt class="literal">bind</tt> macro assumes
+        the default HTML escaping behavior specified by the ServletContext
+        parameter <tt class="literal">defaultHtmlEscape</tt> in web.xml</p><p>The optional form of the macro called
+        <tt class="literal">#springBindEscaped</tt> /
+        <tt class="literal">&lt;@spring.bindEscaped&gt;</tt> takes a second argument
+        and explicitly specifies whether HTML escaping should be used in the
+        status error messages or values. Set to true or false as required.
+        Additional form handling macros simplify the use of HTML escaping and
+        these macros should be used wherever possible. They are explained in
+        the next section.</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e10793"></a>14.4.5.3.&nbsp;form input generation macros</h4></div></div><div></div></div><p>Additional convenience macros for both languages simplify both
+        binding and form generation (including validation error display). It
+        is never necessary to use these macros to generate form input fields,
+        and they can be mixed and matched with simple HTML or calls direct to
+        the spring bind macros highlighted previously.</p><p>The following table of available macros show the VTL and FTL
+        definitions and the parameter list that each takes.</p><div class="table"><a name="d0e10800"></a><p class="title"><b>Table&nbsp;14.1.&nbsp;table of macro definitions</b></p><table summary="table of macro definitions" border="1"><colgroup><col align="left"><col><col></colgroup><thead><tr><th align="center">macro</th><th align="center">VTL definition</th><th align="center">FTL definition</th></tr></thead><tbody><tr><td align="left"><span class="bold"><b>message</b></span> (output a
+                string from a resource bundle based on the code
+                parameter)</td><td><tt class="literal">#springMessage($code)</tt></td><td><tt class="literal">&lt;@spring.message
+                code/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>messageText</b></span> (output a
+                string from a resource bundle based on the code parameter,
+                falling back to the value of the default parameter)</td><td><tt class="literal">#springMessageText($code
+                $default)</tt></td><td><tt class="literal">&lt;@spring.messageText code,
+                default/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>url</b></span> (prefix a relative
+                URL with the application's context root)</td><td><tt class="literal">#springUrl($relativeUrl)</tt></td><td><tt class="literal">&lt;@spring.url
+                relativeUrl/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formInput</b></span> (standard
+                input field for gathering user input)</td><td><tt class="literal">#springFormInput($path
+                $attributes)</tt></td><td><tt class="literal">&lt;@spring.formInput path, attributes,
+                fieldType/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formHiddenInput *</b></span>
+                (hidden input field for submitting non-user input)</td><td><tt class="literal">#springFormHiddenInput($path
+                $attributes)</tt></td><td><tt class="literal">&lt;@spring.formHiddenInput path,
+                attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formPasswordInput</b></span> *
+                (standard input field for gathering passwords. Note that no
+                value will ever be populated in fields of this type)</td><td><tt class="literal">#springFormPasswordInput($path
+                $attributes)</tt></td><td><tt class="literal">&lt;@spring.formPasswordInput path,
+                attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formTextarea</b></span> (large
+                text field for gathering long, freeform text input)</td><td><tt class="literal">#springFormTextarea($path
+                $attributes)</tt></td><td><tt class="literal">&lt;@spring.formTextarea path,
+                attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formSingleSelect</b></span> (drop
+                down box of options allowing a single required value to be
+                selected)</td><td><tt class="literal">#springFormSingleSelect( $path $options
+                $attributes)</tt></td><td><tt class="literal">&lt;@spring.formSingleSelect path, options,
+                attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formMultiSelect</b></span> (a
+                list box of options allowing the user to select 0 or more
+                values)</td><td><tt class="literal">#springFormMultiSelect($path $options
+                $attributes)</tt></td><td><tt class="literal">&lt;@spring.formMultiSelect path, options,
+                attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formRadioButtons</b></span> (a
+                set of radio buttons allowing a single selection to be made
+                from the available choices)</td><td><tt class="literal">#springFormRadioButtons($path $options
+                $separator $attributes)</tt></td><td><tt class="literal">&lt;@spring.formRadioButtons path, options
+                separator, attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formCheckboxes</b></span> (a set
+                of checkboxes allowing 0 or more values to be
+                selected)</td><td><tt class="literal">#springFormCheckboxes($path $options
+                $separator $attributes)</tt></td><td><tt class="literal">&lt;@spring.formCheckboxes path, options,
+                separator, attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>showErrors</b></span> (simplify
+                display of validation errors for the bound field)</td><td><tt class="literal">#springShowErrors($separator
+                $classOrStyle)</tt></td><td><tt class="literal">&lt;@spring.showErrors separator,
+                classOrStyle/&gt;</tt></td></tr></tbody></table></div><p>* In FTL (FreeMarker), these two macros are not actually
+        required as you can use the normal <tt class="literal">formInput</tt> macro,
+        specifying '<tt class="literal">hidden</tt>' or
+        '<tt class="literal">password</tt>' as the value for the
+        <tt class="literal">fieldType</tt> parameter.</p><p>The parameters to any of the above macros have consistent
+        meanings:</p><div class="itemizedlist"><ul type="disc"><li><p>path: the name of the field to bind to (ie
+            "command.name")</p></li><li><p>options: a Map of all the available values that can be
+            selected from in the input field. The keys to the map represent
+            the values that will be POSTed back from the form and bound to the
+            command object. Map objects stored against the keys are the labels
+            displayed on the form to the user and may be different from the
+            corresponding values posted back by the form. Usually such a map
+            is supplied as reference data by the controller. Any Map
+            implementation can be used depending on required behavior. For
+            strictly sorted maps, a <tt class="literal">SortedMap</tt> such as a
+            <tt class="literal">TreeMap</tt> with a suitable Comparator may be used
+            and for arbitrary Maps that should return values in insertion
+            order, use a <tt class="literal">LinkedHashMap</tt> or a
+            <tt class="literal">LinkedMap</tt> from commons-collections.</p></li><li><p>separator: where multiple options are available as discreet
+            elements (radio buttons or checkboxes), the sequence of characters
+            used to separate each one in the list (ie "&lt;br&gt;").</p></li><li><p>attributes: an additional string of arbitrary tags or text
+            to be included within the HTML tag itself. This string is echoed
+            literally by the macro. For example, in a textarea field you may
+            supply attributes as 'rows="5" cols="60"' or you could pass style
+            information such as 'style="border:1px solid silver"'.</p></li><li><p>classOrStyle: for the showErrors macro, the name of the CSS
+            class that the span tag wrapping each error will use. If no
+            information is supplied (or the value is empty) then the errors
+            will be wrapped in &lt;b&gt;&lt;/b&gt; tags.</p></li></ul></div><p>Examples of the macros are outlined below some in FTL and some
+        in VTL. Where usage differences exist between the two languages, they
+        are explained in the notes.</p><div class="sect4" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="d0e10992"></a>14.4.5.3.1.&nbsp;Input Fields</h5></div></div><div></div></div><pre class="programlisting">&lt;!-- the Name field example from above using form macros in VTL --&gt;
+...
+    Name:
+    #springFormInput("command.name" "")&lt;br&gt;
+    #springShowErrors("&lt;br&gt;" "")&lt;br&gt;</pre><p>The formInput macro takes the path parameter (command.name)
+          and an additional attributes parameter which is empty in the example
+          above. The macro, along with all other form generation macros,
+          performs an implicit spring bind on the path parameter. The binding
+          remains valid until a new bind occurs so the showErrors macro
+          doesn't need to pass the path parameter again - it simply operates
+          on whichever field a bind was last created for.</p><p>The showErrors macro takes a separator parameter (the
+          characters that will be used to separate multiple errors on a given
+          field) and also accepts a second parameter, this time a class name
+          or style attribute. Note that FreeMarker is able to specify default
+          values for the attributes parameter, unlike Velocity, and the two
+          macro calls above could be expressed as follows in FTL:</p><pre class="programlisting">&lt;@spring.formInput "command.name"/&gt;
+&lt;@spring.showErrors "&lt;br&gt;"/&gt;</pre><p>Output is shown below of the form fragment generating the name
+          field, and displaying a validation error after the form was
+          submitted with no value in the field. Validation occurs through
+          Spring's Validation framework.</p><p>The generated HTML looks like this:</p><pre class="programlisting">Name:
+  &lt;input type="text" name="name" value=""     
+&gt;
+&lt;br&gt;
+  &lt;b&gt;required&lt;/b&gt;
+&lt;br&gt;
+&lt;br&gt;</pre><p>The formTextarea macro works the same way as the formInput
+          macro and accepts the same parameter list. Commonly, the second
+          parameter (attributes) will be used to pass style information or
+          rows and cols attributes for the textarea.</p></div><div class="sect4" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="d0e11012"></a>14.4.5.3.2.&nbsp;Selection Fields</h5></div></div><div></div></div><p>Four selection field macros can be used to generate common UI
+          value selection inputs in your HTML forms.</p><div class="itemizedlist"><ul type="disc"><li><p>formSingleSelect</p></li><li><p>formMultiSelect</p></li><li><p>formRadioButtons</p></li><li><p>formCheckboxes</p></li></ul></div><p>Each of the four macros accepts a Map of options containing
+          the value for the form field, and the label corresponding to that
+          value. The value and the label can be the same.</p><p>An example of radio buttons in FTL is below. The form backing
+          object specifies a default value of 'London' for this field and so
+          no validation is necessary. When the form is rendered, the entire
+          list of cities to choose from is supplied as reference data in the
+          model under the name 'cityMap'.</p><pre class="programlisting">...
+  Town:
+  &lt;@spring.formRadioButtons "command.address.town", cityMap, "" /&gt;&lt;br&gt;&lt;br&gt;</pre><p>This renders a line of radio buttons, one for each value in
+          <tt class="literal">cityMap</tt> using the separator "". No additional
+          attributes are supplied (the last parameter to the macro is
+          missing). The cityMap uses the same String for each key-value pair
+          in the map. The map's keys are what the form actually submits as
+          POSTed request parameters, map values are the labels that the user
+          sees. In the example above, given a list of three well known cities
+          and a default value in the form backing object, the HTML would
+          be</p><pre class="programlisting">Town:
+&lt;input type="radio" name="address.town" value="London"
+   
+&gt;
+London
+&lt;input type="radio" name="address.town" value="Paris"
+  checked="checked" 
+&gt;
+Paris
+&lt;input type="radio" name="address.town" value="New York"
+   
+&gt;
+New York</pre><p>If your application expects to handle cities by internal codes
+          for example, the map of codes would be created with suitable keys
+          like the example below.</p><pre class="programlisting">protected Map referenceData(HttpServletRequest request) throws Exception {
+  Map cityMap = new LinkedHashMap();
+  cityMap.put("LDN", "London");
+  cityMap.put("PRS", "Paris");
+  cityMap.put("NYC", "New York");
+  
+  Map m = new HashMap();
+  m.put("cityMap", cityMap);
+  return m;
+}</pre><p>The code would now produce output where the radio values are
+          the relevant codes but the user still sees the more user friendly
+          city names.</p><pre class="programlisting">Town:
+&lt;input type="radio" name="address.town" value="LDN"
+   
+&gt;
+London
+&lt;input type="radio" name="address.town" value="PRS"
+  checked="checked" 
+&gt;
+Paris
+&lt;input type="radio" name="address.town" value="NYC"
+   
+&gt;
+New York</pre></div></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e11051"></a>14.4.5.4.&nbsp;Overriding HTML escaping and making tags XHTML
+        compliant</h4></div></div><div></div></div><p>Default usage of the form macros above will result in HTML tags
+        that are HTML 4.01 compliant and that use the default value for HTML
+        escaping defined in your web.xml as used by Spring's bind support. In
+        order to make the tags XHTML compliant or to override the default HTML
+        escaping value, you can specify two variables in your template (or in
+        your model where they will be visible to your templates). The
+        advantage of specifying them in the templates is that they can be
+        changed to different values later in the template processing to
+        provide different behavior for different fields in your form.</p><p>To switch to XHTML compliance for your tags, specify a value of
+        'true' for a model/context variable named xhtmlCompliant:</p><pre class="programlisting">## for Velocity..
+#set($springXhtmlCompliant = true)
+
+&lt;#-- for FreeMarker --&gt;
+&lt;#assign xhtmlCompliant = true in spring&gt;</pre><p>Any tags generated by the Spring macros will now be XHTML
+        compliant after processing this directive.</p><p>In similar fashion, HTML escaping can be specified per
+        field:</p><pre class="programlisting">&lt;#-- until this point, default HTML escaping is used --&gt;
+
+&lt;#assign htmlEscape = true in spring&gt;
+&lt;#-- next field will use HTML escaping --&gt;
+&lt;@spring.formInput "command.name" /&gt;
+
+&lt;#assign htmlEscape = false in spring&gt;
+&lt;#-- all future fields will be bound with HTML escaping off --&gt;</pre></div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-xslt"></a>14.5.&nbsp;XSLT</h2></div></div><div></div></div><p>XSLT is a transformation language for XML and is popular as a view
+    technology within web applications. XSLT can be a good choice as a view
+    technology if your application naturally deals with XML, or if your model
+    can easily be converted to XML. The following section shows how to produce
+    an XML document as model data and have it transformed with XSLT in a
+    Spring application.</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-xslt-firstwords"></a>14.5.1.&nbsp;My First Words</h3></div></div><div></div></div><p>This example is a trivial Spring application that creates a list
+      of words in the Controller and adds them to the model map. The map is
+      returned along with the view name of our XSLT view. See <a href="mvc.html#mvc-controller" title="13.3.&nbsp;Controllers">Section&nbsp;13.3, &#8220;Controllers&#8221;</a> for details of Spring
+      <tt class="literal">Controller</tt>s. The XSLT view will turn the list of
+      words into a simple XML document ready for transformation.</p><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-xslt-beandefs"></a>14.5.1.1.&nbsp;Bean definitions</h4></div></div><div></div></div><p>Configuration is standard for a simple Spring application. The
+        dispatcher servlet config file contains a reference to a
+        <tt class="literal">ViewResolver</tt>, URL mappings and a single controller
+        bean.. </p><pre class="programlisting">&lt;bean id="homeController"class="xslt.HomeController"/&gt; </pre><p>
+        ..that implements our word generation 'logic'.</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-xslt-controllercode"></a>14.5.1.2.&nbsp;Standard MVC controller code</h4></div></div><div></div></div><p>The controller logic is encapsulated in a subclass of
+        AbstractController, with the handler method being defined like so..
+        </p><pre class="programlisting">protected ModelAndView handleRequestInternal(
+    HttpServletRequest req,
+    HttpServletResponse resp)
+    throws Exception {
+        
+    Map map = new HashMap();
+    List wordList = new ArrayList();
+        
+    wordList.add("hello");
+    wordList.add("world");
+       
+    map.put("wordList", wordList);
+      
+    return new ModelAndView("home", map);
+} </pre><p>So far we've done nothing that's XSLT specific. The model data
+        has been created in the same way as you would for any other Spring MVC
+        application. Depending on the configuration of the application now,
+        that list of words could be rendered by JSP/JSTL by having them added
+        as request attributes, or they could be handled by Velocity by adding
+        the object to the VelocityContext. In order to have XSLT render them,
+        they of course have to be converted into an XML document somehow.
+        There are software packages available that will automatically 'domify'
+        an object graph, but within Spring, you have complete flexibility to
+        create the DOM from your model in any way you choose. This prevents
+        the transformation of XML playing too great a part in the structure of
+        your model data which is a danger when using tools to manage the
+        domification process.</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-xslt-subclassing"></a>14.5.1.3.&nbsp;Convert the model data to XML</h4></div></div><div></div></div><p>In order to create a DOM document from our list of words or any
+        other model data, we subclass
+        <tt class="literal">org.springframework.web.servlet.view.xslt.AbstractXsltView</tt>.
+        In doing so, we must implement the abstract method
+        <tt class="literal">createDomNode()</tt>. The first parameter passed to this
+        method is our model Map. Here's the complete listing of the HomePage
+        class in our trivial word application - it uses JDOM to build the XML
+        document before converting it to the required W3C Node, but this is
+        simply because I find JDOM (and Dom4J) easier API's to handle than the
+        W3C API. </p><pre class="programlisting">
+package xslt;
+
+// imports omitted for brevity
+
+public class HomePage extends AbstractXsltView {
+
+    protected Node createDomNode( 
+        Map model, String rootName, HttpServletRequest req, HttpServletResponse res
+    ) throws Exception {
+        
+        org.jdom.Document doc = new org.jdom.Document();
+        Element root = new Element(rootName);
+        doc.setRootElement(root);
+
+        List words = (List) model.get("wordList");
+        for (Iterator it = words.iterator(); it.hasNext();) {
+            String nextWord = (String) it.next();
+            Element e = new Element("word");
+            e.setText(nextWord);
+            root.addContent(e);
+        }
+
+        // convert JDOM doc to a W3C Node and return
+        return new DOMOutputter().output( doc );
+    }
+
+}</pre><div class="sect4" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="d0e11114"></a>14.5.1.3.1.&nbsp;Adding stylesheet parameters</h5></div></div><div></div></div><p>A series of parameter name/value pairs can optionally be
+          defined by your subclass which will be added to the transformation
+          object. The parameter names must match those defined in your XSLT
+          template declared with <tt class="literal">&lt;xsl:param
+          name="myParam"&gt;defaultValue&lt;/xsl:param&gt;</tt> To
+          specify the parameters, override the method
+          <tt class="literal">getParameters()</tt> from AbstractXsltView and return
+          a <tt class="literal">Map</tt> of the name/value pairs. If your parameters
+          need to derive information from the current request, you can (from
+          version 1.1) override the <tt class="literal">getParameters(HttpServletRequest
+          request)</tt> method instead.</p></div><div class="sect4" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="view-xslt-formathelper"></a>14.5.1.3.2.&nbsp;Formatting dates and currency</h5></div></div><div></div></div><p>Unlike JSTL and Velocity, XSLT has relatively poor support for
+          locale based currency and date formatting. In recognition of the
+          fact, Spring provides a helper class that you can use from within
+          your <tt class="literal">createDomNode()</tt> methods to get such support.
+          See the javadocs for
+          <tt class="literal">org.springframework.web.servlet.view.xslt.FormatHelper</tt></p></div></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-xslt-viewdefinitions"></a>14.5.1.4.&nbsp;Defining the view properties</h4></div></div><div></div></div><p>The views.properties file (or equivalent xml definition if
+        you're using an XML based view resolver as we did in the Velocity
+        examples above) looks like this for the one-view application that is
+        'My First Words'.. </p><pre class="programlisting">home.class=xslt.HomePage
+home.stylesheetLocation=/WEB-INF/xsl/home.xslt
+home.root=words</pre><p> Here, you can see how the view is tied in
+        with the HomePage class just written which handles the model
+        domification in the first property '.class'. The stylesheetLocation
+        property obviously points to the XSLT file which will handle the XML
+        transformation into HTML for us and the final property '.root' is the
+        name that will be used as the root of the XML document. This gets
+        passed to the HomePage class above in the second parameter to the
+        <tt class="literal">createDomNode</tt> method.</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-xslt-transforming"></a>14.5.1.5.&nbsp;Document transformation</h4></div></div><div></div></div><p>Finally, we have the XSLT code used for transforming the above
+        document. As highlighted in the views.properties file, it is called
+        <tt class="literal">home.xslt</tt> and it lives in the war file under
+        <tt class="literal">WEB-INF/xsl</tt>. </p><pre class="programlisting">&lt;?xml version="1.0"?&gt;
+
+&lt;xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+    &lt;xsl:output method="text/html" omit-xml-declaration="yes"/&gt;
+
+    &lt;xsl:template match="/"&gt;
+        &lt;html&gt;
+            &lt;head&gt;&lt;title&gt;Hello!&lt;/title&gt;&lt;/head&gt;
+            &lt;body&gt;
+
+                &lt;h1&gt;My First Words&lt;/h1&gt;
+                &lt;xsl:for-each select="wordList/word"&gt;
+                    &lt;xsl:value-of select="."/&gt;&lt;br /&gt;
+                &lt;/xsl:for-each&gt; 
+
+            &lt;/body&gt;
+        &lt;/html&gt;
+    &lt;/xsl:template&gt;
+
+&lt;/xsl:stylesheet&gt;</pre></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-xslt-summary"></a>14.5.2.&nbsp;Summary</h3></div></div><div></div></div><p>A summary of the files discussed and their location in the WAR
+      file is shown in the simplified WAR structure below. </p><pre class="programlisting">ProjectRoot
+  |
+  +- WebContent
+      |
+      +- WEB-INF
+          |
+          +- classes
+          |    |
+          |    +- xslt
+          |    |   |
+          |    |   +- HomePageController.class 
+          |    |   +- HomePage.class
+          |    |
+          |    +- views.properties
+          |
+          +- lib
+          |   |
+          |   +- spring.jar
+          |
+          +- xsl
+          |   |
+          |   +- home.xslt
+          |
+          +- frontcontroller-servlet.xml</pre><p> You will also need
+      to ensure that an XML parser and an XSLT engine are available on the
+      classpath. JDK 1.4 provides them by default, and most J2EE containers
+      will also make them available by default, but it's a possible source of
+      errors to be aware of.</p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-document"></a>14.6.&nbsp;Document views (PDF/Excel)</h2></div></div><div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-document-intro"></a>14.6.1.&nbsp;Introduction</h3></div></div><div></div></div><p>Returning an HTML page isn't always the best way for the user to
+      view the model output, and Spring makes it simple to generate a PDF
+      document or an Excel spreadsheet dynamically from the model data. The
+      document is the view and will be streamed from the server with the
+      correct content type to (hopefully) enable the client PC to run their
+      spreadsheet or PDF viewer application in response.</p><p>In order to use Excel views, you need to add the 'poi' library to
+      your classpath, and for PDF generation, the iText.jar. Both are included
+      in the main Spring distribution.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-document-config"></a>14.6.2.&nbsp;Configuration and setup</h3></div></div><div></div></div><p>Document based views are handled in an almost identical fashion to
+      XSLT views, and the following sections build upon the previous one by
+      demonstrating how the same controller used in the XSLT example is
+      invoked to render the same model as both a PDF document and an Excel
+      spreadsheet (which can also be viewed or manipulated in Open
+      Office).</p><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-document-configviews"></a>14.6.2.1.&nbsp;Document view definitions</h4></div></div><div></div></div><p>Firstly, let's amend the views.properties file (or xml
+        equivalent) and add a simple view definition for both document types.
+        The entire file now looks like this with the XSLT view shown from
+        earlier.. </p><pre class="programlisting">home.class=xslt.HomePage
+home.stylesheetLocation=/WEB-INF/xsl/home.xslt
+home.root=words
+
+xl.class=excel.HomePage
+
+pdf.class=pdf.HomePage</pre><p> <span class="emphasis"><em>If you want to start with a
+        template spreadsheet to add your model data to, specify the location
+        as the 'url' property in the view definition</em></span></p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-document-configcontroller"></a>14.6.2.2.&nbsp;Controller code</h4></div></div><div></div></div><p>The controller code we'll use remains exactly the same from the
+        XSLT example earlier other than to change the name of the view to use.
+        Of course, you could be clever and have this selected based on a URL
+        parameter or some other logic - proof that Spring really is very good
+        at decoupling the views from the controllers!</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-document-configsubclasses"></a>14.6.2.3.&nbsp;Subclassing for Excel views</h4></div></div><div></div></div><p>Exactly as we did for the XSLT example, we'll subclass suitable
+        abstract classes in order to implement custom behavior in generating
+        our output documents. For Excel, this involves writing a subclass of
+        <tt class="literal">org.springframework.web.servlet.view.document.AbstractExcelView</tt>
+		(for Excel files generated by POI)
+			or <tt class="literal">org.springframework.web.servlet.view.document.AbstractJExcelView</tt>
+		(for JExcelApi-generated Excel files).
+        and implementing the <tt class="literal">buildExcelDocument</tt></p><p>Here's the complete listing for our POI Excel view which displays
+        the word list from the model map in consecutive rows of the first
+        column of a new spreadsheet.. </p><pre class="programlisting">package excel;
+
+// imports omitted for brevity
+
+public class HomePage extends AbstractExcelView {
+
+    protected void buildExcelDocument(
+        Map model,
+        HSSFWorkbook wb,
+        HttpServletRequest req,
+        HttpServletResponse resp)
+        throws Exception {
+    
+        HSSFSheet sheet;
+        HSSFRow sheetRow;
+        HSSFCell cell;
+
+        // Go to the first sheet
+        // getSheetAt: only if wb is created from an existing document
+        //sheet = wb.getSheetAt( 0 );
+        sheet = wb.createSheet("Spring");
+        sheet.setDefaultColumnWidth((short)12);
+
+        // write a text at A1
+        cell = getCell( sheet, 0, 0 );
+        setText(cell,"Spring-Excel test");
+
+        List words = (List ) model.get("wordList");
+        for (int i=0; i &lt; words.size(); i++) {
+            cell = getCell( sheet, 2+i, 0 );
+            setText(cell, (String) words.get(i));
+
+        }
+    }
+}</pre><p>And this a view generating the same Excel file, now using JExcelApi: </p><pre class="programlisting">package excel;
+			
+// imports omitted for brevity
+
+public class HomePage extends AbstractExcelView {
+
+    protected void buildExcelDocument(Map model,
+        WritableWorkbook wb,
+        HttpServletRequest request,
+        HttpServletResponse response)
+    throws Exception {
+			
+        WritableSheet sheet = wb.createSheet("Spring");
+
+        sheet.addCell(new Label(0, 0, "Spring-Excel test");
+		
+        List words  = (List)model.get("wordList");
+        for (int i = -; i &lt; words.size(); i++) {
+            sheet.addCell(new Label(2+i, 0, (String)words.get(i));
+        }
+    }
+}
+</pre><p>			
+		</p><p>Note the differences between the APIs. We've found that the
+		JExcelApi is somewhat more intuitive and furthermore, JExcelApi
+		has a bit better image-handling capabilities. There have been 
+		memory problems with large Excel file when using JExcelApi however.</p><p>If you now amend the controller such that it returns
+        <tt class="literal">xl</tt> as the name of the view (<tt class="literal">return new
+        ModelAndView("xl", map);</tt>) and run your application again,
+        you should find that the Excel spreadsheet is created and downloaded
+        automatically when you request the same page as before.</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-document-configsubclasspdf"></a>14.6.2.4.&nbsp;Subclassing for PDF views</h4></div></div><div></div></div><p>The PDF version of the word list is even simpler. This time, the
+        class extends
+        <tt class="literal">org.springframework.web.servlet.view.document.AbstractPdfView</tt>
+        and implements the <tt class="literal">buildPdfDocument()</tt> method as
+        follows.. </p><pre class="programlisting">package pdf;
+
+// imports omitted for brevity
+
+public class PDFPage extends AbstractPdfView {
+
+    protected void buildPdfDocument(
+        Map model,
+        Document doc,
+        PdfWriter writer,
+        HttpServletRequest req,
+        HttpServletResponse resp)
+        throws Exception {
+        
+        List words = (List) model.get("wordList");
+        
+        for (int i=0; i&lt;words.size(); i++)
+            doc.add( new Paragraph((String) words.get(i)));
+    
+    }
+}</pre><p> Once again, amend the controller to return the
+        <tt class="literal">pdf</tt> view with a <tt class="literal">return new
+        ModelAndView("pdf", map);</tt> and reload the URL in your
+        application. This time a PDF document should appear listing each of
+        the words in the model map.</p></div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-jasper-reports"></a>14.7.&nbsp;JasperReports</h2></div></div><div></div></div><p>JasperReports (<a href="http://jasperreports.sourceforge.net" target="_top">http://jasperreports.sourceforge.net</a>) is a powerful,
+    open-source reporting engine that supports the creation of report designs
+    using an easily understood XML file formats. JasperReports is capable of
+    rendering reports output into four different formats: CSV, Excel, HTML and
+    PDF.</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jasper-reports-dependencies"></a>14.7.1.&nbsp;Dependencies</h3></div></div><div></div></div><p>Your application will need to include the latest release of
+      JasperReports, which at the time of writing was 0.6.1. JasperReports
+      itself depends on the following projects:</p><div class="itemizedlist"><ul type="bullet"><li style="list-style-type: disc"><p>BeanShell</p></li><li style="list-style-type: disc"><p>Commons BeanUtils</p></li><li style="list-style-type: disc"><p>Commons Collections</p></li><li style="list-style-type: disc"><p>Commons Digester</p></li><li style="list-style-type: disc"><p>Commons Logging</p></li><li style="list-style-type: disc"><p>iText</p></li><li style="list-style-type: disc"><p>POI</p></li></ul></div><p>JasperReports also requires a JAXP compliant XML parser.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jasper-reports-configuration"></a>14.7.2.&nbsp;Configuration</h3></div></div><div></div></div><p>To configure JasperReports views in your
+      <tt class="literal">ApplicationContext</tt> you have to define a
+      <tt class="literal">ViewResolver</tt> to map view names to the appropriate
+      view class depending on which format you want your report rendered
+      in.</p><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jasper-reports-configuration-resolver"></a>14.7.2.1.&nbsp;Configuring the <tt class="literal">ViewResolver</tt></h4></div></div><div></div></div><p>Typically, you will use the
+        <tt class="literal">ResourceBundleViewResolver</tt> to map view names to
+        view classes and files in a properties file </p><pre class="programlisting">&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.ResourceBundleViewResolver"&gt;
+    &lt;property name="basename" value="views"/&gt;
+&lt;/bean&gt;
+                  </pre><p>Here we've configured an instance of
+        <tt class="literal">ResourceBundleViewResolver</tt> which will look for view
+        mappings in the resource bundle with base name
+        <tt class="literal">views</tt>. The exact contents of this file is described
+        in the next section.</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jasper-reports-configuration-views"></a>14.7.2.2.&nbsp;Configuring the <tt class="literal">View</tt>s</h4></div></div><div></div></div><p>Spring contains five different View implementations for
+        JasperReports four of which corresponds to one of the four output
+        formats supported by JasperReports and one that allows for the format
+        to be determined at runtime:</p><div class="table"><a name="view-jasper-reports-configuration-views-classes"></a><p class="title"><b>Table&nbsp;14.2.&nbsp;JasperReports <tt class="literal">View</tt> Classes</b></p><table summary="JasperReports View Classes" border="1"><colgroup><col><col></colgroup><thead><tr><th>Class Name</th><th>Render Format</th></tr></thead><tbody><tr><td><tt class="literal">JasperReportsCsvView</tt></td><td>CSV</td></tr><tr><td><tt class="literal">JasperReportsHtmlView</tt></td><td>HTML</td></tr><tr><td><tt class="literal">JasperReportsPdfView</tt></td><td>PDF</td></tr><tr><td><tt class="literal">JasperReportsXlsView</tt></td><td>Microsoft Excel</td></tr><tr><td><tt class="literal">JasperReportsMultiFormatView</tt></td><td>Decided at runtime (see <a href="view.html#view-jasper-reports-configuration-multiformat-view" title="14.7.2.4.&nbsp;Using JasperReportsMultiFormatView">Section&nbsp;14.7.2.4, &#8220;Using JasperReportsMultiFormatView&#8221;</a>)</td></tr></tbody></table></div><p>Mapping one of these classes to a view name and a report file is
+        simply a matter of adding the appropriate entries into the resource
+        bundle configured in the previous section as shown here:</p><pre class="programlisting">simpleReport.class=org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView
+simpleReport.url=/WEB-INF/reports/DataSourceReport.jasper
+              </pre><p>Here you can see that the view with name,
+        <tt class="literal">simpleReport</tt>, is mapped to the
+        <tt class="literal">JasperReportsPdfView</tt> class. This will cause the
+        output of this report to be rendered in PDF format. The
+        <tt class="literal">url</tt> property of the view is set to the location of
+        the underlying report file.</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jasper-reports-configuration-report-files"></a>14.7.2.3.&nbsp;About Report Files</h4></div></div><div></div></div><p>JasperReports has two distinct types of report file: the design
+        file, which has a <tt class="literal">.jrxml</tt> extension, and the
+        compiled report file, which has a <tt class="literal">.jasper</tt>
+        extension. Typically, you use the JasperReports Ant task to compile
+        your <tt class="literal">.jrxml</tt> design file into a
+        <tt class="literal">.jasper</tt> file before deploying it into your
+        application. With Spring you can map either of these files to your
+        report file and Spring will take care of compiling the
+        <tt class="literal">.jrxml</tt> file on the fly for you. You should note
+        that after a <tt class="literal">.jrxml</tt> file is compiled by Spring, the
+        compiled report is cached for the life of the application. To make
+        changes to the file you will need to restart your application.</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jasper-reports-configuration-multiformat-view"></a>14.7.2.4.&nbsp;Using <tt class="literal">JasperReportsMultiFormatView</tt></h4></div></div><div></div></div><p>The <tt class="literal">JasperReportsMultiFormatView</tt> allows for
+        report format to be specified at runtime. The actual rendering of the
+        report is delegated to one of the other JasperReports view classes -
+        the <tt class="literal">JasperReportsMultiFormatView</tt> class simply adds
+        a wrapper layer that allows for the exact implementation to be
+        specified at runtime.</p><p>The <tt class="literal">JasperReportsMultiFormatView</tt> class
+        introduces two concepts: the format key and the discriminator key. The
+        <tt class="literal">JasperReportsMultiFormatView</tt> class uses the mapping
+        key to lookup the actual view implementation class and uses the format
+        key to lookup up the mapping key. From a coding perspective you add an
+        entry to your model with the formay key as the key and the mapping key
+        as the value, for example:</p><pre class="programlisting">public ModelAndView handleSimpleReportMulti(HttpServletRequest request,
+HttpServletResponse response) throws Exception {
+
+  String uri = request.getRequestURI();
+  String format = uri.substring(uri.lastIndexOf(".") + 1);
+
+  Map model = getModel();
+  model.put("format", format);
+
+  return new ModelAndView("simpleReportMulti", model);
+}</pre><p>In this example, the mapping key is determined from the
+        extension of the request URI and is added to the model under the
+        default format key: <tt class="literal">format</tt>. If you wish to use a
+        different format key then you can configure this using the
+        <tt class="literal">formatKey</tt> property of the
+        <tt class="literal">JasperReportsMultiFormatView</tt> class.</p><p>By default the following mapping key mappings are configured in
+        <tt class="literal">JasperReportsMultiFormatView</tt>: </p><div class="table"><a name="view-jasper-reports-configuration-multiformat-view-mappings"></a><p class="title"><b>Table&nbsp;14.3.&nbsp;JasperReportsMultiFormatView Default Mapping Key
+            Mappings</b></p><table summary="JasperReportsMultiFormatView Default Mapping Key&#xA;            Mappings" border="1"><colgroup><col><col></colgroup><thead><tr><th>Mapping Key</th><th>View Class</th></tr></thead><tbody><tr><td>csv</td><td><tt class="literal">JasperReportsCsvView</tt></td></tr><tr><td>html</td><td><tt class="literal">JasperReportsHtmlView</tt></td></tr><tr><td>pdf</td><td><tt class="literal">JasperReportsPdfView</tt></td></tr><tr><td>xls</td><td><tt class="literal">JasperReportsXlsView</tt></td></tr></tbody></table></div><p> So in the example above a request to URI /foo/myReport.pdf
+        would be mapped to the <tt class="literal">JasperReportsPdfView</tt> class.
+        You can override the mapping key to view class mappings using the
+        <tt class="literal">formatMappings</tt> property of
+        <tt class="literal">JasperReportsMultiFormatView</tt>.</p></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jasper-reports-model"></a>14.7.3.&nbsp;Populating the <tt class="literal">ModelAndView</tt></h3></div></div><div></div></div><p>In order to render your report correctly in the format you have
+      chosen, you must supply Spring with all of the data needed to populate
+      your report. For JasperReports this means you must pass in all report
+      parameters along with the report datasource. Report parameters are
+      simple name/value pairs and can be added be to the
+      <tt class="literal">Map</tt> for your model as you would add any name/value
+      pair.</p><p>When adding the datasource to the model you have two approaches to
+      choose from. The first approach is to add an instance of
+      <tt class="literal">JRDataSource</tt> or <tt class="literal">Collection</tt> to the
+      model <tt class="literal">Map</tt> under any arbitrary key. Spring will then
+      locate this object in the model and treat it as the report datasource.
+      For example, you may populate your model like this: </p><pre class="programlisting">private Map getModel() {
+  Map model = new HashMap();
+  Collection beanData = getBeanData();
+  model.put("myBeanData", beanData);
+  return model;
+}</pre><p>The second approach is to add the instance of
+      <tt class="literal">JRDataSource</tt> or <tt class="literal">Collection</tt> under a
+      specific key and then configure this key using the
+      <tt class="literal">reportDataKey</tt> property of the view class. In both
+      cases Spring will instances of <tt class="literal">Collection</tt> in a
+      <tt class="literal">JRBeanCollectionDataSource</tt> instance. For example:
+      </p><pre class="programlisting">private Map getModel() {
+  Map model = new HashMap();
+  Collection beanData = getBeanData();
+  Collection someData = getSomeData();
+  model.put("myBeanData", beanData);
+  model.put("someData", someData);
+  return model;
+}</pre><p> Here you can see that two <tt class="literal">Collection</tt>
+      instances are being added to the model. To ensure that the correct one
+      is used, we simply modify our view configuration as appropriate:
+      </p><pre class="programlisting">simpleReport.class=org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView
+simpleReport.url=/WEB-INF/reports/DataSourceReport.jasper
+simpleReport.reportDataKey=myBeanData
+              </pre><p>Be aware that when using the first approach, Spring will use the
+      first instance of <tt class="literal">JRDataSource</tt> or
+      <tt class="literal">Collection</tt> that it encounters. If you need to place
+      multiple instances of <tt class="literal">JRDataSource</tt> or
+      <tt class="literal">Collection</tt> into the model then you need to use the
+      second approach.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jasper-reports-subreports"></a>14.7.4.&nbsp;Working with Sub-Reports</h3></div></div><div></div></div><p>JasperReports provides support for embedded sub-reports within
+      your master report files. There are a wide variety of mechanisms for
+      including sub-reports in your report files. The easiest way is to hard
+      code the report path and the SQL query for the sub report into your
+      design files. The drawback of this approach is obvious - the values are
+      hard-coded into your report files reducing reusability and making it
+      harder to modify and update report designs. To overcome this you can
+      configure sub-reports declaratively and you can include additional data
+      for these sub-reports directly from your controllers.</p><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jasper-reports-subreports-config-reports"></a>14.7.4.1.&nbsp;Configuring Sub-Report Files</h4></div></div><div></div></div><p>To control which sub-report files are included in a master
+        report using Spring, your report file must be configured to accept
+        sub-reports from an external source. To do this you declare a
+        parameter in your report file like this: </p><pre class="programlisting">&lt;parameter name="ProductsSubReport" class="net.sf.jasperreports.engine.JasperReport"/&gt;</pre><p>
+        Then, you define your sub-report to use this sub-report parameter:
+        </p><pre class="programlisting">&lt;subreport&gt;
+    &lt;reportElement isPrintRepeatedValues="false" x="5" y="25" width="325"
+        height="20" isRemoveLineWhenBlank="true" backcolor="#ffcc99"/&gt;
+    &lt;subreportParameter name="City"&gt;
+        &lt;subreportParameterExpression&gt;&lt;![CDATA[$F{city}]]&gt;&lt;/subreportParameterExpression&gt;
+    &lt;/subreportParameter&gt;
+    &lt;dataSourceExpression&gt;&lt;![CDATA[$P{SubReportData}]]&gt;&lt;/dataSourceExpression&gt;
+    &lt;subreportExpression class="net.sf.jasperreports.engine.JasperReport"&gt;
+                  &lt;![CDATA[$P{ProductsSubReport}]]&gt;&lt;/subreportExpression&gt;
+&lt;/subreport&gt;</pre><p> This defines a master report file that
+        expects the sub-report to be passed in as an instance of
+        <tt class="literal">net.sf.jasperreports.engine.JasperReports</tt> under the
+        parameter <tt class="literal">ProductsSubReport</tt>. When configuring your
+        Jasper view class, you can instruct Spring to load a report file and
+        pass into the JasperReports engine as a sub-report using the
+        <tt class="literal">subReportUrls</tt> property: </p><pre class="programlisting">&lt;property name="subReportUrls"&gt;
+    &lt;map&gt;
+        &lt;entry key="ProductsSubReport" value="/WEB-INF/reports/subReportChild.jrxml"/&gt;
+    &lt;/map&gt;
+&lt;/property&gt;</pre><p> Here, the key of the <tt class="literal">Map</tt>
+        corresponds to the name of the sub-report parameter in th report
+        design file, and the entry is the URL of the report file. Spring will
+        load this report file, compiling it if necessary, and will pass into
+        the JasperReports engine under the given key.</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jasper-reports-subreports-config-datasources"></a>14.7.4.2.&nbsp;Configuring Sub-Report Data Sources</h4></div></div><div></div></div><p>This step is entirely optional when using Spring configure your
+        sub-reports. If you wish, you can still configure the data source for
+        your sub-reports using static queries. However, if you want Spring to
+        convert data returned in your <tt class="literal">ModelAndView</tt> into
+        instances of <tt class="literal">JRDataSource</tt> then you need to specify
+        which of the parameters in your <tt class="literal">ModelAndView</tt> Spring
+        should convert. To do this configure the list of parameter names using
+        the <tt class="literal">subReportDataKeys</tt> property of the your chosen
+        view class: </p><pre class="programlisting">&lt;property name="subReportDataKeys"
+    value="SubReportData"/&gt;</pre><p> Here, the key you supply MUST
+        correspond to both the key used in your <tt class="literal">ModelAndView</tt>
+        and the key used in your report design file.</p></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jasper-reports-exporter-parameters"></a>14.7.5.&nbsp;Configuring Exporter Parameters</h3></div></div><div></div></div><p>If you have special requirements for exporter configuration -
+      perhaps you want a specific page size for your PDF report, then you can
+      configure these exporter parameters declaratively in your Spring
+      configuration file using the <tt class="literal">exporterParameters</tt>
+      property of the view class. The <tt class="literal">exporterParameters</tt>
+      property is typed as <tt class="literal">Map</tt> and in your configuration
+      the key of an entry should be the fully-qualified name of a static field
+      that contains the exporter parameter definition and the value of an
+      entry should be the value you want to assign to the parameter. An
+      example of this is shown below: </p><pre class="programlisting">&lt;bean id="htmlReport" class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"&gt;
+  &lt;property name="url" value="/WEB-INF/reports/simpleReport.jrxml"/&gt;
+  &lt;property name="exporterParameters"&gt;
+    &lt;map&gt;
+      &lt;entry key="net.sf.jasperreports.engine.export.JRHtmlExporterParameter.HTML_FOOTER"&gt;
+        &lt;value&gt;Footer by Spring!
+          &amp;lt;/td&amp;gt;&amp;lt;td width="50%"&amp;gt;&amp;amp;nbsp; &amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;
+          &amp;lt;/table&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;
+        &lt;/value&gt;
+      &lt;/entry&gt;
+    &lt;/map&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p> Here you can see that the
+      <tt class="literal">JasperReportsHtmlView</tt> is being configured with an
+      exporter parameter for
+      <tt class="literal">net.sf.jasperreports.engine.export.JRHtmlExporterParameter.HTML_FOOTER</tt>
+      which will output a footer in the resulting HTML.</p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="mvc.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="webintegration.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;13.&nbsp;Web MVC framework&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;15.&nbsp;Integrating with other web frameworks</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

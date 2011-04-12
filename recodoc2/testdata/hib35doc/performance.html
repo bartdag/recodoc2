@@ -1,0 +1,826 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 20. Improving performance</title><link rel="stylesheet" href="css/hibernate.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="up" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="prev" href="xml.html" title="Chapter 19. XML Mapping"/><link rel="next" href="toolsetguide.html" title="Chapter 21. Toolset Guide"/><link rel="copyright" href="Legal_Notice.html" title="Legal Notice"/></head><body><p id="title"><a href="http://www.hibernate.org" class="site_href"><strong>Hibernate.org</strong></a><a href="http://hibernate.org/Documentation/DocumentationOverview" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="xml.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="toolsetguide.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="performance"/>Chapter 20. Improving performance</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="performance.html#performance-fetching">20.1. Fetching strategies</a></span></dt><dd><dl><dt><span class="section"><a href="performance.html#performance-fetching-lazy">20.1.1. Working with lazy associations</a></span></dt><dt><span class="section"><a href="performance.html#performance-fetching-custom">20.1.2. Tuning fetch strategies</a></span></dt><dt><span class="section"><a href="performance.html#performance-fetching-proxies">20.1.3. Single-ended association proxies</a></span></dt><dt><span class="section"><a href="performance.html#performance-fetching-initialization">20.1.4. Initializing collections and proxies</a></span></dt><dt><span class="section"><a href="performance.html#performance-fetching-batch">20.1.5. Using batch fetching</a></span></dt><dt><span class="section"><a href="performance.html#performance-fetching-subselect">20.1.6. Using subselect fetching</a></span></dt><dt><span class="section"><a href="performance.html#performance-fetching-profiles">20.1.7. Fetch profiles</a></span></dt><dt><span class="section"><a href="performance.html#performance-fetching-lazyproperties">20.1.8. Using lazy property fetching</a></span></dt></dl></dd><dt><span class="section"><a href="performance.html#performance-cache">20.2. The Second Level Cache</a></span></dt><dd><dl><dt><span class="section"><a href="performance.html#performance-cache-mapping">20.2.1. Cache mappings</a></span></dt><dt><span class="section"><a href="performance.html#performance-cache-readonly">20.2.2. Strategy: read only</a></span></dt><dt><span class="section"><a href="performance.html#performance-cache-readwrite">20.2.3. Strategy: read/write</a></span></dt><dt><span class="section"><a href="performance.html#performance-cache-nonstrict">20.2.4. Strategy: nonstrict read/write</a></span></dt><dt><span class="section"><a href="performance.html#performance-cache-transactional">20.2.5. Strategy: transactional</a></span></dt><dt><span class="section"><a href="performance.html#performance-cache-compat-matrix">20.2.6. Cache-provider/concurrency-strategy compatibility</a></span></dt></dl></dd><dt><span class="section"><a href="performance.html#performance-sessioncache">20.3. Managing the caches</a></span></dt><dt><span class="section"><a href="performance.html#performance-querycache">20.4. The Query Cache</a></span></dt><dd><dl><dt><span class="section"><a href="performance.html#performance-querycache-enable">20.4.1. Enabling query caching</a></span></dt><dt><span class="section"><a href="performance.html#performance-querycache-regions">20.4.2. Query cache regions</a></span></dt></dl></dd><dt><span class="section"><a href="performance.html#performance-collections">20.5. Understanding Collection performance</a></span></dt><dd><dl><dt><span class="section"><a href="performance.html#performance-collections-taxonomy">20.5.1. Taxonomy</a></span></dt><dt><span class="section"><a href="performance.html#performance-collections-mostefficientupdate">20.5.2. Lists, maps, idbags and sets are the most efficient collections to update</a></span></dt><dt><span class="section"><a href="performance.html#performance-collections-mostefficentinverse">20.5.3. Bags and lists are the most efficient inverse collections</a></span></dt><dt><span class="section"><a href="performance.html#performance-collections-oneshotdelete">20.5.4. One shot delete</a></span></dt></dl></dd><dt><span class="section"><a href="performance.html#performance-monitoring">20.6. Monitoring performance</a></span></dt><dd><dl><dt><span class="section"><a href="performance.html#performance-monitoring-sf">20.6.1. Monitoring a SessionFactory</a></span></dt><dt><span class="section"><a href="performance.html#performance-monitoring-metrics">20.6.2. Metrics</a></span></dt></dl></dd></dl></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="performance-fetching"/>20.1. Fetching strategies</h2></div></div></div><p>
+            Hibernate uses a <span class="emphasis"><em>fetching strategy</em></span> to
+            retrieve associated objects if the application needs to navigate the association. 
+            Fetch strategies can be declared in the O/R mapping metadata, or over-ridden by a 
+            particular HQL or <code class="literal">Criteria</code> query.
+        </p><p>
+            Hibernate3 defines the following fetching strategies:
+        </p><div class="itemizedlist"><ul><li><p>
+                    <span class="emphasis"><em>Join fetching</em></span>: Hibernate retrieves the
+                    associated instance or collection in the same <code class="literal">SELECT</code>,
+                    using an <code class="literal">OUTER JOIN</code>.
+                </p></li><li><p>
+                    <span class="emphasis"><em>Select fetching</em></span>: a second <code class="literal">SELECT</code>
+                    is used to retrieve the associated entity or collection. Unless
+                    you explicitly disable lazy fetching by specifying <code class="literal">lazy="false"</code>, 
+                    this second select will only be executed when you access the
+                    association.
+                </p></li><li><p>
+                    <span class="emphasis"><em>Subselect fetching</em></span>: a second <code class="literal">SELECT</code>
+                    is used to retrieve the associated collections for all entities retrieved in a
+                    previous query or fetch. Unless you explicitly disable lazy fetching by specifying 
+                    <code class="literal">lazy="false"</code>, this second select will only be executed when you 
+                    access the association.
+                </p></li><li><p>
+                    <span class="emphasis"><em>Batch fetching</em></span>: an optimization strategy
+                    for select fetching. Hibernate retrieves a batch of entity instances 
+                    or collections in a single <code class="literal">SELECT</code> by specifying 
+                    a list of primary or foreign keys.
+                </p></li></ul></div><p>
+            Hibernate also distinguishes between:
+        </p><div class="itemizedlist"><ul><li><p>
+                    <span class="emphasis"><em>Immediate fetching</em></span>: an association, collection or
+                    attribute is fetched immediately when the owner is loaded.
+                </p></li><li><p>
+                    <span class="emphasis"><em>Lazy collection fetching</em></span>: a collection is fetched 
+                    when the application invokes an operation upon that collection. This
+                    is the default for collections.
+                </p></li><li><p>
+                    <span class="emphasis"><em>"Extra-lazy" collection fetching</em></span>: individual
+                    elements of the collection are accessed from the database as needed.
+                    Hibernate tries not to fetch the whole collection into memory unless
+                    absolutely needed. It is suitable for large collections.
+                </p></li><li><p>
+                    <span class="emphasis"><em>Proxy fetching</em></span>: a single-valued association is 
+                    fetched when a method other than the identifier getter is invoked
+                    upon the associated object.
+                </p></li><li><p>
+                    <span class="emphasis"><em>"No-proxy" fetching</em></span>: a single-valued association is 
+                    fetched when the instance variable is accessed. Compared to proxy fetching, 
+                    this approach is less lazy; the association is fetched even when only the 
+                    identifier is accessed.  It is also more transparent, since no proxy is visible to 
+                    the application. This approach requires buildtime bytecode instrumentation 
+                    and is rarely necessary.
+                </p></li><li><p>
+                    <span class="emphasis"><em>Lazy attribute fetching</em></span>: an attribute or single
+                    valued association is fetched when the instance variable is accessed. 
+                    This approach requires buildtime bytecode instrumentation and is rarely 
+                    necessary.
+                </p></li></ul></div><p>
+            We have two orthogonal notions here: <span class="emphasis"><em>when</em></span> is the association
+            fetched and <span class="emphasis"><em>how</em></span> is it fetched. It is important that you do not
+            confuse them. We use <code class="literal">fetch</code> to tune performance. We can use 
+            <code class="literal">lazy</code> to define a contract for what data is always available 
+            in any detached instance of a particular class.
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-fetching-lazy"/>20.1.1. Working with lazy associations</h3></div></div></div><p>
+                By default, Hibernate3 uses lazy select fetching for collections and lazy proxy
+                fetching for single-valued associations. These defaults make sense for most
+                associations in the majority of applications. 
+            </p><p>
+                If you set 
+                <code class="literal">hibernate.default_batch_fetch_size</code>, Hibernate will use the 
+                batch fetch optimization for lazy fetching. This optimization can also be enabled 
+                at a more granular level.
+            </p><p>
+                Please be aware that access to a 
+                lazy association outside of the context of an open Hibernate session will result 
+                in an exception. For example:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_plain">s&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sessions</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">openSession</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;s</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<!--  --><br/><span class="java_type">User</span><span class="java_plain">&nbsp;u&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">User</span><span class="java_separator">)</span><span class="java_plain">&nbsp;s</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span><span class="java_literal">&quot;from&nbsp;User&nbsp;u&nbsp;where&nbsp;u.name=:userName&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setString</span><span class="java_separator">(</span><span class="java_literal">&quot;userName&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;userName</span><span class="java_separator">).</span><span class="java_plain">uniqueResult</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Map</span><span class="java_plain">&nbsp;permissions&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;u</span><span class="java_separator">.</span><span class="java_plain">getPermissions</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_plain">tx</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">s</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_type">Integer</span><span class="java_plain">&nbsp;accessLevel&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Integer</span><span class="java_separator">)</span><span class="java_plain">&nbsp;permissions</span><span class="java_separator">.</span><span class="java_plain">get</span><span class="java_separator">(</span><span class="java_literal">&quot;accounts&quot;</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Error</span><span class="java_operator">!</span></pre><p>
+                Since the permissions collection was not initialized when the 
+                <code class="literal">Session</code> was closed, the collection will not be able to 
+                load its state. <span class="emphasis"><em>Hibernate does not support lazy initialization 
+                for detached objects</em></span>. This can be fixed by moving the code that reads 
+                from the collection to just before the transaction is committed.
+            </p><p>
+                Alternatively, you can use a non-lazy collection or association, 
+                by specifying <code class="literal">lazy="false"</code> for the association mapping.
+                However, it is intended that lazy initialization be used for almost all 
+                collections and associations. If you define too many non-lazy associations 
+                in your object model, Hibernate will fetch the entire 
+                database into memory in every transaction.
+            </p><p>
+                On the other hand, you can use join fetching, which is non-lazy by 
+                nature, instead of select fetching in a particular transaction. We will now explain
+                how to customize the fetching strategy. In Hibernate3, the mechanisms for
+                choosing a fetch strategy are identical for single-valued associations and
+                collections.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-fetching-custom"/>20.1.2. Tuning fetch strategies</h3></div></div></div><p>
+                Select fetching (the default) is extremely vulnerable to N+1 selects problems, 
+                so we might want to enable join fetching in the mapping document:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">set</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;permissions&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">fetch</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;join&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;userId&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Permission&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">set</span><span class="xml_plain"></span><br />
+</pre><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">many-to-one</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;mother&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Cat&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">fetch</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;join&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                The <code class="literal">fetch</code> strategy defined in the mapping document affects:
+            </p><div class="itemizedlist"><ul><li><p>
+                    retrieval via <code class="literal">get()</code> or <code class="literal">load()</code>
+                </p></li><li><p>
+                    retrieval that happens implicitly when an association is navigated
+                </p></li><li><p>
+                    <code class="literal">Criteria</code> queries
+                </p></li><li><p>
+                    HQL queries if <code class="literal">subselect</code> fetching is used
+                </p></li></ul></div><p>
+                Irrespective of the fetching strategy you use, the defined non-lazy graph is guaranteed
+                to be loaded into memory. This might, however, result in several immediate selects
+                being used to execute a particular HQL query.
+            </p><p>
+                Usually, the mapping document is not used to customize fetching. Instead, we
+                keep the default behavior, and override it for a particular transaction, using 
+                <code class="literal">left join fetch</code> in HQL. This tells Hibernate to fetch 
+                the association eagerly in the first select, using an outer join. In the
+                <code class="literal">Criteria</code> query API, you would use
+                <code class="literal">setFetchMode(FetchMode.JOIN)</code>.
+            </p><p>
+                If you want to change the fetching strategy used by
+                <code class="literal">get()</code> or <code class="literal">load()</code>, you can use a 
+                <code class="literal">Criteria</code> query. For example:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">User</span><!-- <br/> --><span class="java_plain">&nbsp;user&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">User</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createCriteria</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">User</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setFetchMode</span><span class="java_separator">(</span><span class="java_literal">&quot;permissions&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">FetchMode</span><span class="java_separator">.</span><span class="java_plain">JOIN</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">add</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_type">Restrictions</span><span class="java_separator">.</span><span class="java_plain">idEq</span><span class="java_separator">(</span><span class="java_plain">userId</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">uniqueResult</span><span class="java_separator">();</span></pre><p>
+                This is Hibernate's equivalent of what some ORM solutions call a "fetch plan".
+            </p><p>
+                A completely different approach to problems with N+1 selects is to use the 
+                second-level cache.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-fetching-proxies"/>20.1.3. Single-ended association proxies</h3></div></div></div><p>
+                Lazy fetching for collections is implemented using Hibernate's own implementation
+                of persistent collections. However, a different mechanism is needed for lazy
+                behavior in single-ended associations. The target entity of the association must
+                be proxied. Hibernate implements lazy initializing proxies for persistent objects
+                using runtime bytecode enhancement which is accessed via the CGLIB library.
+            </p><p>
+                At startup, Hibernate3 generates proxies by default for all persistent classes
+                and uses them to enable lazy fetching of <code class="literal">many-to-one</code> and
+                <code class="literal">one-to-one</code> associations.
+            </p><p>
+                The mapping file may declare an interface to use as the proxy interface for that
+                class, with the <code class="literal">proxy</code> attribute. By default, Hibernate uses a subclass
+                of the class. <span class="emphasis"><em>The proxied class must implement a default constructor
+                with at least package visibility. This constructor is recommended for all persistent classes</em></span>.
+            </p><p>
+                There are potential problems to note when extending this approach to polymorphic classes.For example:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Cat&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">proxy</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Cat&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;......</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">subclass</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;DomesticCat&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.....</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">subclass</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                Firstly, instances of <code class="literal">Cat</code> will never be castable to
+                <code class="literal">DomesticCat</code>, even if the underlying instance is an
+                instance of <code class="literal">DomesticCat</code>:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_plain">&nbsp;cat&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">load</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;id</span><!-- <br/> --><span class="java_separator">);</span><!-- <br/> --><span class="java_plain">&nbsp;&nbsp;</span><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">&nbsp;instantiate&nbsp;a&nbsp;proxy&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">does&nbsp;not&nbsp;hit&nbsp;the&nbsp;db</span><!-- <br/> --><span class="java_separator">)</span>
+<!--  --><br/><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;cat</span><span class="java_separator">.</span><span class="java_plain">isDomesticCat</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;hit&nbsp;the&nbsp;db&nbsp;to&nbsp;initialize&nbsp;the&nbsp;proxy</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">DomesticCat</span><span class="java_plain">&nbsp;dc&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">DomesticCat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;cat</span><span class="java_separator">;</span><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Error</span><span class="java_operator">!</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">....</span>
+<!--  --><br/><span class="java_separator">}</span></pre><p>
+                Secondly, it is possible to break proxy <code class="literal">==</code>:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_plain">&nbsp;cat&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">load</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;id</span><!-- <br/> --><span class="java_separator">);</span><!-- <br/> --><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">&nbsp;instantiate&nbsp;a&nbsp;</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_plain">&nbsp;proxy</span>
+<!--  --><br/><span class="java_type">DomesticCat</span><span class="java_plain">&nbsp;dc&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">(</span><span class="java_type">DomesticCat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">load</span><span class="java_separator">(</span><span class="java_type">DomesticCat</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">,</span><span class="java_plain">&nbsp;id</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;acquire&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">DomesticCat</span><span class="java_plain">&nbsp;proxy</span><span class="java_operator">!</span>
+<!--  --><br/><span class="java_type">System</span><span class="java_separator">.</span><span class="java_plain">out</span><span class="java_separator">.</span><span class="java_plain">println</span><span class="java_separator">(</span><span class="java_plain">cat</span><span class="java_operator">==</span><span class="java_plain">dc</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_literal">false</span></pre><p>
+                However, the situation is not quite as bad as it looks. Even though we now have two references
+                to different proxy objects, the underlying instance will still be the same object:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_plain">cat</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">setWeight</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">11.0</span><!-- <br/> --><span class="java_separator">);</span><!-- <br/> --><span class="java_plain">&nbsp;&nbsp;</span><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">&nbsp;hit&nbsp;the&nbsp;db&nbsp;to&nbsp;initialize&nbsp;the&nbsp;proxy</span>
+<!--  --><br/><span class="java_type">System</span><span class="java_separator">.</span><span class="java_plain">out</span><span class="java_separator">.</span><span class="java_plain">println</span><span class="java_separator">(</span><span class="java_plain">&nbsp;dc</span><span class="java_separator">.</span><span class="java_plain">getWeight</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_literal">11.0</span></pre><p>
+                Third, you cannot use a CGLIB proxy for a <code class="literal">final</code> class or a class
+                with any <code class="literal">final</code> methods.
+            </p><p>
+                Finally, if your persistent object acquires any resources upon instantiation (e.g. in
+                initializers or default constructor), then those resources will also be acquired by
+                the proxy. The proxy class is an actual subclass of the persistent class.
+            </p><p>
+                These problems are all due to fundamental limitations in Java's single inheritance model.
+                To avoid these problems your persistent classes must each implement an interface
+                that declares its business methods. You should specify these interfaces in the mapping file where 
+		<code class="literal">CatImpl</code> implements the interface <code class="literal">Cat</code> and <code class="literal">DomesticCatImpl</code>
+	        implements the interface <code class="literal">DomesticCat</code>. For example: 
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;CatImpl&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">proxy</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Cat&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;......</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">subclass</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;DomesticCatImpl&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">proxy</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;DomesticCat&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.....</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">subclass</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                Then proxies for instances of <code class="literal">Cat</code> and <code class="literal">DomesticCat</code> can be returned
+                by <code class="literal">load()</code> or <code class="literal">iterate()</code>. 
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_plain">&nbsp;cat&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">load</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">CatImpl</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;catid</span><!-- <br/> --><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">Iterator</span><span class="java_plain">&nbsp;iter&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span><span class="java_literal">&quot;from&nbsp;CatImpl&nbsp;as&nbsp;cat&nbsp;where&nbsp;cat.name='fritz'&quot;</span><span class="java_separator">).</span><span class="java_plain">iterate</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Cat</span><span class="java_plain">&nbsp;fritz&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;iter</span><span class="java_separator">.</span><span class="java_plain">next</span><span class="java_separator">();</span></pre><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="note"><h2>Note</h2><p>
+		<code class="literal">list()</code> does not usually return proxies.
+	    </p></div><p>
+                Relationships are also lazily initialized. This means you must declare any properties to be of
+                type <code class="literal">Cat</code>, not <code class="literal">CatImpl</code>.
+            </p><p>
+                Certain operations do <span class="emphasis"><em>not</em></span> require proxy initialization:
+            </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                        <code class="literal">equals()</code>: if the persistent class does not override
+                        <code class="literal">equals()</code>
+                    </p></li><li><p>
+                        <code class="literal">hashCode()</code>: if the persistent class does not override
+                        <code class="literal">hashCode()</code>
+                    </p></li><li><p>
+                        The identifier getter method
+                    </p></li></ul></div><p>
+                Hibernate will detect persistent classes that override <code class="literal">equals()</code> or
+                <code class="literal">hashCode()</code>.
+            </p><p>
+                By choosing <code class="literal">lazy="no-proxy"</code> instead of the default 
+                <code class="literal">lazy="proxy"</code>, you can avoid problems associated with typecasting.
+                However, buildtime bytecode instrumentation is required, and all operations
+                will result in immediate proxy initialization.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-fetching-initialization"/>20.1.4. Initializing collections and proxies</h3></div></div></div><p>
+                A <code class="literal">LazyInitializationException</code> will be thrown by Hibernate if an uninitialized 
+                collection or proxy is accessed outside of the scope of the <code class="literal">Session</code>, i.e., when 
+                the entity owning the collection or having the reference to the proxy is in the detached state.
+            </p><p>
+                Sometimes a proxy or collection needs to be initialized before closing the
+                <code class="literal">Session</code>. You can force initialization by calling
+                <code class="literal">cat.getSex()</code> or <code class="literal">cat.getKittens().size()</code>, for example.
+                However, this can be confusing to readers of the code and it is not convenient for generic code.
+            </p><p>
+                The static methods <code class="literal">Hibernate.initialize()</code> and <code class="literal">Hibernate.isInitialized()</code>,
+                provide the application with a convenient way of working with lazily initialized collections or
+                proxies. <code class="literal">Hibernate.initialize(cat)</code> will force the initialization of a proxy,
+                <code class="literal">cat</code>, as long as its <code class="literal">Session</code> is still open.
+                <code class="literal">Hibernate.initialize( cat.getKittens() )</code> has a similar effect for the collection
+                of kittens.
+            </p><p>
+                Another option is to keep the <code class="literal">Session</code> open until all required
+                collections and proxies have been loaded. In some application architectures,
+                particularly where the code that accesses data using Hibernate, and the code that
+                uses it are in different application layers or different physical processes, it 
+                can be a problem to ensure that the <code class="literal">Session</code> is open when a 
+                collection is initialized. There are two basic ways to deal with this issue:
+            </p><div class="itemizedlist"><ul><li><p>
+                        In a web-based application, a servlet filter can be used to close the
+                        <code class="literal">Session</code> only at the end of a user request, once
+                        the rendering of the view is complete (the <span class="emphasis"><em>Open Session in
+                        View</em></span> pattern).  Of course, this places heavy demands on the 
+                        correctness of the exception handling of your application infrastructure. 
+                        It is vitally important that the <code class="literal">Session</code> is closed and the 
+                        transaction ended before returning to the user, even when an exception occurs 
+                        during rendering of the view. See the Hibernate Wiki for examples of this
+                        "Open Session in View" pattern.
+                    </p></li><li><p>
+                        In an application with a separate business tier, the business logic must
+                        "prepare" all collections that the web tier needs before
+                        returning. This means that the business tier should load all the data and
+                        return all the data already initialized to the presentation/web tier that
+                        is required for a particular use case. Usually, the application calls
+                        <code class="literal">Hibernate.initialize()</code> for each collection that will
+                        be needed in the web tier (this call must occur before the session is closed)
+                        or retrieves the collection eagerly using a Hibernate query with a
+                        <code class="literal">FETCH</code> clause or a <code class="literal">FetchMode.JOIN</code> in
+                        <code class="literal">Criteria</code>. This is usually easier if you adopt the
+                        <span class="emphasis"><em>Command</em></span> pattern instead of a <span class="emphasis"><em>Session Facade</em></span>.
+                    </p></li><li><p>
+                        You can also attach a previously loaded object to a new <code class="literal">Session</code>
+                        with <code class="literal">merge()</code> or <code class="literal">lock()</code> before
+                        accessing uninitialized collections or other proxies. Hibernate does not,
+                        and certainly <span class="emphasis"><em>should</em></span> not, do this automatically since it 
+                        would introduce impromptu transaction semantics.
+                    </p></li></ul></div><p>
+                Sometimes you do not want to initialize a large collection, but still need some
+                information about it, like its size, for example, or a subset of the data.
+            </p><p>
+                You can use a collection filter to get the size of a collection without initializing it:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Integer</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;s</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createFilter</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">&nbsp;collection</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_literal">&quot;select&nbsp;count(*)&quot;</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">).</span><!-- <br/> --><span class="java_plain">list</span><!-- <br/> --><span class="java_separator">().</span><!-- <br/> --><span class="java_plain">get</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">0</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">).</span><!-- <br/> --><span class="java_plain">intValue</span><!-- <br/> --><span class="java_separator">()</span></pre><p>
+                The <code class="literal">createFilter()</code> method is also used to efficiently retrieve subsets
+                of a collection without needing to initialize the whole collection:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_plain">s</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createFilter</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">&nbsp;lazyCollection</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_literal">&quot;&quot;</span><!-- <br/> --><span class="java_separator">).</span><!-- <br/> --><span class="java_plain">setFirstResult</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">0</span><!-- <br/> --><span class="java_separator">).</span><!-- <br/> --><span class="java_plain">setMaxResults</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">10</span><!-- <br/> --><span class="java_separator">).</span><!-- <br/> --><span class="java_plain">list</span><!-- <br/> --><span class="java_separator">();</span></pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-fetching-batch"/>20.1.5. Using batch fetching</h3></div></div></div><p>
+                Using batch fetching, Hibernate can load several uninitialized
+                proxies if one proxy is accessed. Batch fetching is an optimization of the lazy select
+                fetching strategy. There are two ways you can configure batch fetching: on the class level and the collection level.
+            </p><p>
+                Batch fetching for classes/entities is easier to understand. Consider the following example:
+                at runtime you have 25 <code class="literal">Cat</code> instances loaded in a <code class="literal">Session</code>, and each
+                <code class="literal">Cat</code> has a reference to its <code class="literal">owner</code>, a <code class="literal">Person</code>.
+                The <code class="literal">Person</code> class is mapped with a proxy, <code class="literal">lazy="true"</code>. If you now
+                iterate through all cats and call <code class="literal">getOwner()</code> on each, Hibernate will, by default,
+                execute 25 <code class="literal">SELECT</code> statements to retrieve the proxied owners. You can tune this
+                behavior by specifying a <code class="literal">batch-size</code> in the mapping of <code class="literal">Person</code>:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Person&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">batch-size</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;10&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain">...</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                Hibernate will now execute only three queries: the pattern is 10, 10, 5.
+            </p><p>
+                You can also enable batch fetching of collections. For example, if each <code class="literal">Person</code> has
+                a lazy collection of <code class="literal">Cat</code>s, and 10 persons are currently loaded in the
+                <code class="literal">Session</code>, iterating through all persons will generate 10 <code class="literal">SELECT</code>s,
+                one for every call to <code class="literal">getCats()</code>. If you enable batch fetching for the
+                <code class="literal">cats</code> collection in the mapping of <code class="literal">Person</code>, Hibernate can pre-fetch
+                collections:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Person&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">set</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;cats&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">batch-size</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;3&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                With a <code class="literal">batch-size</code> of 3, Hibernate will load 3, 3, 3, 1 collections in four
+                <code class="literal">SELECT</code>s. Again, the value of the attribute depends on the expected number of
+                uninitialized collections in a particular <code class="literal">Session</code>.
+            </p><p>
+                Batch fetching of collections is particularly useful if you have a nested tree of items, i.e.
+                the typical bill-of-materials pattern. However, a <span class="emphasis"><em>nested set</em></span> or a
+                <span class="emphasis"><em>materialized path</em></span> might be a better option for read-mostly trees.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-fetching-subselect"/>20.1.6. Using subselect fetching</h3></div></div></div><p>
+                If one lazy collection or single-valued proxy has to be fetched, Hibernate will load all of
+                them, re-running the original query in a subselect. This works in the same way as
+                batch-fetching but without the piecemeal loading.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-fetching-profiles"/>20.1.7. Fetch profiles</h3></div></div></div><p>
+                Another way to affect the fetching strategy for loading associated objects is through something
+                called a fetch profile, which is a named configuration associated with the
+                <code class="interfacename">org.hibernate.SessionFactory</code> but enabled, by name, on the
+                <code class="interfacename">org.hibernate.Session</code>.  Once enabled on a
+                <code class="interfacename">org.hibernate.Session</code>, the fetch profile wull be in affect for
+                that <code class="interfacename">org.hibernate.Session</code> until it is explicitly disabled.
+            </p><p>
+                So what does that mean?  Well lets explain that by way of an example.  Say we have
+                the following mappings:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Customer&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">set</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;orders&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">inverse</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;cust_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Order&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Order&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                Now normally when you get a reference to a particular customer, that customer's set of
+                orders will be lazy meaning we will not yet have loaded those orders from the database.
+                Normally this is a good thing.  Now lets say that you have a certain use case where
+                it is more efficient to load the customer and their orders together.  One way certainly is
+                to use "dynamic fetching" strategies via an HQL or criteria queries.  But another option is
+                to use a fetch profile to achieve that.  Just add the following to your mapping:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;...</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">fetch-profile</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;customer-with-orders&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">fetch</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">entity</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Customer&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">association</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;orders&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">style</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;join&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">fetch-profile</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                or even:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Customer&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">fetch-profile</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;customer-with-orders&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">fetch</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">association</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;orders&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">style</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;join&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">fetch-profile</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;...</span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                Now the following code will actually load both the customer <span class="emphasis"><em>and their orders</em></span>:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"></span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Session</span><span class="java_plain">&nbsp;session&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">...;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">enableFetchProfile</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;customer-with-orders&quot;</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;name&nbsp;matches&nbsp;from&nbsp;mapping</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Customer</span><span class="java_plain">&nbsp;customer&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Customer</span><span class="java_separator">)</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">get</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_type">Customer</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">,</span><span class="java_plain">&nbsp;customerId&nbsp;</span><span class="java_separator">);</span>
+</pre><p>
+                Currently only join style fetch profiles are supported, but they plan is to support additional
+                styles.  See <a class="ulink" href="http://opensource.atlassian.com/projects/hibernate/browse/HHH-3414">HHH-3414</a>
+                for details.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-fetching-lazyproperties"/>20.1.8. Using lazy property fetching</h3></div></div></div><p>
+                Hibernate3 supports the lazy fetching of individual properties. This optimization technique
+                is also known as <span class="emphasis"><em>fetch groups</em></span>. Please note that this is mostly a
+                marketing feature; optimizing row reads is much more important than
+                optimization of column reads. However, only loading some properties of a class could
+                be useful in extreme cases. For example, when legacy tables have hundreds of columns and the data model
+                cannot be improved.
+            </p><p>
+                To enable lazy property loading, set the <code class="literal">lazy</code> attribute on your
+                particular property mappings:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Document&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">generator</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;native&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">id</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;name&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">length</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;50&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;summary&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">length</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;200&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">lazy</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;text&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">length</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;2000&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">lazy</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                Lazy property loading requires buildtime bytecode instrumentation. If your persistent
+                classes are not enhanced, Hibernate will ignore lazy property settings and
+                return to immediate fetching.
+            </p><p>
+                For bytecode instrumentation, use the following Ant task:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">target</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;instrument&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">depends</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;compile&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">taskdef</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;instrument&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">classname</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;org.hibernate.tool.instrument.InstrumentTask&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">classpath</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">path</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;${jar.path}&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">classpath</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">path</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;${classes.dir}&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">classpath</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">refid</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;lib.class.path&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">taskdef</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">instrument</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">verbose</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">fileset</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">dir</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;${testclasses.dir}/org/hibernate/auction/model&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">include</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;*.class&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">fileset</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">instrument</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">target</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                A different way of avoiding unnecessary column reads, at least for
+                read-only transactions, is to use the projection features of HQL or Criteria
+                queries. This avoids the need for buildtime bytecode processing and is
+                certainly a preferred solution.
+            </p><p>
+                You can force the usual eager fetching of properties using <code class="literal">fetch all
+                properties</code> in HQL.
+            </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="performance-cache"/>20.2. The Second Level Cache</h2></div></div></div><p>
+            A Hibernate <code class="literal">Session</code> is a transaction-level cache of persistent data. It is
+            possible to configure a cluster or JVM-level (<code class="literal">SessionFactory</code>-level) cache on 
+            a class-by-class and collection-by-collection basis. You can even plug in a clustered cache. Be 
+            aware that caches are not aware of changes made to the persistent store by another application. 
+            They can, however, be configured to regularly expire cached data.
+        </p><p>
+            You have the option to tell Hibernate which caching implementation to use by
+            specifying the name of a class that implements <code class="literal">org.hibernate.cache.CacheProvider</code>
+            using the property <code class="literal">hibernate.cache.provider_class</code>.  Hibernate
+            is bundled with a number of built-in integrations with the open-source cache providers
+            that are listed below. You can also implement your own and plug it in as
+            outlined above. Note that versions prior to 3.2 use EhCache as the default
+            cache provider.
+        </p><div class="table"><a id="cacheproviders"/><p class="title"><b>Table 20.1. Cache Providers</b></p><div class="table-contents"><table summary="Cache Providers" border="1"><colgroup><col align="left"/><col align="left"/><col align="left"/><col align="left"/><col align="left"/></colgroup><thead><tr><th align="left">Cache</th><th align="left">Provider class</th><th align="left">Type</th><th align="left">Cluster Safe</th><th align="left">Query Cache Supported</th></tr></thead><tbody><tr><td align="left">Hashtable (not intended for production use)</td><td align="left"><code class="literal">org.hibernate.cache.HashtableCacheProvider</code></td><td align="left">memory</td><td align="left"> </td><td align="left">yes</td></tr><tr><td align="left">EHCache</td><td align="left"><code class="literal">org.hibernate.cache.EhCacheProvider</code></td><td align="left">memory, disk</td><td align="left"> </td><td align="left">yes</td></tr><tr><td align="left">OSCache</td><td align="left"><code class="literal">org.hibernate.cache.OSCacheProvider</code></td><td align="left">memory, disk</td><td align="left"> </td><td align="left">yes</td></tr><tr><td align="left">SwarmCache</td><td align="left"><code class="literal">org.hibernate.cache.SwarmCacheProvider</code></td><td align="left">clustered (ip multicast)</td><td align="left">yes (clustered invalidation)</td><td align="left"> </td></tr><tr><td align="left">JBoss Cache 1.x</td><td align="left"><code class="literal">org.hibernate.cache.TreeCacheProvider</code></td><td align="left">clustered (ip multicast), transactional</td><td align="left">yes (replication)</td><td align="left">yes (clock sync req.)</td></tr><tr><td align="left">JBoss Cache 2</td><td align="left"><code class="literal">org.hibernate.cache.jbc.JBossCacheRegionFactory</code></td><td align="left">clustered (ip multicast), transactional</td><td align="left">yes (replication or invalidation)</td><td align="left">yes (clock sync req.)</td></tr></tbody></table></div></div><br class="table-break"/><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-cache-mapping"/>20.2.1. Cache mappings</h3></div></div></div><p>
+                The <code class="literal">&lt;cache&gt;</code> element of a class or collection mapping has the
+                following form:
+            </p><div class="programlistingco"><pre class="programlisting">&lt;cache
+    usage="tra<span xmlns="" class="co" id="cache1"><img src="images/org/hibernate/docbook/callouts/1.png" alt="(1)"/></span>nsactional|read-write|nonstrict-read-write|read-only"
+    region="Re<span xmlns="" class="co" id="cache2"><img src="images/org/hibernate/docbook/callouts/2.png" alt="(2)"/></span>gionName"
+    include="a<span xmlns="" class="co" id="cache3"><img src="images/org/hibernate/docbook/callouts/3.png" alt="(3)"/></span>ll|non-lazy"
+/&gt;</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/1.png" alt="1" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                            <code class="literal">usage</code> (required) specifies the caching strategy:
+                            <code class="literal">transactional</code>,
+                            <code class="literal">read-write</code>,
+                            <code class="literal">nonstrict-read-write</code> or
+                            <code class="literal">read-only</code>
+                        </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/2.png" alt="2" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                            <code class="literal">region</code> (optional: defaults to the class or
+                            collection role name): specifies the name of the second level cache 
+                            region
+                        </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/3.png" alt="3" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                            <code class="literal">include</code> (optional: defaults to <code class="literal">all</code>) 
+                            <code class="literal">non-lazy</code>: specifies that properties of the entity mapped
+                            with <code class="literal">lazy="true"</code> cannot be cached when attribute-level
+                            lazy fetching is enabled
+                        </p></td></tr></table></div></div><p>
+                Alternatively, you can specify <code class="literal">&lt;class-cache&gt;</code> and 
+                <code class="literal">&lt;collection-cache&gt;</code> elements in <code class="literal">hibernate.cfg.xml</code>.
+            </p><p>
+                The <code class="literal">usage</code> attribute specifies a <span class="emphasis"><em>cache concurrency strategy</em></span>.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-cache-readonly"/>20.2.2. Strategy: read only</h3></div></div></div><p>
+                If your application needs to read, but not modify, instances of a persistent class, a 
+                <code class="literal">read-only</code> cache can be used. This is the simplest and optimal performing
+                strategy. It is even safe for use in a cluster.
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;eg.Immutable&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">mutable</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;false&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">cache</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">usage</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;read-only&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;....</span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-cache-readwrite"/>20.2.3. Strategy: read/write</h3></div></div></div><p>
+                If the application needs to update data, a <code class="literal">read-write</code> cache might be appropriate. 
+                This cache strategy should never be used if serializable transaction isolation level is required. 
+                If the cache is used in a JTA environment, you must specify the property 
+                <code class="literal">hibernate.transaction.manager_lookup_class</code> and naming a strategy for obtaining the 
+                JTA <code class="literal">TransactionManager</code>. In other environments, you should ensure that the transaction 
+                is completed when <code class="literal">Session.close()</code> or <code class="literal">Session.disconnect()</code> is called. 
+                If you want to use this strategy in a cluster, you should ensure that the underlying cache implementation 
+                supports locking. The built-in cache providers <span class="emphasis"><em>do not</em></span> support locking.
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;eg.Cat&quot;</span><span class="xml_plain">&nbsp;....&nbsp;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">cache</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">usage</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;read-write&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;....</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">set</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;kittens&quot;</span><span class="xml_plain">&nbsp;...&nbsp;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">cache</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">usage</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;read-write&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;....</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-cache-nonstrict"/>20.2.4. Strategy: nonstrict read/write</h3></div></div></div><p>
+                If the application only occasionally needs to update data (i.e. if it is extremely unlikely that two 
+                transactions would try to update the same item simultaneously), and strict transaction isolation is
+                not required, a <code class="literal">nonstrict-read-write</code> cache might be appropriate. If the cache is 
+                used in a JTA environment, you must specify <code class="literal">hibernate.transaction.manager_lookup_class</code>. 
+                In other environments, you should ensure that the transaction is completed when 
+                <code class="literal">Session.close()</code> or <code class="literal">Session.disconnect()</code> is called.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-cache-transactional"/>20.2.5. Strategy: transactional</h3></div></div></div><p>
+                The <code class="literal">transactional</code> cache strategy provides support for fully transactional cache
+                providers such as JBoss TreeCache. Such a cache can only be used in a JTA environment and you must 
+                specify <code class="literal">hibernate.transaction.manager_lookup_class</code>. 
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-cache-compat-matrix"/>20.2.6. Cache-provider/concurrency-strategy compatibility</h3></div></div></div><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="important"><h2>Important</h2><p>
+                    None of the cache providers support all of the cache concurrency strategies.
+                </p></div><p>
+                The following table shows which providers are compatible with which concurrency strategies.
+            </p><div class="table"><a id="d0e15814"/><p class="title"><b>Table 20.2. Cache Concurrency Strategy Support</b></p><div class="table-contents"><table summary="Cache Concurrency Strategy Support" border="1"><colgroup><col align="left"/><col align="left"/><col align="left"/><col align="left"/><col align="left"/></colgroup><thead><tr><th align="left">Cache</th><th align="left">read-only</th><th align="left">nonstrict-read-write</th><th align="left">read-write</th><th align="left">transactional</th></tr></thead><tbody><tr><td align="left">Hashtable (not intended for production use)</td><td align="left">yes</td><td align="left">yes</td><td align="left">yes</td><td align="left"> </td></tr><tr><td align="left">EHCache</td><td align="left">yes</td><td align="left">yes</td><td align="left">yes</td><td align="left"> </td></tr><tr><td align="left">OSCache</td><td align="left">yes</td><td align="left">yes</td><td align="left">yes</td><td align="left"> </td></tr><tr><td align="left">SwarmCache</td><td align="left">yes</td><td align="left">yes</td><td align="left"> </td><td align="left"> </td></tr><tr><td align="left">JBoss Cache 1.x</td><td align="left">yes</td><td align="left"> </td><td align="left"> </td><td align="left">yes</td></tr><tr><td align="left">JBoss Cache 2</td><td align="left">yes</td><td align="left"> </td><td align="left"> </td><td align="left">yes</td></tr></tbody></table></div></div><br class="table-break"/></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="performance-sessioncache"/>20.3. Managing the caches</h2></div></div></div><p>
+            Whenever you pass an object to <code class="literal">save()</code>, <code class="literal">update()</code>
+            or <code class="literal">saveOrUpdate()</code>, and whenever you retrieve an object using 
+            <code class="literal">load()</code>, <code class="literal">get()</code>, <code class="literal">list()</code>, 
+            <code class="literal">iterate()</code> or <code class="literal">scroll()</code>, that object is added 
+            to the internal cache of the <code class="literal">Session</code>. 
+        </p><p>
+            When <code class="literal">flush()</code> is subsequently called, the state of that object will 
+            be synchronized with the database. If you do not want this synchronization to occur, or 
+            if you are processing a huge number of objects and need to manage memory efficiently, 
+            the <code class="literal">evict()</code> method can be used to remove the object and its collections 
+            from the first-level cache.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">ScrollableResult</span><!-- <br/> --><span class="java_plain">&nbsp;cats&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createQuery</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">&quot;from&nbsp;Cat&nbsp;as&nbsp;cat&quot;</span><!-- <br/> --><span class="java_separator">).</span><!-- <br/> --><span class="java_plain">scroll</span><!-- <br/> --><span class="java_separator">();</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">a&nbsp;huge&nbsp;result&nbsp;set</span>
+<!--  --><br/><span class="java_keyword">while</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;cats</span><span class="java_separator">.</span><span class="java_plain">next</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Cat</span><span class="java_plain">&nbsp;cat&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;cats</span><span class="java_separator">.</span><span class="java_plain">get</span><span class="java_separator">(</span><span class="java_literal">0</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;doSomethingWithACat</span><span class="java_separator">(</span><span class="java_plain">cat</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;sess</span><span class="java_separator">.</span><span class="java_plain">evict</span><span class="java_separator">(</span><span class="java_plain">cat</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_separator">}</span></pre><p>
+            The <code class="literal">Session</code> also provides a <code class="literal">contains()</code> method to determine 
+            if an instance belongs to the session cache.
+        </p><p>
+            To evict all objects from the session cache, call <code class="literal">Session.clear()</code>
+        </p><p>
+            For the second-level cache, there are methods defined on <code class="literal">SessionFactory</code> for 
+            evicting the cached state of an instance, entire class, collection instance or entire collection 
+            role.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_plain">sessionFactory</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">evict</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;catId</span><!-- <br/> --><span class="java_separator">);</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">evict&nbsp;a&nbsp;particular&nbsp;</span><!-- <br/> --><span class="java_type">Cat</span>
+<!--  --><br/><span class="java_plain">sessionFactory</span><span class="java_separator">.</span><span class="java_plain">evict</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">evict&nbsp;all&nbsp;</span><span class="java_type">Cats</span>
+<!--  --><br/><span class="java_plain">sessionFactory</span><span class="java_separator">.</span><span class="java_plain">evictCollection</span><span class="java_separator">(</span><span class="java_literal">&quot;Cat.kittens&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;catId</span><span class="java_separator">);</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">evict&nbsp;a&nbsp;particular&nbsp;collection&nbsp;of&nbsp;kittens</span>
+<!--  --><br/><span class="java_plain">sessionFactory</span><span class="java_separator">.</span><span class="java_plain">evictCollection</span><span class="java_separator">(</span><span class="java_literal">&quot;Cat.kittens&quot;</span><span class="java_separator">);</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">evict&nbsp;all&nbsp;kitten&nbsp;collections</span></pre><p>
+            The <code class="literal">CacheMode</code> controls how a particular session interacts with the second-level
+            cache:
+        </p><div class="itemizedlist"><ul><li><p>
+            <code class="literal">CacheMode.NORMAL</code>: will read items from and write items to the second-level cache
+        </p></li><li><p>
+            <code class="literal">CacheMode.GET</code>: will read items from the second-level cache. Do not write to
+            the second-level cache except when updating data
+        </p></li><li><p>
+            <code class="literal">CacheMode.PUT</code>: will write items to the second-level cache. Do not read from
+            the second-level cache
+        </p></li><li><p>
+            <code class="literal">CacheMode.REFRESH</code>: will write items to the second-level cache. Do not read from
+            the second-level cache.  Bypass the effect of <code class="literal">hibernate.cache.use_minimal_puts</code> forcing
+            a refresh of the second-level cache for all items read from the database
+        </p></li></ul></div><p>
+            To browse the contents of a second-level or query cache region, use the <code class="literal">Statistics</code>
+            API:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Map</span><!-- <br/> --><span class="java_plain">&nbsp;cacheEntries&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sessionFactory</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">getStatistics</span><!-- <br/> --><span class="java_separator">()</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">getSecondLevelCacheStatistics</span><span class="java_separator">(</span><span class="java_plain">regionName</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">getEntries</span><span class="java_separator">();</span></pre><p>
+            You will need to enable statistics and, optionally, force Hibernate to keep the cache entries in a
+            more readable format:
+        </p><pre class="programlisting">hibernate.generate_statistics true
+hibernate.cache.use_structured_entries true</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="performance-querycache"/>20.4. The Query Cache</h2></div></div></div><p>
+            Query result sets can also be cached. This is only useful for queries that are run
+            frequently with the same parameters.
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-querycache-enable"/>20.4.1. Enabling query caching</h3></div></div></div><p>
+                Caching of query results introduces some overhead in terms of your applications normal
+                transactional processing.  For example, if you cache results of a query against Person
+                Hibernate will need to keep track of when those results should be invalidated because
+                changes have been committed against Person.  That, coupled with the fact that most
+                applications simply gain no benefit from caching query results, leads Hibernate to
+                disable caching of query results by default.  To use query caching, you will first
+                need to enable the query cache:
+            </p><pre class="programlisting">hibernate.cache.use_query_cache true</pre><p>
+                This setting creates two new cache regions:
+                </p><div class="itemizedlist"><ul><li><p>
+                            <code class="classname">org.hibernate.cache.StandardQueryCache</code>, holding
+                            the cached query results
+                        </p></li><li><p>
+                            <code class="classname">org.hibernate.cache.UpdateTimestampsCache</code>, holding
+                            timestamps of the most recent updates to queryable tables.  These are used
+                            to validate the results as they are served from the query cache.
+                        </p></li></ul></div><p>
+            </p><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="important"><h2>Important</h2><p>
+                    If you configure your underlying cache implementation to use expiry or
+                    timeouts is very important that the cache timeout of the underlying
+                    cache region for the UpdateTimestampsCache be set to a higher value than
+                    the timeouts of any of the query caches.  In fact, we recommend that the
+                    the UpdateTimestampsCache region not be configured for expiry at all.  Note,
+                    in particular, that an LRU cache expiry policy is never appropriate.
+                </p></div><p>
+                As mentioned above, most queries do not benefit from caching or their results.  So by
+                default, individual queries are not cached even after enabling query caching. To enable
+                results caching for a particular query, call
+                <code class="literal">org.hibernate.Query.setCacheable(true)</code>.  This call allows the query
+                to look for existing cache results or add its results to the cache when it is executed.
+            </p><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="note"><h2>Note</h2><p>
+                    The query cache does not cache the state of the actual entities in the cache; it
+                    caches only identifier values and results of value type.  For this reaso, the query
+                    cache should always be used in conjunction with the second-level cache for those
+                    entities expected to be cached as part of a query result cache (just as with
+                    collection caching).
+                </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-querycache-regions"/>20.4.2. Query cache regions</h3></div></div></div><p>
+                If you require fine-grained control over query cache expiration policies, you can
+                specify a named cache region for a particular query by calling
+                <code class="literal">Query.setCacheRegion()</code>.
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">List</span><!-- <br/> --><span class="java_plain">&nbsp;blogs&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createQuery</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">&quot;from&nbsp;Blog&nbsp;blog&nbsp;where&nbsp;blog.blogger&nbsp;=&nbsp;:blogger&quot;</span><!-- <br/> --><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setEntity</span><span class="java_separator">(</span><span class="java_literal">&quot;blogger&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;blogger</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setMaxResults</span><span class="java_separator">(</span><span class="java_literal">15</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setCacheable</span><span class="java_separator">(</span><span class="java_literal">true</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setCacheRegion</span><span class="java_separator">(</span><span class="java_literal">&quot;frontpages&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span></pre><p>
+                If you want to force the query cache to refresh one of its regions (disregard any
+                cached results it finds there) you can use
+                <code class="literal">org.hibernate.Query.setCacheMode(CacheMode.REFRESH)</code>.  In conjunction
+                with the region you have defined for the given query, Hibernate will selectively force
+                the results cached in that particular region to be refreshed.  This is particularly useful
+                in cases where underlying data may have been updated via a separate process and is a far more
+                efficient alternative to bulk eviction of the region via
+                <code class="literal">org.hibernate.SessionFactory.evictQueries()</code>.
+            </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="performance-collections"/>20.5. Understanding Collection performance</h2></div></div></div><p>
+            In the previous sections we have covered collections and their applications.
+            In this section we explore some more issues in relation to
+            collections at runtime.
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-collections-taxonomy"/>20.5.1. Taxonomy</h3></div></div></div><p>Hibernate defines three basic kinds of collections:</p><div class="itemizedlist"><ul><li><p>collections of values</p></li><li><p>one-to-many associations</p></li><li><p>many-to-many associations</p></li></ul></div><p>
+                This classification distinguishes the various table and foreign key
+                relationships but does not tell us quite everything we need to know
+                about the relational model. To fully understand the relational structure
+                and performance characteristics, we must also consider the structure of
+                the primary key that is used by Hibernate to update or delete collection
+                rows. This suggests the following classification:
+            </p><div class="itemizedlist"><ul><li><p>indexed collections</p></li><li><p>sets</p></li><li><p>bags</p></li></ul></div><p>
+                All indexed collections (maps, lists, and arrays) have a primary key consisting
+                of the <code class="literal">&lt;key&gt;</code> and <code class="literal">&lt;index&gt;</code>
+                columns. In this case, collection updates are extremely efficient.
+                The primary key can be efficiently indexed and a particular row can be efficiently
+                located when Hibernate tries to update or delete it.
+            </p><p>
+                Sets have a primary key consisting of <code class="literal">&lt;key&gt;</code> and element
+                columns. This can be less efficient for some types of collection element, particularly
+                composite elements or large text or binary fields, as the database may not be able to index
+                a complex primary key as efficiently.  However, for one-to-many or many-to-many
+                associations, particularly in the case of synthetic identifiers, it is likely to be just
+                as efficient. If you want <code class="literal">SchemaExport</code> to actually create
+                the primary key of a <code class="literal">&lt;set&gt;</code>, you must declare all columns
+                as <code class="literal">not-null="true"</code>.
+            </p><p>
+                <code class="literal">&lt;idbag&gt;</code> mappings define a surrogate key, so they are
+                efficient to update. In fact, they are the best case.
+            </p><p>
+                Bags are the worst case since they permit duplicate element values and, as they have no
+                index column, no primary key can be defined. Hibernate has no way of distinguishing
+                between duplicate rows. Hibernate resolves this problem by completely removing
+                in a single <code class="literal">DELETE</code> and recreating the collection whenever it
+                changes. This can be inefficient.
+            </p><p>
+                For a one-to-many association, the "primary key" may not be the physical
+                primary key of the database table. Even in this case, the above classification
+                is still useful. It reflects how Hibernate "locates" individual rows of the
+                collection.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-collections-mostefficientupdate"/>20.5.2. Lists, maps, idbags and sets are the most efficient collections to update</h3></div></div></div><p>
+                From the discussion above, it should be clear that indexed collections
+                and sets allow the most efficient operation in terms of adding,
+                removing and updating elements.
+            </p><p>
+                There is, arguably, one more advantage that indexed collections have over sets for
+                many-to-many associations or collections of values. Because of the structure of a
+                <code class="literal">Set</code>, Hibernate does not <code class="literal">UPDATE</code> a row when
+                an element is "changed". Changes to a <code class="literal">Set</code> always work via
+                <code class="literal">INSERT</code> and <code class="literal">DELETE</code> of individual rows. Once
+                again, this consideration does not apply to one-to-many associations.
+            </p><p>
+                After observing that arrays cannot be lazy, you can conclude that lists, maps and 
+                idbags are the most performant (non-inverse) collection types, with sets not far 
+                behind. You can expect sets to be the most common kind of collection in Hibernate 
+                applications. This is because the "set" semantics are most natural in the relational
+                model.
+            </p><p>
+                However, in well-designed Hibernate domain models, most collections
+                are in fact one-to-many associations with <code class="literal">inverse="true"</code>. For these
+                associations, the update is handled by the many-to-one end of the association, and so
+                considerations of collection update performance simply do not apply.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-collections-mostefficentinverse"/>20.5.3. Bags and lists are the most efficient inverse collections</h3></div></div></div><p>
+                There is a particular case, however, in which bags, and also lists,
+                are much more performant than sets. For a collection with <code class="literal">inverse="true"</code>,
+                the standard bidirectional one-to-many relationship idiom, for example, we can add elements
+                to a bag or list without needing to initialize (fetch) the bag elements. This is because, unlike a <code class="literal">set</code>,
+                <code class="literal">Collection.add()</code> or <code class="literal">Collection.addAll()</code> must always
+                return true for a bag or <code class="literal">List</code>. This can
+                make the following common code much faster:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Parent</span><!-- <br/> --><span class="java_plain">&nbsp;p&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Parent</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">load</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Parent</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;id</span><!-- <br/> --><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">Child</span><span class="java_plain">&nbsp;c&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">Child</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">c</span><span class="java_separator">.</span><span class="java_plain">setParent</span><span class="java_separator">(</span><span class="java_plain">p</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">p</span><span class="java_separator">.</span><span class="java_plain">getChildren</span><span class="java_separator">().</span><span class="java_plain">add</span><span class="java_separator">(</span><span class="java_plain">c</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">no&nbsp;need&nbsp;to&nbsp;fetch&nbsp;the&nbsp;collection</span><span class="java_operator">!</span>
+<!--  --><br/><span class="java_plain">sess</span><span class="java_separator">.</span><span class="java_plain">flush</span><span class="java_separator">();</span></pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-collections-oneshotdelete"/>20.5.4. One shot delete</h3></div></div></div><p>
+                Deleting collection elements one by one can sometimes be extremely inefficient. Hibernate
+                knows not to do that in the case of an newly-empty collection
+                (if you called <code class="literal">list.clear()</code>, for example). In this case, Hibernate will
+                issue a single <code class="literal">DELETE</code>. 
+            </p><p>
+                Suppose you added a single element to a collection of size twenty and then remove two elements.
+                Hibernate will issue one <code class="literal">INSERT</code> statement and two <code class="literal">DELETE</code>
+                statements, unless the collection is a bag. This is certainly desirable.
+            </p><p>
+                However, suppose that we remove eighteen elements, leaving two and then add thee new elements.
+                There are two possible ways to proceed
+            </p><div class="itemizedlist"><ul><li><p>delete eighteen rows one by one and then insert three rows</p></li><li><p>remove the whole collection in one SQL <code class="literal">DELETE</code> and insert
+                all five current elements one by one</p></li></ul></div><p>
+                Hibernate cannot know that the second option is probably quicker.
+                It would probably be undesirable for Hibernate to be that intuitive as such behavior might
+                confuse database triggers, etc.
+            </p><p>
+                Fortunately, you can force this behavior (i.e. the second strategy) at any time by discarding
+                (i.e. dereferencing) the original collection and returning a newly instantiated collection with
+                all the current elements. 
+            </p><p>
+                One-shot-delete does not apply to collections mapped <code class="literal">inverse="true"</code>.
+            </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="performance-monitoring"/>20.6. Monitoring performance</h2></div></div></div><p>
+            Optimization is not much use without monitoring and access to performance numbers.
+            Hibernate provides a full range of figures about its internal operations.
+            Statistics in Hibernate are available per <code class="literal">SessionFactory</code>.
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-monitoring-sf"/>20.6.1. Monitoring a SessionFactory</h3></div></div></div><p>
+                You can access <code class="literal">SessionFactory</code> metrics in two ways.
+                Your first option is to call <code class="literal">sessionFactory.getStatistics()</code> and
+                read or display the <code class="literal">Statistics</code> yourself.
+            </p><p>
+                Hibernate can also use JMX to publish metrics if you enable the
+                <code class="literal">StatisticsService</code> MBean. You can enable a single MBean for all your
+                <code class="literal">SessionFactory</code> or one per factory. See the following code for
+                minimalistic configuration examples:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_type">MBean</span><!-- <br/> --><span class="java_plain">&nbsp;service&nbsp;registration&nbsp;</span><!-- <br/> --><span class="java_keyword">for</span><!-- <br/> --><span class="java_plain">&nbsp;a&nbsp;specific&nbsp;</span><!-- <br/> --><span class="java_type">SessionFactory</span>
+<!--  --><br/><span class="java_type">Hashtable</span><span class="java_plain">&nbsp;tb&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">Hashtable</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">tb</span><span class="java_separator">.</span><span class="java_plain">put</span><span class="java_separator">(</span><span class="java_literal">&quot;type&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;statistics&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">tb</span><span class="java_separator">.</span><span class="java_plain">put</span><span class="java_separator">(</span><span class="java_literal">&quot;sessionFactory&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;myFinancialApp&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">ObjectName</span><span class="java_plain">&nbsp;on&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">ObjectName</span><span class="java_separator">(</span><span class="java_literal">&quot;hibernate&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;tb</span><span class="java_separator">);</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">MBean</span><span class="java_plain">&nbsp;object&nbsp;name</span>
+</span>
+<!--  --><br/><span class="java_type">StatisticsService</span><span class="java_plain">&nbsp;stats&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">StatisticsService</span><span class="java_separator">();</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">MBean</span><span class="java_plain">&nbsp;implementation</span>
+<!--  --><br/><span class="java_plain">stats</span><span class="java_separator">.</span><span class="java_plain">setSessionFactory</span><span class="java_separator">(</span><span class="java_plain">sessionFactory</span><span class="java_separator">);</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Bind</span><span class="java_plain">&nbsp;the&nbsp;stats&nbsp;to&nbsp;a&nbsp;</span><span class="java_type">SessionFactory</span>
+<!--  --><br/><span class="java_plain">server</span><span class="java_separator">.</span><span class="java_plain">registerMBean</span><span class="java_separator">(</span><span class="java_plain">stats</span><span class="java_separator">,</span><span class="java_plain">&nbsp;on</span><span class="java_separator">);</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Register</span><span class="java_plain">&nbsp;the&nbsp;</span><span class="java_type">Mbean</span><span class="java_plain">&nbsp;on&nbsp;the&nbsp;server</span></pre><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_type">MBean</span><!-- <br/> --><span class="java_plain">&nbsp;service&nbsp;registration&nbsp;</span><!-- <br/> --><span class="java_keyword">for</span><!-- <br/> --><span class="java_plain">&nbsp;all&nbsp;</span><!-- <br/> --><span class="java_type">SessionFactory</span><!-- <br/> --><span class="java_plain">'s</span>
+<!--  --><br/><span class="java_type">Hashtable</span><span class="java_plain">&nbsp;tb&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">Hashtable</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">tb</span><span class="java_separator">.</span><span class="java_plain">put</span><span class="java_separator">(</span><span class="java_literal">&quot;type&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;statistics&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">tb</span><span class="java_separator">.</span><span class="java_plain">put</span><span class="java_separator">(</span><span class="java_literal">&quot;sessionFactory&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;all&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">ObjectName</span><span class="java_plain">&nbsp;on&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">ObjectName</span><span class="java_separator">(</span><span class="java_literal">&quot;hibernate&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;tb</span><span class="java_separator">);</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">MBean</span><span class="java_plain">&nbsp;object&nbsp;name</span>
+</span>
+<!--  --><br/><span class="java_type">StatisticsService</span><span class="java_plain">&nbsp;stats&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">StatisticsService</span><span class="java_separator">();</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">MBean</span><span class="java_plain">&nbsp;implementation</span>
+<!--  --><br/><span class="java_plain">server</span><span class="java_separator">.</span><span class="java_plain">registerMBean</span><span class="java_separator">(</span><span class="java_plain">stats</span><span class="java_separator">,</span><span class="java_plain">&nbsp;on</span><span class="java_separator">);</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Register</span><span class="java_plain">&nbsp;the&nbsp;</span><span class="java_type">MBean</span><span class="java_plain">&nbsp;on&nbsp;the&nbsp;server</span></pre><p>
+                You can activate and deactivate the monitoring for a <code class="literal">SessionFactory</code>:
+            </p><div class="itemizedlist"><ul><li><p>
+                        at configuration time, set <code class="literal">hibernate.generate_statistics</code> to <code class="literal">false</code>
+                    </p></li></ul></div><div class="itemizedlist"><ul><li><p>
+                        at runtime: <code class="literal">sf.getStatistics().setStatisticsEnabled(true)</code>
+                        or <code class="literal">hibernateStatsBean.setStatisticsEnabled(true)</code>
+                    </p></li></ul></div><p>
+                Statistics can be reset programmatically using the <code class="literal">clear()</code> method.
+                A summary can be sent to a logger (info level) using the <code class="literal">logSummary()</code>
+                method.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="performance-monitoring-metrics"/>20.6.2. Metrics</h3></div></div></div><p>
+                Hibernate provides a number of metrics, from basic information to more specialized information
+                that is only relevant in certain scenarios. All available counters are described in the
+                <code class="literal">Statistics</code> interface API, in three categories:
+            </p><div class="itemizedlist"><ul><li><p>
+                        Metrics related to the general <code class="literal">Session</code> usage, such as
+                        number of open sessions, retrieved JDBC connections, etc.
+                    </p></li><li><p>
+                        Metrics related to the entities, collections, queries, and caches as a
+                        whole (aka global metrics).
+                    </p></li><li><p>
+                        Detailed metrics related to a particular entity, collection, query or
+                        cache region.
+                    </p></li></ul></div><p>
+                For example, you can check the cache hit, miss, and put ratio of entities, collections
+                and queries, and the average time a query needs. Be aware that the number of milliseconds
+                is subject to approximation in Java. Hibernate is tied to the JVM precision and on some
+                platforms this might only be accurate to 10 seconds.
+            </p><p>
+                Simple getters are used to access the global metrics (i.e. not tied to a particular entity,
+                collection, cache region, etc.). You can access the metrics of a particular entity, collection
+                or cache region through its name, and through its HQL or SQL representation for queries. Please
+                refer to the <code class="literal">Statistics</code>, <code class="literal">EntityStatistics</code>,
+                <code class="literal">CollectionStatistics</code>, <code class="literal">SecondLevelCacheStatistics</code>,
+                and <code class="literal">QueryStatistics</code> API Javadoc for more information. The following
+                code is a simple example:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Statistics</span><!-- <br/> --><span class="java_plain">&nbsp;stats&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_type">HibernateUtil</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">sessionFactory</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">getStatistics</span><!-- <br/> --><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_type">double</span><span class="java_plain">&nbsp;queryCacheHitCount&nbsp;&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;stats</span><span class="java_separator">.</span><span class="java_plain">getQueryCacheHitCount</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">double</span><span class="java_plain">&nbsp;queryCacheMissCount&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;stats</span><span class="java_separator">.</span><span class="java_plain">getQueryCacheMissCount</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">double</span><span class="java_plain">&nbsp;queryCacheHitRatio&nbsp;</span><span class="java_operator">=</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;queryCacheHitCount&nbsp;</span><span class="java_operator">/</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">queryCacheHitCount&nbsp;</span><span class="java_operator">+</span><span class="java_plain">&nbsp;queryCacheMissCount</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_plain">log</span><span class="java_separator">.</span><span class="java_plain">info</span><span class="java_separator">(</span><span class="java_literal">&quot;Query&nbsp;Hit&nbsp;ratio:&quot;</span><span class="java_plain">&nbsp;</span><span class="java_operator">+</span><span class="java_plain">&nbsp;queryCacheHitRatio</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_type">EntityStatistics</span><span class="java_plain">&nbsp;entityStats&nbsp;</span><span class="java_operator">=</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;stats</span><span class="java_separator">.</span><span class="java_plain">getEntityStatistics</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_type">Cat</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">.</span><span class="java_plain">getName</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">long</span><span class="java_plain">&nbsp;changes&nbsp;</span><span class="java_operator">=</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entityStats</span><span class="java_separator">.</span><span class="java_plain">getInsertCount</span><span class="java_separator">()</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">+</span><span class="java_plain">&nbsp;entityStats</span><span class="java_separator">.</span><span class="java_plain">getUpdateCount</span><span class="java_separator">()</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">+</span><span class="java_plain">&nbsp;entityStats</span><span class="java_separator">.</span><span class="java_plain">getDeleteCount</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">log</span><span class="java_separator">.</span><span class="java_plain">info</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">.</span><span class="java_plain">getName</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_operator">+</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;&nbsp;changed&nbsp;&quot;</span><span class="java_plain">&nbsp;</span><span class="java_operator">+</span><span class="java_plain">&nbsp;changes&nbsp;</span><span class="java_operator">+</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;times&quot;</span><span class="java_plain">&nbsp;&nbsp;</span><span class="java_separator">);</span></pre><p>
+                You can work on all entities, collections, queries and region caches, by retrieving
+                the list of names of entities, collections, queries and region caches using the
+                following methods: <code class="literal">getQueries()</code>, <code class="literal">getEntityNames()</code>,
+                <code class="literal">getCollectionRoleNames()</code>, and
+                <code class="literal">getSecondLevelCacheRegionNames()</code>.
+            </p></div></div></div><HR xmlns=""/><a xmlns="" href="legalnotice.html"><p xmlns="http://www.w3.org/1999/xhtml" class="copyright">Copyright © 2004 Red Hat, Inc.</p></a><ul class="docnav"><li class="previous"><a accesskey="p" href="xml.html"><strong>Prev</strong>Chapter 19. XML Mapping</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="toolsetguide.html"><strong>Next</strong>Chapter 21. Toolset Guide</a></li></ul></body></html>

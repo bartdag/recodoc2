@@ -1,0 +1,766 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;8.&nbsp;Transaction management</title><link rel="stylesheet" href="../styles/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><link rel="home" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="up" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="previous" href="aspectj.html" title="Chapter&nbsp;7.&nbsp;AspectJ Integration"><link rel="next" href="metadata.html" title="Chapter&nbsp;9.&nbsp;Source Level Metadata Support"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;8.&nbsp;Transaction management</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="aspectj.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="metadata.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="transaction"></a>Chapter&nbsp;8.&nbsp;Transaction management</h2></div></div><div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e5280"></a>8.1.&nbsp;The Spring transaction abstraction</h2></div></div><div></div></div><p>Spring provides a consistent abstraction for transaction management.
+    This abstraction is one of the most important of Spring's abstractions,
+    and delivers the following benefits:</p><div class="itemizedlist"><ul type="disc"><li><p>Provides a consistent programming model across different
+          transaction APIs such as JTA, JDBC, Hibernate, iBATIS Database Layer
+          and JDO.</p></li><li><p>Provides a simpler, easier to use, API for programmatic
+          transaction management than most of these transaction APIs</p></li><li><p>Integrates with the Spring data access abstraction</p></li><li><p>Supports Spring declarative transaction management</p></li></ul></div><p>Traditionally, J2EE developers have had two choices for transaction
+    management: to use <span class="emphasis"><em>global</em></span> or
+    <span class="emphasis"><em>local</em></span> transactions. Global transactions are managed
+    by the application server, using JTA. Local transactions are
+    resource-specific: for example, a transaction associated with a JDBC
+    connection. This choice had profound implications. Global transactions
+    provide the ability to work with multiple transactional resources. (It's
+    worth noting that most applications use a single transaction resource)
+    With local transactions, the application server is not involved in
+    transaction management, and cannot help ensure correctness across multiple
+    resources.</p><p>Global transactions have a significant downside. Code needs to use
+    JTA: a cumbersome API to use (partly due to its exception model).
+    Furthermore, a JTA <tt class="literal">UserTransaction</tt> normally needs to be
+    obtained from JNDI: meaning that we need to use <span class="emphasis"><em>both</em></span>
+    JNDI and JTA to use JTA. Obviously all use of global transactions limits
+    the reusability of application code, as JTA is normally only available in
+    an application server environment.</p><p>The preferred way to use global transactions was via EJB
+    <span class="emphasis"><em>CMT</em></span> (<span class="emphasis"><em>Container Managed
+    Transaction</em></span>): a form of <span class="bold"><b>declarative
+    transaction management</b></span> (as distinguished from <span class="bold"><b>programmatic transaction management</b></span>). EJB CMT
+    removes the need for transaction-related JNDI lookups--although of course
+    the use of EJB itself necessitates the use of JNDI. It removes most--not
+    all--need to write Java code to control transactions. The significant
+    downside is that CMT is (obviously) tied to JTA and an application server
+    environment; and that it's only available if we choose to implement
+    business logic in EJBs, or at least behind a transactional EJB facade. The
+    negatives around EJB in general are so great that this is not an
+    attractive proposition, when there are alternatives for declarative
+    transaction management.</p><p>Local transactions may be easier to use, but also have significant
+    disadvantages: They cannot work across multiple transactional resources,
+    and tend to invade the programming model. For example, code that manages
+    transactions using a JDBC connection cannot run within a global JTA
+    transaction.</p><p>Spring resolves these problems. It enables application developers to
+    use a consistent programming model <span class="emphasis"><em>in any
+    environment</em></span>. You write your code once, and it can benefit from
+    different transaction management strategies in different environments.
+    Spring provides both declarative and programmatic transaction management.
+    Declarative transaction management is preferred by most users, and
+    recommended in most cases.</p><p>With programmatic transaction management developers work with the
+    Spring transaction abstraction, which can run over any underlying
+    transaction infrastructure. With the preferred declarative model
+    developers typically write little or no code related to transaction
+    management, and hence don't depend on Spring's or any other transaction
+    API.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e5337"></a>8.2.&nbsp;Transaction strategies</h2></div></div><div></div></div><p>The key to the Spring transaction abstraction is the notion of a
+    <span class="emphasis"><em>transaction strategy</em></span>.</p><p>This is captured in the
+    <tt class="literal">org.springframework.transaction.PlatformTransactionManager</tt>
+    interface, shown below:</p><pre class="programlisting">public interface PlatformTransactionManager {
+
+    TransactionStatus getTransaction(TransactionDefinition definition)
+        throws TransactionException;
+
+    void commit(TransactionStatus status) throws TransactionException;
+
+    void rollback(TransactionStatus status) throws TransactionException;
+}</pre><p>This is primarily an SPI interface, although it can be used
+    programmatically. Note that in keeping with Spring's philosophy, this is
+    an <span class="emphasis"><em>interface</em></span>. Thus it can easily be mocked or stubbed
+    if necessary. Nor is it tied to a lookup strategy such as JNDI:
+    PlatformTransactionManager implementations are defined like any other
+    object in a Spring IoC container. This benefit alone makes this a
+    worthwhile abstraction even when working with JTA: transactional code can
+    be tested much more easily than if it directly used JTA.</p><p>In keeping with Spring's philosophy,
+    <tt class="literal">TransactionException</tt> is unchecked. Failures of the
+    transaction infrastructure are almost invariably fatal. In rare cases
+    where application code can recover from them, the application developer
+    can still choose to catch and handle
+    <tt class="literal">TransactionException</tt>.</p><p>The <tt class="literal">getTransaction() </tt>method returns a
+    <tt class="literal">TransactionStatus</tt> object, depending on a
+    <tt class="literal">TransactionDefinition</tt> parameter. The returned
+    <tt class="literal">TransactionStatus</tt> might represent a new or existing
+    transaction (if there was a matching transaction in the current call
+    stack).</p><p>As with J2EE transaction contexts, a
+    <tt class="literal">TransactionStatus</tt> is associated with a <span class="bold"><b>thread</b></span> of execution.</p><p>The <tt class="literal">TransactionDefinition</tt> interface
+    specifies:</p><div class="itemizedlist"><ul type="disc"><li><p><span class="bold"><b>Transaction isolation</b></span>: The
+        degree of isolation this transaction has from the work of other
+        transactions. For example, can this transaction see uncommitted writes
+        from other transactions?</p></li><li><p><span class="bold"><b>Transaction propagation</b></span>:
+        Normally all code executed within a transaction scope will run in that
+        transaction. However, there are several options specifying behavior if
+        a transactional method is executed when a transaction context already
+        exists: For example, simply running in the existing transaction (the
+        most common case); or suspending the existing transaction and creating
+        a new transaction. Spring offers the transaction propagation options
+        familiar from EJB CMT.</p></li><li><p><span class="bold"><b>Transaction timeout</b></span>: How long
+        this transaction may run before timing out (automatically being rolled
+        back by the underlying transaction infrastructure).</p></li><li><p><span class="bold"><b>Read-only status</b></span>: A read-only
+        transaction does not modify any data. Read-only transactions can be a
+        useful optimization in some cases (such as when using
+        Hibernate).</p></li></ul></div><p>These settings reflect standard concepts. If necessary, please refer
+    to a resource discussing transaction isolation levels and other core
+    transaction concepts: Understanding such core concepts is essential to
+    using Spring or any other transaction management solution.</p><p>The <tt class="literal">TransactionStatus</tt> interface provides a simple
+    way for transactional code to control transaction execution and query
+    transaction status. The concepts should be familiar, as they are common to
+    all transaction APIs:</p><pre class="programlisting">public interface TransactionStatus {
+
+    boolean isNewTransaction();
+
+    void setRollbackOnly();
+
+    boolean isRollbackOnly();
+}</pre><p>However Spring transaction management is used, defining the
+    <tt class="literal">PlatformTransactionManager</tt> implementation is essential.
+    In good Spring fashion, this important definition is made using Inversion
+    of Control.</p><p>PlatformTransactionManager implementations normally require
+    knowledge of the environment in which they work: JDBC, JTA, Hibernate
+    etc.</p><p>The following examples from
+    <tt class="literal">dataAccessContext-local.xml</tt> from Spring's <span class="bold"><b>jPetStore</b></span> sample application show how a local
+    PlatformTransactionManager implementation can be defined. This will work
+    with JDBC.</p><p>We must define a JDBC DataSource, and then use the Spring
+    DataSourceTransactionManager, giving it a reference to the
+    DataSource.</p><pre class="programlisting">&lt;bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"&gt;
+  &lt;property name="driverClassName" value="${jdbc.driverClassName}"/&gt;
+  &lt;property name="url" value="${jdbc.url}"/&gt;
+  &lt;property name="username" value="${jdbc.username}"/&gt;
+  &lt;property name="password" value="${jdbc.password}"/&gt;
+&lt;/bean&gt;</pre><p>The PlatformTransactionManager definition will look like
+    this:</p><pre class="programlisting">&lt;bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"&gt;
+  &lt;property name="dataSource" ref="dataSource"/&gt;
+&lt;/bean&gt;</pre><p>If we use JTA, as in the <tt class="literal">dataAccessContext-jta.xml
+    </tt>file from the same sample application, we need to use a
+    container DataSource, obtained via JNDI, and a JtaTransactionManager
+    implementation. The JtaTransactionManager doesn't need to know about the
+    DataSource, or any other specific resources, as it will use the
+    container's global transaction management.</p><pre class="programlisting">&lt;bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean"&gt;
+  &lt;property name="jndiName" value="jdbc/jpetstore"/&gt;&gt;
+&lt;/bean&gt;
+
+&lt;bean id="txManager" class="org.springframework.transaction.jta.JtaTransactionManager"/&gt;</pre><p>We can use Hibernate local transactions easily, as shown in the
+    following examples from the Spring <span class="bold"><b>PetClinic</b></span> sample application.</p><p>In this case, we need to define a Hibernate LocalSessionFactory,
+    which application code will use to obtain Hibernate Sessions.</p><p>The DataSource bean definition will be similar to one of the above
+    examples, and is not shown. (If it's a container DataSource it should be
+    non-transactional as Spring, rather than the container, will manage
+    transactions.)</p><p>The "txManager" bean in this case is of class
+    HibernateTransactionManager. In the same way as the
+    DataSourceTransactionManager needs a reference to the DataSource, the
+    HibernateTransactionManager needs a reference to the
+    SessionFactory.</p><pre class="programlisting">&lt;bean id="sessionFactory" class="org.springframework.orm.hibernate.LocalSessionFactoryBean"&gt;
+  &lt;property name="dataSource" ref="dataSource"/&gt;
+  &lt;property name="mappingResources"&gt;
+    &lt;list&gt;
+      &lt;value&gt;org/springframework/samples/petclinic/hibernate/petclinic.hbm.xml&lt;/value&gt;
+    &lt;/list&gt;
+  &lt;/property&gt;
+  &lt;property name="hibernateProperties"&gt;
+    &lt;props&gt;
+      &lt;prop key="hibernate.dialect"&gt;${hibernate.dialect}&lt;/prop&gt;
+    &lt;/props&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="txManager" class="org.springframework.orm.hibernate.HibernateTransactionManager"&gt;
+  &lt;property name="sessionFactory" ref="sessionFactory"/&gt;
+&lt;/bean&gt;</pre><p>With Hibernate and JTA transactions we could simply use the
+    JtaTransactionManager as with JDBC or any other resource strategy.</p><pre class="programlisting">&lt;bean id="txManager" class="org.springframework.transaction.jta.JtaTransactionManager"/&gt;</pre><p>Note that this is identical to JTA configuration for any resource,
+    as these are global transactions, which can enlist any transactional
+    resource.</p><p><i><span class="remark">In all these cases, application code won't need to change at
+    all. We can change how transactions are managed merely by changing
+    configuration, even if that change means moving from local to global
+    transactions or vice versa.</span></i></p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e5480"></a>8.3.&nbsp;Resource synchronization with transactions</h2></div></div><div></div></div><p>It should now be clear how different transaction managers are
+    created, and how they are linked to related resources which need to be
+    synchronized to transactions (i.e.
+    <tt class="literal">DataSourceTransactionManager</tt> to a JDBC
+    <tt class="literal">DataSource</tt>,
+    <tt class="literal">HibernateTransactionManager</tt> to a Hibernate
+    <tt class="literal">SessionFactory</tt>, etc.). There remains the question
+    however of how the application code directly or indirectly using a
+    persistence API (JDBC, Hibernate, JDO, etc.), ensures that these resources
+    are obtained and handled properly, in terms of proper
+    creation/reuse/cleanup and to trigger (optionally) transaction
+    synchronization via the relevant
+    <tt class="literal">PlatformTransactionManager</tt>.</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5500"></a>8.3.1.&nbsp;High-level approach</h3></div></div><div></div></div><p>The preferred approach is to use Spring's highest level
+      persistence integration APIs. These do not replace the native APIs, but
+      do internally handle resource creation/reuse, cleanup, optional
+      transaction synchronization of the resources and exception mapping, so
+      that user data access code doesn't have to worry about these concerns at
+      all, but can concentrate purely on non-boilerplate persistence logic.
+      Generally, the same<span class="emphasis"><em> template</em></span> approach is followed
+      for all persistence APIs, with classes such as
+      <tt class="literal">JdbcTemplate</tt>, <tt class="literal">HibernateTemplate</tt>,
+      <tt class="literal">JdoTemplate</tt>, etc.. These integration classes are
+      detailed in subsequent chapters of this manual.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5517"></a>8.3.2.&nbsp;Low-level approach</h3></div></div><div></div></div><p>At a lower level exist classes such as
+      <tt class="literal">DataSourceUtils</tt> (for JDBC),
+      <tt class="literal">SessionFactoryUtils</tt> (for Hibernate),
+      <tt class="literal">PersistenceManagerFactoryUtils</tt> (for JDO), and so on.
+      When it is preferred for application code to deal directly with the
+      resource types of the native persistence APIs, these classes ensure that
+      proper Spring-managed instances are obtained, transactions are
+      (optionally) synchronized to, and exceptions which happen in the process
+      are properly mapped to a consistent API.</p><p>For example, for JDBC, instead of the traditional JDBC approach of
+      calling the <tt class="literal">getConnection()</tt> method on the
+      <tt class="literal">DataSource</tt>, you would instead use Spring's
+      <tt class="literal">org.springframework.jdbc.datasource.DataSourceUtils</tt>
+      class as follows:</p><pre class="programlisting">Connection conn = DataSourceUtils.getConnection(dataSource);</pre><p>If an existing transaction exists, and already has a connection
+      synchronized (linked) to it, that instance will be returned. Otherwise,
+      the method call will trigger the creation of a new connection, which
+      will be (optionally) synchronized to any existing transaction, and
+      available for subsequent reuse in that same transaction. As mentioned,
+      this has the added advantage that any <tt class="literal">SQLException</tt>
+      will be wrapped in a Spring
+      <tt class="literal">CannotGetJdbcConnectionException</tt>--one of Spring's
+      hierarchy of unchecked DataAccessExceptions. This gives you more
+      information than can easily be obtained from the
+      <tt class="literal">SQLException</tt>, and ensures portability across
+      databases: even across different persistence technologies.</p><p>It should be noted that this will also work fine without Spring
+      transaction management (transaction synchronization is optional), so you
+      can use it whether or not you are using Spring for transaction
+      management.</p><p>Of course, once you've used Spring's JDBC support or Hibernate
+      support, you will generally prefer not to use
+      <tt class="literal">DataSourceUtils</tt> or the other helper classes, because
+      you'll be much happier working via the Spring abstraction than directly
+      with the relevant APIs. For example, if you use the Spring JdbcTemplate
+      or jdbc.object package to simplify your use of JDBC, correct connection
+      retrieval happens behind the scenes and you won't need to write any
+      special code.</p><p>All these lower level resource access classes are detailed in
+      subsequent chapters of this manual.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5564"></a>8.3.3.&nbsp;TransactionAwareDataSourceProxy</h3></div></div><div></div></div><p>At the very lowest level exists the
+      <tt class="literal">TransactionAwareDataSourceProxy</tt> class. This is a
+      proxy for a target <tt class="literal">DataSource</tt>, which wraps that
+      target <tt class="literal">DataSource</tt> to add awareness of Spring-managed
+      transactions. In this respect it is similar to a transactional JNDI
+      <tt class="literal">DataSource</tt> as provided by a J2EE server.</p><p>It should almost never be necessary or desireable to use this
+      class, except when existing code exists which must be called and passed
+      a standard JDBC <tt class="literal">DataSource</tt> interface implementation.
+      In this case, it's possible to still have this code be usable, but
+      participating in Spring managed transactions. It is preferable to write
+      your own new code using the higher level abstractions mentioned
+      above.</p><p>See the <tt class="literal">TransactionAwareDataSourceProxy</tt>
+      Javadocs for more details.</p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e5591"></a>8.4.&nbsp;Programmatic transaction management</h2></div></div><div></div></div><p>Spring provides two means of programmatic transaction
+    management:</p><div class="itemizedlist"><ul type="disc"><li><p>Using the <tt class="literal">TransactionTemplate</tt></p></li><li><p>Using a <tt class="literal">PlatformTransactionManager</tt>
+        implementation directly</p></li></ul></div><p>We generally recommend the first approach.</p><p>The second approach is similar to using the JTA
+    <tt class="literal">UserTransaction</tt> API (although exception handling is
+    less cumbersome).</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5615"></a>8.4.1.&nbsp;Using the <tt class="literal">TransactionTemplate</tt></h3></div></div><div></div></div><p>The <tt class="literal">TransactionTemplate</tt> adopts the same
+      approach as other Spring <span class="emphasis"><em>templates</em></span> such as
+      <tt class="literal">JdbcTemplate</tt> and
+      <tt class="literal">HibernateTemplate</tt>. It uses a callback approach, to
+      free application code from the working of acquiring and releasing
+      resources. (No more try/catch/finally.) Like other templates, a
+      <tt class="literal">TransactionTemplate</tt> is threadsafe.</p><p>Application code that must execute in a transaction context looks
+      like this. Note that the <tt class="literal">TransactionCallback</tt> can be
+      used to return a value:</p><pre class="programlisting">Object result = tt.execute(new TransactionCallback() {
+    public Object doInTransaction(TransactionStatus status) {
+        updateOperation1();
+        return resultOfUpdateOperation2();
+    }
+});</pre><p>If there's no return value, use a
+      <tt class="literal">TransactionCallbackWithoutResult</tt> like this:</p><pre class="programlisting">tt.execute(new TransactionCallbackWithoutResult() {
+    protected void doInTransactionWithoutResult(TransactionStatus status) {
+        updateOperation1();
+        updateOperation2();
+    }
+});</pre><p>Code within the callback can roll the transaction back by calling
+      the <tt class="literal">setRollbackOnly()</tt> method on the
+      <tt class="literal">TransactionStatus</tt> object.</p><p>Application classes wishing to use the
+      <tt class="literal">TransactionTemplate</tt> must have access to a
+      PlatformTransactionManager: usually exposed as a JavaBean property or as
+      a constructor argument.</p><p>It's easy to unit test such classes with a mock or stub
+      <tt class="literal">PlatformTransactionManager</tt>. There's no JNDI lookup or
+      static magic here: it's a simple interface. As usual, you can use Spring
+      to simplify your unit testing.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5671"></a>8.4.2.&nbsp;Using the <tt class="literal">PlatformTransactionManager</tt></h3></div></div><div></div></div><p>You can also use the
+      <tt class="literal">org.springframework.transaction.PlatformTransactionManager</tt>
+      directly to manage your transaction. Simply pass the implementation of
+      the PlatformTransactionManager you're using to your bean via a bean
+      reference. Then, using the <tt class="literal">TransactionDefinition</tt> and
+      <tt class="literal">TransactionStatus</tt> objects you can initiate
+      transactions, rollback and commit.</p><pre class="programlisting">DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+
+TransactionStatus status = txManager.getTransaction(def);
+try {
+    // execute your business logic here
+}
+catch (MyException ex) {
+    txManager.rollback(status);
+    throw ex;
+}
+txManager.commit(status);</pre></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e5690"></a>8.5.&nbsp;Declarative transaction management</h2></div></div><div></div></div><p>Spring also offers declarative transaction management. This is
+    enabled by Spring AOP, although, as the transactional aspects code comes
+    with Spring and may be used in a boilerplate fashion, AOP concepts do not
+    generally have to be understood to make effective use of this
+    code..</p><i><span class="remark">Most Spring users choose declarative transaction management. It is
+    the option with the least impact on application code, and hence is most
+    consistent with the ideals of a n<span class="emphasis"><em>on-invasive
+    </em></span>lightweight container.</span></i><p>It may be helpful to begin by considering EJB CMT and explaining the
+    similarities and differences with Spring declarative transaction
+    management. The basic approach is similar: It's possible to specify
+    transaction behavior (or lack of it) down to individual methods. It's
+    possible to make a <tt class="literal">setRollbackOnly() </tt>call within a
+    transaction context if necessary. The differences are:</p><div class="itemizedlist"><ul type="disc"><li><p>Unlike EJB CMT, which is tied to JTA, Spring declarative
+        transaction management works in any environment. It can work with
+        JDBC, JDO, Hibernate or other transactions under the covers, with
+        configuration changes only.</p></li><li><p>Spring enables declarative transaction management to be applied
+        to any POJO, not just special classes such as EJBs.</p></li><li><p>Spring offers declarative <span class="emphasis"><em>rollback rules</em></span>: a
+        feature with no EJB equivalent, which we'll discuss below. Rollback
+        can be controlled declaratively, not merely programmatically.</p></li><li><p>Spring gives you an opportunity to customize transactional
+        behavior, using AOP. For example, if you want to insert custom
+        behavior in the case of transaction rollback, you can. You can also
+        add arbitrary advice, along with the transactional advice. With EJB
+        CMT, you have no way to influence the container's transaction
+        management other than <tt class="literal">setRollbackOnly()</tt>.</p></li><li><p>Spring does not support propagation of transaction contexts
+        across remote calls, as do high-end application servers. If you need
+        this feature, we recommend that you use EJB. However, don't use this
+        feature lightly. Normally we don't want transactions to span remote
+        calls.</p></li></ul></div><p>The concept of rollback rules is important: they enable us to
+    specify which exceptions (and throwables) should cause automatic roll
+    back. We specify this declaratively, in configuration, not in Java code.
+    So, while we can still call <tt class="literal">setRollbackOnly() </tt>on the
+    <tt class="literal">TransactionStatus</tt> object to roll the current
+    transaction back programmatically, most often we can specify a rule that
+    <tt class="literal">MyApplicationException</tt> should always result in roll
+    back. This has the significant advantage that business objects don't need
+    to depend on the transaction infrastructure. For example, they typically
+    don't need to import any Spring APIs, transaction or other.</p><p>While the EJB default behavior is for the EJB container to
+    automatically roll back the transaction on a <span class="emphasis"><em>system
+    exception</em></span> (usually a runtime exception), EJB CMT does not roll
+    back the transaction automatically on an <span class="emphasis"><em>application
+    exception</em></span> (checked exception other than
+    <tt class="literal">java.rmi.RemoteException</tt>). While the Spring default
+    behavior for declarative transaction management follows EJB convention
+    (roll back is automatic only on unchecked exceptions), it's often useful
+    to customize this.</p><p>On our benchmarks, the performance of Spring declarative transaction
+    management exceeds that of EJB CMT.</p><p>The usual way of setting up transactional proxying in Spring is via
+    the the use of <tt class="literal">TransactionProxyFactoryBean</tt> to create
+    the transactional proxy. This factory bean is simply a specialized version
+    of Spring's generic <tt class="literal">ProxyFactoryBean</tt>, that, in addition
+    to creating a proxy to wrap a target object, will also always
+    automatically create and attach a
+    <tt class="literal">TransactionInterceptor</tt> to that proxy, reducing
+    boilerplate code. (Note that as with <tt class="literal">ProxyFactoryBean</tt>,
+    you may still specify other interceptors or AOP advice to apply via the
+    proxy).</p><p>When using <tt class="literal">TransactionProxyFactoryBean</tt>, you need
+    to first of all specify the target object to wrap in the transactional
+    proxy, via the <tt class="literal">target</tt> attribute.. The target object is
+    normally a POJO bean definition. You must also specify a reference to the
+    relevant <tt class="literal">PlatformTransactionManager</tt>. Finally, you must
+    specify the <span class="bold"><b>transaction attributes</b></span>.
+    Transaction attributes contain the definition of what transaction
+    semantics we wish to use (as discussed above), as well as where they
+    apply. Now let's consider the following sample:</p><pre class="programlisting">&lt;!-- this example is in verbose form, see note later about concise for multiple proxies! --&gt;
+&lt;!-- the target bean to wrap transactionally --&gt;
+&lt;bean id="petStoreTarget"&gt;
+  ...
+&lt;/bean&gt;
+
+&lt;bean id="petStore" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"&gt;
+  &lt;property name="transactionManager" ref="txManager"/&gt;
+  &lt;property name="target" ref="petStoreTarget"/&gt;
+  &lt;property name="transactionAttributes"&gt;
+    &lt;props&gt;
+      &lt;prop key="insert*"&gt;PROPAGATION_REQUIRED,-MyCheckedException&lt;/prop&gt;
+      &lt;prop key="update*"&gt;PROPAGATION_REQUIRED&lt;/prop&gt;
+      &lt;prop key="*"&gt;PROPAGATION_REQUIRED,readOnly&lt;/prop&gt;
+    &lt;/props&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p>The transactional proxy will implement the interfaces of the target:
+    in this case, the bean with id <span class="emphasis"><em>petStoreTarget</em></span>. (Note
+    that using CGLIB it's possible to transactionally proxy non-interface
+    methods of the target class as well. Set the "proxyTargetClass" property
+    to true to force this to always happen, although it will happen
+    automatically if the target doesn't implement any interfaces. In general,
+    of course, we want to program to interfaces rather than classes.) It's
+    possible (and usually a good idea) to restrict the transactional proxy to
+    proxying only specific target interfaces, using the
+    <span class="emphasis"><em>proxyInterfaces</em></span> property. It's also possible to
+    customize the behavior of a <tt class="literal">TransactionProxyFactoryBean</tt>
+    via several properties inherited from
+    <tt class="literal">org.springframework.aop.framework.ProxyConfig</tt>, and
+    shared with all AOP proxy factories.</p><p>The transaction interceptor will ultimately use an object
+    implementating Spring's <tt class="literal">TransactionAttributeSource</tt>
+    interface to get at the transaction attributes (in the form of
+    <tt class="literal">TransactionAttribute</tt> objects) defining the transaction
+    semantics to be applied to specific methods of specific classes. The most
+    basic way to specify this <tt class="literal">TransactionAttributeSource</tt>
+    instance when creating the proxy is for you to create a bean implementing
+    the <tt class="literal">TransactionAttributeSource</tt> interface (Spring has
+    several implementations), and then directly set the the
+    <tt class="literal">transactionAttributeSource</tt> property of the proxy
+    factory bean to refer to it (or wrap it as an inner bean. Alternately, you
+    may set a text string for this property, and rely on the fact that the
+    pre-registered (by Spring)
+    <tt class="literal">TransactionAttributeSourceEditor</tt> will automatically
+    convert that text string to a
+    <tt class="literal">MethodMapTransactionAttributeSource</tt> instance.</p><p>However, as shown in this example, most users will instead prefer to
+    define the transaction attributes by setting the
+    <tt class="literal">transactionAttributes</tt> property. This property has a
+    type of <tt class="literal">Java.util.Properties</tt>, which will then
+    internally be converted to a
+    <tt class="literal">NameMatchTransactionAttributeSource</tt> object.</p><p>As can be seen in the above definition, a
+    <tt class="literal">NameMatchTransactionAttributeSource</tt> object holds a list
+    of name/value pairs. The key of each pair is a method or methods (a *
+    wildcard ending is optional) to apply transactional semantics to. Note
+    that the method name is <span class="emphasis"><em>not</em></span> qualified with a package
+    name, but rather is considered relative to the class of the target object
+    being wrapped. The value portion of the name/value pair is the
+    <tt class="literal">TransactionAttribute</tt> itself that needs to be applied.
+    When specifying it as the <tt class="literal">Properties</tt> value as in this
+    example, it's in String format as defined by
+    <tt class="literal">TransactionAttributeEditor</tt>. This format is:</p><pre class="programlisting">PROPAGATION_NAME,ISOLATION_NAME,readOnly,timeout_NNNN,+Exception1,-Exception2</pre><p>Note that the only mandatory portion of the string is the
+    propagation setting. The default transactions semantics which apply are as
+    follows:</p><div class="itemizedlist"><ul type="disc"><li><p>Exception Handling: RuntimeExceptions roll-back, normal
+        (checked) Exceptions don&#8217;t</p></li><li><p>Transactions are read/write</p></li><li><p>Isolation Level: TransactionDefinition.ISOLATION_DEFAULT</p></li><li><p>Timeout: TransactionDefinition.TIMEOUT_DEFAULT</p></li></ul></div><p>See the JavaDocs for
+    <tt class="literal">org.springframework.transaction.TransactionDefinition</tt>
+    class for the format allowed for the propagation setting and isolation
+    level setting. The String format is the same as the Integer constant names
+    for the same values.</p><p>In this example, note that the value for the insert* mapping
+    contains a rollback rule. Adding <tt class="literal">-MyCheckedException</tt>
+    here specifies that if the method throws
+    <tt class="literal">MyCheckedException</tt> or any subclasses, the transaction
+    will automatically be rolled back. Multiple rollback rules can be
+    specified here, comma-separated. A - prefix forces rollback; a + prefix
+    specifies commit. (This allows commit even on unchecked exceptions, if you
+    really know what you're doing!)</p><p>The <tt class="literal">TransactionProxyFactoryBean</tt> allows you to set
+    optional "pre" and "post" advice, for additional interception behavior,
+    using the "preInterceptors" and "postInterceptors" properties. Any number
+    of pre and post advices can be set, and their type may be
+    <tt class="literal">Advisor</tt> (in which case they can contain a pointcut),
+    <tt class="literal">MethodInterceptor</tt> or any advice type supported by the
+    current Spring configuration (such as <tt class="literal">ThrowsAdvice</tt>,
+    <tt class="literal">AfterReturningtAdvice</tt> or
+    <tt class="literal">BeforeAdvice</tt>, which are supported by default.) These
+    advices must support a shared-instance model. If you need transactional
+    proxying with advanced AOP features such as stateful mixins, it's normally
+    best to use the generic
+    <tt class="literal">org.springframework.aop.framework.ProxyFactoryBean</tt>,
+    rather than the <tt class="literal">TransactionProxyFactoryBean</tt> convenience
+    proxy creator.</p><p><span class="emphasis"><em>Note</em></span>: Using TransactionProxyFactoryBean
+    definitions in the form above can seem overly verbose when many almost
+    identical transaction proxies need to be created. You will almost always
+    want to take advantage of parent and child bean definitions, along with
+    inner bean definitions, to significantly reduce the verbosity of your
+    transaction proxy definitions, as described in <a href="aop.html#aop-concise-proxy" title="6.7.&nbsp;Concise proxy definitions">Section&nbsp;6.7, &#8220;Concise proxy definitions&#8221;</a>.</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5910"></a>8.5.1.&nbsp;Source Annotations for Transaction Demarcation</h3></div></div><div></div></div><p>XML-based transaction attribute sources definitions are
+      convenient, and work in any environment, but if you are willing to
+      commit to a dependency on Java 5+ (JDK 1.5+), you will almost certainly
+      want to consider using Spring's support for transaction Annotations in
+      JDK standard format, as the attribute source instead.</p><p>Declaring transaction semantics directly in the Java source code
+      puts the declarations much closer to the affected code, and there is
+      generally not much danger of undue coupling, since typically, code that
+      is deployed as transactional is always deployed that way.</p><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e5917"></a>8.5.1.1.&nbsp;The <tt class="literal">Transactional</tt> Annotation</h4></div></div><div></div></div><p>The
+        <tt class="literal">org.springframework.transaction.annotation.Transactional
+        Annotation</tt> is used to indicate that an interface, interface
+        method, class, or class method should have transaction
+        semantics.</p><pre class="programlisting">@Transactional
+public interface OrderService {
+
+void createOrder(Order order);
+List queryByCriteria(Order criteria);</pre><p>Used in bare form, this
+        Annotation specifies that an interface, class, or method must be
+        transactional. Default transaction semantics are read/write,
+        PROPAGATION_REQUIRED, ISOLATION_DEFAULT, TIMEOUT_DEFAULT, with
+        rollback on a <tt class="literal">RuntimeException</tt>, but not
+        <tt class="literal">Exception</tt>.</p><p>Optional properties of the annotation modify transaction
+        settings.</p><div class="table"><a name="d0e5941"></a><p class="title"><b>Table&nbsp;8.1.&nbsp;Properties of the <tt class="literal">Transactional</tt>
+            Annotation</b></p><table summary="Properties of the Transactional&#xA;            Annotation" border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><tt class="literal">propagation</tt></td><td>enum: Propagation</td><td>optional propagation setting (defaults to
+                  PROPAGATION_REQUIRED)</td></tr><tr><td><tt class="literal">isolation</tt></td><td>enum: Isolation</td><td>optional isolation level (defaults to
+                  ISOLATION_DEFAULT)</td></tr><tr><td><tt class="literal">readOnly</tt></td><td>boolean</td><td>read/write vs. read-only transaction (defaults to
+                  false, or read/write)</td></tr><tr><td><tt class="literal">rollbackFor</tt></td><td>array of Class objects, must be derived from
+                  Throwable</td><td>optional array of exception classes which should
+                  cause rollback. By default, checked exceptions do not roll
+                  back, unchecked (RuntimeException derived) roll back</td></tr><tr><td><tt class="literal">rollbackForClassname</tt></td><td>array of String class names. Classes must be derived
+                  from Throwable</td><td>optional array of names of exception classes which
+                  should cause rollback</td></tr><tr><td><tt class="literal">noRollbackFor</tt></td><td>array of Class objects, must be derived from
+                  Throwable</td><td>optional array of exception classes which should not
+                  cause rollback.</td></tr><tr><td><tt class="literal">noRollbackForClassname</tt></td><td>array of String class names, must be derived from
+                  Throwable</td><td>optional array of names of exception classes which
+                  should not rollback</td></tr></tbody></table></div><p>The annotation may be placed before an interface definition, a
+        method on an interface, a class definition, or a method on a class. It
+        may exist on both an element of an interface, and a class which
+        implements that interface. The most derived location takes precedence
+        when evaluating the transaction semantics of a method.</p><div class="sect4" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="d0e6015"></a>8.5.1.1.1.&nbsp;<tt class="literal">Transactional</tt> annotation examples</h5></div></div><div></div></div><p>Annotating a class definition:</p><pre class="programlisting">public class OrderServiceImpl implements OrderService {
+
+  @Transactional
+  void createOrder(Order order);
+  public List queryByCriteria(Order criteria);
+
+}</pre><p>In the following example, the interface is annotated for
+          read-only transactions, which will thus be the setting used for
+          methods by default. The Annotation on the createOrder method
+          overrides this, setting the transaction to read/write, and
+          specifying that transactions should also (in addition to the defualt
+          rollback rule for <tt class="literal">RuntimeException</tt>) rollback when
+          the <tt class="literal">DuplicateOrderIdException</tt> (presumably a
+          non-checked Exception) is thrown.</p><pre class="programlisting">@Transactional(readOnly=true)
+interface TestService {
+
+  @Transactional(readOnly=false,
+               rollbackFor=DuplicateOrderIdException.class)
+  void createOrder(Order order) throws DuplicateOrderIdException ;
+
+  List queryByCriteria(Order criteria);
+}</pre><p>Note that a class definition which implements this interface
+          may still override these settings on its own class or method
+          elements.</p></div><div class="sect4" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="d0e6036"></a>8.5.1.1.2.&nbsp;Telling Spring to apply the <tt class="literal">Transactional</tt>
+          annotation</h5></div></div><div></div></div><p>By itself, adding instances of this annotation to interface or
+          class elements will not result in transactional wrapping of the
+          implementation clases. Spring must still be told somehow to create
+          transactional proxies around classes with these annotations.</p><p>The key is to take advantage of the
+          <tt class="literal">org.springframework.transaction.annotation.AnnotationTransactionAttributeSource</tt>
+          class, which reads Annotations format transaction attributes from
+          class files. Taking the previous example which uses
+          TransactionProxyFactoryBean, the
+          <tt class="literal">TransactionAttributes</tt> property which specified
+          transaction attributes in text form is replaced by the direct usage
+          of the <tt class="literal">TransactionAttributeSource</tt> property,
+          specifying an
+          <tt class="literal">AnnotationTransactionAttributeSource</tt>.</p><pre class="programlisting">&lt;bean id="petStore" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"&gt;
+  &lt;property name="transactionManager" ref="txManager"/&gt;
+  &lt;property name="target" ref="petStoreTarget"/&gt;
+  &lt;property name="transactionAttributeSource"&gt;
+    &lt;bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p>Since the TransactionAttributeSource property
+          does not need to change at all for each proxy instance, when using
+          parent and child bean definitions to avoid code duplication, the
+          property may just be set on the base, parent definition and
+          forgotten, there is never a need to override it in the child since
+          the attribute source will read the right settings from each class
+          file.</p></div><div class="sect4" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="d0e6062"></a>8.5.1.1.3.&nbsp;Using AOP to ensure the <tt class="literal">Transactional</tt>
+          annotation is applied</h5></div></div><div></div></div><p>The previous example is still more work than would be ideal.
+          There is in principle no need for XML for each proxy (to point to
+          the target bean) when the annotations in the class files themselves
+          can be used as an indication that a proxy needs to be created for
+          the annotated classes.</p><p>A more AOP focused approach allows a small amount of
+          boilerplate XML (used once only, not for each target bean) to
+          automatically ensure that proxies are created for all classes with
+          Transactional annotations in them. Spring AOP was fully detailed in
+          a previous chapter, which you should consult for general AOP
+          documentation, but the key is the use of
+          <tt class="literal">DefaultAdvisorAutoProxyCreator</tt>, a
+          <tt class="literal">BeanPostProcessor</tt>. Because it is a bean post
+          processor, it gets a chance to look at every bean that is created as
+          it is created. If the bean contains the
+          <tt class="literal">Transactional</tt> annotation, a transactional proxy
+          is automatically created to wrap it.</p><pre class="programlisting">&lt;bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/&gt;
+
+&lt;bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor"&gt;
+  &lt;property name="transactionInterceptor" ref="txInterceptor"/&gt;
+&lt;/bean&gt;
+
+&lt;bean id="txInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor"&gt;
+  &lt;property name="transactionManager" ref="txManager"/&gt;
+  &lt;property name="transactionAttributeSource"&gt;
+    &lt;bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p>A number of classes are involved here:</p><div class="itemizedlist"><ul type="disc"><li><p><tt class="literal">TransactionInterceptor</tt>: the AOP Advice,
+              actually intercepts method call and wraps it with a transaction</p></li><li><p><tt class="literal">TransactionAttributeSourceAdvisor</tt>: AOP
+              Advisor (holds the TransactionInterceptor, which is the advice,
+              and a pointcut (where to apply the advice), in the form of a
+              TransactionAttributeSource)</p></li><li><p><tt class="literal">AnnotationTransactionAttributeSource</tt>:
+              TransactionAttributeSource implementation which provides
+              transaction attributes read from class files</p></li><li><p><tt class="literal">DefaultAdvisorAutoProxyCreator</tt>: looks
+              for Advisors in the context, and automatically creates proxy
+              objects which are the transactional wrappers</p></li></ul></div></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e6107"></a>8.5.2.&nbsp;BeanNameAutoProxyCreator,
+      another declarative approach</h3></div></div><div></div></div><p><tt class="classname">TransactionProxyFactoryBean</tt> is very useful,
+      and gives you full control when wrapping objects with a transactional
+      proxy. Used with parent/child bean definitions and inner beans holding
+      the target, and when Java 5 Annotations are not available as an option,
+      it is generally the best choice for transactional wrapping. In the case
+      that you need to wrap a number of beans in a completely identical
+      fashion (for example, a boilerplate, 'make all methods transactional',
+      using a <tt class="classname">BeanFactoryPostProcessor</tt> called
+      <tt class="classname">BeanNameAutoProxyCreator</tt> can offer an alternative
+      approach which can end up being even less verbose for this simplified
+      use case.</p><p>To recap, once the ApplicationContext has read its initialization
+      information, it instantiates any beans within it which implement the
+      <tt class="classname">BeanPostProcessor</tt> interface, and gives them a
+      chance to post-process all other beans in the ApplicationContext. So
+      using this mechanism, a properly configured
+      <tt class="classname">BeanNameAutoProxyCreator</tt> can be used to
+      postprocess any other beans in the ApplicationContext (recognizing them
+      by name), and wrap them with a transactional proxy. The actual
+      transaction proxy produced is essentially identical to that produced by
+      the use of <tt class="classname">TransactionProxyFactoryBean</tt>, so will
+      not be discussed further.</p><p>Let us consider a sample configuration:</p><pre class="programlisting">&lt;beans&gt;
+
+	&lt;!-- Transaction Interceptor set up to do PROPAGATION_REQUIRED on all methods --&gt;
+  &lt;bean id="matchAllWithPropReq" 
+      class="org.springframework.transaction.interceptor.MatchAlwaysTransactionAttributeSource"&gt;
+    &lt;property name="transactionAttribute" value="PROPAGATION_REQUIRED"/&gt;
+  &lt;/bean&gt;
+
+  &lt;bean id="matchAllTxInterceptor"
+      class="org.springframework.transaction.interceptor.TransactionInterceptor"&gt;
+    &lt;property name="transactionManager" ref="txManager"/&gt;
+    &lt;property name="transactionAttributeSource" ref="matchAllWithPropReq"/&gt;
+  &lt;/bean&gt;
+
+  &lt;!-- One BeanNameAutoProxyCreator handles all beans where we want all methods to use 
+       PROPAGATION_REQUIRED --&gt;
+  &lt;bean id="autoProxyCreator" 
+      class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator"&gt;
+    &lt;property name="interceptorNames"&gt;
+      &lt;list&gt;
+        &lt;idref local="matchAllTxInterceptor"/&gt;
+        &lt;idref bean="hibInterceptor"/&gt;
+      &lt;/list&gt;
+    &lt;/property&gt;
+    &lt;property name="beanNames"&gt;
+      &lt;list&gt;
+        &lt;idref local="core-services-applicationControllerSevice"/&gt;
+        &lt;idref local="core-services-deviceService"/&gt;
+        &lt;idref local="core-services-authenticationService"/&gt;
+        &lt;idref local="core-services-packagingMessageHandler"/&gt;
+        &lt;idref local="core-services-sendEmail"/&gt;
+        &lt;idref local="core-services-userService"/&gt;
+      &lt;/list&gt;
+    &lt;/property&gt;
+  &lt;/bean&gt;
+
+&lt;/beans&gt;</pre><p>Assuming that we already have a
+      <tt class="classname">TransactionManager</tt> instance in our
+      ApplicationContext, the first thing we need to do is create a
+      <tt class="classname">TransactionInterceptor</tt> instance to use. The
+      <tt class="classname">TransactionInterceptor</tt> decides which methods to
+      intercept based on a <tt class="classname">TransactionAttributeSource</tt>
+      implementing object passed to it as a property. In this case, we want to
+      handle the very simple case of matching all methods. This is not
+      necessarily the most efficient approach, but it's very quick to set up,
+      because we can use the special pre-defined
+      <tt class="classname">MatchAlwaysTransactionAttributeSource</tt>, which
+      simply matches all methods. If we wanted to be more specific, we could
+      use other variants such as
+      <tt class="classname">MethodMapTransactionAttributeSource</tt>,
+      <tt class="classname">NameMatchTransactionAttributeSource</tt>, or
+      <tt class="classname">AttributesTransactionAttributeSource</tt>.</p><p>Now that we have the transaction interceptor, we simply feed it to
+      a <tt class="classname">BeanNameAutoProxyCreator</tt> instance we define,
+      along with the names of 6 beans in the ApplicationContext that we want
+      to wrap in an identical fashion. As you can see, the net result is
+      significantly less verbose than it would have been to wrap 6 beans
+      identically with TransactionProxyFactoryBean. Wrapping a 7th bean would
+      add only one more line of config.</p><p>You may notice that we are able to apply multiple interceptors. In
+      this case, we are also applying a
+      <tt class="classname">HibernateInterceptor</tt> we have previously defined
+      (bean id=<span class="emphasis"><em>hibInterceptor</em></span>), which will manage
+      Hibernate Sessions for us.</p><p>There is one thing to keep in mind, with regards to bean naming,
+      when switching back and forth between the use of
+      <tt class="classname">TransactionProxyFactoryBean</tt>, and
+      <tt class="classname">BeanNameAutoProxyCreator</tt>. For the former, if the
+      target bean is not defined as an inner bean, you normally give the
+      target bean you want to wrap an id similar in form to
+      <span class="emphasis"><em>myServiceTarget</em></span>, and then give the proxy object an
+      id of <span class="emphasis"><em>myService</em></span>; then all users of the wrapped
+      object simply refer to the proxy, i.e. <span class="emphasis"><em>myService</em></span>.
+      (These are just sample naming conventions, the point is that the target
+      object has a different name than the proxy, and both are available from
+      the ApplicationContext). However, when using
+      <tt class="classname">BeanNameAutoProxyCreator</tt>, you name the target
+      object something like <span class="emphasis"><em>myService</em></span>. Then, when
+      <tt class="classname">BeanNameAutoProxyCreator</tt> postprocesses the target
+      object and create the proxy, it causes the proxy to be inserted into the
+      Application context under the name of the original bean. From that point
+      on, only the proxy (the wrapped object) is available from the
+      ApplicationContext. When using TransactionProxyFactoryBean with the
+      target specified as an inner bean, this naming issue is not a concern,
+      since the inner bean is not normally given a name.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e6201"></a>8.5.3.&nbsp;AOP and Transactions</h3></div></div><div></div></div><i><span class="remark">As you've seen by reading this chapter, you don't really need to
+      be an AOP expert--or indeed, to know much at all about AOP--to use
+      Spring's declarative transaction management effectively. However, if you
+      do want to become a "power user" of Spring AOP, you will find it easy to
+      combine declarative transaction management with powerful AOP
+      capabilities.</span></i></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e6206"></a>8.6.&nbsp;Choosing between programmatic and declarative transaction
+    management</h2></div></div><div></div></div><p>Programmatic transaction management is usually a good idea only if
+    you have a small number of transactional operations. For example, if you
+    have a web application that require transactions only for certain update
+    operations, you may not want to set up transactional proxies using Spring
+    or any other technology. Using the TransactionTemplate may be a good
+    approach.</p><p>On the other hand, if your applications has numerous transactional
+    operations, declarative transaction management is usually worthwhile. It
+    keeps transaction management out of business logic, and is not difficult
+    to configure in Spring. Using Spring, rather than EJB CMT, the
+    configuration cost of declarative transaction management is greatly
+    reduced.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e6213"></a>8.7.&nbsp;Do you need an application server for transaction
+    management?</h2></div></div><div></div></div><p>Spring's transaction management capabilities--and especially its
+    declarative transaction management--significantly changes traditional
+    thinking as to when a J2EE application requires an application
+    server.</p><p>In particular, you don't need an application server just to have
+    declarative transactions via EJB. In fact, even if you have an application
+    server with powerful JTA capabilities, you may well decide that Spring
+    declarative transactions offer more power and a much more productive
+    programming model than EJB CMT.</p><p>You need an application server's JTA capability only if you need to
+    enlist multiple transactional resources. Many applications don't face this
+    requirement. For example, many high-end applications use a single, highly
+    scalable, database such as Oracle 9i RAC.</p><p>Of course you may need other application server capabilities such as
+    JMS and JCA. However, if you need only JTA, you could also consider an
+    open source JTA add-on such as JOTM. (Spring integrates with JOTM out of
+    the box.) However, as of early 2004, high-end application servers provide
+    more robust support for XA transactions.</p><p></p><p>The most important point is that with Spring <span class="emphasis"><em>you can
+    choose when to scale your application up to a full-blown application
+    server</em></span>. Gone are the days when the only alternative to using
+    EJB CMT or JTA was to write coding using local transactions such as those
+    on JDBC connections, and face a hefty rework if you ever needed that code
+    to run within global, container-managed transactions. With Spring only
+    configuration needs to change: your code doesn't.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e6230"></a>8.8.&nbsp;AppServer-specific integration</h2></div></div><div></div></div><p>Spring's transaction abstraction is generally AppServer agnostic.
+    Additionally, Spring's <tt class="literal">JtaTransactionManager</tt> class,
+    which can optionally perform a JNDI lookup for the JTA
+    <tt class="literal">UserTransaction</tt> and
+    <tt class="literal">TransactionManager</tt> objects, can be set to autodetect
+    the location for the latter object, which varies by AppServer. Having
+    access to the <tt class="literal">TransactionManager</tt> instance does allow
+    enhanced transaction semantics. Please see the
+    <tt class="literal">JtaTransactionManager</tt> Javadocs for more details.</p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e6250"></a>8.8.1.&nbsp;BEA WebLogic</h3></div></div><div></div></div><p>In a WebLogic 7.0, 8.1 or higher environment, you will generally
+      prefer to use <tt class="literal">WebLogicJtaTransactionManager</tt> instead
+      of the stock <tt class="literal">JtaTransactionManager</tt> class. This
+      special WebLogic specific subclass of the normal
+      <tt class="literal">JtaTransactionManager</tt>. It supports the full power of
+      Spring's transaction definitions in a WebLogic managed transaction
+      environment, beyond standard JTA semantics: features include transaction
+      names, per-transaction isolation levels, and proper resuming of
+      transactions in all cases.</p><p>Please see the Javadocs for full details.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e6266"></a>8.8.2.&nbsp;IBM WebSphere</h3></div></div><div></div></div><p>In a WebSphere 5.1, 5.0 and 4 environment, you may wish to use
+      Spring's <tt class="literal">WebSphereTransactionManagerFactoryBean</tt>
+      class. This is a factory bean which retrieves the JTA
+      <tt class="literal">TransactionManager</tt> in a WebSphere environment, which
+      is done via WebSphere's static access methods. These methods are
+      different for each version of WebSphere.</p><p>Once the JTA <tt class="literal">TransactionManager</tt> instance has
+      been obtained via this factory bean, Spring's
+      <tt class="literal">JtaTransactionManager</tt> may be configured with a
+      reference to it, for enhanced transaction semantics over the use of only
+      the JTA <tt class="literal">UserTransaction</tt> object.</p><p>Please see the Javadocs for full details.</p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e6290"></a>8.9.&nbsp;Common problems</h2></div></div><div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e6293"></a>8.9.1.&nbsp;Use of the wrong transaction manager for a specific
+      DataSource</h3></div></div><div></div></div><p>Developers should take care to use the correct
+      <span class="emphasis"><em><tt class="literal">PlatformTransactionManager</tt></em></span>
+      implementation for their requirements.</p><p>It's important to understand how the Spring transaction
+      abstraction works with JTA global transactions. Used properly, there is
+      no conflict here: Spring merely provides a simplifying, portable
+      abstraction.</p><p>If you are using global transactions, you
+      <span class="emphasis"><em>must</em></span> use the Spring
+      <tt class="literal">org.springframework.transaction.jta.JtaTransactionManager</tt>
+      for all your for all your transactional operations. Otherwise Spring
+      will attempt to perform local transactions on resources such as
+      container DataSources. Such local transactions don't make sense, and a
+      good application server will treat them as errors.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e6312"></a>8.9.2.&nbsp;Spurious AppServer warnings about the transaction or DataSource
+      no longer being active</h3></div></div><div></div></div><p>In some JTA environments with very strict XADataSource
+      implementations -- currently only some WebLogic and WebSphere versions
+      -- when using Hibernate configured without any awareness of the JTA
+      <tt class="literal">TransactionManager</tt> object for that environment, it is
+      is possible for spurious warning or exceptions to show up in the
+      application server log. These warnings or exceptions will say something
+      to the effect that the connection being accessed is no longer valid, or
+      JDBC access is no longer valid, possibly because the transaction is no
+      longer active. As an example, here is an actual exception from
+      WebLogic:</p><pre class="programlisting">java.sql.SQLException: The transaction is no longer active - status: 'Committed'.
+   No further JDBC access is allowed within this transaction. </pre><p>This warning is easy to resolve as described in <a href="orm.html#orm-hibernate-invalid-jdbc-access-error" title="12.2.10.&nbsp;Spurious AppServer warnings about the transaction or DataSource&#xA;      no longer being active">Section&nbsp;12.2.10, &#8220;Spurious AppServer warnings about the transaction or DataSource
+      no longer being active&#8221;</a>.</p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="aspectj.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="metadata.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;7.&nbsp;AspectJ Integration&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;9.&nbsp;Source Level Metadata Support</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

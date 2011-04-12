@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 11. Read-only entities</title><link rel="stylesheet" href="css/hibernate.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="up" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="prev" href="objectstate.html" title="Chapter 10. Working with objects"/><link rel="next" href="transactions.html" title="Chapter 12. Transactions and Concurrency"/><link rel="copyright" href="Legal_Notice.html" title="Legal Notice"/></head><body><p id="title"><a href="http://www.hibernate.org" class="site_href"><strong>Hibernate.org</strong></a><a href="http://hibernate.org/Documentation/DocumentationOverview" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="objectstate.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="transactions.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="readonly"/>Chapter 11. Read-only entities</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="readonly.html#readonly-api">11.1. Making persistent entities read-only</a></span></dt><dd><dl><dt><span class="section"><a href="readonly.html#readonly-api-immutable">11.1.1. Entities of immutable classes</a></span></dt><dt><span class="section"><a href="readonly.html#readonly-api-loaddefault">11.1.2. Loading persistent entities as read-only</a></span></dt><dt><span class="section"><a href="readonly.html#readonly-api-querycriteria">11.1.3. Loading read-only entities from an HQL query/criteria</a></span></dt><dt><span class="section"><a href="readonly.html#readonly-api-entity">11.1.4. Making a persistent entity read-only</a></span></dt></dl></dd><dt><span class="section"><a href="readonly.html#readonly-proptypes">11.2. Read-only affect on property type</a></span></dt><dd><dl><dt><span class="section"><a href="readonly.html#readonly-proptypes-simple">11.2.1. Simple properties</a></span></dt><dt><span class="section"><a href="readonly.html#readonly-prop-types-unidir">11.2.2. Unidirectional associations</a></span></dt><dt><span class="section"><a href="readonly.html#readonly-proptypes-bidir">11.2.3. Bidirectional associations</a></span></dt></dl></dd></dl></div><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="important"><h2>Important</h2><p>
+            Hibernate's treatment of <span class="emphasis"><em>read-only</em></span> entities may 
+            differ from what you may have encountered elsewhere. Incorrect usage 
+            may cause unexpected results.
+        </p></div><p>
+        When an entity is read-only:
+
+        </p><div class="itemizedlist"><ul><li><p> 
+                    Hibernate does not dirty-check the entity's simple 
+                    properties or single-ended associations;
+                </p></li><li><p> 
+                    Hibernate will not update simple properties or updatable
+                    single-ended associations; 
+                </p></li><li><p> 
+                    Hibernate will not update the version of the read-only 
+                    entity if only simple properties or single-ended 
+                    updatable associations are changed;
+                </p></li></ul></div><p>
+    </p><p>
+        In some ways, Hibernate treats read-only entities the same as entities that are 
+        not read-only:
+ 
+        </p><div class="itemizedlist"><ul><li><p> 
+                    Hibernate cascades operations to associations as
+                    defined in the entity mapping.
+                </p></li><li><p> 
+                    Hibernate updates the version if the entity has a 
+                    collection with changes that dirties the entity;
+                </p></li><li><p> 
+                    A read-only entity can be deleted.
+                </p></li></ul></div><p>
+    </p><p>
+        Even if an entity is not read-only, its collection association can 
+        be affected if it contains a read-only entity.
+    </p><p>
+        For details about the affect of read-only entities on different
+        property and association types, see 
+        <a class="xref" href="readonly.html#readonly-proptypes" title="11.2. Read-only affect on property type">Section 11.2, “Read-only affect on property type”</a>.
+    </p><p>     
+        For details about how to make entities read-only, see 
+        <a class="xref" href="readonly.html#readonly-api" title="11.1. Making persistent entities read-only">Section 11.1, “Making persistent entities read-only”</a>
+    </p><p>
+        Hibernate does some optimizing for read-only entities:
+    </p><div class="itemizedlist"><ul><li><p>
+                    It saves execution time by not dirty-checking simple properties or 
+                    single-ended associations.
+                 </p></li><li><p>
+                    It saves memory by deleting database snapshots.
+                </p></li></ul></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="readonly-api"/>11.1. Making persistent entities read-only</h2></div></div></div><p>
+            Only persistent entities can be made read-only. Transient and
+            detached entities must be put in persistent state before they
+            can be made read-only.
+        </p><p>
+            Hibernate provides the following ways to make persistent entities read-only:
+        </p><div class="itemizedlist"><ul><li><p>
+                    you can map an entity class as <span class="emphasis"><em>immutable</em></span>;
+                    when an entity of an immutable class is made persistent,
+                    Hibernate automatically makes it read-only.
+                    see <a class="xref" href="readonly.html#readonly-api-immutable" title="11.1.1. Entities of immutable classes">Section 11.1.1, “Entities of immutable classes”</a> for details 
+                </p></li><li><p>
+                    you can change a default so that entities loaded
+                    into the session by Hibernate are automatically 
+                    made read-only; see <a class="xref" href="readonly.html#readonly-api-loaddefault" title="11.1.2. Loading persistent entities as read-only">Section 11.1.2, “Loading persistent entities as read-only”</a> for details
+                </p></li><li><p>
+                    you can make an HQL query or criteria read-only so
+                    that entities loaded when the query or criteria executes,
+                    scrolls, or iterates, are automatically 
+                    made read-only; see <a class="xref" href="readonly.html#readonly-api-querycriteria" title="11.1.3. Loading read-only entities from an HQL query/criteria">Section 11.1.3, “Loading read-only entities from an HQL query/criteria”</a> for details
+                </p></li><li><p>
+                    you can make a persistent entity that is already in the
+                    in the session read-only; see 
+                    <a class="xref" href="readonly.html#readonly-api-entity" title="11.1.4. Making a persistent entity read-only">Section 11.1.4, “Making a persistent entity read-only”</a> for details
+                </p></li></ul></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="readonly-api-immutable"/>11.1.1. Entities of immutable classes</h3></div></div></div><p>
+                When an entity instance of an immutable class is made 
+                persistent, Hibernate automatically makes it read-only. 
+            </p><p>
+                An entity of an immutable class can created
+                and deleted the same as an entity of a mutable class.
+            </p><p>
+                Hibernate treats a persistent entity of an immutable 
+                class the same way as a read-only persistent entity
+                of a mutable class. The only exception is that 
+                Hibernate will not allow an entity of an immutable
+                class to be changed so it is not read-only.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="readonly-api-loaddefault"/>11.1.2. Loading persistent entities as read-only</h3></div></div></div><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="note"><h2>Note</h2><p>
+                    Entities of immutable classes are automatically loaded
+                    as read-only.
+                </p></div><p>
+                To change the default behavior so Hibernate loads entity 
+                instances of mutable classes into the session and automatically 
+                makes them read-only, call:
+            </p><pre class="programlisting">Session.setDefaultReadOnly( true );</pre><p>
+                To change the default back so entities loaded by Hibernate are not
+                made read-only, call:
+            </p><pre class="programlisting">Session.setDefaultReadOnly( false );</pre><p>
+                You can determine the current setting by calling:
+            </p><pre class="programlisting">Session.isDefaultReadOnly();</pre><p> 
+                If Session.isDefaultReadOnly() returns true, entities loaded by 
+                the following are automatically made read-only:
+            </p><div class="itemizedlist"><ul><li><p>
+                        Session.load()
+                    </p></li><li><p>
+                        Session.get()
+                    </p></li><li><p>
+                        Session.merge()
+                    </p></li><li><p>
+                        executing, scrolling, or iterating HQL queries and 
+                        criteria; to override this setting for a particular
+                        HQL query or criteria see 
+                        <a class="xref" href="readonly.html#readonly-api-querycriteria" title="11.1.3. Loading read-only entities from an HQL query/criteria">Section 11.1.3, “Loading read-only entities from an HQL query/criteria”</a> 
+                    </p></li></ul></div><p>
+                Changing this default has no effect on:
+            </p><div class="itemizedlist"><ul><li><p>
+                        persistent entities already in the session when the 
+                        default was changed
+                    </p></li><li><p>
+                        persistent entities that are refreshed via
+                        Session.refresh(); a refreshed persistent 
+                        entity will only be read-only if it was 
+                        read-only before refreshing
+                    </p></li><li><p>
+                        persistent entities added by the application via 
+                        Session.persist(), Session.save(), and Session.update()
+                        Session.saveOrUpdate()
+                    </p></li></ul></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="readonly-api-querycriteria"/>11.1.3. Loading read-only entities from an HQL query/criteria</h3></div></div></div><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="note"><h2>Note</h2><p>
+                    Entities of immutable classes are automatically loaded
+                    as read-only.
+                </p></div><p>
+                If Session.isDefaultReadOnly() returns false (the default) 
+                when an HQL query or criteria executes, then entities 
+                and proxies of mutable classes loaded by the query will 
+                not be read-only.
+            </p><p>
+                You can override this behavior so that entities and proxies loaded 
+                by an HQL query or criteria are automatically made read-only. 
+            </p><p>
+                For an HQL query, call:
+            </p><pre class="programlisting">Query.setReadOnly( true );</pre><p>
+                <code class="literal">Query.setReadOnly( true )</code> must be called before
+                <code class="literal">Query.list()</code>, <code class="literal">Query.uniqueResult()</code>,
+                <code class="literal">Query.scroll()</code>, or <code class="literal">Query.iterate()</code>
+            </p><p>
+                For an HQL criteria, call:
+            </p><pre class="programlisting">Criteria.setReadOnly( true );</pre><p>
+                <code class="literal">Criteria.setReadOnly( true )</code> must be called before
+                <code class="literal">Criteria.list()</code>, <code class="literal">Criteria.uniqueResult()</code>,
+                or <code class="literal">Criteria.scroll()</code>
+            </p><p>
+                Entities and proxies that exist in the session before being returned
+                by an HQL query or criteria are not affected.
+            </p><p>
+                Uninitialized persistent collections returned by the query are 
+                not affected. Later, when the collection is initialized,
+                entities loaded into the session will be read-only if 
+                Session.isDefaultReadOnly() returns true.   
+            </p><p>
+                Using <code class="literal">Query.setReadOnly( true )</code> or
+                <code class="literal">Criteria.setReadOnly( true )</code> works well
+                when a single HQL query or criteria loads all the entities and 
+                intializes all the proxies and collections that the application
+                needs to be read-only.
+            </p><p>
+                When it is not possible to load and initialize all 
+                necessary entities in a single query or criteria,
+                you can temporarily change the session default to load
+                entities as read-only before the query is executed.
+                Then you can explicitly initialize proxies and collections 
+                before restoring the session default.
+            </p><pre class="programlisting">
+Session session = factory.openSession();
+Transaction tx = session.beginTransaction();
+ 
+setDefaultReadOnly( true );
+Contract contract = 
+   ( Contract ) session.createQuery(
+           "from Contract where customerName = 'Sherman'" )
+           .uniqueResult();
+Hibernate.initialize( contract.getPlan() );
+Hibernate.initialize( contract.getVariations() );
+Hibernate.initialize( contract.getNotes() );
+setDefaultReadOnly( false );
+...
+tx.commit();
+session.close();
+
+</pre><p>
+                If Session.isDefaultReadOnly() returns true, then you can
+                use Query.setReadOnly( false ) and Criteria.setReadOnly( false )
+                to override this session setting and load entities that are 
+                not read-only.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="readonly-api-entity"/>11.1.4. Making a persistent entity read-only</h3></div></div></div><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="note"><h2>Note</h2><p>
+                    Persistent entities of immutable classes are automatically
+                    made read-only.
+                </p></div><p>
+                To make a persistent entity or proxy read-only, call:
+            </p><pre class="programlisting">Session.setReadOnly(entityOrProxy, true)</pre><p>
+                To change a read-only entity or proxy of a mutable class so 
+                it is no longer read-only, call:
+            </p><pre class="programlisting">Session.setReadOnly(entityOrProxy, false)</pre><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="important"><h2>Important</h2><p>
+                    When a read-only entity or proxy is changed so it is no longer 
+                    read-only, Hibernate assumes that the current state of the 
+                    read-only entity is consistent with its database representation. 
+                    If this is not true, then any non-flushed changes made before
+                    or while the entity was read-only, will be ignored.
+                </p></div><p>        
+                To throw away non-flushed changes and make the persistent entity 
+                consistent with its database representation, call:           </p><pre class="programlisting">session.refresh( entity );</pre><p>
+                To flush changes made before or while the entity
+                was read-only and make the database representation 
+                consistent with the current state of the persistent
+                entity:
+            </p><pre class="programlisting">
+// evict the read-only entity so it is detached
+session.evict( entity );
+
+// make the detached entity (with the non-flushed changes) persistent
+session.update( entity );
+
+// now entity is no longer read-only and its changes can be flushed
+s.flush();
+</pre></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="readonly-proptypes"/>11.2. Read-only affect on property type</h2></div></div></div><p>
+            The following table summarizes how different property types are 
+            affected by making an entity read-only.
+        </p><div class="table"><a id="readonly-proptype-summary"/><p class="title"><b>Table 11.1. Affect of read-only entity on property types</b></p><div class="table-contents"><table summary="Affect of read-only entity on property types" border="1"><colgroup><col/><col/></colgroup><thead><tr><th>Property/Association Type</th><th>Changes flushed to DB?</th></tr></thead><tbody><tr><td>
+                            Simple
+                            <p>
+                                (<a class="xref" href="readonly.html#readonly-proptypes-simple" title="11.2.1. Simple properties">Section 11.2.1, “Simple properties”</a>)
+                            </p>
+                        </td><td>no*</td></tr><tr><td>
+                            <p>Unidirectional one-to-one</p> 
+                            <p>Unidirectional many-to-one</p> 
+                            <p>
+                                (<a class="xref" href="readonly.html#readonly-proptypes-singleended-unidir" title="11.2.2.1. Unidirectional one-to-one and many-to-one">Section 11.2.2.1, “Unidirectional one-to-one and many-to-one”</a>)
+                            </p>
+                        </td><td>
+                            <p>no*</p>
+                            <p>no*</p>
+                        </td></tr><tr><td>
+                            <p>Unidirectional one-to-many</p>
+                            <p>Unidirectional many-to-many</p>
+                            <p>
+                                (<a class="xref" href="readonly.html#readonly-proptypes-manyended-unidir" title="11.2.2.2. Unidirectional one-to-many and many-to-many">Section 11.2.2.2, “Unidirectional one-to-many and many-to-many”</a>)
+                            </p>
+                        </td><td>
+                            <p>yes</p>
+                            <p>yes</p>
+                        </td></tr><tr><td>
+                            <p>Bidirectional one-to-one</p>
+                            <p>
+                                (<a class="xref" href="readonly.html#readonly-proptypes-onetoone-bidir" title="11.2.3.1. Bidirectional one-to-one">Section 11.2.3.1, “Bidirectional one-to-one”</a>)
+                            </p>
+                        </td><td>only if the owning entity is not read-only*</td></tr><tr><td>
+                            <p>Bidirectional one-to-many/many-to-one</p>
+                            <p>inverse collection</p>
+                            <p>non-inverse collection</p>
+                            <p>
+                                (<a class="xref" href="readonly.html#readonly-proptypes-onetomany-manytoone" title="11.2.3.2. Bidirectional one-to-many/many-to-one">Section 11.2.3.2, “Bidirectional one-to-many/many-to-one”</a>)
+                            </p>
+                        </td><td>
+                            <p> </p>
+                            <p>only added/removed entities that are not read-only*</p>
+                            <p>yes</p>
+                        </td></tr><tr><td>
+                            <p>Bidirectional many-to-many</p>
+                            <p>
+                                (<a class="xref" href="readonly.html#readonly-proptypes-manytomany-bidir" title="11.2.3.3. Bidirectional many-to-many">Section 11.2.3.3, “Bidirectional many-to-many”</a>)
+                            </p>
+                        </td><td>yes</td></tr></tbody></table></div></div><br class="table-break"/><p>
+            * Behavior is different when the entity having the property/association
+              is read-only, compared to when it is not read-only.
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="readonly-proptypes-simple"/>11.2.1. Simple properties</h3></div></div></div><p>
+                When a persistent object is read-only, Hibernate does not 
+                dirty-check simple properties.
+            </p><p>
+                Hibernate will not synchronize simple property state changes 
+                to the database. If you have automatic versioning, Hibernate 
+                will not increment the version if any simple properties change.
+            </p><pre class="programlisting">
+Session session = factory.openSession();
+Transaction tx = session.beginTransaction();
+
+// get a contract and make it read-only
+Contract contract = ( Contract ) session.get( Contract.class, contractId );
+session.setReadOnly( contract, true );
+
+// contract.getCustomerName() is "Sherman"
+contract.setCustomerName( "Yogi" );
+tx.commit();
+
+tx = session.beginTransaction();
+
+contract = ( Contract ) session.get( Contract.class, contractId );
+// contract.getCustomerName() is still "Sherman"
+...
+tx.commit();
+session.close();
+            </pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="readonly-prop-types-unidir"/>11.2.2. Unidirectional associations</h3></div></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="readonly-proptypes-singleended-unidir"/>11.2.2.1. Unidirectional one-to-one and many-to-one</h4></div></div></div><p>
+                    Hibernate treats unidirectional one-to-one and many-to-one
+                    associations in the same way when the owning entity is 
+                    read-only. 
+                </p><p>
+                    We use the term <span class="emphasis"><em>unidirectional single-ended 
+                    association</em></span> when referring to functionality
+                    that is common to unidirectional one-to-one and many-to-one
+                    associations.
+                </p><p>
+                    Hibernate does not dirty-check unidirectional single-ended
+                    associations when the owning entity is read-only. 
+                </p><p>
+                    If you change a read-only entity's reference to a 
+                    unidirectional single-ended association to null,
+                    or to refer to a different entity, that change
+                    will not be flushed to the database. 
+                </p><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="note"><h2>Note</h2><p>
+                        If an entity is of an immutable class,
+                        then its references to unidirectional single-ended
+                        associations must be assigned when that 
+                        entity is first created. Because the entity is
+                        automatically made read-only, these references can
+                        not be updated.
+                    </p></div><p>
+                    If automatic versioning is used, Hibernate will not 
+                    increment the version due to local changes to 
+                    unidirectional single-ended associations.
+                </p><p>
+                    In the following examples, Contract has a unidirectional 
+                    many-to-one association with Plan. Contract cascades save and
+                    update operations to the association.
+                </p><p>
+                    The following shows that changing a read-only entity's 
+                    many-to-one association reference to null has no effect
+                    on the entity's database representation.
+                </p><pre class="programlisting">// get a contract with an existing plan;
+// make the contract read-only and set its plan to null 
+tx = session.beginTransaction();
+Contract contract = ( Contract ) session.get( Contract.class, contractId );
+session.setReadOnly( contract, true );
+contract.setPlan( null );
+tx.commit();
+
+// get the same contract
+tx = session.beginTransaction();
+contract = ( Contract ) session.get( Contract.class, contractId );
+
+// contract.getPlan() still refers to the original plan;
+
+tx.commit();
+session.close();</pre><p>
+                    The following shows that, even though
+                    an update to a read-only entity's many-to-one 
+                    association has no affect on the entity's 
+                    database representation, flush still cascades 
+                    the save-update operation to the locally
+                    changed association.
+                </p><pre class="programlisting">// get a contract with an existing plan;
+// make the contract read-only and change to a new plan
+tx = session.beginTransaction();
+Contract contract = ( Contract ) session.get( Contract.class, contractId );
+session.setReadOnly( contract, true );
+Plan newPlan = new Plan( "new plan"
+contract.setPlan( newPlan);
+tx.commit();
+
+// get the same contract
+tx = session.beginTransaction();
+contract = ( Contract ) session.get( Contract.class, contractId );
+newPlan = ( Contract ) session.get( Plan.class, newPlan.getId() ); 
+
+// contract.getPlan() still refers to the original plan;
+// newPlan is non-null because it was persisted when 
+// the previous transaction was committed; 
+
+tx.commit();
+session.close();</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="readonly-proptypes-manyended-unidir"/>11.2.2.2. Unidirectional one-to-many and many-to-many</h4></div></div></div><p>
+                    Hibernate treats unidirectional one-to-many 
+                    and many-to-many associations owned by a read-only
+                    entity the same as when owned by an entity that is not 
+                    read-only.
+                </p><p>
+                    Hibernate dirty-checks unidirectional one-to-many and 
+                    many-to-many associations;
+                </p><p>
+                    The collection can contain entities that 
+                    are read-only, as well as entities
+                    that are not read-only.
+                </p><p> 
+                    Entities can be added and removed from the
+                    collection; changes are flushed to the database.
+                </p><p> 
+                    If automatic versioning is used, Hibernate will 
+                    update the version due to changes in the collection
+                    if they dirty the owning entity.
+                </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="readonly-proptypes-bidir"/>11.2.3. Bidirectional associations</h3></div></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="readonly-proptypes-onetoone-bidir"/>11.2.3.1. Bidirectional one-to-one</h4></div></div></div><p>
+                    If a read-only entity owns a bidirectional 
+                    one-to-one association:
+                </p><div class="itemizedlist"><ul><li><p>
+                            Hibernate does not dirty-check the association. 
+                        </p></li><li><p>
+                            updates that change the association reference 
+                            to null or to refer to a different entity
+                            will not be flushed to the database. 
+                        </p></li><li><p>
+                            If automatic versioning is used, Hibernate will not 
+                            increment the version due to local changes to 
+                            the association.
+                       </p></li></ul></div><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="note"><h2>Note</h2><p>
+                        If an entity is of an immutable class,
+                        and it owns a bidirectional one-to-one
+                        association, then its reference must be
+                        assigned when that entity is first created. 
+                        Because the entity is automatically made 
+                        read-only, these references cannot be updated.
+                    </p></div><p>
+                    When the owner is not read-only, Hibernate treats 
+                    an association with a read-only entity the same
+                    as when the association is with an entity that is
+                    not read-only.
+                </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="readonly-proptypes-onetomany-manytoone"/>11.2.3.2. Bidirectional one-to-many/many-to-one</h4></div></div></div><p>
+                    A read-only entity has no impact on a bidirectional
+                    one-to-many/many-to-one association if:
+                </p><div class="itemizedlist"><ul><li><p>
+                            the read-only entity is on the one-to-many side
+                            using an inverse collection;
+                        </p></li><li><p>
+                            the read-only entity is on the one-to-many side
+                            using a non-inverse collection;                            
+                        </p></li><li><p>
+                            the one-to-many side uses a non-inverse collection 
+                            that contains the read-only entity
+                       </p></li></ul></div><p>
+                    When the one-to-many side uses an inverse collection:
+                </p><div class="itemizedlist"><ul><li><p>
+                            a read-only entity can only be added to the collection
+                            when it is created;
+                        </p></li><li><p>
+                            a read-only entity can only be removed from the
+                            collection by an orphan delete or by explicitly
+                            deleting the entity.                            
+                        </p></li></ul></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="readonly-proptypes-manytomany-bidir"/>11.2.3.3. Bidirectional many-to-many</h4></div></div></div><p>
+                    Hibernate treats bidirectional many-to-many 
+                    associations owned by a read-only entity the
+                    same as when owned by an entity that is not
+                    read-only.
+                </p><p>
+                    Hibernate dirty-checks bidirectional many-to-many 
+                    associations.
+                </p><p> 
+                    The collection on either side of the association
+                    can contain entities that are read-only, as well
+                    as entities that are not read-only.
+                </p><p> 
+                    Entities are added and removed from both sides 
+                    of the collection; changes are flushed to the 
+                    database.
+                </p><p> 
+                    If automatic versioning is used, Hibernate will 
+                    update the version due to changes in both sides of
+                    the collection if they dirty the entity owning the
+                    respective collections.
+                </p></div></div></div></div><HR xmlns=""/><a xmlns="" href="legalnotice.html"><p xmlns="http://www.w3.org/1999/xhtml" class="copyright">Copyright © 2004 Red Hat, Inc.</p></a><ul class="docnav"><li class="previous"><a accesskey="p" href="objectstate.html"><strong>Prev</strong>Chapter 10. Working with objects</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="transactions.html"><strong>Next</strong>Chapter 12. Transactions and Concurrency</a></li></ul></body></html>

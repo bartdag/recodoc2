@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 25. Best Practices</title><link rel="stylesheet" href="css/hibernate.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="up" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="prev" href="example-mappings.html" title="Chapter 24. Example: Various Mappings"/><link rel="next" href="portability.html" title="Chapter 26. Database Portability Considerations"/><link rel="copyright" href="Legal_Notice.html" title="Legal Notice"/></head><body><p id="title"><a href="http://www.hibernate.org" class="site_href"><strong>Hibernate.org</strong></a><a href="http://hibernate.org/Documentation/DocumentationOverview" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="example-mappings.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="portability.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="best-practices"/>Chapter 25. Best Practices</h2></div></div></div><div class="variablelist"><dl><dt><span class="term">Write fine-grained classes and map them using <code class="literal">&lt;component&gt;</code>:</span></dt><dd><p>
+                    Use an <code class="literal">Address</code> class to encapsulate <code class="literal">street</code>,
+                    <code class="literal">suburb</code>, <code class="literal">state</code>, <code class="literal">postcode</code>.
+                    This encourages code reuse and simplifies refactoring.
+                </p></dd><dt><span class="term">Declare identifier properties on persistent classes:</span></dt><dd><p>
+                    Hibernate makes identifier properties optional. There are a range of reasons why
+                    you should use them. We recommend that identifiers be 'synthetic', that is, generated with
+                    no business meaning.
+                </p></dd><dt><span class="term">Identify natural keys:</span></dt><dd><p>
+                    Identify natural keys for all entities, and map them using 
+                    <code class="literal">&lt;natural-id&gt;</code>. Implement <code class="literal">equals()</code> and 
+                    <code class="literal">hashCode()</code> to compare the properties that make up the natural key.
+                </p></dd><dt><span class="term">Place each class mapping in its own file:</span></dt><dd><p>
+                     Do not use a single monolithic mapping document. Map <code class="literal">com.eg.Foo</code> in 
+                     the file <code class="literal">com/eg/Foo.hbm.xml</code>. This makes sense, particularly in 
+                     a team environment.
+                </p></dd><dt><span class="term">Load mappings as resources:</span></dt><dd><p>
+                    Deploy the mappings along with the classes they map.
+                </p></dd><dt><span class="term">Consider externalizing query strings:</span></dt><dd><p>
+                    This is recommended if your queries call non-ANSI-standard SQL functions. 
+                    Externalizing the query strings to mapping files will make the application more 
+                    portable.
+                </p></dd><dt><span class="term">Use bind variables.</span></dt><dd><p>
+                     As in JDBC, always replace non-constant values by "?". Do not use string manipulation to 
+                     bind a non-constant value in a query. You should also consider using named parameters in
+                     queries.
+                </p></dd><dt><span class="term">Do not manage your own JDBC connections:</span></dt><dd><p>
+                    Hibernate allows the application to manage JDBC connections, but his approach should be considered 
+                    a last-resort. If you cannot use the built-in connection providers, consider providing your 
+                    own implementation of <code class="literal">org.hibernate.connection.ConnectionProvider</code>.
+                </p></dd><dt><span class="term">Consider using a custom type:</span></dt><dd><p>
+                    Suppose you have a Java type from a library that needs to be persisted but does not 
+                    provide the accessors needed to map it as a component. You should consider implementing
+                    <code class="literal">org.hibernate.UserType</code>. This approach frees the application
+                    code from implementing transformations to/from a Hibernate type.
+                </p></dd><dt><span class="term">Use hand-coded JDBC in bottlenecks:</span></dt><dd><p>
+                    In performance-critical areas of the system, some kinds of operations might benefit from 
+                    direct JDBC. Do not assume, however, that JDBC is necessarily faster. Please wait until you <span class="emphasis"><em>know</em></span> something is a bottleneck. 
+                    If you need to use direct JDBC, 
+                    you can open a Hibernate <code class="literal">Session</code>, wrap your JDBC operation as a <code class="literal">org.hibernate.jdbc.Work</code> object and using that JDBC connection. This 
+                    way you can still use the same transaction strategy and underlying connection provider.
+                </p></dd><dt><span class="term">Understand <code class="literal">Session</code> flushing:</span></dt><dd><p>
+                    Sometimes the Session synchronizes its persistent state with the database. Performance will
+                    be affected if this process occurs too often. You can sometimes minimize unnecessary flushing by 
+                    disabling automatic flushing, or even by changing the order of queries and other operations within a 
+                    particular transaction.      
+                </p></dd><dt><span class="term">In a three tiered architecture, consider using detached objects:</span></dt><dd><p>
+                    When using a servlet/session bean architecture, you can pass persistent objects loaded in
+                    the session bean to and from the servlet/JSP layer. Use a new session to service each request. 
+                    Use <code class="literal">Session.merge()</code> or <code class="literal">Session.saveOrUpdate()</code> to 
+                    synchronize objects with the database.
+                </p></dd><dt><span class="term">In a two tiered architecture, consider using long persistence contexts:</span></dt><dd><p>
+                    Database Transactions have to be as short as possible for best scalability. However, it is often
+                    necessary to implement long running <span class="emphasis"><em>application transactions</em></span>, a single 
+                    unit-of-work from the point of view of a user. An application transaction might span several 
+                    client request/response cycles. It is common to use detached objects to implement application
+                    transactions. An appropriate alternative in a two tiered architecture, is to maintain
+                    a single open persistence contact session for the whole life cycle of the application transaction. Then  
+                    simply disconnect from the JDBC connection at the end of each request and reconnect at the 
+                    beginning of the subsequent request. Never share a single session across more than one application 
+                    transaction or you will be working with stale data.
+                </p></dd><dt><span class="term">Do not treat exceptions as recoverable:</span></dt><dd><p>
+                    This is more of a necessary practice than a "best" practice. When an exception occurs, roll back
+                    the <code class="literal">Transaction</code> and close the <code class="literal">Session</code>. If you do not do this, Hibernate
+                    cannot guarantee that in-memory state accurately represents the persistent state. For example,
+                    do not use <code class="literal">Session.load()</code> to determine if an instance with the given identifier 
+                    exists on the database; use <code class="literal">Session.get()</code> or a query instead.
+                </p></dd><dt><span class="term">Prefer lazy fetching for associations:</span></dt><dd><p>
+                    Use eager fetching sparingly. Use proxies and lazy collections for most associations to classes that 
+                    are not likely to be completely held in the second-level cache. For associations to cached classes, 
+                    where there is an a extremely high probability of a cache hit, explicitly disable eager fetching using 
+                    <code class="literal">lazy="false"</code>. When join fetching is appropriate to a particular use
+                    case, use a query with a <code class="literal">left join fetch</code>.
+                </p></dd><dt><span class="term">
+                Use the <span class="emphasis"><em>open session in view</em></span> pattern, or a disciplined 
+                <span class="emphasis"><em>assembly phase</em></span> to avoid problems with unfetched data:
+            </span></dt><dd><p>
+                    Hibernate frees the developer from writing tedious <span class="emphasis"><em>Data Transfer Objects</em></span> (DTO). 
+                    In a traditional EJB architecture, DTOs serve dual purposes: first, they work around the problem
+                    that entity beans are not serializable; second, they implicitly define an assembly phase where
+                    all data to be used by the view is fetched and marshalled into the DTOs before returning control 
+                    to the presentation tier. Hibernate eliminates the first purpose. Unless you are prepared to hold the
+                    persistence context (the session) open across the view rendering process, you will still need
+                    an assembly phase. Think of your business methods as having a strict contract with the presentation
+                    tier about what data is available in the detached objects. This is not a limitation
+                    of Hibernate. It is a fundamental requirement of safe transactional data access.
+                </p></dd><dt><span class="term">Consider abstracting your business logic from Hibernate:</span></dt><dd><p>
+                    Hide Hibernate data-access code behind an interface. Combine the <span class="emphasis"><em>DAO</em></span> and 
+                    <span class="emphasis"><em>Thread Local Session</em></span> patterns. You can even have some classes persisted by
+                    handcoded JDBC associated to Hibernate via a <code class="literal">UserType</code>. This advice is, however, 
+                    intended for "sufficiently large" applications. It is not appropriate for an application with
+                    five tables.
+                </p></dd><dt><span class="term">Do not use exotic association mappings:</span></dt><dd><p>
+                    Practical test cases for real many-to-many associations are rare. Most of the time you need
+                    additional information stored in the "link table". In this case, it is much better to
+                    use two one-to-many associations to an intermediate link class. In fact,
+                    most associations are one-to-many and many-to-one. For this reason, you should proceed cautiously when using any
+                    other association style.
+                </p></dd><dt><span class="term">Prefer bidirectional associations:</span></dt><dd><p>
+                    Unidirectional associations are more difficult to query. In a large application, almost
+                    all associations must be navigable in both directions in queries.
+                </p></dd></dl></div></div><HR xmlns=""/><a xmlns="" href="legalnotice.html"><p xmlns="http://www.w3.org/1999/xhtml" class="copyright">Copyright © 2004 Red Hat, Inc.</p></a><ul class="docnav"><li class="previous"><a accesskey="p" href="example-mappings.html"><strong>Prev</strong>Chapter 24. Example: Various Mappings</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="portability.html"><strong>Next</strong>Chapter 26. Database Portability Considerations</a></li></ul></body></html>

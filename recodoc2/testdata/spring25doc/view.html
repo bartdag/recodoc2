@@ -1,0 +1,1376 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;14.&nbsp;View technologies</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><!--Begin Google Analytics code--><script xmlns="http://www.w3.org/TR/xhtml1/transitional" type="text/javascript"> 
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        </script><script xmlns="http://www.w3.org/TR/xhtml1/transitional" type="text/javascript"> 
+            var pageTracker = _gat._getTracker("UA-2728886-3");
+            pageTracker._setDomainName("none");
+            pageTracker._setAllowLinker(true);
+            pageTracker._trackPageview();
+        </script><!--End Google Analytics code--><link rel="home" href="index.html" title="The Spring Framework - Reference Documentation"><link rel="up" href="spring-web.html" title="Part&nbsp;III.&nbsp;The Web"><link rel="previous" href="mvc.html" title="Chapter&nbsp;13.&nbsp;Web MVC framework"><link rel="next" href="web-integration.html" title="Chapter&nbsp;15.&nbsp;Integrating with other web frameworks"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://www.springframework.org/" title="The Spring Framework"><img style="border:none;" src="images/xdev-spring_logo.jpg"></a><a style="border:none;" href="http://www.springsource.com/" title="SpringSource"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/springsource-banner-rhs.png"></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="view"></a>Chapter&nbsp;14.&nbsp;View technologies</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-introduction"></a>14.1.&nbsp;Introduction</h2></div></div><div></div></div><p>One of the areas in which Spring excels is in the separation of view
+    technologies from the rest of the MVC framework. For example, deciding to
+    use Velocity or XSLT in place of an existing JSP is primarily a matter of
+    configuration. This chapter covers the major view technologies that work
+    with Spring and touches briefly on how to add new ones. This chapter
+    assumes you are already familiar with <a href="mvc.html#mvc-viewresolver" title="13.5.&nbsp;Views and resolving them">Section&nbsp;13.5, &#8220;Views and resolving them&#8221;</a>
+    which covers the basics of how views in general are coupled to the MVC
+    framework.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-jsp"></a>14.2.&nbsp;JSP &amp; JSTL</h2></div></div><div></div></div><p>Spring provides a couple of out-of-the-box solutions for JSP and
+    JSTL views. Using JSP or JSTL is done using a normal view resolver defined
+    in the <tt class="interfacename">WebApplicationContext</tt>. Furthermore,
+    of course you need to write some JSPs that will actually render the view.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jsp-resolver"></a>14.2.1.&nbsp;View resolvers</h3></div></div><div></div></div><p>Just as with any other view technology you're integrating with
+      Spring, for JSPs you'll need a view resolver that will resolve your
+      views. The most commonly used view resolvers when developing with JSPs
+      are the <tt class="classname">InternalResourceViewResolver</tt> and the
+      <tt class="classname">ResourceBundleViewResolver</tt>. Both are declared in the
+      <tt class="interfacename">WebApplicationContext</tt>:</p><pre class="programlisting"><i class="lineannotation"><span class="lineannotation">&lt;!-- the <tt class="classname">ResourceBundleViewResolver</tt> --&gt;</span></i>
+&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.ResourceBundleViewResolver"&gt;
+  &lt;property name="basename" value="views"/&gt;
+&lt;/bean&gt;
+
+<i class="lineannotation"><span class="lineannotation"># And a sample properties file is uses (views.properties in WEB-INF/classes):</span></i>
+welcome.class=org.springframework.web.servlet.view.JstlView
+welcome.url=/WEB-INF/jsp/welcome.jsp
+
+productList.class=org.springframework.web.servlet.view.JstlView
+productList.url=/WEB-INF/jsp/productlist.jsp</pre><p>As you can see, the <tt class="classname">ResourceBundleViewResolver</tt> needs
+      a properties file defining the view names mapped to 1) a class and 2) a URL. With a
+      <tt class="classname">ResourceBundleViewResolver</tt> you can mix different types of views using
+      only one resolver.</p><pre class="programlisting">&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
+  &lt;property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/&gt;
+  &lt;property name="prefix" value="/WEB-INF/jsp/"/&gt;
+  &lt;property name="suffix" value=".jsp"/&gt;
+&lt;/bean&gt;</pre><p>The <tt class="classname">InternalResourceBundleViewResolver</tt> can be configured for using
+      JSPs as described above. As a best practice, we strongly encourage
+      placing your JSP files in a directory under the <tt class="filename">'WEB-INF'</tt> directory, so
+      there can be no direct access by clients.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jsp-jstl"></a>14.2.2.&nbsp;'Plain-old' JSPs versus JSTL</h3></div></div><div></div></div><p>When using the Java Standard Tag Library you must use a special view
+      class, the <tt class="classname">JstlView</tt>, as JSTL needs some preparation
+      before things such as the i18N features will work.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jsp-tags"></a>14.2.3.&nbsp;Additional tags facilitating development</h3></div></div><div></div></div><p>Spring provides data binding of request parameters to command
+      objects as described in earlier chapters. To facilitate the development
+      of JSP pages in combination with those data binding features, Spring
+      provides a few tags that make things even easier. All Spring tags have
+      <span class="emphasis"><em>HTML escaping</em></span> features to enable or disable
+      escaping of characters.</p><p>The tag library descriptor (TLD) is included in the
+      <tt class="filename">spring.jar</tt> as well in the distribution itself.
+      Further information about the individual tags can be found in the appendix entitled
+      <a href="spring.tld.html" title="Appendix&nbsp;D.&nbsp;spring.tld">Appendix&nbsp;D, <i>spring.tld</i></a>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jsp-formtaglib"></a>14.2.4.&nbsp;Using Spring's form tag library</h3></div></div><div></div></div><p>As of version 2.0, Spring provides a comprehensive set of data
+      binding-aware tags for handling form elements when using JSP and Spring
+      Web MVC. Each tag provides support for the set of attributes of its
+      corresponding HTML tag counterpart, making the tags familiar and intuitive
+      to use. The tag-generated HTML is HTML 4.01/XHTML 1.0 compliant.</p><p>Unlike other form/input tag libraries, Spring's form tag library is
+      integrated with Spring Web MVC, giving the tags access to the command
+      object and reference data your controller deals with. As you will see in
+      the following examples, the form tags make JSPs easier to develop, read
+      and maintain.</p><p>Let's go through the form tags and look at an example of how each
+      tag is used. We have included generated HTML snippets where certain tags
+      require further commentary.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-configuration"></a>14.2.4.1.&nbsp;Configuration</h4></div></div><div></div></div><p>The form tag library comes bundled in
+        <tt class="literal">spring.jar</tt>. The library descriptor is called
+        <tt class="literal">spring-form.tld</tt>.</p><p>To use the tags from this library, add the following directive to
+        the top of your JSP page:</p><pre class="programlisting">&lt;%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %&gt;</pre><p>... where <tt class="literal">form</tt> is the tag name prefix you want
+        to use for the tags from this library.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-formtag"></a>14.2.4.2.&nbsp;The <tt class="literal">form</tt> tag</h4></div></div><div></div></div><p>This tag renders an HTML 'form' tag and exposes a binding path to
+        inner tags for binding. It puts the command object in the
+        <tt class="literal">PageContext</tt> so that the command object can be
+        accessed by inner tags. <span class="emphasis"><em>All the other tags in this library are
+        nested tags of the <tt class="literal">form</tt> tag</em></span>.</p><p>Let's assume we have a domain object called
+        <tt class="classname">User</tt>. It is a JavaBean with properties such as
+        <tt class="literal">firstName</tt> and <tt class="literal">lastName</tt>. We will
+        use it as the form backing object of our form controller which returns
+        <tt class="literal">form.jsp</tt>. Below is an example of what
+        <tt class="literal">form.jsp</tt> would look like:</p><pre class="programlisting">&lt;form:form&gt;
+      &lt;table&gt;
+          &lt;tr&gt;
+              &lt;td&gt;First Name:&lt;/td&gt;
+              &lt;td&gt;&lt;form:input path="firstName" /&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+              &lt;td&gt;Last Name:&lt;/td&gt;
+              &lt;td&gt;&lt;form:input path="lastName" /&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+              &lt;td colspan="2"&gt;
+                  &lt;input type="submit" value="Save Changes" /&gt;
+              &lt;/td&gt;
+          &lt;/tr&gt;
+      &lt;/table&gt;
+  &lt;/form:form&gt;</pre><p>The <tt class="literal">firstName</tt> and <tt class="literal">lastName</tt>
+        values are retrieved from the command object placed in the
+        <tt class="interfacename">PageContext</tt> by the page controller. Keep
+        reading to see more complex examples of how inner tags are used with the
+        <tt class="literal">form</tt> tag.</p><p>The generated HTML looks like a standard form:</p><pre class="programlisting">&lt;form method="POST"&gt;
+      &lt;table&gt;
+        &lt;tr&gt;
+            &lt;td&gt;First Name:&lt;/td&gt;
+            &lt;td&gt;&lt;input name="firstName" type="text" value="Harry"/&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Last Name:&lt;/td&gt;
+            &lt;td&gt;&lt;input name="lastName" type="text" value="Potter"/&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td colspan="2"&gt;
+              &lt;input type="submit" value="Save Changes" /&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/table&gt;
+  &lt;/form&gt;</pre><p>The preceding JSP assumes that the variable name of the form
+        backing object is <tt class="literal">'command'</tt>. If you have put the form
+        backing object into the model under another name (definitely a best
+        practice), then you can bind the form to the named variable like
+        so:</p><pre class="programlisting">&lt;form:form <i class="lineannotation"><span class="lineannotation"><span class="bold"><b>commandName="user"</b></span></span></i>&gt;
+      &lt;table&gt;
+          &lt;tr&gt;
+              &lt;td&gt;First Name:&lt;/td&gt;
+              &lt;td&gt;&lt;form:input path="firstName" /&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+              &lt;td&gt;Last Name:&lt;/td&gt;
+              &lt;td&gt;&lt;form:input path="lastName" /&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+              &lt;td colspan="2"&gt;
+                  &lt;input type="submit" value="Save Changes" /&gt;
+              &lt;/td&gt;
+          &lt;/tr&gt;
+      &lt;/table&gt;
+  &lt;/form:form&gt;</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-inputtag"></a>14.2.4.3.&nbsp;The <tt class="literal">input</tt> tag</h4></div></div><div></div></div><p>This tag renders an HTML 'input' tag with type 'text' using the
+        bound value. For an example of this tag, see <a href="view.html#view-jsp-formtaglib-formtag" title="14.2.4.2.&nbsp;The form tag">Section&nbsp;14.2.4.2, &#8220;The form tag&#8221;</a>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-checkboxtag"></a>14.2.4.4.&nbsp;The <tt class="literal">checkbox</tt> tag</h4></div></div><div></div></div><p>This tag renders an HTML 'input' tag with type 'checkbox'.</p><p>Let's assume our <tt class="classname">User</tt> has preferences such
+        as newsletter subscription and a list of hobbies. Below is an example of
+        the <tt class="classname">Preferences</tt> class:</p></div><pre class="programlisting">public class Preferences {
+
+      private boolean receiveNewsletter;
+
+      private String[] interests;
+
+      private String favouriteWord;
+
+      public boolean isReceiveNewsletter() {
+          return receiveNewsletter;
+      }
+
+      public void setReceiveNewsletter(boolean receiveNewsletter) {
+          this.receiveNewsletter = receiveNewsletter;
+      }
+
+      public String[] getInterests() {
+          return interests;
+      }
+
+      public void setInterests(String[] interests) {
+          this.interests = interests;
+      }
+
+      public String getFavouriteWord() {
+          return favouriteWord;
+      }
+
+      public void setFavouriteWord(String favouriteWord) {
+          this.favouriteWord = favouriteWord;
+      }
+  }</pre><p>The <tt class="literal">form.jsp</tt> would look like:</p><pre class="programlisting">&lt;form:form&gt;
+      &lt;table&gt;
+          &lt;tr&gt;
+              &lt;td&gt;Subscribe to newsletter?:&lt;/td&gt;
+              <i class="lineannotation"><span class="lineannotation">&lt;%-- Approach 1: Property is of type <tt class="classname">java.lang.Boolean</tt> --%&gt;</span></i>
+              &lt;td&gt;&lt;form:checkbox path="preferences.receiveNewsletter"/&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr&gt;
+              &lt;td&gt;Interests:&lt;/td&gt;
+              &lt;td&gt;
+                  <i class="lineannotation"><span class="lineannotation">&lt;%-- Approach 2: Property is of an array or of type <tt class="interfacename">java.util.Collection</tt> --%&gt;</span></i>
+                  Quidditch: &lt;form:checkbox path="preferences.interests" value="Quidditch"/&gt;
+                  Herbology: &lt;form:checkbox path="preferences.interests" value="Herbology"/&gt;
+                  Defence Against the Dark Arts: &lt;form:checkbox path="preferences.interests"
+                      value="Defence Against the Dark Arts"/&gt;
+              &lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+              &lt;td&gt;Favourite Word:&lt;/td&gt;
+              &lt;td&gt;
+                  <i class="lineannotation"><span class="lineannotation">&lt;%-- Approach 3: Property is of type <tt class="classname">java.lang.Object</tt> --%&gt;</span></i>
+                  Magic: &lt;form:checkbox path="preferences.favouriteWord" value="Magic"/&gt;
+              &lt;/td&gt;
+          &lt;/tr&gt;
+      &lt;/table&gt;
+  &lt;/form:form&gt;</pre><p>There are 3 approaches to the <tt class="literal">checkbox</tt> tag which
+      should meet all your checkbox needs. </p><div class="itemizedlist"><ul type="disc"><li><p>Approach One - When the bound value is of type
+            <tt class="literal">java.lang.Boolean</tt>, the
+            <tt class="literal">input(checkbox)</tt> is marked as 'checked' if the
+            bound value is <tt class="literal">true</tt>. The <tt class="literal">value</tt>
+            attribute corresponds to the resolved value of the
+            <tt class="literal">setValue(Object)</tt> value property.</p></li><li><p>Approach Two - When the bound value is of type
+            <tt class="literal">array</tt> or
+            <tt class="interfacename">java.util.Collection</tt>, the
+            <tt class="literal">input(checkbox)</tt> is marked as 'checked' if the
+            configured <tt class="literal">setValue(Object)</tt> value is present in
+            the bound <tt class="interfacename">Collection</tt>.</p></li><li><p>Approach Three - For any other bound value type, the
+            <tt class="literal">input(checkbox)</tt> is marked as 'checked' if the
+            configured <tt class="literal">setValue(Object)</tt> is equal to the bound
+            value.</p></li></ul></div><p>Note that regardless of the approach, the same HTML structure is
+      generated. Below is an HTML snippet of some checkboxes:</p><pre class="programlisting">&lt;tr&gt;
+      &lt;td&gt;Interests:&lt;/td&gt;
+      &lt;td&gt;
+          Quidditch: &lt;input name="preferences.interests" type="checkbox" value="Quidditch"/&gt;
+          &lt;input type="hidden" value="1" name="_preferences.interests"/&gt;
+          Herbology: &lt;input name="preferences.interests" type="checkbox" value="Herbology"/&gt;
+          &lt;input type="hidden" value="1" name="_preferences.interests"/&gt;
+          Defence Against the Dark Arts: &lt;input name="preferences.interests" type="checkbox"
+              value="Defence Against the Dark Arts"/&gt;
+          &lt;input type="hidden" value="1" name="_preferences.interests"/&gt;
+      &lt;/td&gt;
+  &lt;/tr&gt;</pre><p>What you might not expect to see is the additional hidden field
+      after each checkbox. When a checkbox in an HTML page is
+      <span class="emphasis"><em>not</em></span> checked, its value will not be sent to the server
+      as part of the HTTP request parameters once the form is submitted, so we
+      need a workaround for this quirk in HTML in order for Spring form data
+      binding to work. The <tt class="literal">checkbox</tt> tag follows the existing
+      Spring convention of including a hidden parameter prefixed by an
+      underscore ("_") for each checkbox. By doing this, you are effectively
+      telling Spring that &#8220;<span class="quote">
+          <span class="emphasis"><em>the checkbox was visible in the form and I want my object to
+          which the form data will be bound to reflect the state of the checkbox
+          no matter what</em></span>
+        </span>&#8221;.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-checkboxestag"></a>14.2.4.5.&nbsp;The <tt class="literal">checkboxes</tt> tag</h4></div></div><div></div></div><p>This tag renders multiple HTML 'input' tags with type
+        'checkbox'.</p><p>Building on the example from the previous
+        <tt class="classname">checkbox</tt> tag section. Sometimes you prefer not to
+        have to list all the possible hobbies in your JSP page. You would rather
+        provide a list at runtime of the available options and pass that in to
+        the tag. That is the purpose of the <tt class="classname">checkboxes</tt>
+        tag. You pass in an <tt class="classname">Array</tt>, a
+        <tt class="classname">List</tt> or a <tt class="classname">Map</tt> containing
+        the available options in the "items" property. Typically the bound
+        property is a collection so it can hold multiple values selected by the
+        user. Below is an example of the JSP using this tag:</p></div><pre class="programlisting">&lt;form:form&gt;
+      &lt;table&gt;
+          &lt;tr&gt;
+              &lt;td&gt;Interests:&lt;/td&gt;
+              &lt;td&gt;
+                  <i class="lineannotation"><span class="lineannotation">&lt;%-- Property is of an array or of type <tt class="interfacename">java.util.Collection</tt> --%&gt;</span></i>
+                  &lt;form:checkboxes path="preferences.interests" items="${interestList}"/&gt;
+              &lt;/td&gt;
+          &lt;/tr&gt;
+      &lt;/table&gt;
+  &lt;/form:form&gt;</pre><p>This example assumes that the "interestList" is a
+      <tt class="classname">List</tt> available as a model attribute containing
+      strings of the values to be selected from. In the case where you use a
+      Map, the map entry key will be used as the value and the map entry's value
+      will be used as the label to be displayed. You can also use a custom
+      object where you can provide the property names for the value using
+      "itemValue" and the label using "itemLabel".</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-radiobuttontag"></a>14.2.4.6.&nbsp;The <tt class="literal">radiobutton</tt> tag</h4></div></div><div></div></div><p>This tag renders an HTML 'input' tag with type 'radio'.</p><p>A typical usage pattern will involve multiple tag instances bound
+        to the same property but with different values.</p><pre class="programlisting">&lt;tr&gt;
+      &lt;td&gt;Sex:&lt;/td&gt;
+      &lt;td&gt;Male: &lt;form:radiobutton path="sex" value="M"/&gt; &lt;br/&gt;
+          Female: &lt;form:radiobutton path="sex" value="F"/&gt; &lt;/td&gt;
+  &lt;/tr&gt;</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-radiobuttonstag"></a>14.2.4.7.&nbsp;The <tt class="literal">radiobuttons</tt> tag</h4></div></div><div></div></div><p>This tag renders multiple HTML 'input' tags with type
+        'radio'.</p><p>Just like the <tt class="classname">checkboxes</tt> tag above, you
+        might want to pass in the available options as a runtime variable. For
+        this usage you would use the <tt class="classname">radiobuttons</tt> tag.
+        You pass in an <tt class="classname">Array</tt>, a
+        <tt class="classname">List</tt> or a <tt class="classname">Map</tt> containing
+        the available options in the "items" property. In the case where you use
+        a Map, the map entry key will be used as the value and the map entry's
+        value will be used as the label to be displayed. You can also use a
+        custom object where you can provide the property names for the value
+        using "itemValue" and the label using "itemLabel".</p><pre class="programlisting">&lt;tr&gt;
+      &lt;td&gt;Sex:&lt;/td&gt;
+      &lt;td&gt;&lt;form:radiobuttons path="sex" items="${sexOptions}"/&gt;&lt;/td&gt;
+  &lt;/tr&gt;</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-passwordtag"></a>14.2.4.8.&nbsp;The <tt class="literal">password</tt> tag</h4></div></div><div></div></div><p>This tag renders an HTML 'input' tag with type 'password' using
+        the bound value.</p><pre class="programlisting">&lt;tr&gt;
+      &lt;td&gt;Password:&lt;/td&gt;
+      &lt;td&gt;
+          &lt;form:password path="password" /&gt;
+      &lt;/td&gt;
+  &lt;/tr&gt;</pre><p>Please note that by default, the password value is
+        <span class="emphasis"><em>not</em></span> shown. If you do want the password value to be
+        shown, then set the value of the <tt class="literal">'showPassword'</tt>
+        attribute to true, like so.</p><pre class="programlisting">&lt;tr&gt;
+      &lt;td&gt;Password:&lt;/td&gt;
+      &lt;td&gt;
+          &lt;form:password path="password" value="^76525bvHGq" showPassword="true" /&gt;
+      &lt;/td&gt;
+  &lt;/tr&gt;</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-selecttag"></a>14.2.4.9.&nbsp;The <tt class="literal">select</tt> tag</h4></div></div><div></div></div><p>This tag renders an HTML 'select' element. It supports data
+        binding to the selected option as well as the use of nested
+        <tt class="literal">option</tt> and <tt class="literal">options</tt> tags.</p><p>Let's assume a <tt class="classname">User</tt> has a list of
+        skills.</p><pre class="programlisting">&lt;tr&gt;
+      &lt;td&gt;Skills:&lt;/td&gt;
+      &lt;td&gt;&lt;form:select path="skills" items="${skills}"/&gt;&lt;/td&gt;
+  &lt;/tr&gt;</pre><p>If the <tt class="literal">User's</tt> skill were in Herbology, the HTML
+        source of the 'Skills' row would look like:</p><pre class="programlisting">&lt;tr&gt;
+      &lt;td&gt;Skills:&lt;/td&gt;
+      &lt;td&gt;&lt;select name="skills" multiple="true"&gt;
+          &lt;option value="Potions"&gt;Potions&lt;/option&gt;
+          &lt;option value="Herbology" selected="selected"&gt;Herbology&lt;/option&gt;
+          &lt;option value="Quidditch"&gt;Quidditch&lt;/option&gt;&lt;/select&gt;
+      &lt;/td&gt;
+  &lt;/tr&gt;</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-optiontag"></a>14.2.4.10.&nbsp;The <tt class="literal">option</tt> tag</h4></div></div><div></div></div><p>This tag renders an HTML 'option'. It sets 'selected' as
+        appropriate based on the bound value.</p><pre class="programlisting">&lt;tr&gt;
+      &lt;td&gt;House:&lt;/td&gt;
+      &lt;td&gt;
+          &lt;form:select path="house"&gt;
+              &lt;form:option value="Gryffindor"/&gt;
+              &lt;form:option value="Hufflepuff"/&gt;
+              &lt;form:option value="Ravenclaw"/&gt;
+              &lt;form:option value="Slytherin"/&gt;
+          &lt;/form:select&gt;
+      &lt;/td&gt;
+  &lt;/tr&gt;</pre><p>If the <tt class="literal">User's</tt> house was in Gryffindor, the HTML
+        source of the 'House' row would look like:</p><pre class="programlisting">&lt;tr&gt;
+      &lt;td&gt;House:&lt;/td&gt;
+      &lt;td&gt;
+          &lt;select name="house"&gt;
+              &lt;option value="Gryffindor" selected="selected"&gt;Gryffindor&lt;/option&gt;
+              &lt;option value="Hufflepuff"&gt;Hufflepuff&lt;/option&gt;
+              &lt;option value="Ravenclaw"&gt;Ravenclaw&lt;/option&gt;
+              &lt;option value="Slytherin"&gt;Slytherin&lt;/option&gt;
+          &lt;/select&gt;
+      &lt;/td&gt;
+   &lt;/tr&gt;</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-optionstag"></a>14.2.4.11.&nbsp;The <tt class="literal">options</tt> tag</h4></div></div><div></div></div><p>This tag renders a list of HTML 'option' tags. It sets the
+        'selected' attribute as appropriate based on the bound value.</p><pre class="programlisting">&lt;tr&gt;
+      &lt;td&gt;Country:&lt;/td&gt;
+      &lt;td&gt;
+          &lt;form:select path="country"&gt;
+              &lt;form:option value="-" label="--Please Select"/&gt;
+              &lt;form:options items="${countryList}" itemValue="code" itemLabel="name"/&gt;
+          &lt;/form:select&gt;
+      &lt;/td&gt;
+  &lt;/tr&gt;</pre><p>If the <tt class="classname">User</tt> lived in the UK, the HTML
+        source of the 'Country' row would look like:</p><pre class="programlisting">&lt;tr&gt;
+      &lt;td&gt;Country:&lt;/td&gt;
+      &lt;td&gt;
+          &lt;select name="country"&gt;
+              &lt;option value="-"&gt;--Please Select&lt;/option&gt;
+              &lt;option value="AT"&gt;Austria&lt;/option&gt;
+              &lt;option value="UK" selected="selected"&gt;United Kingdom&lt;/option&gt;
+              &lt;option value="US"&gt;United States&lt;/option&gt;
+          &lt;/select&gt;
+      &lt;/td&gt;
+  &lt;/tr&gt;</pre><p>As the example shows, the combined usage of an
+        <tt class="literal">option</tt> tag with the <tt class="literal">options</tt> tag
+        generates the same standard HTML, but allows you to explicitly specify a
+        value in the JSP that is for display only (where it belongs) such as the
+        default string in the example: "-- Please Select".</p><p>The <tt class="literal">items</tt> attribute is typically populated with a
+        collection or array of item objects. <tt class="literal">itemValue</tt> and
+        <tt class="literal">itemLabel</tt> simply refer to bean properties of those
+        item objects, if specified; otherwise, the item objects themselves will
+        be stringified. Alternatively, you may specify a <tt class="literal">Map</tt>
+        of items, in which case the map keys are interpreted as option values and
+        the map values correspond to option labels. If <tt class="literal">itemValue</tt>
+        and/or <tt class="literal">itemLabel</tt> happen to be specified as well,
+        the item value property will apply to the map key and the item label
+        property will apply to the map value.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-textAreatag"></a>14.2.4.12.&nbsp;The <tt class="literal">textarea</tt> tag</h4></div></div><div></div></div><p>This tag renders an HTML 'textarea'.</p><pre class="programlisting">&lt;tr&gt;
+      &lt;td&gt;Notes:&lt;/td&gt;
+      &lt;td&gt;&lt;form:textarea path="notes" rows="3" cols="20" /&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;form:errors path="notes" /&gt;&lt;/td&gt;
+  &lt;/tr&gt;</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-hiddeninputtag"></a>14.2.4.13.&nbsp;The <tt class="literal">hidden</tt> tag</h4></div></div><div></div></div><p>This tag renders an HTML 'input' tag with type 'hidden' using the
+        bound value. To submit an unbound hidden value, use the HTML
+        <tt class="literal">input</tt> tag with type 'hidden'.</p><pre class="programlisting">&lt;form:hidden path="house" /&gt;
+  </pre><p>If we choose to submit the 'house' value as a hidden one, the HTML
+        would look like:</p><pre class="programlisting">&lt;input name="house" type="hidden" value="Gryffindor"/&gt;
+  </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jsp-formtaglib-errorstag"></a>14.2.4.14.&nbsp;The <tt class="literal">errors</tt> tag</h4></div></div><div></div></div><p>This tag renders field errors in an HTML 'span' tag. It provides
+        access to the errors created in your controller or those that were
+        created by any validators associated with your controller.</p><p>Let's assume we want to display all error messages for the
+        <tt class="literal">firstName</tt> and <tt class="literal">lastName</tt> fields once
+        we submit the form. We have a validator for instances of the
+        <tt class="classname">User</tt> class called
+        <tt class="classname">UserValidator</tt>.</p><pre class="programlisting">public class UserValidator implements Validator {
+
+      public boolean supports(Class candidate) {
+          return User.class.isAssignableFrom(candidate);
+      }
+
+      public void validate(Object obj, Errors errors) {
+          ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "required", "Field is required.");
+          ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "required", "Field is required.");
+      }
+  }</pre><p>The <tt class="literal">form.jsp</tt> would look like:</p><pre class="programlisting">&lt;form:form&gt;
+      &lt;table&gt;
+          &lt;tr&gt;
+              &lt;td&gt;First Name:&lt;/td&gt;
+              &lt;td&gt;&lt;form:input path="firstName" /&gt;&lt;/td&gt;
+              <i class="lineannotation"><span class="lineannotation">&lt;%-- Show errors for firstName field --%&gt;</span></i>
+              &lt;td&gt;&lt;form:errors path="firstName" /&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr&gt;
+              &lt;td&gt;Last Name:&lt;/td&gt;
+              &lt;td&gt;&lt;form:input path="lastName" /&gt;&lt;/td&gt;
+              <i class="lineannotation"><span class="lineannotation">&lt;%-- Show errors for lastName field --%&gt;</span></i>
+              &lt;td&gt;&lt;form:errors path="lastName"  /&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+              &lt;td colspan="3"&gt;
+                  &lt;input type="submit" value="Save Changes" /&gt;
+              &lt;/td&gt;
+          &lt;/tr&gt;
+      &lt;/table&gt;
+  &lt;/form:form&gt;</pre><p>If we submit a form with empty values in the
+        <tt class="literal">firstName</tt> and <tt class="literal">lastName</tt> fields,
+        this is what the HTML would look like:</p><pre class="programlisting">&lt;form method="POST"&gt;
+      &lt;table&gt;
+          &lt;tr&gt;
+              &lt;td&gt;First Name:&lt;/td&gt;
+              &lt;td&gt;&lt;input name="firstName" type="text" value=""/&gt;&lt;/td&gt;
+              <i class="lineannotation"><span class="lineannotation">&lt;%-- Associated errors to firstName field displayed --%&gt;</span></i>
+              &lt;td&gt;&lt;span name="firstName.errors"&gt;Field is required.&lt;/span&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr&gt;
+              &lt;td&gt;Last Name:&lt;/td&gt;
+              &lt;td&gt;&lt;input name="lastName" type="text" value=""/&gt;&lt;/td&gt;
+              <i class="lineannotation"><span class="lineannotation">&lt;%-- Associated errors to lastName field displayed --%&gt;</span></i>
+              &lt;td&gt;&lt;span name="lastName.errors"&gt;Field is required.&lt;/span&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+              &lt;td colspan="3"&gt;
+                  &lt;input type="submit" value="Save Changes" /&gt;
+              &lt;/td&gt;
+          &lt;/tr&gt;
+      &lt;/table&gt;
+  &lt;/form&gt;</pre><p>What if we want to display the entire list of errors for a given
+        page? The example below shows that the <tt class="literal">errors</tt> tag
+        also supports some basic wildcarding functionality.</p><div class="itemizedlist"><ul type="disc"><li><p><tt class="literal">path="*"</tt> - displays all errors</p></li><li><p><tt class="literal">path="lastName*"</tt> - displays all errors
+            associated with the <tt class="literal">lastName</tt> field</p></li></ul></div><p>The example below will display a list of errors at the top of the
+        page, followed by field-specific errors next to the fields:</p><pre class="programlisting">&lt;form:form&gt;
+      &lt;form:errors path="*" cssClass="errorBox" /&gt;
+      &lt;table&gt;
+          &lt;tr&gt;
+              &lt;td&gt;First Name:&lt;/td&gt;
+              &lt;td&gt;&lt;form:input path="firstName" /&gt;&lt;/td&gt;
+              &lt;td&gt;&lt;form:errors path="firstName" /&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+              &lt;td&gt;Last Name:&lt;/td&gt;
+              &lt;td&gt;&lt;form:input path="lastName" /&gt;&lt;/td&gt;
+              &lt;td&gt;&lt;form:errors path="lastName"  /&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+              &lt;td colspan="3"&gt;
+                  &lt;input type="submit" value="Save Changes" /&gt;
+              &lt;/td&gt;
+          &lt;/tr&gt;
+      &lt;/table&gt;
+  &lt;/form:form&gt;</pre><p>The HTML would look like:</p><pre class="programlisting">&lt;form method="POST"&gt;
+      &lt;span name="*.errors" class="errorBox"&gt;Field is required.&lt;br/&gt;Field is required.&lt;/span&gt;
+      &lt;table&gt;
+          &lt;tr&gt;
+              &lt;td&gt;First Name:&lt;/td&gt;
+              &lt;td&gt;&lt;input name="firstName" type="text" value=""/&gt;&lt;/td&gt;
+              &lt;td&gt;&lt;span name="firstName.errors"&gt;Field is required.&lt;/span&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr&gt;
+              &lt;td&gt;Last Name:&lt;/td&gt;
+              &lt;td&gt;&lt;input name="lastName" type="text" value=""/&gt;&lt;/td&gt;
+              &lt;td&gt;&lt;span name="lastName.errors"&gt;Field is required.&lt;/span&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+              &lt;td colspan="3"&gt;
+                  &lt;input type="submit" value="Save Changes" /&gt;
+              &lt;/td&gt;
+          &lt;/tr&gt;
+  &lt;/form&gt;</pre></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-tiles"></a>14.3.&nbsp;Tiles</h2></div></div><div></div></div><p>It is possible to integrate Tiles - just as any other view
+    technology - in web applications using Spring. The following describes in
+    a broad way how to do this.</p><p><span class="emphasis"><em>NOTE:</em></span> This section focuses on Spring's support
+    for Tiles 2 (the standalone version of Tiles, requiring Java 5+) in the
+    <tt class="literal">org.springframework.web.servlet.view.tiles2</tt> package.
+    Spring also continues to support Tiles 1.x (a.k.a. "Struts Tiles",
+    as shipped with Struts 1.1+; compatible with Java 1.4) in the original
+    <tt class="literal">org.springframework.web.servlet.view.tiles</tt> package.
+    </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-tiles-dependencies"></a>14.3.1.&nbsp;Dependencies</h3></div></div><div></div></div><p>To be able to use Tiles you have to have a couple of additional
+      dependencies included in your project. The following is the list of
+      dependencies you need.</p><div class="itemizedlist"><ul type="disc" compact><li><p><tt class="literal">Tiles version 2.0.4 or higher</tt></p></li><li><p><tt class="literal">Commons BeanUtils</tt></p></li><li><p><tt class="literal">Commons Digester</tt></p></li><li><p><tt class="literal">Commons Logging</tt></p></li></ul></div><p>These dependencies are all available in the Spring distribution.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-tiles-integrate"></a>14.3.2.&nbsp;How to integrate Tiles</h3></div></div><div></div></div><p>To be able to use Tiles, you have to configure it using files
+      containing definitions (for basic information on definitions and other
+      Tiles concepts, please have a look at <a href="http://tiles.apache.org" target="_top">http://tiles.apache.org</a>). In Spring this is done
+      using the <tt class="classname">TilesConfigurer</tt>. Have a look at the
+      following piece of example ApplicationContext configuration:</p><pre class="programlisting">&lt;bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer"&gt;
+  &lt;property name="definitions"&gt;
+    &lt;list&gt;
+      &lt;value&gt;/WEB-INF/defs/general.xml&lt;/value&gt;
+      &lt;value&gt;/WEB-INF/defs/widgets.xml&lt;/value&gt;
+      &lt;value&gt;/WEB-INF/defs/administrator.xml&lt;/value&gt;
+      &lt;value&gt;/WEB-INF/defs/customer.xml&lt;/value&gt;
+      &lt;value&gt;/WEB-INF/defs/templates.xml&lt;/value&gt;
+    &lt;/list&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p>As you can see, there are five files containing definitions, which
+      are all located in the <tt class="filename">'WEB-INF/defs'</tt> directory.
+      At initialization of the <tt class="interfacename">WebApplicationContext</tt>,
+      the files will be loaded and the definitions factory will be initialized.
+      After that has been done, the Tiles includes in the definition files can be used
+      as views within your Spring web application. To be able to use the views
+      you have to have a <tt class="interfacename">ViewResolver</tt> just as with any
+      other view technology used with Spring. Below you can find two
+      possibilities, the <tt class="classname">UrlBasedViewResolver</tt> and
+      the <tt class="classname">ResourceBundleViewResolver</tt>.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-tiles-url"></a>14.3.2.1.&nbsp;<tt class="classname">UrlBasedViewResolver</tt></h4></div></div><div></div></div><p>The <tt class="classname">UrlBasedViewResolver</tt> instantiates the given
+        <tt class="literal">viewClass</tt> for each view it has to resolve.</p><pre class="programlisting">&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver"&gt;
+  &lt;property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView"/&gt;
+&lt;/bean&gt;</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-tiles-resource"></a>14.3.2.2.&nbsp;<tt class="classname">ResourceBundleViewResolver</tt></h4></div></div><div></div></div><p>The <tt class="classname">ResourceBundleViewResolver</tt> has to be provided with a
+        property file containing viewnames and viewclasses the resolver can
+        use:</p><pre class="programlisting">&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.ResourceBundleViewResolver"&gt;
+  &lt;property name="basename" value="views"/&gt;
+&lt;/bean&gt;</pre><pre class="programlisting">...
+welcomeView.class=org.springframework.web.servlet.view.tiles2.TilesView
+welcomeView.url=welcome <i class="lineannotation"><span class="lineannotation">(this is the name of a Tiles definition)</span></i>
+
+vetsView.class=org.springframework.web.servlet.view.tiles2.TilesView
+vetsView.url=vetsView <i class="lineannotation"><span class="lineannotation">(again, this is the name of a Tiles definition)</span></i>
+
+findOwnersForm.class=org.springframework.web.servlet.view.JstlView
+findOwnersForm.url=/WEB-INF/jsp/findOwners.jsp
+...</pre><p>As you can see, when using the <tt class="classname">ResourceBundleViewResolver</tt>,
+        you can easily mix different view technologies.</p></div><p>Note that the <tt class="classname">TilesView</tt> class for Tiles 2 supports
+      JSTL (the JSP Standard Tag Library) out of the box, whereas there is a separate
+			<tt class="classname">TilesJstlView</tt> subclass in the Tiles 1.x support.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-tiles-preparer"></a>14.3.2.3.&nbsp;<tt class="classname">SimpleSpringPreparerFactory</tt> and <tt class="classname">SpringBeanPreparerFactory</tt></h4></div></div><div></div></div><p>As an advanced feature, Spring also supports two special Tiles 2
+        <tt class="interfacename">PreparerFactory</tt> implementations. Check out the
+        Tiles documentation for details on how to use <tt class="interfacename">ViewPreparer</tt>
+        references in your Tiles definition files.</p><p>Specify <tt class="classname">SimpleSpringPreparerFactory</tt> to autowire
+        ViewPreparer instances based on specified preparer classes, applying Spring's
+        container callbacks as well as applying configured Spring BeanPostProcessors.
+        If Spring's context-wide annotation-config has been activated, annotations in
+        ViewPreparer classes will be automatically detected and applied.
+        Note that this expects preparer <span class="emphasis"><em>classes</em></span> in the Tiles definition files,
+        just like the default <tt class="classname">PreparerFactory</tt> does.</p><p>Specify <tt class="classname">SpringBeanPreparerFactory</tt> to operate on specified
+        preparer <span class="emphasis"><em>names</em></span> instead of classes, obtaining the corresponding
+        Spring bean from the DispatcherServlet's application context. The full bean
+        creation process will be in the control of the Spring application context in
+        this case, allowing for the use of explicit dependency injection configuration,
+        scoped beans etc. Note that you need to define one Spring bean definition per
+        preparer name (as used in your Tiles definitions).</p><pre class="programlisting">&lt;bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer"&gt;
+  &lt;property name="definitions"&gt;
+    &lt;list&gt;
+      &lt;value&gt;/WEB-INF/defs/general.xml&lt;/value&gt;
+      &lt;value&gt;/WEB-INF/defs/widgets.xml&lt;/value&gt;
+      &lt;value&gt;/WEB-INF/defs/administrator.xml&lt;/value&gt;
+      &lt;value&gt;/WEB-INF/defs/customer.xml&lt;/value&gt;
+      &lt;value&gt;/WEB-INF/defs/templates.xml&lt;/value&gt;
+    &lt;/list&gt;
+  &lt;/property&gt;
+
+  <i class="lineannotation"><span class="lineannotation">&lt;!-- resolving preparer names as Spring bean definition names --&gt;</span></i>
+  &lt;property name="preparerFactoryClass"
+       value="org.springframework.web.servlet.view.tiles2.SpringBeanPreparerFactory"/&gt;
+
+&lt;/bean&gt;</pre></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-velocity"></a>14.4.&nbsp;Velocity &amp; FreeMarker</h2></div></div><div></div></div><p><a href="http://velocity.apache.org" target="_top">Velocity</a> and
+    <a href="http://www.freemarker.org" target="_top">FreeMarker</a> are two
+    templating languages that can both be used as view technologies within
+    Spring MVC applications. The languages are quite similar and serve similar
+    needs and so are considered together in this section. For semantic and
+    syntactic differences between the two languages, see the <a href="http://www.freemarker.org" target="_top">FreeMarker</a> web site.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-velocity-dependencies"></a>14.4.1.&nbsp;Dependencies</h3></div></div><div></div></div><p>Your web application will need to include
+      <tt class="filename">velocity-1.x.x.jar</tt> or
+      <tt class="filename">freemarker-2.x.jar</tt> in order to
+      work with Velocity or FreeMarker respectively and
+      <tt class="filename">commons-collections.jar</tt>
+      needs also to be available for Velocity. Typically they are included in
+      the <tt class="literal">WEB-INF/lib</tt> folder where they are guaranteed to
+      be found by a J2EE server and added to the classpath for your
+      application. It is of course assumed that you already have the
+      <tt class="filename">spring.jar</tt> in your
+      <tt class="filename">'WEB-INF/lib'</tt> directory too!
+      The latest stable Velocity, FreeMarker and Commons
+      Collections jars are supplied with the Spring framework and can be
+      copied from the relevant <tt class="filename">/lib/</tt>
+      sub-directories. If you make use of Spring's 'dateToolAttribute' or
+      'numberToolAttribute' in your Velocity views, you will also need to include the
+      <tt class="filename">velocity-tools-generic-1.x.jar</tt></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-velocity-contextconfig"></a>14.4.2.&nbsp;Context configuration</h3></div></div><div></div></div><p>A suitable configuration is initialized by adding the relevant
+      configurer bean definition to your <tt class="filename">'*-servlet.xml'</tt> as shown below:</p><pre class="programlisting"><i class="lineannotation"><span class="lineannotation">&lt;!-- 
+  This bean sets up the Velocity environment for us based on a root path for templates.
+  Optionally, a properties file can be specified for more control over the Velocity
+  environment, but the defaults are pretty sane for file based template loading.
+--&gt;</span></i>
+&lt;bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer"&gt;
+  &lt;property name="resourceLoaderPath" value="/WEB-INF/velocity/"/&gt;
+&lt;/bean&gt;
+
+<i class="lineannotation"><span class="lineannotation">&lt;!-- 
+
+  View resolvers can also be configured with ResourceBundles or XML files. If you need
+  different view resolving based on Locale, you have to use the resource bundle resolver.
+
+--&gt;</span></i>
+&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver"&gt;
+  &lt;property name="cache" value="true"/&gt;
+  &lt;property name="prefix" value=""/&gt;
+  &lt;property name="suffix" value=".vm"/&gt;
+&lt;/bean&gt;</pre><pre class="programlisting"><i class="lineannotation"><span class="lineannotation">&lt;!-- freemarker config --&gt;</span></i>
+&lt;bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer"&gt;
+  &lt;property name="templateLoaderPath" value="/WEB-INF/freemarker/"/&gt;
+&lt;/bean&gt;
+
+<i class="lineannotation"><span class="lineannotation">&lt;!-- 
+
+  View resolvers can also be configured with ResourceBundles or XML files. If you need
+  different view resolving based on Locale, you have to use the resource bundle resolver.
+
+--&gt;</span></i>
+&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver"&gt;
+  &lt;property name="cache" value="true"/&gt;
+  &lt;property name="prefix" value=""/&gt;
+  &lt;property name="suffix" value=".ftl"/&gt;
+&lt;/bean&gt;</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../images/admons/note.png"></td><th align="left">Note</th></tr><tr><td colspan="2" align="left" valign="top"><p>For non web-apps add a <tt class="classname">VelocityConfigurationFactoryBean</tt> or a
+      <tt class="classname">FreeMarkerConfigurationFactoryBean</tt> to your application context definition file.</p></td></tr></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-velocity-createtemplates"></a>14.4.3.&nbsp;Creating templates</h3></div></div><div></div></div><p>Your templates need to be stored in the directory specified by the
+      <tt class="literal">*Configurer</tt> bean shown above. This document does not cover
+      details of creating templates for the two languages - please see their
+      relevant websites for information. If you use the view resolvers
+      highlighted, then the logical view names relate to the template file
+      names in similar fashion to
+      <tt class="classname">InternalResourceViewResolver</tt> for JSP's. So if your
+      controller returns a ModelAndView object containing a view name of
+      "welcome" then the resolvers will look for the
+      <tt class="literal">/WEB-INF/freemarker/welcome.ftl</tt> or
+      <tt class="literal">/WEB-INF/velocity/welcome.vm</tt> template as
+      appropriate.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-velocity-advancedconfig"></a>14.4.4.&nbsp;Advanced configuration</h3></div></div><div></div></div><p>The basic configurations highlighted above will be suitable for
+      most application requirements, however additional configuration options
+      are available for when unusual or advanced requirements dictate.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-velocity-example-velocityproperties"></a>14.4.4.1.&nbsp;velocity.properties</h4></div></div><div></div></div><p>This file is completely optional, but if specified, contains the
+        values that are passed to the Velocity runtime in order to configure
+        velocity itself. Only required for advanced configurations, if you
+        need this file, specify its location on the
+        <tt class="literal">VelocityConfigurer</tt> bean definition above.</p><pre class="programlisting">&lt;bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer"&gt;
+  &lt;property name="configLocation value="/WEB-INF/velocity.properties"/&gt;
+&lt;/bean&gt;</pre><p>Alternatively, you can specify velocity properties directly in
+        the bean definition for the Velocity config bean by replacing the
+        "configLocation" property with the following inline properties.</p><pre class="programlisting">&lt;bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer"&gt;
+  &lt;property name="velocityProperties"&gt;
+    &lt;props&gt;
+      &lt;prop key="resource.loader"&gt;file&lt;/prop&gt;
+      &lt;prop key="file.resource.loader.class"&gt;
+        org.apache.velocity.runtime.resource.loader.FileResourceLoader
+      &lt;/prop&gt;
+      &lt;prop key="file.resource.loader.path"&gt;${webapp.root}/WEB-INF/velocity&lt;/prop&gt;
+      &lt;prop key="file.resource.loader.cache"&gt;false&lt;/prop&gt;
+    &lt;/props&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p>Refer to the <a href="http://static.springframework.org/spring/docs/2.5.x/api/org/springframework/ui/velocity/VelocityEngineFactory.html" target="_top">API
+        documentation</a> for Spring configuration of Velocity, or the
+        Velocity documentation for examples and definitions of the
+        <tt class="filename">'velocity.properties'</tt> file itself.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="views-freemarker"></a>14.4.4.2.&nbsp;FreeMarker</h4></div></div><div></div></div><p>FreeMarker 'Settings' and 'SharedVariables' can be passed
+        directly to the FreeMarker <tt class="literal">Configuration</tt> object
+        managed by Spring by setting the appropriate bean properties on the
+        <tt class="literal">FreeMarkerConfigurer</tt> bean. The
+        <tt class="literal">freemarkerSettings</tt> property requires a
+        <tt class="literal">java.util.Properties</tt> object and the
+        <tt class="literal">freemarkerVariables</tt> property requires a
+        <tt class="literal">java.util.Map</tt>.</p><pre class="programlisting">&lt;bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer"&gt;
+  &lt;property name="templateLoaderPath" value="/WEB-INF/freemarker/"/&gt;
+  &lt;property name="freemarkerVariables"&gt;
+    &lt;map&gt;
+      &lt;entry key="xml_escape" value-ref="fmXmlEscape"/&gt;
+    &lt;/map&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape"/&gt;</pre><p>See the FreeMarker documentation for details of settings and
+        variables as they apply to the <tt class="classname">Configuration</tt>
+        object.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-velocity-forms"></a>14.4.5.&nbsp;Bind support and form handling</h3></div></div><div></div></div><p>Spring provides a tag library for use in JSP's that contains
+      (amongst other things) a <tt class="literal">&lt;spring:bind/&gt;</tt> tag.
+      This tag primarily enables forms to display values from form backing
+      objects and to show the results of failed validations from a
+      <tt class="literal">Validator</tt> in the web or business tier. From version
+      1.1, Spring now has support for the same functionality in both Velocity
+      and FreeMarker, with additional convenience macros for generating form
+      input elements themselves.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-bind-macros"></a>14.4.5.1.&nbsp;The bind macros</h4></div></div><div></div></div><p>A standard set of macros are maintained within the
+        <tt class="literal">spring.jar</tt> file for both languages, so they are
+        always available to a suitably configured application.</p><p>Some of the macros defined in the Spring libraries are
+        considered internal (private) but no such scoping exists in the macro
+        definitions making all macros visible to calling code and user
+        templates. The following sections concentrate only on the macros you
+        need to be directly calling from within your templates. If you wish to
+        view the macro code directly, the files are called spring.vm /
+        spring.ftl and are in the packages
+        <tt class="literal">org.springframework.web.servlet.view.velocity</tt> or
+        <tt class="literal">org.springframework.web.servlet.view.freemarker</tt>
+        respectively.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-simple-binding"></a>14.4.5.2.&nbsp;Simple binding</h4></div></div><div></div></div><p>In your html forms (vm / ftl templates) that act as the
+        'formView' for a Spring form controller, you can use code similar to
+        the following to bind to field values and display error messages for
+        each input field in similar fashion to the JSP equivalent. Note that
+        the name of the command object is "command" by default, but can be
+        overridden in your MVC configuration by setting the 'commandName' bean
+        property on your form controller. Example code is shown below for the
+        <tt class="literal">personFormV</tt> and <tt class="literal">personFormF</tt>
+        views configured earlier;</p><pre class="programlisting">&lt;!-- velocity macros are automatically available --&gt;
+&lt;html&gt;
+...
+&lt;form action="" method="POST"&gt;
+  Name: 
+  #springBind( "command.name" )
+  &lt;input type="text" 
+    name="${status.expression}" 
+    value="$!status.value" /&gt;&lt;br&gt;
+  #foreach($error in $status.errorMessages) &lt;b&gt;$error&lt;/b&gt; &lt;br&gt; #end
+  &lt;br&gt;
+  ... 
+  &lt;input type="submit" value="submit"/&gt;
+&lt;/form&gt;
+...
+&lt;/html&gt;</pre><pre class="programlisting">&lt;!-- freemarker macros have to be imported into a namespace.  We strongly
+recommend sticking to 'spring' --&gt;
+&lt;#import "spring.ftl" as spring /&gt;
+&lt;html&gt;
+...
+&lt;form action="" method="POST"&gt;
+  Name: 
+  &lt;@spring.bind "command.name" /&gt; 
+  &lt;input type="text" 
+    name="${spring.status.expression}" 
+    value="${spring.status.value?default("")}" /&gt;&lt;br&gt;
+  &lt;#list spring.status.errorMessages as error&gt; &lt;b&gt;${error}&lt;/b&gt; &lt;br&gt; &lt;/#list&gt;
+  &lt;br&gt;
+  ... 
+  &lt;input type="submit" value="submit"/&gt;
+&lt;/form&gt;
+...
+&lt;/html&gt;</pre><p><tt class="literal">#springBind</tt> /
+        <tt class="literal">&lt;@spring.bind&gt;</tt> requires a 'path' argument
+        which consists of the name of your command object (it will be
+        'command' unless you changed it in your FormController properties)
+        followed by a period and the name of the field on the command object
+        you wish to bind to. Nested fields can be used too such as
+        "command.address.street". The <tt class="literal">bind</tt> macro assumes
+        the default HTML escaping behavior specified by the ServletContext
+        parameter <tt class="literal">defaultHtmlEscape</tt> in web.xml</p><p>The optional form of the macro called
+        <tt class="literal">#springBindEscaped</tt> /
+        <tt class="literal">&lt;@spring.bindEscaped&gt;</tt> takes a second argument
+        and explicitly specifies whether HTML escaping should be used in the
+        status error messages or values. Set to true or false as required.
+        Additional form handling macros simplify the use of HTML escaping and
+        these macros should be used wherever possible. They are explained in
+        the next section.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="views-form-macros"></a>14.4.5.3.&nbsp;Form input generation macros</h4></div></div><div></div></div><p>Additional convenience macros for both languages simplify both
+        binding and form generation (including validation error display). It
+        is never necessary to use these macros to generate form input fields,
+        and they can be mixed and matched with simple HTML or calls direct to
+        the spring bind macros highlighted previously.</p><p>The following table of available macros show the VTL and FTL
+        definitions and the parameter list that each takes.</p><div class="table"><a name="views-macros-defs-tbl"></a><p class="title"><b>Table&nbsp;14.1.&nbsp;Table of macro definitions</b></p><table summary="Table of macro definitions" border="1"><colgroup><col align="left"><col><col></colgroup><thead><tr><th align="center">macro</th><th align="center">VTL definition</th><th align="center">FTL definition</th></tr></thead><tbody><tr><td align="left"><span class="bold"><b>message</b></span> (output a
+                string from a resource bundle based on the code
+                parameter)</td><td><tt class="literal">#springMessage($code)</tt></td><td><tt class="literal">&lt;@spring.message
+                code/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>messageText</b></span> (output a
+                string from a resource bundle based on the code parameter,
+                falling back to the value of the default parameter)</td><td><tt class="literal">#springMessageText($code
+                $text)</tt></td><td><tt class="literal">&lt;@spring.messageText code,
+                text/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>url</b></span> (prefix a relative
+                URL with the application's context root)</td><td><tt class="literal">#springUrl($relativeUrl)</tt></td><td><tt class="literal">&lt;@spring.url
+                relativeUrl/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formInput</b></span> (standard
+                input field for gathering user input)</td><td><tt class="literal">#springFormInput($path
+                $attributes)</tt></td><td><tt class="literal">&lt;@spring.formInput path, attributes,
+                fieldType/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formHiddenInput *</b></span>
+                (hidden input field for submitting non-user input)</td><td><tt class="literal">#springFormHiddenInput($path
+                $attributes)</tt></td><td><tt class="literal">&lt;@spring.formHiddenInput path,
+                attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formPasswordInput</b></span> *
+                (standard input field for gathering passwords. Note that no
+                value will ever be populated in fields of this type)</td><td><tt class="literal">#springFormPasswordInput($path
+                $attributes)</tt></td><td><tt class="literal">&lt;@spring.formPasswordInput path,
+                attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formTextarea</b></span> (large
+                text field for gathering long, freeform text input)</td><td><tt class="literal">#springFormTextarea($path
+                $attributes)</tt></td><td><tt class="literal">&lt;@spring.formTextarea path,
+                attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formSingleSelect</b></span> (drop
+                down box of options allowing a single required value to be
+                selected)</td><td><tt class="literal">#springFormSingleSelect( $path $options
+                $attributes)</tt></td><td><tt class="literal">&lt;@spring.formSingleSelect path, options,
+                attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formMultiSelect</b></span> (a
+                list box of options allowing the user to select 0 or more
+                values)</td><td><tt class="literal">#springFormMultiSelect($path $options
+                $attributes)</tt></td><td><tt class="literal">&lt;@spring.formMultiSelect path, options,
+                attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formRadioButtons</b></span> (a
+                set of radio buttons allowing a single selection to be made
+                from the available choices)</td><td><tt class="literal">#springFormRadioButtons($path $options
+                $separator $attributes)</tt></td><td><tt class="literal">&lt;@spring.formRadioButtons path, options
+                separator, attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>formCheckboxes</b></span> (a set
+                of checkboxes allowing 0 or more values to be
+                selected)</td><td><tt class="literal">#springFormCheckboxes($path $options
+                $separator $attributes)</tt></td><td><tt class="literal">&lt;@spring.formCheckboxes path, options,
+                separator, attributes/&gt;</tt></td></tr><tr><td align="left"><span class="bold"><b>showErrors</b></span> (simplify
+                display of validation errors for the bound field)</td><td><tt class="literal">#springShowErrors($separator
+                $classOrStyle)</tt></td><td><tt class="literal">&lt;@spring.showErrors separator,
+                classOrStyle/&gt;</tt></td></tr></tbody></table></div><p>* In FTL (FreeMarker), these two macros are not actually
+        required as you can use the normal <tt class="literal">formInput</tt> macro,
+        specifying '<tt class="literal">hidden</tt>' or
+        '<tt class="literal">password</tt>' as the value for the
+        <tt class="literal">fieldType</tt> parameter.</p><p>The parameters to any of the above macros have consistent
+        meanings:</p><div class="itemizedlist"><ul type="disc"><li><p>path: the name of the field to bind to (ie
+            "command.name")</p></li><li><p>options: a Map of all the available values that can be
+            selected from in the input field. The keys to the map represent
+            the values that will be POSTed back from the form and bound to the
+            command object. Map objects stored against the keys are the labels
+            displayed on the form to the user and may be different from the
+            corresponding values posted back by the form. Usually such a map
+            is supplied as reference data by the controller. Any Map
+            implementation can be used depending on required behavior. For
+            strictly sorted maps, a <tt class="literal">SortedMap</tt> such as a
+            <tt class="literal">TreeMap</tt> with a suitable Comparator may be used
+            and for arbitrary Maps that should return values in insertion
+            order, use a <tt class="literal">LinkedHashMap</tt> or a
+            <tt class="literal">LinkedMap</tt> from commons-collections.</p></li><li><p>separator: where multiple options are available as discreet
+            elements (radio buttons or checkboxes), the sequence of characters
+            used to separate each one in the list (ie "&lt;br&gt;").</p></li><li><p>attributes: an additional string of arbitrary tags or text
+            to be included within the HTML tag itself. This string is echoed
+            literally by the macro. For example, in a textarea field you may
+            supply attributes as 'rows="5" cols="60"' or you could pass style
+            information such as 'style="border:1px solid silver"'.</p></li><li><p>classOrStyle: for the showErrors macro, the name of the CSS
+            class that the span tag wrapping each error will use. If no
+            information is supplied (or the value is empty) then the errors
+            will be wrapped in &lt;b&gt;&lt;/b&gt; tags.</p></li></ul></div><p>Examples of the macros are outlined below some in FTL and some
+        in VTL. Where usage differences exist between the two languages, they
+        are explained in the notes.</p><div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="views-form-macros-input"></a>14.4.5.3.1.&nbsp;Input Fields</h5></div></div><div></div></div><pre class="programlisting">&lt;!-- the Name field example from above using form macros in VTL --&gt;
+...
+    Name:
+    #springFormInput("command.name" "")&lt;br&gt;
+    #springShowErrors("&lt;br&gt;" "")&lt;br&gt;</pre><p>The formInput macro takes the path parameter (command.name)
+          and an additional attributes parameter which is empty in the example
+          above. The macro, along with all other form generation macros,
+          performs an implicit spring bind on the path parameter. The binding
+          remains valid until a new bind occurs so the showErrors macro
+          doesn't need to pass the path parameter again - it simply operates
+          on whichever field a bind was last created for.</p><p>The showErrors macro takes a separator parameter (the
+          characters that will be used to separate multiple errors on a given
+          field) and also accepts a second parameter, this time a class name
+          or style attribute. Note that FreeMarker is able to specify default
+          values for the attributes parameter, unlike Velocity, and the two
+          macro calls above could be expressed as follows in FTL:</p><pre class="programlisting">&lt;@spring.formInput "command.name"/&gt;
+&lt;@spring.showErrors "&lt;br&gt;"/&gt;</pre><p>Output is shown below of the form fragment generating the name
+          field, and displaying a validation error after the form was
+          submitted with no value in the field. Validation occurs through
+          Spring's Validation framework.</p><p>The generated HTML looks like this:</p><pre class="programlisting">Name:
+  &lt;input type="text" name="name" value=""     
+&gt;
+&lt;br&gt;
+  &lt;b&gt;required&lt;/b&gt;
+&lt;br&gt;
+&lt;br&gt;</pre><p>The formTextarea macro works the same way as the formInput
+          macro and accepts the same parameter list. Commonly, the second
+          parameter (attributes) will be used to pass style information or
+          rows and cols attributes for the textarea.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="views-form-macros-select"></a>14.4.5.3.2.&nbsp;Selection Fields</h5></div></div><div></div></div><p>Four selection field macros can be used to generate common UI
+          value selection inputs in your HTML forms.</p><div class="itemizedlist"><ul type="disc"><li><p>formSingleSelect</p></li><li><p>formMultiSelect</p></li><li><p>formRadioButtons</p></li><li><p>formCheckboxes</p></li></ul></div><p>Each of the four macros accepts a Map of options containing
+          the value for the form field, and the label corresponding to that
+          value. The value and the label can be the same.</p><p>An example of radio buttons in FTL is below. The form backing
+          object specifies a default value of 'London' for this field and so
+          no validation is necessary. When the form is rendered, the entire
+          list of cities to choose from is supplied as reference data in the
+          model under the name 'cityMap'.</p><pre class="programlisting">...
+  Town:
+  &lt;@spring.formRadioButtons "command.address.town", cityMap, "" /&gt;&lt;br&gt;&lt;br&gt;</pre><p>This renders a line of radio buttons, one for each value in
+          <tt class="literal">cityMap</tt> using the separator "". No additional
+          attributes are supplied (the last parameter to the macro is
+          missing). The cityMap uses the same String for each key-value pair
+          in the map. The map's keys are what the form actually submits as
+          POSTed request parameters, map values are the labels that the user
+          sees. In the example above, given a list of three well known cities
+          and a default value in the form backing object, the HTML would
+          be</p><pre class="programlisting">Town:
+&lt;input type="radio" name="address.town" value="London"
+   
+&gt;
+London
+&lt;input type="radio" name="address.town" value="Paris"
+  checked="checked" 
+&gt;
+Paris
+&lt;input type="radio" name="address.town" value="New York"
+   
+&gt;
+New York</pre><p>If your application expects to handle cities by internal codes
+          for example, the map of codes would be created with suitable keys
+          like the example below.</p><pre class="programlisting">protected Map referenceData(HttpServletRequest request) throws Exception {
+  Map cityMap = new LinkedHashMap();
+  cityMap.put("LDN", "London");
+  cityMap.put("PRS", "Paris");
+  cityMap.put("NYC", "New York");
+  
+  Map m = new HashMap();
+  m.put("cityMap", cityMap);
+  return m;
+}</pre><p>The code would now produce output where the radio values are
+          the relevant codes but the user still sees the more user friendly
+          city names.</p><pre class="programlisting">Town:
+&lt;input type="radio" name="address.town" value="LDN"
+   
+&gt;
+London
+&lt;input type="radio" name="address.town" value="PRS"
+  checked="checked" 
+&gt;
+Paris
+&lt;input type="radio" name="address.town" value="NYC"
+   
+&gt;
+New York</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="views-form-macros-html-escaping"></a>14.4.5.4.&nbsp;HTML escaping and XHTML compliance</h4></div></div><div></div></div><p>Default usage of the form macros above will result in HTML tags
+        that are HTML 4.01 compliant and that use the default value for HTML
+        escaping defined in your web.xml as used by Spring's bind support. In
+        order to make the tags XHTML compliant or to override the default HTML
+        escaping value, you can specify two variables in your template (or in
+        your model where they will be visible to your templates). The
+        advantage of specifying them in the templates is that they can be
+        changed to different values later in the template processing to
+        provide different behavior for different fields in your form.</p><p>To switch to XHTML compliance for your tags, specify a value of
+        'true' for a model/context variable named xhtmlCompliant:</p><pre class="programlisting">## for Velocity..
+#set($springXhtmlCompliant = true)
+
+&lt;#-- for FreeMarker --&gt;
+&lt;#assign xhtmlCompliant = true in spring&gt;</pre><p>Any tags generated by the Spring macros will now be XHTML
+        compliant after processing this directive.</p><p>In similar fashion, HTML escaping can be specified per
+        field:</p><pre class="programlisting">&lt;#-- until this point, default HTML escaping is used --&gt;
+
+&lt;#assign htmlEscape = true in spring&gt;
+&lt;#-- next field will use HTML escaping --&gt;
+&lt;@spring.formInput "command.name" /&gt;
+
+&lt;#assign htmlEscape = false in spring&gt;
+&lt;#-- all future fields will be bound with HTML escaping off --&gt;</pre></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-xslt"></a>14.5.&nbsp;XSLT</h2></div></div><div></div></div><p>XSLT is a transformation language for XML and is popular as a view
+    technology within web applications. XSLT can be a good choice as a view
+    technology if your application naturally deals with XML, or if your model
+    can easily be converted to XML. The following section shows how to produce
+    an XML document as model data and have it transformed with XSLT in a
+    Spring Web MVC application.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-xslt-firstwords"></a>14.5.1.&nbsp;My First Words</h3></div></div><div></div></div><p>This example is a trivial Spring application that creates a list
+      of words in the <tt class="interfacename">Controller</tt> and adds them to the model
+      map. The map is  returned along with the view name of our XSLT view. See the section
+      entitled <a href="mvc.html#mvc-controller" title="13.3.&nbsp;Controllers">Section&nbsp;13.3, &#8220;Controllers&#8221;</a> for details of Spring Web MVC's
+      <tt class="interfacename">Controller</tt> interface. The XSLT view will turn the list of
+      words into a simple XML document ready for transformation.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-xslt-beandefs"></a>14.5.1.1.&nbsp;Bean definitions</h4></div></div><div></div></div><p>Configuration is standard for a simple Spring application. The
+        dispatcher servlet config file contains a reference to a
+        <tt class="interfacename">ViewResolver</tt>, URL mappings and a single controller
+        bean...</p><pre class="programlisting">&lt;bean id="homeController"class="xslt.HomeController"/&gt;</pre><p>... that encapsulates our word generation logic.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-xslt-controllercode"></a>14.5.1.2.&nbsp;Standard MVC controller code</h4></div></div><div></div></div><p>The controller logic is encapsulated in a subclass of
+        <tt class="classname">AbstractController</tt>, with the handler method being defined like so...</p><pre class="programlisting">protected ModelAndView handleRequestInternal(
+    HttpServletRequest request,
+    HttpServletResponse response) throws Exception {
+        
+    Map map = new HashMap();
+    List wordList = new ArrayList();
+        
+    wordList.add("hello");
+    wordList.add("world");
+       
+    map.put("wordList", wordList);
+      
+    return new ModelAndView("home", map);
+}</pre><p>So far we've done nothing that's XSLT specific. The model data
+        has been created in the same way as you would for any other Spring MVC
+        application. Depending on the configuration of the application now,
+        that list of words could be rendered by JSP/JSTL by having them added
+        as request attributes, or they could be handled by Velocity by adding
+        the object to the <tt class="classname">VelocityContext</tt>. In
+        order to have XSLT render them, they of course have to be converted into
+        an XML document somehow.
+        There are software packages available that will automatically 'domify'
+        an object graph, but within Spring, you have complete flexibility to
+        create the DOM from your model in any way you choose. This prevents
+        the transformation of XML playing too great a part in the structure of
+        your model data which is a danger when using tools to manage the
+        domification process.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-xslt-subclassing"></a>14.5.1.3.&nbsp;Convert the model data to XML</h4></div></div><div></div></div><p>In order to create a DOM document from our list of words or any
+        other model data, we must subclass the (provided)
+        <tt class="classname">org.springframework.web.servlet.view.xslt.AbstractXsltView</tt>
+        class. In doing so, we must also typically implement the abstract method
+        <tt class="methodname">createXsltSource(..)</tt> method. The first parameter passed
+        to this method is our model map. Here's the complete listing of the
+        <tt class="classname">HomePage</tt> class in our trivial word application:</p><pre class="programlisting">
+package xslt;
+
+<i class="lineannotation"><span class="lineannotation">// imports omitted for brevity</span></i>
+
+public class HomePage extends AbstractXsltView {
+
+    protected Source createXsltSource(Map model, String rootName, HttpServletRequest
+        request, HttpServletResponse response) throws Exception {
+
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        Element root = document.createElement(rootName);
+
+        List words = (List) model.get("wordList");
+        for (Iterator it = words.iterator(); it.hasNext();) {
+            String nextWord = (String) it.next();
+            Element wordNode = document.createElement("word");
+            Text textNode = document.createTextNode(nextWord);
+            wordNode.appendChild(textNode);
+            root.appendChild(wordNode);
+        }
+        return new DOMSource(root);
+    }
+
+}</pre><p>A series of parameter name/value pairs can optionally be
+        defined by your subclass which will be added to the transformation
+        object. The parameter names must match those defined in your XSLT
+        template declared with
+        <tt class="literal">&lt;xsl:param name="myParam"&gt;defaultValue&lt;/xsl:param&gt;</tt>.
+        To  specify the parameters, override the
+        <tt class="methodname">getParameters()</tt> method of the
+        <tt class="classname">AbstractXsltView</tt> class and return a
+        <tt class="interfacename">Map</tt> of the name/value pairs. If your parameters
+        need to derive information from the current request, you can override the
+        <tt class="methodname">getParameters(HttpServletRequest request)</tt> method instead.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-xslt-viewdefinitions"></a>14.5.1.4.&nbsp;Defining the view properties</h4></div></div><div></div></div><p>The views.properties file (or equivalent xml definition if
+        you're using an XML based view resolver as we did in the Velocity
+        examples above) looks like this for the one-view application that is
+        'My First Words':</p><pre class="programlisting">home.class=xslt.HomePage
+home.stylesheetLocation=/WEB-INF/xsl/home.xslt
+home.root=words</pre><p>Here, you can see how the view is tied in
+        with the <tt class="classname">HomePage</tt> class just written which handles the model
+        domification in the first property <tt class="literal">'.class'</tt>. The <tt class="literal">'stylesheetLocation'</tt>
+        property points to the XSLT file which will handle the XML
+        transformation into HTML for us and the final property <tt class="literal">'.root'</tt> is the
+        name that will be used as the root of the XML document. This gets
+        passed to the <tt class="classname">HomePage</tt> class above in the second parameter to the
+        <tt class="methodname">createXsltSource(..)</tt> method(s).</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-xslt-transforming"></a>14.5.1.5.&nbsp;Document transformation</h4></div></div><div></div></div><p>Finally, we have the XSLT code used for transforming the above
+        document. As shown in the above <tt class="filename">'views.properties'</tt> file, the stylesheet is called
+        <tt class="filename">'home.xslt'</tt> and it lives in the war file in the
+        <tt class="filename">'WEB-INF/xsl'</tt> directory.</p><pre class="programlisting">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+
+    &lt;xsl:output method="html" omit-xml-declaration="yes"/&gt;
+
+    &lt;xsl:template match="/"&gt;
+        &lt;html&gt;
+            &lt;head&gt;&lt;title&gt;Hello!&lt;/title&gt;&lt;/head&gt;
+            &lt;body&gt;
+                &lt;h1&gt;My First Words&lt;/h1&gt;
+                &lt;xsl:apply-templates/&gt;
+            &lt;/body&gt;
+        &lt;/html&gt;
+    &lt;/xsl:template&gt;
+
+    &lt;xsl:template match="word"&gt;
+        &lt;xsl:value-of select="."/&gt;&lt;br/&gt;
+    &lt;/xsl:template&gt;
+
+&lt;/xsl:stylesheet&gt;</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-xslt-summary"></a>14.5.2.&nbsp;Summary</h3></div></div><div></div></div><p>A summary of the files discussed and their location in the WAR
+      file is shown in the simplified WAR structure below.</p><pre class="programlisting">ProjectRoot
+  |
+  +- WebContent
+      |
+      +- WEB-INF
+          |
+          +- classes
+          |    |
+          |    +- xslt
+          |    |   |
+          |    |   +- HomePageController.class 
+          |    |   +- HomePage.class
+          |    |
+          |    +- views.properties
+          |
+          +- lib
+          |   |
+          |   +- spring.jar
+          |
+          +- xsl
+          |   |
+          |   +- home.xslt
+          |
+          +- frontcontroller-servlet.xml</pre><p>You will also need to ensure that an XML parser and an XSLT engine are available on the
+            classpath. JDK 1.4 provides them by default, and most J2EE containers
+            will also make them available by default, but it's a possible source of
+            errors to be aware of.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-document"></a>14.6.&nbsp;Document views (PDF/Excel)</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-document-intro"></a>14.6.1.&nbsp;Introduction</h3></div></div><div></div></div><p>Returning an HTML page isn't always the best way for the user to
+      view the model output, and Spring makes it simple to generate a PDF
+      document or an Excel spreadsheet dynamically from the model data. The
+      document is the view and will be streamed from the server with the
+      correct content type to (hopefully) enable the client PC to run their
+      spreadsheet or PDF viewer application in response.</p><p>In order to use Excel views, you need to add the 'poi' library to
+      your classpath, and for PDF generation, the iText.jar. Both are included
+      in the main Spring distribution.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-document-config"></a>14.6.2.&nbsp;Configuration and setup</h3></div></div><div></div></div><p>Document based views are handled in an almost identical fashion to
+      XSLT views, and the following sections build upon the previous one by
+      demonstrating how the same controller used in the XSLT example is
+      invoked to render the same model as both a PDF document and an Excel
+      spreadsheet (which can also be viewed or manipulated in Open
+      Office).</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-document-configviews"></a>14.6.2.1.&nbsp;Document view definitions</h4></div></div><div></div></div><p>Firstly, let's amend the views.properties file (or xml
+        equivalent) and add a simple view definition for both document types.
+        The entire file now looks like this with the XSLT view shown from
+        earlier.. </p><pre class="programlisting">home.class=xslt.HomePage
+home.stylesheetLocation=/WEB-INF/xsl/home.xslt
+home.root=words
+
+xl.class=excel.HomePage
+
+pdf.class=pdf.HomePage</pre><p> <span class="emphasis"><em>If you want to start with a
+        template spreadsheet to add your model data to, specify the location
+        as the 'url' property in the view definition</em></span></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-document-configcontroller"></a>14.6.2.2.&nbsp;Controller code</h4></div></div><div></div></div><p>The controller code we'll use remains exactly the same from the
+        XSLT example earlier other than to change the name of the view to use.
+        Of course, you could be clever and have this selected based on a URL
+        parameter or some other logic - proof that Spring really is very good
+        at decoupling the views from the controllers!</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-document-configsubclasses"></a>14.6.2.3.&nbsp;Subclassing for Excel views</h4></div></div><div></div></div><p>Exactly as we did for the XSLT example, we'll subclass suitable
+        abstract classes in order to implement custom behavior in generating
+        our output documents. For Excel, this involves writing a subclass of
+        <tt class="literal">org.springframework.web.servlet.view.document.AbstractExcelView</tt>
+		(for Excel files generated by POI)
+			or <tt class="literal">org.springframework.web.servlet.view.document.AbstractJExcelView</tt>
+		(for JExcelApi-generated Excel files).
+        and implementing the <tt class="literal">buildExcelDocument</tt></p><p>Here's the complete listing for our POI Excel view which displays
+        the word list from the model map in consecutive rows of the first
+        column of a new spreadsheet.. </p><pre class="programlisting">package excel;
+
+// imports omitted for brevity
+
+public class HomePage extends AbstractExcelView {
+
+    protected void buildExcelDocument(
+        Map model,
+        HSSFWorkbook wb,
+        HttpServletRequest req,
+        HttpServletResponse resp)
+        throws Exception {
+    
+        HSSFSheet sheet;
+        HSSFRow sheetRow;
+        HSSFCell cell;
+
+        // Go to the first sheet
+        // getSheetAt: only if wb is created from an existing document
+        //sheet = wb.getSheetAt( 0 );
+        sheet = wb.createSheet("Spring");
+        sheet.setDefaultColumnWidth((short)12);
+
+        // write a text at A1
+        cell = getCell( sheet, 0, 0 );
+        setText(cell,"Spring-Excel test");
+
+        List words = (List ) model.get("wordList");
+        for (int i=0; i &lt; words.size(); i++) {
+            cell = getCell( sheet, 2+i, 0 );
+            setText(cell, (String) words.get(i));
+
+        }
+    }
+}</pre><p>And this a view generating the same Excel file, now using JExcelApi: </p><pre class="programlisting">package excel;
+			
+// imports omitted for brevity
+
+public class HomePage extends AbstractExcelView {
+
+    protected void buildExcelDocument(Map model,
+        WritableWorkbook wb,
+        HttpServletRequest request,
+        HttpServletResponse response)
+    throws Exception {
+			
+        WritableSheet sheet = wb.createSheet("Spring");
+
+        sheet.addCell(new Label(0, 0, "Spring-Excel test");
+		
+        List words  = (List)model.get("wordList");
+        for (int i = -; i &lt; words.size(); i++) {
+            sheet.addCell(new Label(2+i, 0, (String)words.get(i));
+        }
+    }
+}
+</pre><p>			
+		</p><p>Note the differences between the APIs. We've found that the
+		JExcelApi is somewhat more intuitive and furthermore, JExcelApi
+		has a bit better image-handling capabilities. There have been 
+		memory problems with large Excel file when using JExcelApi however.</p><p>If you now amend the controller such that it returns
+        <tt class="literal">xl</tt> as the name of the view (<tt class="literal">return new
+        ModelAndView("xl", map);</tt>) and run your application again,
+        you should find that the Excel spreadsheet is created and downloaded
+        automatically when you request the same page as before.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-document-configsubclasspdf"></a>14.6.2.4.&nbsp;Subclassing for PDF views</h4></div></div><div></div></div><p>The PDF version of the word list is even simpler. This time, the
+        class extends
+        <tt class="literal">org.springframework.web.servlet.view.document.AbstractPdfView</tt>
+        and implements the <tt class="literal">buildPdfDocument()</tt> method as
+        follows.. </p><pre class="programlisting">package pdf;
+
+// imports omitted for brevity
+
+public class PDFPage extends AbstractPdfView {
+
+    protected void buildPdfDocument(
+        Map model,
+        Document doc,
+        PdfWriter writer,
+        HttpServletRequest req,
+        HttpServletResponse resp)
+        throws Exception {
+        
+        List words = (List) model.get("wordList");
+        
+        for (int i=0; i&lt;words.size(); i++)
+            doc.add( new Paragraph((String) words.get(i)));
+    
+    }
+}</pre><p> Once again, amend the controller to return the
+        <tt class="literal">pdf</tt> view with a <tt class="literal">return new
+        ModelAndView("pdf", map);</tt> and reload the URL in your
+        application. This time a PDF document should appear listing each of
+        the words in the model map.</p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-jasper-reports"></a>14.7.&nbsp;JasperReports</h2></div></div><div></div></div><p>JasperReports (<a href="http://jasperreports.sourceforge.net" target="_top">http://jasperreports.sourceforge.net</a>)
+    is a powerful open-source reporting engine that supports the creation of report
+    designs using an easily understood XML file format. JasperReports is capable of
+    rendering reports output into four different formats: CSV, Excel, HTML and PDF.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jasper-reports-dependencies"></a>14.7.1.&nbsp;Dependencies</h3></div></div><div></div></div><p>Your application will need to include the latest release of
+      JasperReports, which at the time of writing was 0.6.1. JasperReports
+      itself depends on the following projects:</p><div class="itemizedlist"><ul type="bullet"><li style="list-style-type: disc"><p>BeanShell</p></li><li style="list-style-type: disc"><p>Commons BeanUtils</p></li><li style="list-style-type: disc"><p>Commons Collections</p></li><li style="list-style-type: disc"><p>Commons Digester</p></li><li style="list-style-type: disc"><p>Commons Logging</p></li><li style="list-style-type: disc"><p>iText</p></li><li style="list-style-type: disc"><p>POI</p></li></ul></div><p>JasperReports also requires a JAXP compliant XML parser.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jasper-reports-configuration"></a>14.7.2.&nbsp;Configuration</h3></div></div><div></div></div><p>To configure JasperReports views in your Spring container configuration
+      you need to define a <tt class="interfacename">ViewResolver</tt> to map view
+      names to the appropriate view class depending on which format you want your
+      report rendered in.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jasper-reports-configuration-resolver"></a>14.7.2.1.&nbsp;Configuring the <tt class="interfacename">ViewResolver</tt></h4></div></div><div></div></div><p>Typically, you will use the <tt class="classname">ResourceBundleViewResolver</tt>
+        to map view names to view classes and files in a properties file.</p><pre class="programlisting">&lt;bean id="viewResolver" class="org.springframework.web.servlet.view.ResourceBundleViewResolver"&gt;
+    &lt;property name="basename" value="views"/&gt;
+&lt;/bean&gt;</pre><p>Here we've configured an instance of the <tt class="classname">ResourceBundleViewResolver</tt>
+        class that will look for view  mappings in the resource bundle with base name
+        <tt class="literal">views</tt>. (The content of this file is described in the next section.)</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jasper-reports-configuration-views"></a>14.7.2.2.&nbsp;Configuring the <tt class="literal">View</tt>s</h4></div></div><div></div></div><p>The Spring Framework contains five different <tt class="interfacename">View</tt>
+        implementations for JasperReports, four of which correspond to one of the four output
+        formats supported by JasperReports, and one that allows for the format to be determined at runtime:</p><div class="table"><a name="view-jasper-reports-configuration-views-classes"></a><p class="title"><b>Table&nbsp;14.2.&nbsp;JasperReports <tt class="interfacename">View</tt> classes</b></p><table summary="JasperReports View classes" border="1"><colgroup><col><col></colgroup><thead><tr><th>Class Name</th><th>Render Format</th></tr></thead><tbody><tr><td><tt class="classname">JasperReportsCsvView</tt></td><td>CSV</td></tr><tr><td><tt class="classname">JasperReportsHtmlView</tt></td><td>HTML</td></tr><tr><td><tt class="classname">JasperReportsPdfView</tt></td><td>PDF</td></tr><tr><td><tt class="classname">JasperReportsXlsView</tt></td><td>Microsoft Excel</td></tr><tr><td><tt class="classname">JasperReportsMultiFormatView</tt></td><td>The view is <a href="view.html#view-jasper-reports-configuration-multiformat-view" title="14.7.2.4.&nbsp;Using JasperReportsMultiFormatView">decided upon at runtime</a></td></tr></tbody></table></div><p>Mapping one of these classes to a view name and a report file is a matter of
+        adding the appropriate entries into the resource bundle configured in the previous
+        section as shown here:</p><pre class="programlisting">simpleReport.class=org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView
+simpleReport.url=/WEB-INF/reports/DataSourceReport.jasper</pre><p>Here you can see that the view with name <tt class="literal">simpleReport</tt>
+        is mapped to the <tt class="classname">JasperReportsPdfView</tt> class, causing the
+        output of this report to be rendered in PDF format. The <tt class="literal">url</tt>
+        property of the view is set to the location of the underlying report file.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jasper-reports-configuration-report-files"></a>14.7.2.3.&nbsp;About Report Files</h4></div></div><div></div></div><p>JasperReports has two distinct types of report file: the design
+        file, which has a <tt class="literal">.jrxml</tt> extension, and the
+        compiled report file, which has a <tt class="literal">.jasper</tt>
+        extension. Typically, you use the JasperReports Ant task to compile
+        your <tt class="literal">.jrxml</tt> design file into a
+        <tt class="literal">.jasper</tt> file before deploying it into your
+        application. With the Spring Framework you can map either of these files to your
+        report file and the framework will take care of compiling the
+        <tt class="literal">.jrxml</tt> file on the fly for you. You should note
+        that after a <tt class="literal">.jrxml</tt> file is compiled by the Spring Framework,
+        the compiled report is cached for the lifetime of the application. To make
+        changes to the file you will need to restart your application.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jasper-reports-configuration-multiformat-view"></a>14.7.2.4.&nbsp;Using <tt class="classname">JasperReportsMultiFormatView</tt></h4></div></div><div></div></div><p>The <tt class="classname">JasperReportsMultiFormatView</tt> allows for
+        report format to be specified at runtime. The actual rendering of the
+        report is delegated to one of the other JasperReports view classes -
+        the <tt class="classname">JasperReportsMultiFormatView</tt> class simply adds
+        a wrapper layer that allows for the exact implementation to be
+        specified at runtime.</p><p>The <tt class="classname">JasperReportsMultiFormatView</tt> class
+        introduces two concepts: the format key and the discriminator key. The
+        <tt class="classname">JasperReportsMultiFormatView</tt> class uses the mapping
+        key to lookup the actual view implementation class and uses the format
+        key to lookup up the mapping key. From a coding perspective you add an
+        entry to your model with the formay key as the key and the mapping key
+        as the value, for example:</p><pre class="programlisting">public ModelAndView handleSimpleReportMulti(HttpServletRequest request,
+HttpServletResponse response) throws Exception {
+
+  String uri = request.getRequestURI();
+  String format = uri.substring(uri.lastIndexOf(".") + 1);
+
+  Map model = getModel();
+  model.put("format", format);
+
+  return new ModelAndView("simpleReportMulti", model);
+}</pre><p>In this example, the mapping key is determined from the
+        extension of the request URI and is added to the model under the
+        default format key: <tt class="literal">format</tt>. If you wish to use a
+        different format key then you can configure this using the
+        <tt class="literal">formatKey</tt> property of the
+        <tt class="classname">JasperReportsMultiFormatView</tt> class.</p><p>By default the following mapping key mappings are configured in
+        <tt class="classname">JasperReportsMultiFormatView</tt>:</p><div class="table"><a name="view-jasper-reports-configuration-multiformat-view-mappings"></a><p class="title"><b>Table&nbsp;14.3.&nbsp;<tt class="classname">JasperReportsMultiFormatView</tt> Default Mapping Key Mappings</b></p><table summary="JasperReportsMultiFormatView Default Mapping Key Mappings" border="1"><colgroup><col><col></colgroup><thead><tr><th>Mapping Key</th><th>View Class</th></tr></thead><tbody><tr><td>csv</td><td><tt class="classname">JasperReportsCsvView</tt></td></tr><tr><td>html</td><td><tt class="classname">JasperReportsHtmlView</tt></td></tr><tr><td>pdf</td><td><tt class="classname">JasperReportsPdfView</tt></td></tr><tr><td>xls</td><td><tt class="classname">JasperReportsXlsView</tt></td></tr></tbody></table></div><p>So in the example above a request to URI /foo/myReport.pdf
+            would be mapped to the <tt class="literal">JasperReportsPdfView</tt> class.
+            You can override the mapping key to view class mappings using the
+            <tt class="literal">formatMappings</tt> property of
+            <tt class="classname">JasperReportsMultiFormatView</tt>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jasper-reports-model"></a>14.7.3.&nbsp;Populating the <tt class="classname">ModelAndView</tt></h3></div></div><div></div></div><p>In order to render your report correctly in the format you have
+      chosen, you must supply Spring with all of the data needed to populate
+      your report. For JasperReports this means you must pass in all report
+      parameters along with the report datasource. Report parameters are
+      simple name/value pairs and can be added be to the
+      <tt class="interfacename">Map</tt> for your model as you would add any name/value
+      pair.</p><p>When adding the datasource to the model you have two approaches to
+      choose from. The first approach is to add an instance of
+      <tt class="classname">JRDataSource</tt> or a <tt class="interfacename">Collection</tt> type to the
+      model <tt class="interfacename">Map</tt> under any arbitrary key. Spring will then
+      locate this object in the model and treat it as the report datasource.
+      For example, you may populate your model like so:</p><pre class="programlisting">private Map getModel() {
+  Map model = new HashMap();
+  Collection beanData = getBeanData();
+  model.put("myBeanData", beanData);
+  return model;
+}</pre><p>The second approach is to add the instance of
+      <tt class="literal">JRDataSource</tt> or <tt class="literal">Collection</tt> under a
+      specific key and then configure this key using the
+      <tt class="literal">reportDataKey</tt> property of the view class. In both
+      cases Spring will instances of <tt class="literal">Collection</tt> in a
+      <tt class="literal">JRBeanCollectionDataSource</tt> instance. For example:</p><pre class="programlisting">private Map getModel() {
+  Map model = new HashMap();
+  Collection beanData = getBeanData();
+  Collection someData = getSomeData();
+  model.put("myBeanData", beanData);
+  model.put("someData", someData);
+  return model;
+}</pre><p>Here you can see that two <tt class="literal">Collection</tt>
+      instances are being added to the model. To ensure that the correct one
+      is used, we simply modify our view configuration as appropriate:</p><pre class="programlisting">simpleReport.class=org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView
+simpleReport.url=/WEB-INF/reports/DataSourceReport.jasper
+simpleReport.reportDataKey=myBeanData</pre><p>Be aware that when using the first approach, Spring will use the
+      first instance of <tt class="literal">JRDataSource</tt> or
+      <tt class="literal">Collection</tt> that it encounters. If you need to place
+      multiple instances of <tt class="literal">JRDataSource</tt> or
+      <tt class="literal">Collection</tt> into the model then you need to use the
+      second approach.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jasper-reports-subreports"></a>14.7.4.&nbsp;Working with Sub-Reports</h3></div></div><div></div></div><p>JasperReports provides support for embedded sub-reports within
+      your master report files. There are a wide variety of mechanisms for
+      including sub-reports in your report files. The easiest way is to hard
+      code the report path and the SQL query for the sub report into your
+      design files. The drawback of this approach is obvious - the values are
+      hard-coded into your report files reducing reusability and making it
+      harder to modify and update report designs. To overcome this you can
+      configure sub-reports declaratively and you can include additional data
+      for these sub-reports directly from your controllers.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jasper-reports-subreports-config-reports"></a>14.7.4.1.&nbsp;Configuring Sub-Report Files</h4></div></div><div></div></div><p>To control which sub-report files are included in a master
+        report using Spring, your report file must be configured to accept
+        sub-reports from an external source. To do this you declare a
+        parameter in your report file like so:</p><pre class="programlisting">&lt;parameter name="ProductsSubReport" class="net.sf.jasperreports.engine.JasperReport"/&gt;</pre><p>Then, you define your sub-report to use this sub-report parameter:</p><pre class="programlisting">&lt;subreport&gt;
+    &lt;reportElement isPrintRepeatedValues="false" x="5" y="25" width="325"
+        height="20" isRemoveLineWhenBlank="true" backcolor="#ffcc99"/&gt;
+    &lt;subreportParameter name="City"&gt;
+        &lt;subreportParameterExpression&gt;&lt;![CDATA[$F{city}]]&gt;&lt;/subreportParameterExpression&gt;
+    &lt;/subreportParameter&gt;
+    &lt;dataSourceExpression&gt;&lt;![CDATA[$P{SubReportData}]]&gt;&lt;/dataSourceExpression&gt;
+    &lt;subreportExpression class="net.sf.jasperreports.engine.JasperReport"&gt;
+                  &lt;![CDATA[$P{ProductsSubReport}]]&gt;&lt;/subreportExpression&gt;
+&lt;/subreport&gt;</pre><p>This defines a master report file that
+        expects the sub-report to be passed in as an instance of
+        <tt class="literal">net.sf.jasperreports.engine.JasperReports</tt> under the
+        parameter <tt class="literal">ProductsSubReport</tt>. When configuring your
+        Jasper view class, you can instruct Spring to load a report file and
+        pass into the JasperReports engine as a sub-report using the
+        <tt class="literal">subReportUrls</tt> property:</p><pre class="programlisting">&lt;property name="subReportUrls"&gt;
+    &lt;map&gt;
+        &lt;entry key="ProductsSubReport" value="/WEB-INF/reports/subReportChild.jrxml"/&gt;
+    &lt;/map&gt;
+&lt;/property&gt;</pre><p>Here, the key of the <tt class="interfacename">Map</tt>
+        corresponds to the name of the sub-report parameter in th report
+        design file, and the entry is the URL of the report file. Spring will
+        load this report file, compiling it if necessary, and will pass into
+        the JasperReports engine under the given key.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="view-jasper-reports-subreports-config-datasources"></a>14.7.4.2.&nbsp;Configuring Sub-Report Data Sources</h4></div></div><div></div></div><p>This step is entirely optional when using Spring configure your
+        sub-reports. If you wish, you can still configure the data source for
+        your sub-reports using static queries. However, if you want Spring to
+        convert data returned in your <tt class="literal">ModelAndView</tt> into
+        instances of <tt class="literal">JRDataSource</tt> then you need to specify
+        which of the parameters in your <tt class="literal">ModelAndView</tt> Spring
+        should convert. To do this configure the list of parameter names using
+        the <tt class="literal">subReportDataKeys</tt> property of the your chosen
+        view class: </p><pre class="programlisting">&lt;property name="subReportDataKeys"
+    value="SubReportData"/&gt;</pre><p> Here, the key you supply MUST
+        correspond to both the key used in your <tt class="literal">ModelAndView</tt>
+        and the key used in your report design file.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="view-jasper-reports-exporter-parameters"></a>14.7.5.&nbsp;Configuring Exporter Parameters</h3></div></div><div></div></div><p>If you have special requirements for exporter configuration -
+      perhaps you want a specific page size for your PDF report, then you can
+      configure these exporter parameters declaratively in your Spring
+      configuration file using the <tt class="literal">exporterParameters</tt>
+      property of the view class. The <tt class="literal">exporterParameters</tt>
+      property is typed as <tt class="interfacename">Map</tt> and in your configuration
+      the key of an entry should be the fully-qualified name of a static field
+      that contains the exporter parameter definition and the value of an
+      entry should be the value you want to assign to the parameter. An
+      example of this is shown below:</p><pre class="programlisting">&lt;bean id="htmlReport" class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"&gt;
+  &lt;property name="url" value="/WEB-INF/reports/simpleReport.jrxml"/&gt;
+  &lt;property name="exporterParameters"&gt;
+    &lt;map&gt;
+      &lt;entry key="net.sf.jasperreports.engine.export.JRHtmlExporterParameter.HTML_FOOTER"&gt;
+        &lt;value&gt;Footer by Spring!
+          &amp;lt;/td&amp;gt;&amp;lt;td width="50%"&amp;gt;&amp;amp;nbsp; &amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;
+          &amp;lt;/table&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;
+        &lt;/value&gt;
+      &lt;/entry&gt;
+    &lt;/map&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</pre><p>Here you can see that the <tt class="classname">JasperReportsHtmlView</tt> is
+      being configured with an exporter parameter for
+      <tt class="literal">net.sf.jasperreports.engine.export.JRHtmlExporterParameter.HTML_FOOTER</tt>
+      which will output a footer in the resulting HTML.</p></div></div></div><!--Begin LoopFuse code--><script xmlns="http://www.w3.org/TR/xhtml1/transitional" src="http://loopfuse.net/webrecorder/js/listen.js" type="text/javascript"></script><script xmlns="http://www.w3.org/TR/xhtml1/transitional" type="text/javascript"> 
+            _lf_cid = "LF_48be82fa";
+            _lf_remora();
+        </script><!--End LoopFuse code--><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="mvc.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="web-integration.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;13.&nbsp;Web MVC framework&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://www.springsource.com/" title="SpringSource">Sponsored by SpringSource</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;15.&nbsp;Integrating with other web frameworks</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

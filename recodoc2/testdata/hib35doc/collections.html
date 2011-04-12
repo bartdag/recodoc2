@@ -1,0 +1,785 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 6. Collection mapping</title><link rel="stylesheet" href="css/hibernate.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="up" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="prev" href="mapping.html" title="Chapter 5. Basic O/R Mapping"/><link rel="next" href="associations.html" title="Chapter 7. Association Mappings"/><link rel="copyright" href="Legal_Notice.html" title="Legal Notice"/></head><body><p id="title"><a href="http://www.hibernate.org" class="site_href"><strong>Hibernate.org</strong></a><a href="http://hibernate.org/Documentation/DocumentationOverview" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="mapping.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="associations.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="collections"/>Chapter 6. Collection mapping</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="collections.html#collections-persistent">6.1. Persistent collections</a></span></dt><dt><span class="section"><a href="collections.html#collections-mapping">6.2. Collection mappings</a></span></dt><dd><dl><dt><span class="section"><a href="collections.html#collections-foreignkeys">6.2.1. Collection foreign keys</a></span></dt><dt><span class="section"><a href="collections.html#collections-elements">6.2.2. Collection elements</a></span></dt><dt><span class="section"><a href="collections.html#collections-indexed">6.2.3. Indexed collections</a></span></dt><dt><span class="section"><a href="collections.html#collections-ofvalues">6.2.4. Collections of values and many-to-many associations</a></span></dt><dt><span class="section"><a href="collections.html#collections-onetomany">6.2.5. One-to-many associations</a></span></dt></dl></dd><dt><span class="section"><a href="collections.html#collections-advancedmappings">6.3. Advanced collection mappings</a></span></dt><dd><dl><dt><span class="section"><a href="collections.html#collections-sorted">6.3.1. Sorted collections</a></span></dt><dt><span class="section"><a href="collections.html#collections-bidirectional">6.3.2. Bidirectional associations</a></span></dt><dt><span class="section"><a href="collections.html#collections-indexedbidirectional">6.3.3. Bidirectional associations with indexed collections</a></span></dt><dt><span class="section"><a href="collections.html#collections-ternary">6.3.4. Ternary associations</a></span></dt><dt><span class="section"><a href="collections.html#collections-idbag">6.3.5. Using an &lt;idbag&gt;</a></span></dt></dl></dd><dt><span class="section"><a href="collections.html#collections-example">6.4. Collection examples</a></span></dt></dl></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="collections-persistent"/>6.1. Persistent collections</h2></div></div></div><p>
+            Hibernate requires that persistent collection-valued fields be declared
+            as an interface type. For example:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_keyword">public</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_type">Product</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;serialNumber</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">Set</span><span class="java_plain">&nbsp;parts&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">HashSet</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">Set</span><span class="java_plain">&nbsp;getParts</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span><span class="java_plain">&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;parts</span><span class="java_separator">;</span><span class="java_plain">&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setParts</span><span class="java_separator">(</span><span class="java_type">Set</span><span class="java_plain">&nbsp;parts</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span><span class="java_plain">&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">parts&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;parts</span><span class="java_separator">;</span><span class="java_plain">&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;getSerialNumber</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span><span class="java_plain">&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;serialNumber</span><span class="java_separator">;</span><span class="java_plain">&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setSerialNumber</span><span class="java_separator">(</span><span class="java_type">String</span><span class="java_plain">&nbsp;sn</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span><span class="java_plain">&nbsp;serialNumber&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;sn</span><span class="java_separator">;</span><span class="java_plain">&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_separator">}</span></pre><p>
+            The actual interface might be <code class="literal">java.util.Set</code>,
+            <code class="literal">java.util.Collection</code>, <code class="literal">java.util.List</code>,
+            <code class="literal">java.util.Map</code>, <code class="literal">java.util.SortedSet</code>,
+            <code class="literal">java.util.SortedMap</code> or anything you like  
+            ("anything you like" means you will have to write an implementation of 
+            <code class="literal">org.hibernate.usertype.UserCollectionType</code>.)
+        </p><p>
+            Notice how the instance variable was initialized with an instance of
+            <code class="literal">HashSet</code>. This is the best way to initialize collection
+            valued properties of newly instantiated (non-persistent) instances. When
+            you make the instance persistent, by calling <code class="literal">persist()</code>
+            for example, Hibernate will actually replace the <code class="literal">HashSet</code>
+            with an instance of Hibernate's own implementation of <code class="literal">Set</code>.
+            Be aware of the following errors:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_plain">&nbsp;cat&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_keyword">new</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_type">DomesticCat</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Cat</span><span class="java_plain">&nbsp;kitten&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">DomesticCat</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_separator">....</span>
+<!--  --><br/><span class="java_type">Set</span><span class="java_plain">&nbsp;kittens&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">HashSet</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">kittens</span><span class="java_separator">.</span><span class="java_plain">add</span><span class="java_separator">(</span><span class="java_plain">kitten</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">cat</span><span class="java_separator">.</span><span class="java_plain">setKittens</span><span class="java_separator">(</span><span class="java_plain">kittens</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">session</span><span class="java_separator">.</span><span class="java_plain">persist</span><span class="java_separator">(</span><span class="java_plain">cat</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">kittens&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;cat</span><span class="java_separator">.</span><span class="java_plain">getKittens</span><span class="java_separator">();</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Okay</span><span class="java_separator">,</span><span class="java_plain">&nbsp;kittens&nbsp;collection&nbsp;is&nbsp;a&nbsp;</span><span class="java_type">Set</span>
+<!--  --><br/><span class="java_separator">(</span><span class="java_type">HashSet</span><span class="java_separator">)</span><span class="java_plain">&nbsp;cat</span><span class="java_separator">.</span><span class="java_plain">getKittens</span><span class="java_separator">();</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Error</span><span class="java_operator">!</span></pre><p>
+            The persistent collections injected by Hibernate behave like
+            <code class="literal">HashMap</code>, <code class="literal">HashSet</code>,
+            <code class="literal">TreeMap</code>, <code class="literal">TreeSet</code> or
+            <code class="literal">ArrayList</code>, depending on the interface type.
+        </p><p>
+            Collections instances have the usual behavior of value types. They are 
+            automatically persisted when referenced by a persistent object and 
+            are automatically deleted when unreferenced. If a collection is passed from one
+            persistent object to another, its elements might be moved from one table to
+            another. Two entities cannot share a reference to the same collection 
+            instance. Due to the underlying relational model, collection-valued properties
+            do not support null value semantics. Hibernate does not distinguish between 
+            a null collection reference and an empty collection.
+        </p><p>
+            Use persistent collections 
+            the same way you use ordinary Java collections. However, please ensure you understand 
+            the semantics of bidirectional associations (these are discussed later).
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="collections-mapping"/>6.2. Collection mappings</h2></div></div></div><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="tip"><h2>Tip</h2><p>
+                There are quite a range of mappings that can be generated for collections that cover
+                many common relational models. We suggest you experiment with the schema generation tool
+                so that you understand how various mapping declarations translate to database tables.
+            </p></div><p>
+            The Hibernate mapping element used for mapping a collection depends upon
+            the type of interface. For example, a <code class="literal">&lt;set&gt;</code> 
+            element is used for mapping properties of type <code class="literal">Set</code>.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_operator">&lt;</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_plain">&nbsp;name</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_literal">&quot;Product&quot;</span><!-- <br/> --><span class="java_operator">&gt;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">&lt;</span><span class="java_plain">id&nbsp;name</span><span class="java_operator">=</span><span class="java_literal">&quot;serialNumber&quot;</span><span class="java_plain">&nbsp;column</span><span class="java_operator">=</span><span class="java_literal">&quot;productSerialNumber&quot;</span><span class="java_operator">/&gt;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">&lt;</span><span class="java_plain">set&nbsp;name</span><span class="java_operator">=</span><span class="java_literal">&quot;parts&quot;</span><span class="java_operator">&gt;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">&lt;</span><span class="java_plain">key&nbsp;column</span><span class="java_operator">=</span><span class="java_literal">&quot;productSerialNumber&quot;</span><span class="java_plain">&nbsp;not</span><span class="java_operator">-</span><span class="java_literal">null</span><span class="java_operator">=</span><span class="java_literal">&quot;true&quot;</span><span class="java_operator">/&gt;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">&lt;</span><span class="java_plain">one</span><span class="java_operator">-</span><span class="java_plain">to</span><span class="java_operator">-</span><span class="java_plain">many&nbsp;</span><span class="java_keyword">class</span><span class="java_operator">=</span><span class="java_literal">&quot;Part&quot;</span><span class="java_operator">/&gt;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">&lt;/</span><span class="java_plain">set</span><span class="java_operator">&gt;</span>
+<!--  --><br/><span class="java_operator">&lt;/</span><span class="java_keyword">class</span><span class="java_operator">&gt;</span></pre><p>
+            Apart from <code class="literal">&lt;set&gt;</code>, there is also 
+            <code class="literal">&lt;list&gt;</code>, <code class="literal">&lt;map&gt;</code>,
+            <code class="literal">&lt;bag&gt;</code>, <code class="literal">&lt;array&gt;</code> and
+            <code class="literal">&lt;primitive-array&gt;</code> mapping elements. The
+            <code class="literal">&lt;map&gt;</code> element is representative:
+        </p><div class="programlistingco"><pre class="programlisting">&lt;map
+    name="prop<span xmlns="" class="co" id="mappingcollection1"><img src="images/org/hibernate/docbook/callouts/1.png" alt="(1)"/></span>ertyName"
+    table="tab<span xmlns="" class="co" id="mappingcollection2"><img src="images/org/hibernate/docbook/callouts/2.png" alt="(2)"/></span>le_name"
+    schema="sc<span xmlns="" class="co" id="mappingcollection3"><img src="images/org/hibernate/docbook/callouts/3.png" alt="(3)"/></span>hema_name"
+    lazy="true<span xmlns="" class="co" id="mappingcollection4"><img src="images/org/hibernate/docbook/callouts/4.png" alt="(4)"/></span>|extra|false"
+    inverse="t<span xmlns="" class="co" id="mappingcollection5"><img src="images/org/hibernate/docbook/callouts/5.png" alt="(5)"/></span>rue|false"
+    cascade="a<span xmlns="" class="co" id="mappingcollection6"><img src="images/org/hibernate/docbook/callouts/6.png" alt="(6)"/></span>ll|none|save-update|delete|all-delete-orphan|delete-orphan"
+    sort="unso<span xmlns="" class="co" id="mappingcollection7"><img src="images/org/hibernate/docbook/callouts/7.png" alt="(7)"/></span>rted|natural|comparatorClass"
+    order-by="<span xmlns="" class="co" id="mappingcollection8"><img src="images/org/hibernate/docbook/callouts/8.png" alt="(8)"/></span>column_name asc|desc"
+    where="arb<span xmlns="" class="co" id="mappingcollection9"><img src="images/org/hibernate/docbook/callouts/9.png" alt="(9)"/></span>itrary sql where condition"
+    fetch="joi<span xmlns="" class="co" id="mappingcollection10"><img src="images/org/hibernate/docbook/callouts/10.png" alt="(10)"/></span>n|select|subselect"
+    batch-size<span xmlns="" class="co" id="mappingcollection11"><img src="images/org/hibernate/docbook/callouts/11.png" alt="(11)"/></span>="N"
+    access="fi<span xmlns="" class="co" id="mappingcollection12"><img src="images/org/hibernate/docbook/callouts/12.png" alt="(12)"/></span>eld|property|ClassName"
+    optimistic<span xmlns="" class="co" id="mappingcollection13"><img src="images/org/hibernate/docbook/callouts/13.png" alt="(13)"/></span>-lock="true|false"
+    mutable="t<span xmlns="" class="co" id="mappingcollection14"><img src="images/org/hibernate/docbook/callouts/14.png" alt="(14)"/></span>rue|false"
+    node="element-name|."
+    embed-xml="true|false"
+&gt;
+
+    &lt;key .... /&gt;
+    &lt;map-key .... /&gt;
+    &lt;element .... /&gt;
+&lt;/map&gt;</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/1.png" alt="1" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">name</code>: the collection property name
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/2.png" alt="2" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">table</code> (optional - defaults to property name): the
+                        name of the collection table. It is not used for one-to-many associations.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/3.png" alt="3" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">schema</code> (optional): the name of a table schema to
+                        override the schema declared on the root element
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/4.png" alt="4" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">lazy</code> (optional - defaults to <code class="literal">true</code>):
+                        disables lazy fetching and specifies that the association is 
+                        always eagerly fetched. It can also be used to enable "extra-lazy" fetching where most 
+                        operations do not initialize the collection. This is suitable for large 
+                        collections.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/5.png" alt="5" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">inverse</code> (optional - defaults to <code class="literal">false</code>):
+                        marks this collection as the "inverse" end of a bidirectional association.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/6.png" alt="6" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">cascade</code> (optional - defaults to <code class="literal">none</code>):
+                        enables operations to cascade to child entities.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/7.png" alt="7" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">sort</code> (optional): specifies a sorted collection with
+                        <code class="literal">natural</code> sort order or a given comparator class.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/8.png" alt="8" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">order-by</code> (optional, JDK1.4 only): specifies a table column or columns
+                        that define the iteration order of the <code class="literal">Map</code>, <code class="literal">Set</code>
+                        or bag, together with an optional <code class="literal">asc</code> or <code class="literal">desc</code>.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/9.png" alt="9" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">where</code> (optional): specifies an arbitrary SQL <code class="literal">WHERE</code>
+                        condition that is used when retrieving or removing the collection. This is useful if the
+                        collection needs to contain only a subset of the available data.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/10.png" alt="10" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">fetch</code> (optional, defaults to <code class="literal">select</code>): chooses
+                        between outer-join fetching, fetching by sequential select, and fetching by sequential
+                        subselect.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/11.png" alt="11" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">batch-size</code> (optional, defaults to <code class="literal">1</code>): specifies a
+                        "batch size" for lazily fetching instances of this collection.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/12.png" alt="12" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">access</code> (optional - defaults to <code class="literal">property</code>): the
+                        strategy Hibernate uses for accessing the collection property value.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/13.png" alt="13" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">optimistic-lock</code> (optional - defaults to <code class="literal">true</code>): 
+                        specifies that changes to the state of the collection results in increments of the
+                        owning entity's version. For one-to-many associations you may want to
+                        disable this setting.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/14.png" alt="14" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">mutable</code> (optional - defaults to <code class="literal">true</code>): 
+                        a value of <code class="literal">false</code> specifies that the elements of the 
+                        collection never change. This allows for minor performance optimization in some cases.
+                    </p></td></tr></table></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="collections-foreignkeys"/>6.2.1. Collection foreign keys</h3></div></div></div><p>
+                Collection instances are distinguished in the database by the foreign key of
+                the entity that owns the collection. This foreign key is referred to as the
+                <span class="emphasis"><em>collection key column</em></span>, or columns, of the collection 
+                table. The collection key column is mapped by the <code class="literal">&lt;key&gt;</code> 
+                element. 
+            </p><p>
+                There can be a nullability constraint on the foreign key column. For most
+                collections, this is implied. For unidirectional one-to-many associations,
+                the foreign key column is nullable by default, so you may need to specify
+                <code class="literal">not-null="true"</code>.
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;productSerialNumber&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                The foreign key constraint can use <code class="literal">ON DELETE CASCADE</code>.
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;productSerialNumber&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">on-delete</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;cascade&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                See the previous chapter for a full definition of the <code class="literal">&lt;key&gt;</code> 
+                element.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="collections-elements"/>6.2.2. Collection elements</h3></div></div></div><p>
+                Collections can contain almost any other Hibernate type, including: basic types,
+                custom types, components and references to other entities. This is an
+                important distinction. An object in a collection might be handled with "value" 
+                semantics (its life cycle fully depends on the collection owner), or it might be a
+                reference to another entity with its own life cycle. In the latter case, only the 
+                "link" between the two objects is considered to be a state held by the collection. 
+            </p><p>
+                The contained type is referred to as the <span class="emphasis"><em>collection element type</em></span>. 
+                Collection elements are mapped by <code class="literal">&lt;element&gt;</code> or
+                <code class="literal">&lt;composite-element&gt;</code>, or in the case of entity references, 
+                with <code class="literal">&lt;one-to-many&gt;</code> or <code class="literal">&lt;many-to-many&gt;</code>. 
+                The first two map elements with value semantics, the next two are used to map entity 
+                associations.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="collections-indexed"/>6.2.3. Indexed collections</h3></div></div></div><p>
+                All collection mappings, except those with set and bag semantics, need an
+                <span class="emphasis"><em>index column</em></span> in the collection table. An index column is a column that maps to an
+                array index, or <code class="literal">List</code> index, or <code class="literal">Map</code> key. The
+                index of a <code class="literal">Map</code> may be of any basic type, mapped with 
+                <code class="literal">&lt;map-key&gt;</code>. It can be an entity reference mapped with 
+                <code class="literal">&lt;map-key-many-to-many&gt;</code>, or it can be a composite type
+                mapped with <code class="literal">&lt;composite-map-key&gt;</code>. The index of an array or 
+                list is always of type <code class="literal">integer</code> and is mapped using the 
+                <code class="literal">&lt;list-index&gt;</code> element. The mapped column contains 
+                sequential integers that are numbered from zero by default.
+            </p><div class="programlistingco"><pre class="programlisting">&lt;list-index
+        column<span xmlns="" class="co" id="index1"><img src="images/org/hibernate/docbook/callouts/1.png" alt="(1)"/></span>="column_name"
+        base="<span xmlns="" class="co" id="index2"><img src="images/org/hibernate/docbook/callouts/2.png" alt="(2)"/></span>0|1|..."/&gt;</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/1.png" alt="1" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">column_name</code> (required): the name of the column holding the
+                        collection index values.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/1.png" alt="1" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">base</code> (optional - defaults to <code class="literal">0</code>): the value
+                        of the index column that corresponds to the first element of the list or array.
+                    </p></td></tr></table></div></div><div class="programlistingco"><pre class="programlisting">&lt;map-key
+        column<span xmlns="" class="co" id="mapkey1"><img src="images/org/hibernate/docbook/callouts/1.png" alt="(1)"/></span>="column_name"
+        formul<span xmlns="" class="co" id="mapkey2"><img src="images/org/hibernate/docbook/callouts/2.png" alt="(2)"/></span>a="any SQL expression"
+        type="<span xmlns="" class="co" id="mapkey3"><img src="images/org/hibernate/docbook/callouts/3.png" alt="(3)"/></span>type_name"
+        node="@attribute-name"
+        length="N"/&gt;</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/1.png" alt="1" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">column</code> (optional): the name of the column holding the
+                        collection index values.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/2.png" alt="2" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">formula</code> (optional): a SQL formula used to evaluate the
+                        key of the map.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/3.png" alt="3" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">type</code> (required): the type of the map keys.
+                    </p></td></tr></table></div></div><div class="programlistingco"><pre class="programlisting">&lt;map-key-many-to-many
+        column<span xmlns="" class="co" id="indexmanytomany1"><img src="images/org/hibernate/docbook/callouts/1.png" alt="(1)"/></span>="column_name"
+        formul<span xmlns="" class="co" id="indexmanytomany2"><img src="images/org/hibernate/docbook/callouts/2.png" alt="(2)"/></span><span xmlns="" class="co" id="indexmanytomany3"><img src="images/org/hibernate/docbook/callouts/3.png" alt="(3)"/></span>a="any SQL expression"
+        class="ClassName"
+/&gt;</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/1.png" alt="1" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">column</code> (optional): the name of the foreign key
+                        column for the collection index values.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/2.png" alt="2" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">formula</code> (optional): a SQ formula used to evaluate the
+                        foreign key of the map key.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/3.png" alt="3" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">class</code> (required): the entity class used as the map key.
+                    </p></td></tr></table></div></div><p>
+                If your table does not have an index column, and you still wish to use <code class="literal">List</code> 
+                as the property type, you can map the property as a Hibernate <span class="emphasis"><em>&lt;bag&gt;</em></span>.
+                A bag does not retain its order when it is retrieved from the database, but it can be 
+                optionally sorted or ordered.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="collections-ofvalues"/>6.2.4. Collections of values and many-to-many associations</h3></div></div></div><p>
+            Any collection of values or many-to-many associations requires a dedicated 
+            <span class="emphasis"><em>collection table</em></span> with a foreign key column or columns, 
+            <span class="emphasis"><em>collection element column</em></span> or columns, and possibly 
+            an index column or columns.
+        </p><p>
+            For a collection of values use the <code class="literal">&lt;element&gt;</code> tag. For example:
+        </p><div class="programlistingco"><pre class="programlisting">&lt;element
+        column<span xmlns="" class="co" id="element1b"><img src="images/org/hibernate/docbook/callouts/1.png" alt="(1)"/></span>="column_name"
+        formul<span xmlns="" class="co" id="element2b"><img src="images/org/hibernate/docbook/callouts/2.png" alt="(2)"/></span>a="any SQL expression"
+        type="<span xmlns="" class="co" id="element3b"><img src="images/org/hibernate/docbook/callouts/3.png" alt="(3)"/></span>typename"
+        length="L"
+        precision="P"
+        scale="S"
+        not-null="true|false"
+        unique="true|false"
+        node="element-name"
+/&gt;</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/1.png" alt="1" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">column</code> (optional): the name of the column holding the
+                        collection element values.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/2.png" alt="2" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">formula</code> (optional): an SQL formula used to evaluate the
+                        element.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/3.png" alt="3" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">type</code> (required): the type of the collection element.
+                    </p></td></tr></table></div></div><p>
+            A <span class="emphasis"><em>many-to-many association</em></span> is specified using the 
+            <code class="literal">&lt;many-to-many&gt;</code> element.
+        </p><div class="programlistingco"><pre class="programlisting">&lt;many-to-many
+        column<span xmlns="" class="co" id="manytomany1"><img src="images/org/hibernate/docbook/callouts/1.png" alt="(1)"/></span>="column_name"
+        formul<span xmlns="" class="co" id="manytomany2"><img src="images/org/hibernate/docbook/callouts/2.png" alt="(2)"/></span>a="any SQL expression"
+        class=<span xmlns="" class="co" id="manytomany3"><img src="images/org/hibernate/docbook/callouts/3.png" alt="(3)"/></span>"ClassName"
+        fetch=<span xmlns="" class="co" id="manytomany4"><img src="images/org/hibernate/docbook/callouts/4.png" alt="(4)"/></span>"select|join"
+        unique<span xmlns="" class="co" id="manytomany5"><img src="images/org/hibernate/docbook/callouts/5.png" alt="(5)"/></span>="true|false"
+        not-fo<span xmlns="" class="co" id="manytomany6"><img src="images/org/hibernate/docbook/callouts/6.png" alt="(6)"/></span>und="ignore|exception"
+        entity<span xmlns="" class="co" id="manytomany7"><img src="images/org/hibernate/docbook/callouts/7.png" alt="(7)"/></span>-name="EntityName"
+        proper<span xmlns="" class="co" id="manytomany8"><img src="images/org/hibernate/docbook/callouts/8.png" alt="(8)"/></span>ty-ref="propertyNameFromAssociatedClass"
+        node="element-name"
+        embed-xml="true|false"
+    /&gt;</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/1.png" alt="1" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">column</code> (optional): the name of the element foreign key column.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/2.png" alt="2" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">formula</code> (optional): an SQL formula used to evaluate the element
+                        foreign key value.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/3.png" alt="3" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">class</code> (required): the name of the associated class.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/4.png" alt="4" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">fetch</code> (optional - defaults to <code class="literal">join</code>):
+                        enables outer-join or sequential select fetching for this association. This
+                        is a special case; for full eager fetching in a single <code class="literal">SELECT</code>
+                        of an entity and its many-to-many relationships to other entities, you would
+                        enable <code class="literal">join</code> fetching,not only of the collection itself,
+                        but also with this attribute on the <code class="literal">&lt;many-to-many&gt;</code>
+                        nested element.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/5.png" alt="5" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">unique</code> (optional): enables the DDL generation of a unique
+                        constraint for the foreign-key column. This makes the association multiplicity
+                        effectively one-to-many.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/6.png" alt="6" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+	                    <code class="literal">not-found</code> (optional - defaults to <code class="literal">exception</code>): 
+	                    specifies how foreign keys that reference missing rows will be handled: 
+	                    <code class="literal">ignore</code> will treat a missing row as a null association.
+	                </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/7.png" alt="7" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">entity-name</code> (optional): the entity name of the associated class,
+                        as an alternative to <code class="literal">class</code>.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/8.png" alt="8" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">property-ref</code> (optional): the name of a property of the associated 
+                        class that is joined to this foreign key. If not specified, the primary key of
+                        the associated class is used.
+                    </p></td></tr></table></div></div><p>
+		Here are some examples.
+	</p><p>
+            A set of strings:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">set</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;names&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">table</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;person_names&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;person_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">element</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;person_name&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;string&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            A bag containing integers with an iteration order determined by the
+            <code class="literal">order-by</code> attribute:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">bag</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sizes&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">table</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;item_sizes&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">order-by</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;size&nbsp;asc&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;item_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">element</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;size&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;integer&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">bag</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            An array of entities, in this case, a many-to-many association:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">array</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;addresses&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">table</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;PersonAddress&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">cascade</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;persist&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;personId&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">list-index</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sortOrder&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">many-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;addressId&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Address&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">array</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            A map from string indices to dates:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;holidays&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">table</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;holidays&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">schema</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;dbo&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">order-by</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;hol_name&nbsp;asc&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map-key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;hol_name&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;string&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">element</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;hol_date&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;date&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">map</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            A list of components (this is discussed in the next chapter):
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">list</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;carComponents&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">table</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;CarComponents&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;carId&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">list-index</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sortOrder&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">composite-element</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;CarComponent&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;price&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;type&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;serialNumber&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;serialNum&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">composite-element</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">list</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="collections-onetomany"/>6.2.5. One-to-many associations</h3></div></div></div><p>
+            A <span class="emphasis"><em>one-to-many association</em></span> links the tables of two classes
+            via a foreign key with no intervening collection table. This mapping loses 
+            certain semantics of normal Java collections:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    An instance of the contained entity class cannot belong to more than
+                    one instance of the collection.
+                </p></li><li><p>
+                    An instance of the contained entity class cannot appear at more than
+                    one value of the collection index.
+                </p></li></ul></div><p>
+            An association from <code class="literal">Product</code> to <code class="literal">Part</code> requires 
+            the existence of a foreign key column and possibly an index column to the <code class="literal">Part</code> 
+            table. A <code class="literal">&lt;one-to-many&gt;</code> tag indicates that this is a one-to-many 
+            association.
+        </p><div class="programlistingco"><pre class="programlisting">&lt;one-to-many
+        class=<span xmlns="" class="co" id="onetomany1"><img src="images/org/hibernate/docbook/callouts/1.png" alt="(1)"/></span>"ClassName"
+        not-fo<span xmlns="" class="co" id="onetomany2"><img src="images/org/hibernate/docbook/callouts/2.png" alt="(2)"/></span>und="ignore|exception"
+        entity<span xmlns="" class="co" id="onetomany3"><img src="images/org/hibernate/docbook/callouts/3.png" alt="(3)"/></span>-name="EntityName"
+        node="element-name"
+        embed-xml="true|false"
+    /&gt;</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/1.png" alt="1" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">class</code> (required): the name of the associated class.
+                    </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/2.png" alt="2" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+		                <code class="literal">not-found</code> (optional - defaults to <code class="literal">exception</code>): 
+		                specifies how cached identifiers that reference missing rows will be handled.
+		                <code class="literal">ignore</code> will treat a missing row as a null association.
+		            </p></td></tr><tr><td width="5%" valign="top" align="left"><p><img xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" src="images/org/hibernate/docbook/callouts/3.png" alt="3" border="0" height="17px" width="17px"/></p></td><td valign="top" align="left"><p>
+                        <code class="literal">entity-name</code> (optional): the entity name of the associated class,
+                        as an alternative to <code class="literal">class</code>.
+                    </p></td></tr></table></div></div><p>
+            The <code class="literal">&lt;one-to-many&gt;</code> element does not need to
+            declare any columns. Nor is it necessary to specify the <code class="literal">table</code>
+            name anywhere.
+        </p><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="warning"><h2>Warning</h2><p>
+            If the foreign key column of a 
+            <code class="literal">&lt;one-to-many&gt;</code> association is declared <code class="literal">NOT NULL</code>, 
+            you must declare the <code class="literal">&lt;key&gt;</code> mapping 
+            <code class="literal">not-null="true"</code> or <span class="emphasis"><em>use a bidirectional association</em></span> 
+            with the collection mapping marked <code class="literal">inverse="true"</code>. See the discussion 
+            of bidirectional associations later in this chapter for more information.
+        </p></div><p>
+            The following example shows a map of <code class="literal">Part</code> entities by name, where
+            <code class="literal">partName</code> is a persistent property of <code class="literal">Part</code>.
+            Notice the use of a formula-based index:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parts&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">cascade</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;all&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;productId&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map-key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">formula</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;partName&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Part&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">map</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="collections-advancedmappings"/>6.3. Advanced collection mappings</h2></div></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="collections-sorted"/>6.3.1. Sorted collections</h3></div></div></div><p>
+            Hibernate supports collections implementing <code class="literal">java.util.SortedMap</code> and
+            <code class="literal">java.util.SortedSet</code>. You must specify a comparator in the mapping file:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">set</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;aliases&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">table</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;person_aliases&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">sort</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;natural&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;person&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">element</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;name&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;string&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;holidays&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">sort</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;my.custom.HolidayComparator&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;year_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map-key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;hol_name&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;string&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">element</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;hol_date&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;date&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">map</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            Allowed values of the <code class="literal">sort</code> attribute are <code class="literal">unsorted</code>,
+            <code class="literal">natural</code> and the name of a class implementing
+            <code class="literal">java.util.Comparator</code>.
+        </p><p>
+            Sorted collections actually behave like <code class="literal">java.util.TreeSet</code> or
+            <code class="literal">java.util.TreeMap</code>.
+        </p><p>
+            If you want the database itself to order the collection elements, use the
+            <code class="literal">order-by</code> attribute of <code class="literal">set</code>, <code class="literal">bag</code>
+            or <code class="literal">map</code> mappings. This solution is only available under
+            JDK 1.4 or higher and is implemented using <code class="literal">LinkedHashSet</code> or
+            <code class="literal">LinkedHashMap</code>. This performs the ordering in the SQL query and 
+            not in the memory.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">set</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;aliases&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">table</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;person_aliases&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">order-by</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;lower(name)&nbsp;asc&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;person&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">element</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;name&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;string&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;holidays&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">order-by</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;hol_date,&nbsp;hol_name&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;year_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map-key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;hol_name&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;string&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">element</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;hol_date&nbsp;type=&quot;</span><span class="xml_attribute_name">date</span><span class="xml_attribute_value">&quot;/</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&lt;/</span><span class="xml_attribute_name">map</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="note"><h2>Note</h2><p>
+            The value of the <code class="literal">order-by</code> attribute is an SQL ordering, not
+            an HQL ordering.
+        </p></div><p>
+            Associations can even be sorted by arbitrary criteria at runtime using a collection
+            <code class="literal">filter()</code>:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_plain">sortedUsers&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;s</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createFilter</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">&nbsp;group</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">getUsers</span><!-- <br/> --><span class="java_separator">(),</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_literal">&quot;order&nbsp;by&nbsp;this.name&quot;</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">).</span><!-- <br/> --><span class="java_plain">list</span><!-- <br/> --><span class="java_separator">();</span></pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="collections-bidirectional"/>6.3.2. Bidirectional associations</h3></div></div></div><p>
+            A <span class="emphasis"><em>bidirectional association</em></span> allows navigation from both
+            "ends" of the association. Two kinds of bidirectional association are
+            supported:
+
+            </p><div class="variablelist"><dl><dt><span class="term">one-to-many</span></dt><dd><p>
+                            set or bag valued at one end and single-valued at the other
+                        </p></dd><dt><span class="term">many-to-many</span></dt><dd><p>
+                            set or bag valued at both ends
+                        </p></dd></dl></div><p>
+
+        </p><p>
+            You can specify a bidirectional many-to-many association by mapping two
+            many-to-many associations to the same database table and declaring one end as
+            <span class="emphasis"><em>inverse</em></span>. You cannot select an
+            indexed collection.
+        </p><p>
+            Here is an example of a bidirectional many-to-many association that illustrates how each category can
+            have many items and each item can be in many categories:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Category&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;CATEGORY_ID&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;...</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">bag</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;items&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">table</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;CATEGORY_ITEM&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;CATEGORY_ID&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">many-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Item&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;ITEM_ID&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">bag</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Item&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;ITEM_ID&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;...</span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_comment">&lt;!--&nbsp;inverse&nbsp;end&nbsp;--&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">bag</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;categories&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">table</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;CATEGORY_ITEM&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">inverse</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;ITEM_ID&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">many-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Category&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;CATEGORY_ID&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">bag</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            Changes made only to the inverse end of the association are <span class="emphasis"><em>not</em></span>
+            persisted. This means that Hibernate has two representations in memory for every
+            bidirectional association: one link from A to B and another link from B to A. This
+            is easier to understand if you think about the Java object model and how
+            a many-to-many relationship in Javais created:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"></span>
+<!--  --><br/><span class="java_plain">category</span><span class="java_separator">.</span><span class="java_plain">getItems</span><span class="java_separator">().</span><span class="java_plain">add</span><span class="java_separator">(</span><span class="java_plain">item</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">The</span><span class="java_plain">&nbsp;category&nbsp;now&nbsp;</span><span class="java_literal">&quot;knows&quot;</span><span class="java_plain">&nbsp;about&nbsp;the&nbsp;relationship</span>
+<!--  --><br/><span class="java_plain">item</span><span class="java_separator">.</span><span class="java_plain">getCategories</span><span class="java_separator">().</span><span class="java_plain">add</span><span class="java_separator">(</span><span class="java_plain">category</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">The</span><span class="java_plain">&nbsp;item&nbsp;now&nbsp;</span><span class="java_literal">&quot;knows&quot;</span><span class="java_plain">&nbsp;about&nbsp;the&nbsp;relationship</span>
+</span>
+<!--  --><br/><span class="java_plain">session</span><span class="java_separator">.</span><span class="java_plain">persist</span><span class="java_separator">(</span><span class="java_plain">item</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">The</span><span class="java_plain">&nbsp;relationship&nbsp;won't&nbsp;be&nbsp;saved</span><span class="java_operator">!</span>
+<!--  --><br/><span class="java_plain">session</span><span class="java_separator">.</span><span class="java_plain">persist</span><span class="java_separator">(</span><span class="java_plain">category</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">The</span><span class="java_plain">&nbsp;relationship&nbsp;will&nbsp;be&nbsp;saved</span></pre><p>
+            The non-inverse side is used to save the in-memory representation to the database.
+        </p><p>
+            You can define a bidirectional one-to-many association by mapping a one-to-many association
+            to the same table column(s) as a many-to-one association and declaring the many-valued
+            end <code class="literal">inverse="true"</code>.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Parent&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;....</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">set</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;children&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">inverse</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;child_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;....</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">many-to-one</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Parent&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            Mapping one end of an association with <code class="literal">inverse="true"</code> does not
+            affect the operation of cascades as these are orthogonal concepts.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="collections-indexedbidirectional"/>6.3.3. Bidirectional associations with indexed collections</h3></div></div></div><p>
+            A bidirectional association where one end is represented as a <code class="literal">&lt;list&gt;</code>
+            or <code class="literal">&lt;map&gt;</code>, requires special consideration. If there is a property of
+            the child class that maps to the index column you can use 
+            <code class="literal">inverse="true"</code> on the collection mapping:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Parent&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;....</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;children&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">inverse</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map-key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;name&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;string&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">map</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;child_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;....</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;name&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">many-to-one</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Parent&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            If there is no such property on the child class, the association cannot be considered
+            truly bidirectional. That is, there is information available at one end of the association that is
+            not available at the other end. In this case, you cannot map the collection 
+            <code class="literal">inverse="true"</code>. Instead, you could use the following mapping:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Parent&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;....</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;children&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map-key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;name&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;string&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">map</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;child_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;....</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">many-to-one</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Parent&quot;</span><span class="xml_plain">&nbsp;</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">insert</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;false&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">update</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;false&quot;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+           Note that in this mapping, the collection-valued end of the association is responsible for 
+           updates to the foreign key. 
+       </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="collections-ternary"/>6.3.4. Ternary associations</h3></div></div></div><p>
+            There are three possible approaches to mapping a ternary association. One approach is to use a 
+            <code class="literal">Map</code> with an association as its index:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;contracts&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;employer_id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map-key-many-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;employee_id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Employee&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Contract&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">map</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;connections&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;incoming_node_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">map-key-many-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;outgoing_node_id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Node&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">many-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;connection_id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Connection&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">map</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            A second approach is to remodel the association as an entity class. This
+            is the most common approach.
+        </p><p>
+            A final alternative is to use composite elements, which will be discussed later. 
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="collections-idbag"/>6.3.5. <code class="literal">Using an &lt;idbag&gt;</code></h3></div></div></div><p>
+            The majority of the many-to-many associations and collections of values
+            shown previously all map to tables with composite keys, even though it has been have suggested 
+	    that entities should have synthetic identifiers (surrogate keys). A
+            pure association table does not seem to benefit much from
+            a surrogate key, although a collection of composite values <span class="emphasis"><em>might</em></span>.
+            It is for this reason that Hibernate provides a feature that allows you to map many-to-many
+            associations and collections of values to a table with a surrogate key.
+        </p><p>
+            The <code class="literal">&lt;idbag&gt;</code> element lets you map a <code class="literal">List</code>
+            (or <code class="literal">Collection</code>) with bag semantics. For example:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">idbag</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;lovers&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">table</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;LOVERS&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">collection-id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;ID&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">type</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;long&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">generator</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sequence&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">collection-id</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;PERSON1&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">many-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;PERSON2&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Person&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">fetch</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;join&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">idbag</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            An <code class="literal">&lt;idbag&gt;</code> has a synthetic id generator,
+            just like an entity class. A different surrogate key is assigned to each collection
+            row. Hibernate does not, however, provide any mechanism for discovering the surrogate key value
+            of a particular row.
+        </p><p>
+            The update performance of an <code class="literal">&lt;idbag&gt;</code> supersedes a regular <code class="literal">&lt;bag&gt;</code>.
+            Hibernate can locate individual rows efficiently and update or delete them
+            individually, similar to a list, map or set.
+        </p><p>
+            In the current implementation, the <code class="literal">native</code> identifier generation
+            strategy is not supported for <code class="literal">&lt;idbag&gt;</code> collection identifiers.
+        </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="collections-example"/>6.4. Collection examples</h2></div></div></div><p>
+            This section covers collection examples. 
+	</p><p>
+	    The following class has a collection of <code class="literal">Child</code> instances:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_keyword">package</span><!-- <br/> --><span class="java_plain">&nbsp;eg</span><!-- <br/> --><span class="java_separator">;</span>
+<!--  --><br/><span class="java_keyword">import</span><span class="java_plain">&nbsp;java</span><span class="java_separator">.</span><span class="java_plain">util</span><span class="java_separator">.</span><span class="java_type">Set</span><span class="java_separator">;</span>
+</span>
+<!--  --><br/><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_keyword">class</span><span class="java_plain">&nbsp;</span><span class="java_type">Parent</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">long</span><span class="java_plain">&nbsp;id</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">Set</span><span class="java_plain">&nbsp;children</span><span class="java_separator">;</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">public</span><span class="java_plain">&nbsp;</span><span class="java_type">long</span><span class="java_plain">&nbsp;getId</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span><span class="java_plain">&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;id</span><span class="java_separator">;</span><span class="java_plain">&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setId</span><span class="java_separator">(</span><span class="java_type">long</span><span class="java_plain">&nbsp;id</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span><span class="java_plain">&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">id</span><span class="java_operator">=</span><span class="java_plain">id</span><span class="java_separator">;</span><span class="java_plain">&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">Set</span><span class="java_plain">&nbsp;getChildren</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span><span class="java_plain">&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;children</span><span class="java_separator">;</span><span class="java_plain">&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">private</span><span class="java_plain">&nbsp;</span><span class="java_type">void</span><span class="java_plain">&nbsp;setChildren</span><span class="java_separator">(</span><span class="java_type">Set</span><span class="java_plain">&nbsp;children</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span><span class="java_plain">&nbsp;</span><span class="java_keyword">this</span><span class="java_separator">.</span><span class="java_plain">children</span><span class="java_operator">=</span><span class="java_plain">children</span><span class="java_separator">;</span><span class="java_plain">&nbsp;</span><span class="java_separator">}</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">....</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">....</span>
+<!--  --><br/><span class="java_separator">}</span></pre><p>
+            If each child has, at most, one parent, the most natural mapping is a 
+            one-to-many association:
+            
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Parent&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">generator</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sequence&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">id</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">set</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;children&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">generator</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sequence&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">id</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;name&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            This maps to the following table definitions:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_plain">create&nbsp;table&nbsp;parent&nbsp;(&nbsp;id&nbsp;bigint&nbsp;not&nbsp;null&nbsp;primary&nbsp;key&nbsp;)</span><br />
+<span class="xml_plain">create&nbsp;table&nbsp;child&nbsp;(&nbsp;id&nbsp;bigint&nbsp;not&nbsp;null&nbsp;primary&nbsp;key,&nbsp;name&nbsp;varchar(255),&nbsp;parent_id&nbsp;bigint&nbsp;)</span><br />
+<span class="xml_plain">alter&nbsp;table&nbsp;child&nbsp;add&nbsp;constraint&nbsp;childfk0&nbsp;(parent_id)&nbsp;references&nbsp;parent</span><br />
+</pre><p>
+            If the parent is <span class="emphasis"><em>required</em></span>, use a bidirectional one-to-many
+            association:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Parent&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">generator</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sequence&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">id</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">set</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;children&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">inverse</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">generator</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sequence&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">id</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;name&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">many-to-one</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Parent&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            Notice the <code class="literal">NOT NULL</code> constraint:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_plain">create&nbsp;table&nbsp;parent&nbsp;(&nbsp;id&nbsp;bigint&nbsp;not&nbsp;null&nbsp;primary&nbsp;key&nbsp;)</span><br />
+<span class="xml_plain">create&nbsp;table&nbsp;child&nbsp;(&nbsp;id&nbsp;bigint&nbsp;not&nbsp;null</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;primary&nbsp;key,</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;varchar(255),</span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parent_id&nbsp;bigint&nbsp;not&nbsp;null&nbsp;)</span><br />
+<span class="xml_plain">alter&nbsp;table&nbsp;child&nbsp;add&nbsp;constraint&nbsp;childfk0&nbsp;(parent_id)&nbsp;references&nbsp;parent</span><br />
+</pre><p>
+            Alternatively, if this association must be unidirectional
+            you can declare the <code class="literal">NOT NULL</code> constraint on the <code class="literal">&lt;key&gt;</code>
+            mapping:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Parent&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">generator</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sequence&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">id</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">set</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;children&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">not-null</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;true&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">generator</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sequence&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">id</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;name&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            On the other hand, if a child has multiple parents, a many-to-many
+            association is appropriate:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Parent&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">generator</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sequence&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">id</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">set</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;children&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">table</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;childset&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">key</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;parent_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">many-to-many</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">column</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;child_id&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">set</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">class</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;Child&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">id</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;id&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">generator</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">class</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;sequence&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">id</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">property</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;name&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">class</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+<span class="xml_plain"></span><br />
+<span class="xml_tag_symbols">&lt;/</span><span class="xml_tag_name">hibernate-mapping</span><span class="xml_tag_symbols">&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            Table definitions:
+        </p><pre class="programlisting">create table parent ( id bigint not null primary key )
+create table child ( id bigint not null primary key, name varchar(255) )
+create table childset ( parent_id bigint not null,
+                        child_id bigint not null,
+                        primary key ( parent_id, child_id ) )
+alter table childset add constraint childsetfk0 (parent_id) references parent
+alter table childset add constraint childsetfk1 (child_id) references child</pre><p>
+            For more examples and a complete explanation of a parent/child relationship mapping,
+            see <a class="xref" href="example-parentchild.html" title="Chapter 22. Example: Parent/Child">Chapter 22, <i>Example: Parent/Child</i></a> for more information.
+        </p><p>
+            Even more complex association mappings are covered
+            in the next chapter.
+        </p></div></div><HR xmlns=""/><a xmlns="" href="legalnotice.html"><p xmlns="http://www.w3.org/1999/xhtml" class="copyright">Copyright © 2004 Red Hat, Inc.</p></a><ul class="docnav"><li class="previous"><a accesskey="p" href="mapping.html"><strong>Prev</strong>Chapter 5. Basic O/R Mapping</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="associations.html"><strong>Next</strong>Chapter 7. Association Mappings</a></li></ul></body></html>

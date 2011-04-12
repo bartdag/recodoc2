@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import re
+import unicodedata
 
 
 CAMELCASE_TOKEN = re.compile(r'((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z]))')
@@ -17,3 +18,11 @@ def smart_decode(s):
 
 def tokenize(s):
     return CAMELCASE_TOKEN.sub(' ', s).split()
+
+
+def normalize(uni_str):
+    '''Ensures that a unicode string does not have strange characters.
+       Necessary with lxml because it does not handle encoding well...'''
+    if uni_str is None:
+        return None
+    return unicodedata.normalize('NFKD', uni_str)
