@@ -16,7 +16,7 @@ from project.actions import create_project_local, create_project_db,\
 from doc.actions import create_doc_local, get_doc_path, list_doc_local,\
                             create_doc_db, list_doc_db, sync_doc,\
                             clear_doc_elements, parse_doc
-from doc.models import Document
+from doc.models import Document, Page, Section
 
 
 class DocSetup(TestCase):
@@ -114,7 +114,7 @@ class DocParser(TransactionTestCase):
         clean_test_dir()
 
     @transaction.autocommit
-    def test_generic_parse_doc(self):
+    def test_docbook_parse_ht4_doc(self):
         pname = 'project1'
         release = '3.0'
         dname = 'manual'
@@ -126,6 +126,99 @@ class DocParser(TransactionTestCase):
                 'file://' + test_doc) 
         create_doc_db('project1', 'manual', '3.0', '',
                 'doc.syncer.generic_syncer.SingleURLSyncer',
-                'doc.parser.generic_parser.GenericParser')
+                'doc.parser.common_parsers.NewDocBookParser')
         sync_doc(pname, dname, release)
-        parse_doc(pname, dname, release)
+        document = parse_doc(pname, dname, release, False)
+        
+        page = Page.objects.filter(document=document).filter(
+                title='Chapter 2. Connection management').all()[0]
+        self.assertEqual('/html/body', page.xpath)
+        self.assertEqual(23, page.sections.count())
+
+        section = Section.objects.filter(page=page).filter(
+                number='2.3.1.').all()[0]
+        self.assertEqual('2.3.1. Route computation', section.title)
+        self.assertEqual(180, section.word_count)
+        self.assertEqual('2.3.', section.parent.number)
+
+        # With code snippets:
+        section = Section.objects.filter(page=page).filter(
+                number='2.5.').all()[0]
+        self.assertEqual('2.5. Socket factories', section.title)
+        self.assertEqual(110, section.word_count)
+        self.assertEqual('2.', section.parent.number)
+        self.assertTrue(section.parent.parent is None)
+
+    def test_docbook_parse_sp25_doc(self):
+        pname = 'project1'
+        release = '3.0'
+        dname = 'manual'
+        test_doc = os.path.join(settings.TESTDATA, 'spring25doc',
+            'index.html')
+        test_doc = os.path.normpath(test_doc)
+        create_doc_local(pname, dname, release,
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'file://' + test_doc) 
+        create_doc_db('project1', 'manual', '3.0', '',
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'doc.parser.common_parsers.NewDocBookParser')
+        print('Syncing Doc')
+        sync_doc(pname, dname, release)
+        print('Synced Doc')
+
+        document = parse_doc(pname, dname, release, False)
+        
+        page = Page.objects.filter(document=document).filter(
+                title='Chapter 22. Email').all()[0]
+        self.assertEqual('/html/body', page.xpath)
+        self.assertEqual(11, page.sections.count())
+
+        section = Section.objects.filter(page=page).filter(
+                number='22.3.1.1.').all()[0]
+        self.assertEqual('22.3.1.1. Attachments', section.title)
+        self.assertEqual(78, section.word_count)
+        self.assertEqual('22.3.1.', section.parent.number)
+
+        section = Section.objects.filter(page=page).filter(
+                number='22.2.').all()[0]
+        self.assertEqual('22.2. Usage', section.title)
+        self.assertEqual(50, section.word_count)
+        self.assertEqual('22.', section.parent.number)
+        self.assertTrue(section.parent.parent is None)
+
+    def test_docbook_parse_hib3_doc(self):
+        pname = 'project1'
+        release = '3.0'
+        dname = 'manual'
+        test_doc = os.path.join(settings.TESTDATA, 'hib35doc',
+            'index.html')
+        test_doc = os.path.normpath(test_doc)
+        create_doc_local(pname, dname, release,
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'file://' + test_doc) 
+        create_doc_db('project1', 'manual', '3.0', '',
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'doc.parser.common_parsers.NewDocBookParser')
+        print('Syncing doc')
+        sync_doc(pname, dname, release)
+        print('Synced doc')
+
+        document = parse_doc(pname, dname, release, False)
+        
+        page = Page.objects.filter(document=document).filter(
+                title='Chapter 12. Transactions and Concurrency').all()[0]
+        self.assertEqual('/html/body', page.xpath)
+        self.assertEqual(18, page.sections.count())
+
+        section = Section.objects.filter(page=page).filter(
+                number='12.3.4.').all()[0]
+        self.assertEqual('12.3.4. Customizing automatic versioning', section.title)
+        self.assertEqual(274, section.word_count)
+        self.assertEqual('12.3.', section.parent.number)
+
+        section = Section.objects.filter(page=page).filter(
+                number='12.5.').all()[0]
+        self.assertEqual('12.5. Connection release modes', section.title)
+        self.assertEqual(361, section.word_count)
+        self.assertEqual('12.', section.parent.number)
+        self.assertTrue(section.parent.parent is None)

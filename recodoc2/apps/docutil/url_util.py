@@ -126,9 +126,10 @@ def get_local_url(base_url, url):
 
     if not base_url:
         return url
-    else:
-        base_url = get_sanitized_directory(base_url)
+
+    base_url = get_sanitized_directory(base_url)
     url_path = urlparse.urlparse(url).path[1:]
+
     destination_url = urlparse.urljoin(base_url, url_path)
     (_, ext) = os.path.splitext(destination_url)
 

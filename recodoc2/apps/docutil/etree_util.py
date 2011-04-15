@@ -3,18 +3,23 @@ from lxml import etree
 from docutil.str_util import normalize
 
 XTEXT = etree.XPath("string()")
-XSCRIPTS = etree.XPath("script")
+XSCRIPTS = etree.XPath(".//script")
 
 
-def get_word_count(element):
-    word_count = len(XTEXT(element).split())
+def clean_tree(tree):
+    etree.strip_elements(tree, 'script', with_tail=False)
 
-    # Remove script content because they are counted in the previous
-    # statement.
-    for script_element in XSCRIPTS(element):
-        word_count -= len(XTEXT(script_element).split())
+
+def get_word_count(elements):
+    word_count = 0
+    for element in elements:
+        word_count += len(XTEXT(element).split())
 
     return word_count
+
+
+def get_word_count_text(text):
+    return len(text.split())
 
 
 class XPathList(object):

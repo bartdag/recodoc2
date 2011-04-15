@@ -11,6 +11,28 @@ import docutil.cache_util as cu
 import docutil.etree_util as eu
 
 
+page_test = '''
+<html>
+<head>
+<title>Hello World</title>
+</head>
+<body>
+<h1>Hello World 2 3 4 <script>document.write('hello a')</script>5<h1>
+<p>
+<div>Hello</div>
+<div>Yo <script> document.write(); document.write();</script>
+deleitou
+</div>
+FooBar!
+</p>
+<p>
+Hillo!
+</p>
+</body>
+</html>
+'''.encode('utf-8')
+
+
 class EtreeUtilTest(TestCase):
     @classmethod
     def setUpClass(self):
@@ -21,8 +43,8 @@ class EtreeUtilTest(TestCase):
         page.close()
         encoding = cc.get_encoding(content)
         self.parser = etree.HTMLParser(remove_comments=True, encoding=encoding)
-        self.tree = etree.fromstring(content, self.parser)
-        
+        self.tree = etree.fromstring(content, self.parser).getroottree()
+
     def test_xpathlist(self):
         xpathlist = eu.XPathList(['//h1[1]', '//title[1]', '//h2[1]'])
         element = xpathlist.get_element(self.tree)
@@ -38,14 +60,35 @@ class EtreeUtilTest(TestCase):
         self.assertEqual(12, len(xpath.get_elements(self.tree)))
         self.assertEqual('2.2. Connection persistence',
                 xpath.get_text_from_parent(self.tree, 1))
+        element = xpath.get_element(self.tree, 1)
+        self.assertEqual('2.2. Connection persistence',
+                xpath.get_text(element, 1))
 
     def test_hierarchy(self):
         xpath = eu.HierarchyXPath('//div[@class="chapter"]',
                 'div[@class="section"]')
-        text = xpath.get_text_from_parent(self.tree) 
+        text = xpath.get_text_from_parent(self.tree)
         self.assertEqual(39, len(text.split()))
         element = xpath.get_element(self.tree)
         self.assertEqual(2, len(xpath.get_element_as_list(element)))
+
+    def test_word_count(self):
+        encoding = cc.get_encoding(page_test)
+        parser = etree.HTMLParser(remove_comments=True, encoding=encoding)
+        tree = etree.fromstring(page_test, parser).getroottree()
+        eu.clean_tree(tree)
+
+        h1 = eu.SingleXPath('//h1[1]')
+        h1_element = h1.get_element(tree)
+        wc = eu.get_word_count(h1.get_element_as_list(h1_element))
+        print(h1.get_text(h1_element))
+        self.assertEqual(6, wc)
+
+        body = eu.SingleXPath('//body[1]')
+        body_element = body.get_element(tree)
+        wc = eu.get_word_count(body.get_element_as_list(body_element))
+        print(body.get_text(body_element))
+        self.assertEqual(11, wc)
 
 
 class JavaUtilTest(TestCase):
@@ -208,7 +251,7 @@ class CacheUtilTest(TestCase):
             'p', 'k2', func2, [1, 5]))
 
         cu.clear_cache()
-        
+
         self.assertEqual(3, cu.get_value(
             'p', 'k', func1, None))
         self.assertEqual('6', cu.get_value(

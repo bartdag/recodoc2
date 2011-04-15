@@ -85,18 +85,13 @@ class Section(SourceElement):
     number = models.CharField(max_length=20, blank=True, null=True)
     '''Represent the section number, if available (e.g., 1.1)'''
 
-    is_orphan = models.BooleanField(default=False)
-    '''att.'''
-
     parent = models.ForeignKey('self', blank=True, null=True,
             related_name='children')
-
     '''att.'''
 
     code_references = generic.GenericRelation(SingleCodeReference,
             content_type_field="local_content_type",
             object_id_field="local_object_id")
-
     '''att.'''
 
     code_snippets = generic.GenericRelation(CodeSnippet,
@@ -126,14 +121,14 @@ class DocumentStatus(object):
 class DocumentPage(object):
     '''Represents a documentation page. Used by the syncer.
     '''
-    def __init__(self, url = None, local_url = None, links = None):
+    def __init__(self, url=None, local_url=None, links=None):
         self.url = url
         self.local_url = local_url
         if links is None:
             self.links = []
         else:
             self.links = links
-            
+
 
 class DocumentLink(object):
     '''Represents a link in a documentation page. Used by the syncer.

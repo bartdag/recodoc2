@@ -36,7 +36,7 @@ def create_doc_db(pname, dname, release, url, syncer, parser):
     document = Document(title=dname, project_release=prelease, url=url,
             parser=parser, syncer=syncer)
     document.save()
-
+    return document
 
 def list_doc_db(pname):
     docs = []
@@ -80,7 +80,7 @@ def clear_doc_elements(pname, dname, release):
 
 
 @transaction.autocommit
-def parse_doc(pname, dname, release):
+def parse_doc(pname, dname, release, parse_refs=True):
     prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
             filter(release=release)[0]
     document = Document.objects.filter(project_release=prelease).\
@@ -88,4 +88,6 @@ def parse_doc(pname, dname, release):
     doc_key = dname + release
     model = load_model(pname, DOC_PATH, doc_key)
     progress_monitor = CLIProgressMonitor()
-    parse(document, model.pages, progress_monitor)
+    parse(document, model.pages, parse_refs, progress_monitor)
+
+    return document

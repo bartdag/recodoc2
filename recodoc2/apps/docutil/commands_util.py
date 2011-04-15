@@ -116,8 +116,12 @@ def get_file_from(url):
             file_from = urllib2.urlopen(url)
             break
         except:
-            trial += 1
-            time.sleep(1)
+            # Do not wait for local url.
+            if is_local(url):
+                break
+            else:
+                trial += 1
+                time.sleep(1)
 
     if file_from == None:
         logger.exception('Error happened while opening url {0}'.format(url))

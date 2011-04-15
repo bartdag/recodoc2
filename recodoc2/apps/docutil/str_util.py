@@ -25,4 +25,22 @@ def normalize(uni_str):
        Necessary with lxml because it does not handle encoding well...'''
     if uni_str is None:
         return None
+    elif not isinstance(uni_str, unicode):
+        uni_str = smart_decode(uni_str)
     return unicodedata.normalize('NFKD', uni_str)
+
+
+def find_list(original, to_find):
+    '''Finds all ocurrences of a string and return a list of the positions.'''
+
+    indexes = []
+    index = 0
+    size = len(original)
+    while index < size:
+        index = original.find(to_find, index)
+        if (index > -1):
+            indexes.append(index)
+            index += 1
+        else:
+            break
+    return indexes
