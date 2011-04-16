@@ -213,10 +213,12 @@ class GenericParser(object):
 
     def _create_section(self, page, load, section_element, text):
         tree = load.tree
-        title = self.xsectiontitle.get_text_from_parent(section_element)
+        title = \
+            self.xsectiontitle.get_text_from_parent(section_element).strip()
         xpath = tree.getpath(section_element)
-        number = self._get_section_number(page, load, section_element, title,
-                xpath)
+        number = \
+            self._get_section_number(page, load, section_element, title,
+                xpath).strip()
         word_count = get_word_count_text(text)
         section = Section(
                 page=page,

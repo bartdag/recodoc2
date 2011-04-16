@@ -124,7 +124,7 @@ def get_file_from(url):
                 time.sleep(1)
 
     if file_from == None:
-        logger.exception('Error happened while opening url {0}'.format(url))
+        logger.info('Error happened while opening url {0}'.format(url))
         raise RecoDocError('Error downloading {0}'.format(url))
     elif trial > 0:
         print('At least it was worth it')
@@ -170,7 +170,7 @@ def get_file_from_real_browser(url):
             time.sleep(1)
 
     if file_from == None:
-        logger.exception('Error happened while opening url {0}'.format(url))
+        logger.info('Error happened while opening url {0}'.format(url))
         raise RecoDocError('Error downloading {0}'.format(url))
     elif trial > 0:
         print('At least it was worth it')
@@ -219,7 +219,7 @@ def download_file(file_from_path, file_to_path, force=False, binary=False,
         else:
             shutil.copyfileobj(file_from, file_to)
     except:
-        logger.exception('Error while downloading a file: {0}'.format(
+        logger.info('Error while downloading a file: {0}'.format(
             url))
         if os.path.exists(file_to_path):
             os.remove(file_to_path)

@@ -67,7 +67,7 @@ class GenericSyncer(object):
     def page_error(self, input_url, pages):
         local_url = get_local_url(self.output_url,
                 get_url_without_hash(input_url))
-        self.logger.exception(
+        self.logger.info(
             'This page could not be downloaded: {0} in {1}'.format(
                 input_url, local_url))
         error_page = DocumentPage(input, None, [])
@@ -182,7 +182,7 @@ class GenericSyncer(object):
                 else:
                     continue
             except:
-                self.logger.exception('This image could not be downloaded: {0}'
+                self.logger.info('This image could not be downloaded: {0}'
                 ' in {1}'.format(urlparse.urljoin(url, src), url))
 
 

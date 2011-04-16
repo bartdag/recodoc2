@@ -149,6 +149,7 @@ class DocParser(TransactionTestCase):
         self.assertEqual('2.', section.parent.number)
         self.assertTrue(section.parent.parent is None)
 
+    @unittest.skip('Usually works.')
     def test_docbook_parse_sp25_doc(self):
         pname = 'project1'
         release = '3.0'
@@ -186,6 +187,7 @@ class DocParser(TransactionTestCase):
         self.assertEqual('22.', section.parent.number)
         self.assertTrue(section.parent.parent is None)
 
+    @unittest.skip('Usually works.')
     def test_docbook_parse_hib3_doc(self):
         pname = 'project1'
         release = '3.0'
@@ -222,3 +224,79 @@ class DocParser(TransactionTestCase):
         self.assertEqual(361, section.word_count)
         self.assertEqual('12.', section.parent.number)
         self.assertTrue(section.parent.parent is None)
+
+    def test_maven_parse_joda162_doc(self):
+        pname = 'project1'
+        release = '3.0'
+        dname = 'manual'
+        test_doc = os.path.join(settings.TESTDATA, 'joda162doc',
+            'index.html')
+        test_doc = os.path.normpath(test_doc)
+        create_doc_local(pname, dname, release,
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'file://' + test_doc) 
+        create_doc_db('project1', 'manual', '3.0', '',
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'doc.parser.common_parsers.MavenParser')
+        print('Syncing doc')
+        sync_doc(pname, dname, release)
+        print('Synced doc')
+
+        document = parse_doc(pname, dname, release, False)
+        
+        page = Page.objects.filter(document=document).filter(
+                title='User Guide').all()[0]
+        self.assertEqual('/html/body', page.xpath)
+        self.assertEqual(35, page.sections.count())
+
+        section = Section.objects.filter(page=page).filter(
+                title='Direct access').all()[0]
+        self.assertEqual('Direct access', section.title)
+        self.assertEqual(109, section.word_count)
+        self.assertEqual('', section.number)
+        self.assertEqual('Input and Output', section.parent.title)
+        self.assertEqual(162, section.parent.word_count)
+
+        section = Section.objects.filter(page=page).filter(
+                title='Advanced features').all()[0]
+        self.assertEqual('Advanced features', section.title)
+        self.assertEqual(2, section.word_count)
+        self.assertTrue(section.parent is None)
+
+    def test_maven_parse_htclient_doc(self):
+        pname = 'project1'
+        release = '3.0'
+        dname = 'manual'
+        test_doc = os.path.join(settings.TESTDATA, 'httpclient31doc',
+            'userguide.html')
+        test_doc = os.path.normpath(test_doc)
+        create_doc_local(pname, dname, release,
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'file://' + test_doc) 
+        create_doc_db('project1', 'manual', '3.0', '',
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'doc.parser.common_parsers.MavenParser')
+        print('Syncing doc')
+        sync_doc(pname, dname, release)
+        print('Synced doc')
+
+        document = parse_doc(pname, dname, release, False)
+        
+        page = Page.objects.filter(document=document).filter(
+                title='HttpClient exception handling guide').all()[0]
+        self.assertEqual('/html/body', page.xpath)
+        self.assertEqual(22, page.sections.count())
+
+        section = Section.objects.filter(page=page).filter(
+                title='Idempotent methods').all()[0]
+        self.assertEqual('Idempotent methods', section.title)
+        self.assertEqual(113, section.word_count)
+        self.assertEqual('', section.number)
+        self.assertEqual('HTTP transport safety', section.parent.title)
+
+        section = Section.objects.filter(page=page).filter(
+                title='Custom exception handler').all()[0]
+        self.assertEqual('Custom exception handler', section.title)
+        self.assertEqual('', section.number)
+        self.assertEqual(132, section.word_count)
+        self.assertTrue(section.parent is None)

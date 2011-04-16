@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from copy import deepcopy
 from lxml import etree
 from docutil.str_util import normalize
 
@@ -50,7 +51,7 @@ class XPathList(object):
         return elems
 
     def get_text_from_parent(self, parent, index=0):
-        text = None
+        text = ''
         elem = self.get_element(parent, index)
         if elem is not None:
             text = self.xtext(elem)
@@ -83,7 +84,7 @@ class SingleXPath(object):
             return []
 
     def get_text_from_parent(self, parent, index=0):
-        text = None
+        text = ''
         elem = self.get_element(parent, index)
         if elem is not None:
             text = self.xtext(elem)
@@ -109,17 +110,23 @@ class HierarchyXPath(SingleXPath):
         return elements
 
     def get_text_from_parent(self, parent, index=0):
-        text = None
+        text = ''
         elem = self.get_element(parent, index)
         if elem is not None:
             text = self.get_text(elem)
         return normalize(text)
 
     def get_text(self, element):
-        stop = self.first_filter(element)
-        text = ''
-        for child in element:
-            if child not in stop:
-                text += self.xtext(child)
-                text += ' '
+        '''Computes the text of this element by creating a deepcopy of the
+           element, removing the bad children, getting the text 
+           representation.
+           
+           This is quite inefficient, but it's the best way to get a good
+           representation of the text in a hierarchical section.'''
+        new_element = deepcopy(element)
+        bad_elements = self.first_filter(new_element)
+        for bad_element in bad_elements:
+            if bad_element in new_element:
+                new_element.remove(bad_element)
+        text = self.xtext(new_element)
         return normalize(text)
