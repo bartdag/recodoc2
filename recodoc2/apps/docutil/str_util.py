@@ -44,3 +44,7 @@ def find_list(original, to_find):
         else:
             break
     return indexes
+
+
+def clean_for_re(original):
+    return original.replace('\n', ' ')
