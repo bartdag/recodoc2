@@ -3,7 +3,6 @@ import os
 from lxml import etree
 from django.test import TestCase
 from django.conf import settings
-from docutil.java_util import clean_java_name
 import docutil.url_util as uu
 import docutil.commands_util as cc
 import docutil.str_util as su
@@ -27,6 +26,30 @@ FooBar!
 </p>
 <p>
 Hillo!
+</p>
+</body>
+</html>
+'''.encode('utf-8')
+
+page_test2 = '''
+<html>
+<head>
+<title>Hello World</title>
+</head>
+<body>
+<h1>Hello World 2 3 4 <script>document.write('hello a')</script>5<h1>
+<p>
+<div>Hello</div>
+<div>
+Hello World <tt>foobar</tt>. This is nice. Yo.
+</div>
+<div>
+Hello World <code>foo</code>. This is <code>foo</code>. Yo.
+</div>
+<div>
+Hello World foo. This is <b>foo</b>. Yo.
+</div>
+FooBar!
 </p>
 </body>
 </html>
@@ -90,20 +113,38 @@ class EtreeUtilTest(TestCase):
         print(body.get_text(body_element))
         self.assertEqual(11, wc)
 
+    def test_get_text_context(self):
+        encoding = cc.get_encoding(page_test2)
+        parser = etree.HTMLParser(remove_comments=True, encoding=encoding)
+        tree = etree.fromstring(page_test2, parser).getroottree()
+        eu.clean_tree(tree)
+        
+        tt = tree.xpath('//tt[1]')[0]
+        text_context = eu.get_text_context(tt)
+        self.assertEqual('Hello World foobar. This is nice. Yo.', text_context)
 
-class JavaUtilTest(TestCase):
-    def test_java_name(self):
-        to_test = [
-            ('java.lang.String', 'java.lang.String', 'String'),
-            ('String', 'String', 'String'),
-            ('p1.Foo$Fa', 'p1.Foo.Fa', 'Fa'),
-            ('p1.Foo$Fa<p2.String,int>', 'p1.Foo.Fa', 'Fa'),
-            ('p1.Bar[[]]', 'p1.Bar', 'Bar'),
-            ]
-        for (original, fqn, simple) in to_test:
-            (simple2, fqn2) = clean_java_name(original)
-            self.assertEqual(simple, simple2)
-            self.assertEqual(fqn, fqn2)
+    def test_get_sentence(self):
+        encoding = cc.get_encoding(page_test2)
+        parser = etree.HTMLParser(remove_comments=True, encoding=encoding)
+        tree = etree.fromstring(page_test2, parser).getroottree()
+        eu.clean_tree(tree)
+        
+        tt = tree.xpath('//tt[1]')[0]
+        text_context = eu.get_text_context(tt)
+        sentence = eu.get_sentence(tt, 'foobar', text_context)
+        self.assertEqual('Hello World foobar.', sentence)
+
+        # Test when there are more than one match!
+        code = tree.xpath('//code[2]')[0]
+        text_context = eu.get_text_context(code)
+        sentence = eu.get_sentence(code, 'foo', text_context)
+        self.assertEqual('This is foo.', sentence)
+
+        # Test when there are more than one match, but wrong markup (sorry...)
+        b = tree.xpath('//b[1]')[0]
+        text_context = eu.get_text_context(b)
+        sentence = eu.get_sentence(b, 'foo', text_context)
+        self.assertEqual('Hello World foo.', sentence)
 
 
 class CommandsUtilTest(TestCase):
@@ -197,6 +238,21 @@ class StrUtilTest(TestCase):
 
         for i in inputs:
             self.assertEqual(i[1], su.tokenize(i[0]))
+
+    def test_find_sentence(self):
+        p1 = 'Hello world. This is luis. Come and get me.'
+        index1 = p1.find('world')
+        index2 = p1.find('is')
+        index3 = p1.find('Come')
+        self.assertEqual('Hello world.', su.find_sentence(p1, index1, index1 +
+            len('world')))
+        self.assertEqual('This is luis.', su.find_sentence(p1, index2, index2 +
+            len('is')))
+        self.assertEqual('Come and get me.', su.find_sentence(p1, index3, index3 +
+            len('Come')))
+
+        p2 = 'Hello world'
+        self.assertEqual('Hello world', su.find_sentence(p2, 0, len('Hello')))
 
 
 def func1():

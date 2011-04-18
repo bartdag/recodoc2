@@ -10,7 +10,7 @@ from py4j.java_gateway import JavaGateway
 from codebase.models import CodeElementKind, CodeElement, MethodElement,\
         ParameterElement, FieldElement
 from docutil.progress_monitor import NullProgressMonitor
-from docutil.java_util import clean_java_name
+from codeutil.java_element import clean_java_name
 
 JAVA_PARSER = 'java'
 PARSER_WORKER = 4

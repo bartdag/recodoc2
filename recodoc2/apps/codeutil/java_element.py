@@ -1,10 +1,37 @@
 from __future__ import unicode_literals
 import re
+from codeutil.parser import create_match
 import docutil.str_util as su
 
 
+### FUNCTIONS ###
 
-### METHODS ###
+def clean_java_name(name):
+    """Given a name, returns a tuple containing the simple name and the fully
+    qualified name. Removes all array or generic artifacts.
+    """
+    # Replaces inner class artifact
+    clean_name_fqn = name.replace('$','.')
+
+    # Clean Array
+    index = clean_name_fqn.find('[')
+    if index > -1:
+        clean_name_fqn = clean_name_fqn[:index]
+
+    # Clean Generic
+    index = clean_name_fqn.find('<')
+    if index > -1:
+        clean_name_fqn = clean_name_fqn[:index]
+    
+    dot_index = clean_name_fqn.rfind('.')
+    clean_name_simple = clean_name_fqn
+    if dot_index > -1:
+        clean_name_simple = clean_name_fqn[dot_index+1:]
+        
+    return (clean_name_simple, clean_name_fqn)
+
+
+### REGEX METHODS ###
 
 # Text Parsing
 METHOD_SIGNATURE_TARGET_RE = re.compile(r'''
@@ -213,7 +240,7 @@ CONSTRUCTOR_CALL_RE = re.compile(r'''
     ''', re.VERBOSE)
 
 
-### TYPES ###
+### REGEX TYPES ###
 
 FQN_RE = re.compile(r'''
     [a-zA-Z]           # Do not begin with numbers or _ or -
@@ -306,7 +333,7 @@ ANONYMOUS_CLASS_DECLARATION_RE = re.compile(r'''
     ''', re.VERBOSE)
 
 
-### FIELDS ###
+### REGEX FIELDS ###
 
 CONSTANT_RE = re.compile(r'''
     [A-Z]               # Do not begin with numbers or _ or -
@@ -326,3 +353,135 @@ def is_class_body(text):
     new_text = su.clean_for_re(text)
     return ANONYMOUS_CLASS_DECLARATION_RE.match(new_text) is not None or\
            METHOD_DECLARATION_RE.match(new_text)
+
+
+### Code Reference Identification and Classification ###
+
+class ClassMethodStrategy(object):
+
+    priority = 50
+    
+    def match(self, text):
+        matches = set()
+        for m in SIMPLE_CALL_TARGET_RE.finditer(text):
+            matches.add(
+                    create_match(
+                        (m.start(), m.end(), 'class', self.priority),
+                        [(m.start(), m.end(), 'method', self.priority)]))
+        for m in METHOD_SIGNATURE_TARGET_RE.finditer(text):
+            matches.add(
+                    create_match(
+                        (m.start(), m.end(), 'class', self.priority),
+                        [(m.start(), m.end(), 'method', self.priority)]))
+        for m in CALL_CHAIN_TARGET_RE.finditer(text):
+            call_chain = text[m.start():m.end()]
+            offset = m.start()
+            children = []
+            for child_match in SIMPLE_CALL_NO_TARGET_RE.finditer(call_chain):
+                children.append(
+                        (child_match.start() + offset,
+                         child_match.end() + offset,
+                         'method', self.priority))
+            
+            # Basically, the first child should still refer to the container    
+            first_child = [(m.start(), m.end(), 'method', self.priority)]
+            matches.add(
+                    create_match(
+                        (m.start(), m.end(), 'class', self.priority), 
+                        first_child + children[1:]))
+        return matches
+
+        
+class MethodStrategy(object):
+    
+    priority = 25
+    
+    def match(self, text):
+        matches = set()
+        for m in SIMPLE_CALL_RE.finditer(text):
+            matches.add(
+                    create_match(
+                        (m.start(), m.end(), 'method', self.priority)))
+        for m in METHOD_SIGNATURE_RE.finditer(text):
+            matches.add(
+                    create_match(
+                        (m.start(), m.end(), 'method', self.priority)))
+        for m in CALL_CHAIN_RE.finditer(text):
+            call_chain = text[m.start():m.end()]
+            offset = m.start()
+            children = []
+            for child_match in SIMPLE_CALL_NO_TARGET_RE.finditer(call_chain):
+                children.append(
+                        (child_match.start() + offset,
+                         child_match.end() + offset,
+                         'method',
+                         self.priority))
+                
+            # Basically, children[0] is == m except that the target
+            # would not be there
+            matches.add(
+                    create_match(
+                        (m.start(), m.end(), 'method', self.priority),
+                        children[1:]))
+        for m in METHOD_DECLARATION_STRICT_RE.finditer(text):
+            matches.add(
+                    create_match(
+                        (m.start(), m.end(), 'method', self.priority)))
+        return matches
+    
+
+class FieldStrategy(object):
+
+    priority = 25
+    
+    def match(self, text):
+        matches = set()
+        for m in FQN_RE.finditer(text):
+            (simple, _) = clean_java_name(m.group(0))
+            if len(simple) > 0:
+                if simple[0].islower() or CONSTANT_RE.match(simple):
+                    matches.add(
+                        create_match(
+                            (m.start(), m.end(), 'class', self.priority),
+                            [(m.start(), m.end(), 'field', self.priority)]))
+        for m in CONSTANT_RE.finditer(text):
+            matches.add(
+                    create_match(
+                        (m.start(), m.end(), 'field', self.priority)))
+        return matches
+
+
+class OtherStrategy(object):
+
+    priority = 15
+    
+    def match(self, text):
+        matches = set()
+        for m in FQN_RE.finditer(text):
+            matches.add(
+                    create_match((m.start(), m.end(), 'class', self.priority)))
+        for m in CAMEL_CASE_1_RE.finditer(text):
+            matches.add(
+                    create_match((m.start(), m.end(), 'class', self.priority)))
+        for m in CAMEL_CASE_2_RE.finditer(text):
+            matches.add(
+                    create_match((m.start(), m.end(), 'class', self.priority)))
+        for m in CAMEL_CASE_3_RE.finditer(text):
+            matches.add(
+                    create_match((m.start(), m.end(), 'class', self.priority)))
+        for m in CAMEL_CASE_4_RE.finditer(text):
+            matches.add(
+                    create_match((m.start(), m.end(), 'class', self.priority)))
+        return matches
+
+
+class AnnotationStrategy(object):
+
+    priority = 25
+    
+    def match(self, text):
+        matches = set()
+        for m in ANNOTATION_RE.finditer(text):
+            matches.add(
+                    create_match((m.start(), m.end(), 'annotation', self.priority)))
+        return matches

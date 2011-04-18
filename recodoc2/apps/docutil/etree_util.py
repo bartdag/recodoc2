@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from copy import deepcopy
 from lxml import etree
-from docutil.str_util import normalize
+from docutil.str_util import normalize, find_list, find_sentence
 
 XTEXT = etree.XPath("string()")
 XSCRIPTS = etree.XPath(".//script")
@@ -21,6 +21,48 @@ def get_word_count(elements):
 
 def get_word_count_text(text):
     return len(text.split())
+
+
+def get_text(element, xtext=XTEXT):
+    return normalize(xtext(element))
+
+
+def get_text_context(element, xtext=XTEXT):
+    text = ''
+    parent = element.getparent()
+    if parent is not None:
+        text = get_text(parent, xtext)
+    return text.strip()
+
+
+def get_sentence(element, element_text, text_context, xtext=XTEXT):
+    indexes = find_list(text_context, element_text)
+    size = len(indexes)
+    if size == 0:
+        return ''
+    elif size == 1:
+        return find_sentence(text_context, indexes[0],
+                indexes[0] + len(element_text))
+    else:
+        parent = element.getparent()
+        child_index_in_parent = 0
+        for child in parent:
+            if child == element:
+                break
+            else:
+                temp_text = normalize(xtext(child))
+                # We have encountered a child that has the same text,
+                # so the first index is not the good one.
+                if temp_text.find(element_text) != -1:
+                    child_index_in_parent += 1
+
+        if child_index_in_parent < size:
+            return find_sentence(text_context, indexes[child_index_in_parent],
+                    indexes[child_index_in_parent] + len(element_text))
+        else:
+            # Something went wrong.
+            return find_sentence(element_text, indexes[0],
+                    indexes[0] + len(element_text))
 
 
 class XPathList(object):
@@ -118,9 +160,9 @@ class HierarchyXPath(SingleXPath):
 
     def get_text(self, element):
         '''Computes the text of this element by creating a deepcopy of the
-           element, removing the bad children, getting the text 
+           element, removing the bad children, getting the text
            representation.
-           
+
            This is quite inefficient, but it's the best way to get a good
            representation of the text in a hierarchical section.'''
         new_element = deepcopy(element)

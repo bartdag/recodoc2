@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 import unittest
 import logging
-from codeutil.tests_java_element import JavaElementRETest
+from codeutil.tests_java_element import JavaElementRETest, \
+    JavaElementFunctionsTest
 
 
 logger = logging.getLogger("docs")
@@ -11,5 +12,7 @@ logger.addHandler(logging.StreamHandler())
 
 def suite():
     suite1 = unittest.TestLoader().loadTestsFromTestCase(JavaElementRETest)
-    alltests = unittest.TestSuite([suite1,])
+    suite2 = \
+        unittest.TestLoader().loadTestsFromTestCase(JavaElementFunctionsTest)
+    alltests = unittest.TestSuite([suite1, suite2, ])
     return alltests

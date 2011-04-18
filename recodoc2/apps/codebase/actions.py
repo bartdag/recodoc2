@@ -7,13 +7,16 @@ import enchant
 from py4j.java_gateway import JavaGateway
 from django.conf import settings
 from django.db import transaction
+from codeutil.parser import is_valid_match, find_parent_reference
+from codeutil.other_element import IGNORE_KIND
 from docutil.str_util import tokenize
 from docutil.cache_util import get_value, get_codebase_key
 from docutil.commands_util import mkdir_safe, import_clazz
 from docutil.progress_monitor import CLILockProgressMonitor
 from project.models import ProjectRelease
 from project.actions import CODEBASE_PATH
-from codebase.models import CodeBase, CodeElementKind, CodeElement
+from codebase.models import CodeBase, CodeElementKind, CodeElement,\
+        SingleCodeReference
 
 
 PROJECT_FILE = '.project'
@@ -28,6 +31,10 @@ PREFIX_CODEBASE_CODE_WORDS = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
                                 'cb_codewords'])
 PREFIX_PROJECT_CODE_WORDS = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
                                 'project_codewords'])
+
+JAVA_KINDS_HIERARCHY = {'field':'class','method':'class','method parameter':'method'}
+XML_KINDS_HIERARCHY = {'xml attribute':'xml element','xml attribute value':'xml attribute'}
+ALL_KINDS_HIERARCHIES = dict(JAVA_KINDS_HIERARCHY, **XML_KINDS_HIERARCHY)
 
 logger = logging.getLogger("recodoc.codebase.actions")
 
@@ -308,3 +315,46 @@ def get_project_code_words(project):
             [codebases]
             )
 
+
+def parse_single_references(text, kind_hint, kind_strategies, kinds,
+        kinds_hierarchies):
+    single_refs = []
+    matches = []
+    filtered = set()
+    avoided = False
+
+    kind_text = kind_hint.kind
+    if kind_text not in kind_strategies:
+        kind_text = 'unknown'
+        
+    for strategy in kind_strategies[kind_text]:
+        matches.extend(strategy.match(text))
+    
+    # Sort to get correct indices
+    sorted(matches, key = lambda tuple: tuple[0][0])
+    
+    for match in matches:
+        if is_valid_match(match, matches, filtered):
+            (parent, children) = match
+            content = text[parent[0]:parent[1]][0:500]
+            if parent[2] == IGNORE_KIND:
+                avoided = True
+                continue
+            main_reference = SingleCodeReference(content=content,kind_hint = kinds[parent[2]])
+            main_reference.save()
+            single_refs.append(main_reference)
+            for i,child in enumerate(children):
+                content = text[child[0]:child[1]][0:500]
+                parent_reference = find_parent_reference(child[2],single_refs)
+                child_reference = SingleCodeReference(content=content,kind_hint = kinds[child[2]], child_index=i, parent_reference=parent_reference)
+                child_reference.save()
+                single_refs.append(child_reference)
+        else:
+            filtered.add(match)
+            
+    if len(single_refs) == 0 and not avoided:
+        code = SingleCodeReference(content=text,kind_hint = kind_hint)
+        code.save()
+        single_refs.append(code)
+        
+    return single_refs

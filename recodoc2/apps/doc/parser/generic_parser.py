@@ -6,11 +6,19 @@ from traceback import print_exc
 from lxml import etree
 from django.db import transaction, connection
 from django.conf import settings
+from codeutil.xml_element import XMLStrategy
+from codeutil.java_element import ClassMethodStrategy, MethodStrategy,\
+        FieldStrategy, OtherStrategy, AnnotationStrategy
+from codeutil.other_element import FileStrategy, IgnoreStrategy,\
+        IGNORE_KIND, EMAIL_PATTERN_RE, URL_PATTERN_RE
+from docutil.str_util import clean_breaks
 from docutil.etree_util import clean_tree, get_word_count, XPathList,\
-        SingleXPath, HierarchyXPath, get_word_count_text
+        SingleXPath, HierarchyXPath, get_word_count_text, get_text
 from docutil.url_util import get_relative_url
 from docutil.commands_util import chunk_it, import_clazz, get_encoding
 from docutil.progress_monitor import NullProgressMonitor
+from codebase.models import CodeElementKind, SingleCodeReference, Snippet,\
+        DOCUMENT_SOURCE
 from codebase.actions import get_project_code_words
 from doc.models import Document, Page, Section
 
@@ -81,6 +89,7 @@ class ParserLoad(object):
         self.code_words = None
         self.sections = None
         self.parse_refs = True
+        self.mix_mode = False
 
 
 class GenericParser(object):
@@ -102,9 +111,50 @@ class GenericParser(object):
     xsectiontitle = None
     '''XPath to find a section title. Required'''
 
+    xcoderef = None
+    '''XPath to find single code references. Required'''
+
+    xsnippet = None
+    '''XPath to find code snippets. Required'''
+
+    strategies = [FileStrategy(), XMLStrategy(), ClassMethodStrategy(),
+            MethodStrategy(), FieldStrategy(), AnnotationStrategy(),
+            OtherStrategy(), IgnoreStrategy([EMAIL_PATTERN_RE, URL_PATTERN_RE])]
+    '''Strategies used to identify any code reference'''
+
+    method_strategies = [ClassMethodStrategy(), MethodStrategy()]
+    '''Strategies used to identify code references to methods'''
+    
+    class_strategies = [AnnotationStrategy(), OtherStrategy()]
+    '''Strategies used to identify code references to classes'''
 
     def __init__(self, document_pk):
         self.document = Document.objects.get(pk=document_pk)
+        self.kinds = {}
+        self.kinds['unknown'] = CodeElementKind.objects.get(kind='unknown')
+        self.kinds['class'] = CodeElementKind.objects.get(kind='class')
+        self.kinds['annotation'] =  CodeElementKind.objects.get(kind='annotation')
+        self.kinds['method'] = CodeElementKind.objects.get(kind='method')
+        self.kinds['field'] = CodeElementKind.objects.get(kind='field')
+        self.kinds['xml element'] = CodeElementKind.objects.get(kind='xml element')
+        self.kinds['xml attribute'] = CodeElementKind.objects.get(kind='xml attribute')
+        self.kinds['xml attribute value'] = \
+        CodeElementKind.objects.get(kind='xml attribute value')
+        self.kinds['xml file'] = CodeElementKind.objects.get(kind='xml file')
+        self.kinds['hbm file'] = CodeElementKind.objects.get(kind='hbm file')
+        self.kinds['ini file'] = CodeElementKind.objects.get(kind='ini file')
+        self.kinds['conf file'] = CodeElementKind.objects.get(kind='conf file')
+        self.kinds['properties file'] = \
+                CodeElementKind.objects.get(kind='properties file')
+        self.kinds['log file'] = CodeElementKind.objects.get(kind='log file')
+        self.kinds['jar file'] = CodeElementKind.objects.get(kind='jar file')
+        self.kinds['java file'] = CodeElementKind.objects.get(kind='java file')
+        self.kinds['python file'] = CodeElementKind.objects.get(kind='python file')
+        self.kind_strategies = {
+                'method' : self.method_strategies,
+                'class' : self.class_strategies,
+                'unknown' : self.strategies
+                }
 
     def parse_page(self, page_local_path, page_url, parse_refs=True):
         try:
@@ -238,5 +288,77 @@ class GenericParser(object):
     def _find_section_parent(self, page, load, sections, sections_number):
         pass
 
-    def _parse_section_references(page, load, sections):
+    def _parse_section_references(self, page, load, sections):
+        s_code_references = []
+        snippets = []
+
+        # get code references
+        code_ref_elements = self.xcoderef.get_elements(load.tree)
+        for i, code_ref_element in enumerate(code_ref_elements):
+            self._add_code_ref(i, code_ref_element, page, load,
+                    s_code_references)
+
+        # get snippets
+        snippet_elements = self.xsnippet.get_elements(load.tree)
+        for i, snippet_element in enumerate(snippet_elements):
+            self._add_code_snippet(i, snippet_element, page, load, snippets)
+
+        # Find section for each code reference
+        for code_reference in s_code_references:
+            self._find_section(code_reference, sections, True, page, load)
+
+        # Find snippet for each code reference
+        for snippet in snippets:
+            self._find_section(snippet, sections, False, page, load)
+
+        # Process sections' title
+        for section in sections:
+            self._process_title_references(page, load, section)
+
+        # If mix mode, analyze the text of each section.
+        if load.mix_mode:
+            for section in sections:
+                self._process_mix_mode(page, load, section)
+
+    def _add_code_ref(self, index, code_ref_element, page, load,
+            s_code_references):
+        text = self.xcoderef.get_text(code_ref_element)
+        text = clean_breaks(text).strip()
+
+        # Not significant
+        if len(text) < 2 or text.isdigit():
+            return
+        
+        text_context = None
+        sentence = None
+
+        (text, kind_hint) = self._get_code_ref_kind(code_ref_element, text)
+        
+        xpath = load.tree.getpath(code_ref_element)
+        for code in self._process_single_ref(text, kind_hint):
+            code.xpath = xpath
+            code.file_path = page.file_path
+            code.source = DOCUMENT_SOURCE
+            code.index = index
+            code.sentence = sentence
+            code.paragraph = text_context
+            code.save()
+            code.project_releases.add(page.document.project_release)
+            s_code_references.append(code)
+
+
+    def _add_code_snippet(self, index, snippet_element, page, load, snippets):
         pass
+
+    def _find_section(self, reference, sections, is_single_ref, page, load):
+        pass
+
+    def _process_title_references(self, page, load, section):
+        pass
+
+    def _process_mix_mode(self, page, load, section):
+        pass
+
+    def _get_code_ref_kind(self, code_ref_tag, text):
+        kind_hint = self.kinds['unknown']
+        return (text, kind_hint)

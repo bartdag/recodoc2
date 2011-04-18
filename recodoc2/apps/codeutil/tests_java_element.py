@@ -29,3 +29,19 @@ class JavaElementRETest(TestCase):
         match = it.next()
         self.assertIsNone(match.group('dot'))
         self.assertEqual('FooBar', match.group('class'))
+
+
+class JavaElementFunctionsTest(TestCase):
+
+    def test_java_name(self):
+        to_test = [
+            ('java.lang.String', 'java.lang.String', 'String'),
+            ('String', 'String', 'String'),
+            ('p1.Foo$Fa', 'p1.Foo.Fa', 'Fa'),
+            ('p1.Foo$Fa<p2.String,int>', 'p1.Foo.Fa', 'Fa'),
+            ('p1.Bar[[]]', 'p1.Bar', 'Bar'),
+            ]
+        for (original, fqn, simple) in to_test:
+            (simple2, fqn2) = je.clean_java_name(original)
+            self.assertEqual(simple, simple2)
+            self.assertEqual(fqn, fqn2)

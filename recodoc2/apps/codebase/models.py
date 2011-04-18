@@ -5,6 +5,10 @@ from django.contrib.contenttypes.models import ContentType
 from project.models import ProjectRelease, SourceElement
 
 
+DOCUMENT_SOURCE = 'd'
+
+CHANNEL_SOURCE = 's'
+
 LANGUAGES = [
     ('j', 'Java'),
     ('p', 'Python'),
@@ -18,8 +22,8 @@ LANGUAGES = [
 '''Language of an element'''
 
 SOURCE_TYPE = (
-    ('d', 'Document'),
-    ('s', 'Support Channel'),
+    (DOCUMENT_SOURCE, 'Document'),
+    (CHANNEL_SOURCE, 'Support Channel'),
 )
 
 
@@ -332,6 +336,14 @@ class SingleCodeReference(SourceElement):
 
     child_index = models.IntegerField(null=True, blank=True, default=0)
     '''Reference order w.r.t. parent reference'''
+
+    # E.g., title of section, message, thread...
+    title_content_type = models.ForeignKey(ContentType, null=True, blank=True,
+            related_name='title_code_references')
+    title_object_id = models.PositiveIntegerField(null=True, blank=True)
+    title_context = generic.GenericForeignKey('title_content_type',
+            'title_object_id')
+    '''Reference in titles.'''
 
     # E.g., section, message
     local_content_type = models.ForeignKey(ContentType, null=True, blank=True,
