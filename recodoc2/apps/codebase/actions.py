@@ -8,7 +8,11 @@ from py4j.java_gateway import JavaGateway
 from django.conf import settings
 from django.db import transaction
 from codeutil.parser import is_valid_match, find_parent_reference
-from codeutil.other_element import IGNORE_KIND
+from codeutil.xml_element import XMLStrategy
+from codeutil.java_element import ClassMethodStrategy, MethodStrategy,\
+        FieldStrategy, OtherStrategy, AnnotationStrategy
+from codeutil.other_element import FileStrategy, IgnoreStrategy,\
+        IGNORE_KIND, EMAIL_PATTERN_RE, URL_PATTERN_RE
 from docutil.str_util import tokenize
 from docutil.cache_util import get_value, get_codebase_key
 from docutil.commands_util import mkdir_safe, import_clazz
@@ -32,8 +36,13 @@ PREFIX_CODEBASE_CODE_WORDS = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
 PREFIX_PROJECT_CODE_WORDS = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
                                 'project_codewords'])
 
-JAVA_KINDS_HIERARCHY = {'field':'class','method':'class','method parameter':'method'}
-XML_KINDS_HIERARCHY = {'xml attribute':'xml element','xml attribute value':'xml attribute'}
+JAVA_KINDS_HIERARCHY = {'field': 'class',
+                        'method': 'class',
+                        'method parameter': 'method'}
+
+XML_KINDS_HIERARCHY = {'xml attribute': 'xml element',
+                       'xml attribute value': 'xml attribute'}
+
 ALL_KINDS_HIERARCHIES = dict(JAVA_KINDS_HIERARCHY, **XML_KINDS_HIERARCHY)
 
 logger = logging.getLogger("recodoc.codebase.actions")
@@ -271,7 +280,7 @@ def clear_code_elements(pname, bname, release, parser_name='-1'):
 
 def compute_code_words(codebase):
     d = enchant.Dict('en-US')
-    
+
     elements = CodeElement.objects.\
             filter(codebase=codebase).\
             filter(kind__is_type=True).\
@@ -287,10 +296,10 @@ def compute_code_words(codebase):
             simple_name = simple_name.lower()
             if not d.check(simple_name):
                 code_words.add(simple_name)
-    
+
     logger.debug('Computed {0} code words for codebase {1}'.format(
         len(code_words), str(codebase)))
-                
+
     return code_words
 
 
@@ -316,8 +325,52 @@ def get_project_code_words(project):
             )
 
 
-def parse_single_references(text, kind_hint, kind_strategies, kinds,
-        kinds_hierarchies):
+def get_default_kind_dict():
+    kinds = {}
+    kinds['unknown'] = CodeElementKind.objects.get(kind='unknown')
+    kinds['class'] = CodeElementKind.objects.get(kind='class')
+    kinds['annotation'] = CodeElementKind.objects.get(kind='annotation')
+    kinds['method'] = CodeElementKind.objects.get(kind='method')
+    kinds['field'] = CodeElementKind.objects.get(kind='field')
+    kinds['xml element'] = CodeElementKind.objects.get(kind='xml element')
+    kinds['xml attribute'] = CodeElementKind.objects.get(kind='xml attribute')
+    kinds['xml attribute value'] = \
+    CodeElementKind.objects.get(kind='xml attribute value')
+    kinds['xml file'] = CodeElementKind.objects.get(kind='xml file')
+    kinds['hbm file'] = CodeElementKind.objects.get(kind='hbm file')
+    kinds['ini file'] = CodeElementKind.objects.get(kind='ini file')
+    kinds['conf file'] = CodeElementKind.objects.get(kind='conf file')
+    kinds['properties file'] = \
+            CodeElementKind.objects.get(kind='properties file')
+    kinds['log file'] = CodeElementKind.objects.get(kind='log file')
+    kinds['jar file'] = CodeElementKind.objects.get(kind='jar file')
+    kinds['java file'] = CodeElementKind.objects.get(kind='java file')
+    kinds['python file'] = CodeElementKind.objects.get(kind='python file')
+    return kinds
+
+
+def get_java_strategies():
+    strategies = [
+            FileStrategy(), XMLStrategy(), ClassMethodStrategy(),
+            MethodStrategy(), FieldStrategy(), AnnotationStrategy(),
+            OtherStrategy(), IgnoreStrategy([EMAIL_PATTERN_RE, URL_PATTERN_RE])
+            ]
+
+    method_strategies = [ClassMethodStrategy(), MethodStrategy()]
+
+    class_strategies = [AnnotationStrategy(), OtherStrategy()]
+
+    kind_strategies = {
+                'method': method_strategies,
+                'class': class_strategies,
+                'unknown': strategies
+                }
+
+    return kind_strategies
+
+
+def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
+        kinds_hierarchies=ALL_KINDS_HIERARCHIES, save_index=False):
     single_refs = []
     matches = []
     filtered = set()
@@ -326,35 +379,51 @@ def parse_single_references(text, kind_hint, kind_strategies, kinds,
     kind_text = kind_hint.kind
     if kind_text not in kind_strategies:
         kind_text = 'unknown'
-        
+
     for strategy in kind_strategies[kind_text]:
         matches.extend(strategy.match(text))
-    
+
     # Sort to get correct indices
-    sorted(matches, key = lambda tuple: tuple[0][0])
-    
+    matches.sort(key=lambda match: match[0][0])
+
+    index = 0
+
     for match in matches:
         if is_valid_match(match, matches, filtered):
             (parent, children) = match
-            content = text[parent[0]:parent[1]][0:500]
+            content = text[parent[0]:parent[1]]
             if parent[2] == IGNORE_KIND:
                 avoided = True
                 continue
-            main_reference = SingleCodeReference(content=content,kind_hint = kinds[parent[2]])
+            main_reference = SingleCodeReference(
+                    content=content,
+                    kind_hint=kinds[parent[2]])
+            if save_index:
+                main_reference.index = index
             main_reference.save()
             single_refs.append(main_reference)
-            for i,child in enumerate(children):
-                content = text[child[0]:child[1]][0:500]
-                parent_reference = find_parent_reference(child[2],single_refs)
-                child_reference = SingleCodeReference(content=content,kind_hint = kinds[child[2]], child_index=i, parent_reference=parent_reference)
+
+            # Process children
+            for i, child in enumerate(children):
+                content = text[child[0]:child[1]]
+                parent_reference = find_parent_reference(child[2], single_refs,
+                                kinds_hierarchies)
+                child_reference = SingleCodeReference(
+                        content=content,
+                        kind_hint=kinds[child[2]],
+                        child_index=i,
+                        parent_reference=parent_reference)
+                if save_index:
+                    child_reference.index = index
                 child_reference.save()
                 single_refs.append(child_reference)
+            index += 1
         else:
             filtered.add(match)
-            
+
     if len(single_refs) == 0 and not avoided:
-        code = SingleCodeReference(content=text,kind_hint = kind_hint)
+        code = SingleCodeReference(content=text, kind_hint=kind_hint)
         code.save()
         single_refs.append(code)
-        
+
     return single_refs

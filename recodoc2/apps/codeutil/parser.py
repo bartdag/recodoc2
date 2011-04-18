@@ -11,13 +11,13 @@ def is_valid_match(match, matches, filtered):
     '''Returns true if the match is new, bigger than an existing match,
        and not encapsulated by an existing match.'''
     valid = True
-    ((start, end, _, priority), _) = match
+    ((start, end, kind, priority), _) = match
     for temp_match in matches:
         if temp_match in filtered or match == temp_match:
             continue
-        ((temp_start, temp_end, _, temp_priority), _) = temp_match
+        ((temp_start, temp_end, temp_kind, temp_priority), _) = temp_match
         if start == temp_start and end == temp_end:
-            if priority < temp_priority:
+            if priority <= temp_priority:
                 # More precise classification exists.
                 valid = False
                 break

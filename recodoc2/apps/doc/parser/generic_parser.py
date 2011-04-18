@@ -6,11 +6,6 @@ from traceback import print_exc
 from lxml import etree
 from django.db import transaction, connection
 from django.conf import settings
-from codeutil.xml_element import XMLStrategy
-from codeutil.java_element import ClassMethodStrategy, MethodStrategy,\
-        FieldStrategy, OtherStrategy, AnnotationStrategy
-from codeutil.other_element import FileStrategy, IgnoreStrategy,\
-        IGNORE_KIND, EMAIL_PATTERN_RE, URL_PATTERN_RE
 from docutil.str_util import clean_breaks
 from docutil.etree_util import clean_tree, get_word_count, XPathList,\
         SingleXPath, HierarchyXPath, get_word_count_text, get_text
@@ -19,7 +14,8 @@ from docutil.commands_util import chunk_it, import_clazz, get_encoding
 from docutil.progress_monitor import NullProgressMonitor
 from codebase.models import CodeElementKind, SingleCodeReference, Snippet,\
         DOCUMENT_SOURCE
-from codebase.actions import get_project_code_words
+from codebase.actions import get_project_code_words, get_default_kind_dict,\
+        parse_single_code_references, get_java_strategies
 from doc.models import Document, Page, Section
 
 DEFAULT_POOL_SIZE = 4
@@ -117,44 +113,10 @@ class GenericParser(object):
     xsnippet = None
     '''XPath to find code snippets. Required'''
 
-    strategies = [FileStrategy(), XMLStrategy(), ClassMethodStrategy(),
-            MethodStrategy(), FieldStrategy(), AnnotationStrategy(),
-            OtherStrategy(), IgnoreStrategy([EMAIL_PATTERN_RE, URL_PATTERN_RE])]
-    '''Strategies used to identify any code reference'''
-
-    method_strategies = [ClassMethodStrategy(), MethodStrategy()]
-    '''Strategies used to identify code references to methods'''
-    
-    class_strategies = [AnnotationStrategy(), OtherStrategy()]
-    '''Strategies used to identify code references to classes'''
-
     def __init__(self, document_pk):
         self.document = Document.objects.get(pk=document_pk)
-        self.kinds = {}
-        self.kinds['unknown'] = CodeElementKind.objects.get(kind='unknown')
-        self.kinds['class'] = CodeElementKind.objects.get(kind='class')
-        self.kinds['annotation'] =  CodeElementKind.objects.get(kind='annotation')
-        self.kinds['method'] = CodeElementKind.objects.get(kind='method')
-        self.kinds['field'] = CodeElementKind.objects.get(kind='field')
-        self.kinds['xml element'] = CodeElementKind.objects.get(kind='xml element')
-        self.kinds['xml attribute'] = CodeElementKind.objects.get(kind='xml attribute')
-        self.kinds['xml attribute value'] = \
-        CodeElementKind.objects.get(kind='xml attribute value')
-        self.kinds['xml file'] = CodeElementKind.objects.get(kind='xml file')
-        self.kinds['hbm file'] = CodeElementKind.objects.get(kind='hbm file')
-        self.kinds['ini file'] = CodeElementKind.objects.get(kind='ini file')
-        self.kinds['conf file'] = CodeElementKind.objects.get(kind='conf file')
-        self.kinds['properties file'] = \
-                CodeElementKind.objects.get(kind='properties file')
-        self.kinds['log file'] = CodeElementKind.objects.get(kind='log file')
-        self.kinds['jar file'] = CodeElementKind.objects.get(kind='jar file')
-        self.kinds['java file'] = CodeElementKind.objects.get(kind='java file')
-        self.kinds['python file'] = CodeElementKind.objects.get(kind='python file')
-        self.kind_strategies = {
-                'method' : self.method_strategies,
-                'class' : self.class_strategies,
-                'unknown' : self.strategies
-                }
+        self.kinds = get_default_kind_dict()
+        self.kind_strategies = get_java_strategies()
 
     def parse_page(self, page_local_path, page_url, parse_refs=True):
         try:
@@ -335,7 +297,8 @@ class GenericParser(object):
         (text, kind_hint) = self._get_code_ref_kind(code_ref_element, text)
         
         xpath = load.tree.getpath(code_ref_element)
-        for code in self._process_single_ref(text, kind_hint):
+        for code in parse_single_code_references(text, kind_hint,
+                self.kind_strategies, self.kinds):
             code.xpath = xpath
             code.file_path = page.file_path
             code.source = DOCUMENT_SOURCE

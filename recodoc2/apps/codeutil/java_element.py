@@ -289,7 +289,7 @@ CAMEL_CASE_4_RE = re.compile(r'''
 
 # This is to find all capitalize words. Identifies if there is a punctuation
 # sign
-TYPE_IN_MIDDLE = re.compile(r'''
+TYPE_IN_MIDDLE_RE = re.compile(r'''
     (?P<dot>[.!?])?
     [\s"']+
     (?P<class>
@@ -472,6 +472,11 @@ class OtherStrategy(object):
         for m in CAMEL_CASE_4_RE.finditer(text):
             matches.add(
                     create_match((m.start(), m.end(), 'class', self.priority)))
+        for m in TYPE_IN_MIDDLE_RE.finditer(text):
+            if m.group('dot') is None:
+                matches.add(create_match(
+                    (m.start('class'), m.end('class'), 'class', self.priority)))
+
         return matches
 
 
