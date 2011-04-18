@@ -5,6 +5,13 @@ from codeutil.other_element import ANCHOR_EMAIL_PATTERN_RE,\
     ANCHOR_URL_PATTERN_RE
 
 
+### CONSTANTS ###
+
+XML_LANGUAGE = 'x'
+
+
+### REGEX ###
+
 XML_PATTERN_RE = re.compile(r'''
     <                      # Tag opening
     [?!/]?                 # Optional tag closing

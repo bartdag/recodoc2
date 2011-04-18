@@ -1,8 +1,15 @@
 from __future__ import unicode_literals
 import re
+import logging
 from codeutil.parser import create_match
 import docutil.str_util as su
 
+
+logger = logging.getLogger("recodoc.codeutil.java")
+
+### CONSTANTS ###
+
+JAVA_LANGUAGE = 'j'
 
 ### FUNCTIONS ###
 
@@ -29,6 +36,40 @@ def clean_java_name(name):
         clean_name_simple = clean_name_fqn[dot_index+1:]
         
     return (clean_name_simple, clean_name_fqn)
+
+
+### JAVA SNIPPET ###
+
+JAVA_END_CHARACTERS = set([';', '{', '}'])
+JAVA_START = ['@','//','/*','*/','**/']
+THRESHOLD_JAVA = 0.20
+
+
+# Filters
+
+class SQLFilter(object):
+    
+    def filter(self, lines, long_line):
+        begin = False
+        end = False
+        for line in lines:
+            begin = begin or line.strip().startswith('BEGIN')
+            end = end or line.strip().startswith('END')
+        return begin and end
+    
+
+class BuilderFilter(object):
+    
+    def filter(self, lines, long_line):
+        builder_syntax = False
+        
+        for line in lines:
+            if line.rstrip().endswith(';'):
+                builder_syntax = False
+                break
+            elif line.find('={') > -1 and not line.startswith('@'):
+                builder_syntax = True
+        return builder_syntax
 
 
 ### REGEX METHODS ###
@@ -353,6 +394,44 @@ def is_class_body(text):
     new_text = su.clean_for_re(text)
     return ANONYMOUS_CLASS_DECLARATION_RE.match(new_text) is not None or\
            METHOD_DECLARATION_RE.match(new_text)
+
+### Java Snippet Regognition ###
+
+def is_java(text, filters=None):
+    return is_java_lines(text.split('\n'), filters)
+
+
+def is_java_lines(lines, filters=None):
+    java_lines = 0
+    empty_lines = 0
+    for line in lines:
+        if len(line.strip()) == 0:
+            empty_lines += 1
+        elif line.rstrip()[-1] in JAVA_END_CHARACTERS:
+            java_lines += 1
+        else:
+            new_line = line.strip()
+            for start in JAVA_START:
+                if new_line.startswith(start):
+                    java_lines +=1
+                    break
+    confidence = float(java_lines) / (len(lines) - empty_lines)
+    
+    is_java_kind = confidence >= THRESHOLD_JAVA
+
+    if confidence > 0:
+        logger.info('Java Lines: {0} {1} {2}'
+            .format(java_lines, len(lines) - empty_lines, str(lines)))
+    
+    if is_java_kind and filters != None:
+        long_text = su.join_text(lines, False)
+        for filter in filters:
+            if filter.filter(lines, long_text):
+                is_java_kind = False
+                logger.info('Not Java Kind. {0}'.format(long_text))
+                break
+        
+    return (is_java_kind, confidence)
 
 
 ### Code Reference Identification and Classification ###

@@ -8,14 +8,14 @@ from django.db import transaction, connection
 from django.conf import settings
 from docutil.str_util import clean_breaks
 from docutil.etree_util import clean_tree, get_word_count, XPathList,\
-        SingleXPath, HierarchyXPath, get_word_count_text, get_text
+        SingleXPath, get_word_count_text, get_text_context, get_sentence
 from docutil.url_util import get_relative_url
 from docutil.commands_util import chunk_it, import_clazz, get_encoding
 from docutil.progress_monitor import NullProgressMonitor
-from codebase.models import CodeElementKind, SingleCodeReference, Snippet,\
-        DOCUMENT_SOURCE
+from codebase.models import DOCUMENT_SOURCE
 from codebase.actions import get_project_code_words, get_default_kind_dict,\
-        parse_single_code_references, get_java_strategies
+        parse_single_code_references, get_java_strategies,\
+        get_default_filters, classify_code_snippet
 from doc.models import Document, Page, Section
 
 DEFAULT_POOL_SIZE = 4
@@ -112,7 +112,7 @@ class GenericParser(object):
 
     xsnippet = None
     '''XPath to find code snippets. Required'''
-
+    
     def __init__(self, document_pk):
         self.document = Document.objects.get(pk=document_pk)
         self.kinds = get_default_kind_dict()
@@ -267,11 +267,11 @@ class GenericParser(object):
 
         # Find section for each code reference
         for code_reference in s_code_references:
-            self._find_section(code_reference, sections, True, page, load)
+            self._find_section(code_reference, sections, page, load)
 
         # Find snippet for each code reference
         for snippet in snippets:
-            self._find_section(snippet, sections, False, page, load)
+            self._find_section(snippet, sections, page, load)
 
         # Process sections' title
         for section in sections:
@@ -291,8 +291,8 @@ class GenericParser(object):
         if len(text) < 2 or text.isdigit():
             return
         
-        text_context = None
-        sentence = None
+        text_context = get_text_context(code_ref_element)
+        sentence = get_sentence(code_ref_element, text, text_context)
 
         (text, kind_hint) = self._get_code_ref_kind(code_ref_element, text)
         
@@ -306,18 +306,63 @@ class GenericParser(object):
             code.sentence = sentence
             code.paragraph = text_context
             code.save()
-            code.project_releases.add(page.document.project_release)
             s_code_references.append(code)
 
-
     def _add_code_snippet(self, index, snippet_element, page, load, snippets):
-        pass
+        text = self.xsnippet.get_text(snippet_element)
+        xpath = load.tree.getpath(snippet_element)
+        snippet = classify_code_snippet(text, get_default_filters())
 
-    def _find_section(self, reference, sections, is_single_ref, page, load):
-        pass
+        if snippet is None:
+            return
+
+        snippet.xpath = xpath
+        snippet.file_path = page.file_path
+        snippet.source = DOCUMENT_SOURCE
+        snippet.index = index
+        snippet.save()
+        snippets.append(snippet)
+
+    def _find_section(self, reference, sections, page, load):
+        parent_section = None
+        max_len = 0
+        
+        for section in sections:
+            section_len = len(section.xpath)
+            if reference.xpath.startswith(section.xpath) and \
+               section_len > max_len:
+                    parent_section = section
+                    max_len = section_len
+            
+        if parent_section != None:
+                reference.local_context = parent_section
+                reference.mid_context = self._get_mid_container(parent_section)
+                reference.global_context = parent_section.page
+                reference.save()
+        else:
+            logger.wrarning('orphan ref {0}, path {1}, page {2}'
+                    .format(reference.content, reference.xpath, page.title))
 
     def _process_title_references(self, page, load, section):
-        pass
+        text_context = section.title
+        sentence = section.title
+
+        kind_hint = self.kinds['unknown']
+        xpath = section.xpath
+        for code in parse_single_code_references(sentence, kind_hint,
+                self.kind_strategies, self.kinds, strict=True):
+            code.xpath = xpath
+            code.file_path = page.file_path
+            code.source = DOCUMENT_SOURCE
+            code.index = -1
+            code.sentence = sentence
+            code.paragraph = text_context
+            code.title_context = section
+            code.local_context = section
+            code.mid_context = self._get_mid_container(section)
+            code.global_context = page
+            code.save()
+            code.project_releases.add(page.document.project_release)
 
     def _process_mix_mode(self, page, load, section):
         pass
@@ -325,3 +370,16 @@ class GenericParser(object):
     def _get_code_ref_kind(self, code_ref_tag, text):
         kind_hint = self.kinds['unknown']
         return (text, kind_hint)
+
+    def _get_mid_context(self, section):
+        '''Returns mid-level sections.
+           e.g., {3., 3.1, 3.1.1} will return 3.1
+        '''
+        if section is None:
+            return None
+        elif section.parent is None:
+            return None
+        if section.parent.parent is None:
+            return section.parent
+        else:
+            return self._get_mid_context(section.parent)

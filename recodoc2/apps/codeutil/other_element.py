@@ -3,6 +3,8 @@ import re
 from codeutil.parser import create_match
 
 
+OTHER_LANGUAGE = 'other'
+
 IGNORE_KIND = 'ignore'
 
 

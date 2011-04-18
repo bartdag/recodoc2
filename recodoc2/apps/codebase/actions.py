@@ -8,11 +8,12 @@ from py4j.java_gateway import JavaGateway
 from django.conf import settings
 from django.db import transaction
 from codeutil.parser import is_valid_match, find_parent_reference
-from codeutil.xml_element import XMLStrategy
+from codeutil.xml_element import XMLStrategy, XML_LANGUAGE, is_xml_snippet
 from codeutil.java_element import ClassMethodStrategy, MethodStrategy,\
-        FieldStrategy, OtherStrategy, AnnotationStrategy
+        FieldStrategy, OtherStrategy, AnnotationStrategy, SQLFilter,\
+        BuilderFilter, JAVA_LANGUAGE, is_java_snippet
 from codeutil.other_element import FileStrategy, IgnoreStrategy,\
-        IGNORE_KIND, EMAIL_PATTERN_RE, URL_PATTERN_RE
+        IGNORE_KIND, EMAIL_PATTERN_RE, URL_PATTERN_RE, OTHER_LANGUAGE
 from docutil.str_util import tokenize
 from docutil.cache_util import get_value, get_codebase_key
 from docutil.commands_util import mkdir_safe, import_clazz
@@ -20,7 +21,7 @@ from docutil.progress_monitor import CLILockProgressMonitor
 from project.models import ProjectRelease
 from project.actions import CODEBASE_PATH
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
-        SingleCodeReference
+        SingleCodeReference, CodeSnippet
 
 
 PROJECT_FILE = '.project'
@@ -369,8 +370,39 @@ def get_java_strategies():
     return kind_strategies
 
 
+def get_default_filters():
+    filters = {
+        JAVA_LANGUAGE: [SQLFilter(), BuilderFilter()],
+        XML_LANGUAGE: [],
+        OTHER_LANGUAGE: [],
+        }
+
+    return filters
+
+
+def classify_code_snippet(text, filters):
+    code = None
+    try:
+        if is_xml_snippet(text)[0]:
+            language = XML_LANGUAGE
+        elif is_java_snippet(text, filters[JAVA_LANGUAGE])[0]:
+            language = JAVA_LANGUAGE
+        else:
+            language = OTHER_LANGUAGE
+    
+        code = CodeSnippet(
+                language=language,
+                snippet_text=text,
+                )
+        code.save()
+    except Exception:
+        logger.exception('Error while classifying snippet.')
+    return code
+
+
 def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
-        kinds_hierarchies=ALL_KINDS_HIERARCHIES, save_index=False):
+        kinds_hierarchies=ALL_KINDS_HIERARCHIES, save_index=False,
+        strict=False):
     single_refs = []
     matches = []
     filtered = set()
@@ -421,7 +453,7 @@ def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
         else:
             filtered.add(match)
 
-    if len(single_refs) == 0 and not avoided:
+    if len(single_refs) == 0 and not avoided and not strict:
         code = SingleCodeReference(content=text, kind_hint=kind_hint)
         code.save()
         single_refs.append(code)

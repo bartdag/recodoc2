@@ -185,6 +185,11 @@ class JavaStrategyTest(TestCase):
         self.assertEqual('annotation', refs[0].kind_hint.kind)
 
     def test_classes_unknown(self):
+        text = '123'
+        refs = psc(text, self.kinds['class'], self.strategies, self.kinds,
+                strict=True)
+        self.assertEqual(0, len(refs))
+
         text = 'FooBar'
         refs = psc(text, self.kinds['unknown'], self.strategies, self.kinds)
         self.assertEqual(1, len(refs))

@@ -79,3 +79,11 @@ def find_sentence(paragraph, start, end):
         first_stopper += 1
     second_stopper = lower_stopper_index(paragraph, end, paragraph_size)
     return paragraph[first_stopper:second_stopper].strip()
+
+
+def join_text(lines, line_breaks=True):
+    if line_breaks:
+        text = '\n'.join(normalize(line).strip() for line in lines)
+    else:
+        text = ' '.join(clean_breaks(normalize(line)) for line in lines)
+    return text
