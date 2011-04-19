@@ -112,7 +112,7 @@ class GenericParser(object):
 
     xsnippet = None
     '''XPath to find code snippets. Required'''
-    
+
     def __init__(self, document_pk):
         self.document = Document.objects.get(pk=document_pk)
         self.kinds = get_default_kind_dict()
@@ -213,7 +213,7 @@ class GenericParser(object):
         self._find_section_parent(page, load, sections, sections_number)
 
         if load.parse_refs:
-            self._parse_code_references(page, load, sections)
+            self._parse_section_references(page, load, sections)
 
     def _is_top_section(self, page, load, section_element):
         '''Indicates whether or not an element is a top section.'''
@@ -290,12 +290,12 @@ class GenericParser(object):
         # Not significant
         if len(text) < 2 or text.isdigit():
             return
-        
+
         text_context = get_text_context(code_ref_element)
         sentence = get_sentence(code_ref_element, text, text_context)
 
         (text, kind_hint) = self._get_code_ref_kind(code_ref_element, text)
-        
+
         xpath = load.tree.getpath(code_ref_element)
         for code in parse_single_code_references(text, kind_hint,
                 self.kind_strategies, self.kinds):
@@ -326,21 +326,21 @@ class GenericParser(object):
     def _find_section(self, reference, sections, page, load):
         parent_section = None
         max_len = 0
-        
+
         for section in sections:
             section_len = len(section.xpath)
             if reference.xpath.startswith(section.xpath) and \
                section_len > max_len:
                     parent_section = section
                     max_len = section_len
-            
+
         if parent_section != None:
                 reference.local_context = parent_section
-                reference.mid_context = self._get_mid_container(parent_section)
+                reference.mid_context = self._get_mid_context(parent_section)
                 reference.global_context = parent_section.page
                 reference.save()
         else:
-            logger.wrarning('orphan ref {0}, path {1}, page {2}'
+            logger.warning('orphan ref {0}, path {1}, page {2}'
                     .format(reference.content, reference.xpath, page.title))
 
     def _process_title_references(self, page, load, section):
@@ -359,16 +359,25 @@ class GenericParser(object):
             code.paragraph = text_context
             code.title_context = section
             code.local_context = section
-            code.mid_context = self._get_mid_container(section)
+            code.mid_context = self._get_mid_context(section)
             code.global_context = page
             code.save()
-            code.project_releases.add(page.document.project_release)
 
     def _process_mix_mode(self, page, load, section):
+        # NOTE: SEE //text() to get many text elements.
         pass
 
     def _get_code_ref_kind(self, code_ref_tag, text):
         kind_hint = self.kinds['unknown']
+
+        if 'class' in code_ref_tag.attrib:
+            clazz = code_ref_tag.attrib['class']
+            if clazz.find('method') > -1:
+                kind_hint = self.kinds['method']
+            elif clazz.find('class') > -1 or clazz.find('interface') > -1 or \
+                 clazz.find('type') > -1:
+                kind_hint = self.kinds['class']
+
         return (text, kind_hint)
 
     def _get_mid_context(self, section):

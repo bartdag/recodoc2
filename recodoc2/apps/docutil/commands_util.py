@@ -77,6 +77,7 @@ def import_clazz(fqn):
 @simple_decorator
 def recocommand(f):
     def newf(*args, **kargs):
+        logging.basicConfig(level=logging.WARNING)
         start = time.clock()
         transaction.enter_transaction_management()
         transaction.managed(True)

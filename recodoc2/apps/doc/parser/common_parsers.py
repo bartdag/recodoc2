@@ -70,6 +70,10 @@ class NewDocBookParser(NumberDotParentMixin, StandardNumberMixin,
 
     xsectiontitle = SingleXPath('.//div[@class="titlepage"]')
 
+    xcoderef = SingleXPath('//code | //tt | //em')
+
+    xsnippet = SingleXPath('//pre')
+
     def __init__(self, document_pk):
         super(NewDocBookParser, self).__init__(document_pk)
 
@@ -84,12 +88,25 @@ class MavenParser(XPathParentMixin, NoNumberMixin, GenericParser):
 
     xsectiontitle = SingleXPath('h2[1] | h3[1] | h4[1]')
 
+    xcoderef = SingleXPath('//code | //tt | //em | //a')
+
+    xsnippet = SingleXPath('//pre')
+
     def _process_page_title(self, page, load):
         title = super(MavenParser, self)._process_page_title(page, load)
         index = title.rfind('-')
         if index > -1 and index < (len(title) + 2):
-            title = title[index+2:]
+            title = title[index + 2:]
 
         return title.strip()
 
-    
+    def _add_code_ref(self, index, code_ref_element, page, load,
+            s_code_references):
+        if code_ref_element.tag == 'a':
+            if 'href' not in code_ref_element:
+                return
+            elif code_ref_element.attrib['href'].find('api') == -1:
+                return
+
+        super(MavenParser, self)._add_code_ref(index, code_ref_element, page,
+                load, s_code_references)

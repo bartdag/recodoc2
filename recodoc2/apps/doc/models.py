@@ -89,9 +89,16 @@ class Section(SourceElement):
             related_name='children')
     '''att.'''
 
+    title_references = generic.GenericRelation(SingleCodeReference,
+            content_type_field="title_content_type",
+            object_id_field="title_object_id",
+            related_name="titles")
+    '''att.'''
+
     code_references = generic.GenericRelation(SingleCodeReference,
             content_type_field="local_content_type",
-            object_id_field="local_object_id")
+            object_id_field="local_object_id",
+            related_name="refs")
     '''att.'''
 
     code_snippets = generic.GenericRelation(CodeSnippet,

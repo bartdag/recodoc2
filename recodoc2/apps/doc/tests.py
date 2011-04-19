@@ -10,6 +10,7 @@ from django.db import transaction
 from docutil.commands_util import load_model
 from docutil.test_util import clean_test_dir
 from codebase.models import CodeElementKind, SingleCodeReference, CodeSnippet
+from codebase.actions import create_code_element_kinds
 from project.models import Project
 from project.actions import create_project_local, create_project_db,\
                             create_release_db, DOC_PATH
@@ -104,6 +105,7 @@ class DocParser(TransactionTestCase):
         create_project_db('Project 1', 'http://www.example1.com', 'project1')
         create_release_db('project1', '3.0', True)
         create_release_db('project1', '3.1')
+        create_code_element_kinds()
 
     @transaction.commit_on_success
     def tearDown(self):
@@ -300,3 +302,73 @@ class DocParser(TransactionTestCase):
         self.assertEqual('', section.number)
         self.assertEqual(132, section.word_count)
         self.assertTrue(section.parent is None)
+
+    def test_maven_parse_joda162_doc_code(self):
+        pname = 'project1'
+        release = '3.0'
+        dname = 'manual'
+        test_doc = os.path.join(settings.TESTDATA, 'joda162doc',
+            'index.html')
+        test_doc = os.path.normpath(test_doc)
+        create_doc_local(pname, dname, release,
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'file://' + test_doc) 
+        create_doc_db('project1', 'manual', '3.0', '',
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'doc.parser.common_parsers.MavenParser')
+        print('Syncing doc')
+        sync_doc(pname, dname, release)
+        print('Synced doc')
+
+        document = parse_doc(pname, dname, release, True)
+        
+        page = Page.objects.filter(document=document).filter(
+                title='User Guide').all()[0]
+
+        section = Section.objects.filter(page=page).filter(
+                title='Direct access').all()[0]
+        self.assertEqual(0, section.title_references.count())
+        # Only 2, because small references are not added! Yay!
+        self.assertEqual(2, section.code_references.count())
+        self.assertEqual(1, section.code_snippets.count())
+        
+        section = Section.objects.filter(page=page).filter(
+                title='Using a MutableDateTime').all()[0]
+        self.assertEqual(1, section.title_references.count())
+        # Include the ref in the title too!
+        self.assertEqual(2, section.code_references.count())
+        self.assertEqual(1, section.code_snippets.count())
+
+    def test_docbook_parse_hib3_doc_code(self):
+        pname = 'project1'
+        release = '3.0'
+        dname = 'manual'
+        test_doc = os.path.join(settings.TESTDATA, 'hib35doc',
+            'index.html')
+        test_doc = os.path.normpath(test_doc)
+        create_doc_local(pname, dname, release,
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'file://' + test_doc) 
+        create_doc_db('project1', 'manual', '3.0', '',
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'doc.parser.common_parsers.NewDocBookParser')
+        print('Syncing doc')
+        sync_doc(pname, dname, release)
+        print('Synced doc')
+
+        document = parse_doc(pname, dname, release, True)
+        
+        page = Page.objects.filter(document=document).filter(
+                title='Chapter 12. Transactions and Concurrency').all()[0]
+
+        section = Section.objects.filter(page=page).filter(
+                number='12.3.4.').all()[0]
+        self.assertEqual(0, section.title_references.count())
+        self.assertEqual(13, section.code_references.count())
+        self.assertEqual(0, section.code_snippets.count())
+
+        section = Section.objects.filter(page=page).filter(
+                number='12.3.3.').all()[0]
+        self.assertEqual(0, section.title_references.count())
+        self.assertEqual(12, section.code_references.count())
+        self.assertEqual(1, section.code_snippets.count())

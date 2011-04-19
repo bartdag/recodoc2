@@ -1,13 +1,19 @@
 from __future__ import unicode_literals
 import re
+import logging
 from codeutil.parser import create_match
 from codeutil.other_element import ANCHOR_EMAIL_PATTERN_RE,\
     ANCHOR_URL_PATTERN_RE
 
 
+logger = logging.getLogger("recodoc.codeutil.xml")
+
+
 ### CONSTANTS ###
 
 XML_LANGUAGE = 'x'
+
+THRESHOLD_XML = 0.20
 
 
 ### REGEX ###
@@ -42,6 +48,61 @@ XML_ATTRIBUTE_VALUE_PAIR_RE = re.compile(r'''
     ''', re.VERBOSE | re.IGNORECASE)
 
 
+# For Snippet identification
+XML_ATTRIBUTE_VALUE_PAIR_STRICT_RE = re.compile(r'''
+    (?P<attribute_name>[\w_\-]*)        # Attribute name
+    =                                   # No space allowed near =
+    (?P<value>
+    "[^"]*" |
+    '[^']*'
+    )
+    ''', re.VERBOSE | re.IGNORECASE)
+
+# Starts with an xml tag
+XML_STRICT_PATTERN1_RE = re.compile(r'''
+    ^[\s]*
+    <                      # Tag opening
+    [?!/]?                 # Optional tag closing
+    (?P<tag_name>[A-Z][-:_A-Z0-9]*) # Anything except 
+    [^>]*                  # Anything else, probably attributes
+    >                      # Tag ending                 
+    ''', re.VERBOSE | re.IGNORECASE)
+
+
+# Ends with an xml tag
+XML_STRICT_PATTERN2_RE = re.compile(r'''
+    .*
+    <                      # Tag opening
+    [/]?                   # Optional tag closing
+    (?P<tag_name>[A-Z][-:_A-Z0-9]*) # Anything except 
+    [^>]*                  # Anything else, probably attributes
+    >                      # Tag ending 
+    [\s]*$                                 
+    ''', re.VERBOSE | re.IGNORECASE)
+
+
+XML_STRICT_OPENING_RE = re.compile(r'''
+    ^[\s]*
+    <
+    [?!]?
+    (?P<tag_name>[A-Z][-:_A-Z0-9]*\b) # Anything except 
+    [^>]*                  # Anything else, probably attributes
+    ''', re.VERBOSE | re.IGNORECASE)
+
+
+XML_STRICT_CLOSING_RE = re.compile(r'''
+    [^>]*
+    \b(?P<tag_name>[A-Z][-:_A-Z0-9]*) # Anything except 
+    [/]?
+    >
+    [\s]*$
+    ''', re.VERBOSE | re.IGNORECASE)
+
+
+XML_STRICT_COMMENT_RE = re.compile(r'''
+    <!--.*?-->
+        ''', re.VERBOSE)
+
 ### Functions ###
 
 def get_xml_pair(xml_text, offset, priority):
@@ -58,6 +119,45 @@ def get_xml_pair(xml_text, offset, priority):
                  'xml attribute value',
                  priority))
     return children
+
+### Snippet Identification ###
+
+def is_xml_snippet(text):
+    return is_xml_lines(text.split('\n'))
+
+
+def is_xml_lines(lines):
+    xml_lines = 0
+    empty_lines = 0
+    confidence = 0.0
+    lines_size = len(lines)
+    
+    for line in lines:
+        if len(line.strip()) == 0:
+            empty_lines += 1
+        elif (XML_STRICT_PATTERN1_RE.match(line) or
+                XML_STRICT_PATTERN2_RE.match(line) or
+                XML_STRICT_COMMENT_RE.match(line)) and not \
+                (ANCHOR_URL_PATTERN_RE.search(line) or \
+                 ANCHOR_EMAIL_PATTERN_RE.search(line)):
+            xml_lines += 1
+        elif lines_size > 1:
+            if XML_STRICT_OPENING_RE.match(line) or \
+            XML_STRICT_CLOSING_RE.match(line) or \
+            line.strip().startswith('<--') or \
+            line.strip().endswith('-->') or \
+            XML_ATTRIBUTE_VALUE_PAIR_STRICT_RE.search(line):
+                xml_lines += 1
+
+    non_empty_lines = lines_size - empty_lines
+
+    if non_empty_lines > 0:
+        confidence = float(xml_lines) / (len(lines) - empty_lines)
+    
+    if -0.10 <= (confidence - THRESHOLD_XML) <= 0:
+        logger.info('Almost reached XML threshold: {0}'.format(lines))
+    
+    return (confidence >= THRESHOLD_XML, confidence)
 
 
 ### Identification and Classification ###

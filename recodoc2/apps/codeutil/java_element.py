@@ -397,17 +397,33 @@ def is_class_body(text):
 
 ### Java Snippet Regognition ###
 
-def is_java(text, filters=None):
+def is_java_snippet(text, filters=None):
     return is_java_lines(text.split('\n'), filters)
+
+
+def get_clean_java_line(line):
+    index = line.rfind('//')
+    if index > -1:
+        return line[:index].strip()
+    
+    index = line.rfind('/*')
+    if index > -1:
+        return line[:index].strip()
+
+    return line.strip()
 
 
 def is_java_lines(lines, filters=None):
     java_lines = 0
     empty_lines = 0
     for line in lines:
+        clean_line = get_clean_java_line(line)
+        clean_size = len(clean_line)
         if len(line.strip()) == 0:
             empty_lines += 1
         elif line.rstrip()[-1] in JAVA_END_CHARACTERS:
+            java_lines += 1
+        elif clean_size > 0 and clean_line[-1] in JAVA_END_CHARACTERS:
             java_lines += 1
         else:
             new_line = line.strip()

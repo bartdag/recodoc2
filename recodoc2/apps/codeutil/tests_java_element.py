@@ -5,7 +5,8 @@ import codeutil.java_element as je
 from codebase.models import SingleCodeReference
 import codebase.actions as ca
 
-psc = ca.parse_single_code_references 
+psc = ca.parse_single_code_references
+
 
 # A few tests for some tricky RE. Nothing more.
 class JavaElementRETest(TestCase):
@@ -25,11 +26,11 @@ class JavaElementRETest(TestCase):
         match = it.next()
         self.assertIsNone(match.group('dot'))
         self.assertEqual('World', match.group('class'))
-        
+
         match = it.next()
         self.assertEqual('!', match.group('dot'))
         self.assertEqual('This', match.group('class'))
-        
+
         match = it.next()
         self.assertIsNone(match.group('dot'))
         self.assertEqual('FooBar', match.group('class'))
@@ -51,8 +52,51 @@ class JavaElementFunctionsTest(TestCase):
             self.assertEqual(fqn, fqn2)
 
 
+class JavaSnippetTest(TestCase):
+    snippet1 = r'''
+This is a Java snippet:
+public class Foo {
+    public void main(String arg)
+    {
+      // Do something useful!
+      System.out.println();
+    }
+}
+    '''
+
+    snippet2 = r'''
+This is not a Java snippet:
+BEGIN;
+SELECT * FROM TABLE;
+COMMIT;
+END;
+    '''
+
+    snippet3 = r'''
+This is an awfully commented Java snippet:
+public class Foo { // Hello
+    public void main(String arg) // Hello
+    { // Hello
+      // Do something useful!
+      System.out.println(); /* Hello */
+    } // Hello
+} // Comment again!
+    '''
+
+    def setUp(self):
+        self.filters = [je.SQLFilter(), je.BuilderFilter()]
+
+    def test_java_snippet1(self):
+        (is_snippet, _) = je.is_java_snippet(self.snippet1, self.filters)
+        self.assertTrue(is_snippet)
+        (is_snippet, _) = je.is_java_snippet(self.snippet2, self.filters)
+        self.assertFalse(is_snippet)
+        (is_snippet, _) = je.is_java_snippet(self.snippet3, self.filters)
+        self.assertTrue(is_snippet)
+
+
 class JavaStrategyTest(TestCase):
-    
+
     def setUp(self):
         ca.create_code_element_kinds()
         self.kinds = ca.get_default_kind_dict()

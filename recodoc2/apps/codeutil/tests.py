@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 import unittest
 import logging
 from codeutil.tests_java_element import JavaElementRETest, \
-    JavaElementFunctionsTest, JavaStrategyTest
+    JavaElementFunctionsTest, JavaStrategyTest, JavaSnippetTest
 
 
 logger = logging.getLogger("docs")
@@ -15,5 +15,6 @@ def suite():
     suite2 = \
         unittest.TestLoader().loadTestsFromTestCase(JavaElementFunctionsTest)
     suite3 = unittest.TestLoader().loadTestsFromTestCase(JavaStrategyTest)
-    alltests = unittest.TestSuite([suite1, suite2, suite3])
+    suite4 = unittest.TestLoader().loadTestsFromTestCase(JavaSnippetTest)
+    alltests = unittest.TestSuite([suite1, suite2, suite3, suite4])
     return alltests
