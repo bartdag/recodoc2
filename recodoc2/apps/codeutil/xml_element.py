@@ -13,7 +13,7 @@ logger = logging.getLogger("recodoc.codeutil.xml")
 
 XML_LANGUAGE = 'x'
 
-THRESHOLD_XML = 0.20
+THRESHOLD_XML = 0.50
 
 
 ### REGEX ###
