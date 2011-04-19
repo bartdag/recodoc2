@@ -11,6 +11,7 @@ from project.actions import DOC_PATH
 from doc.models import DocumentStatus, Document, Page, Section
 from doc.parser.generic_parser import parse
 
+
 def get_doc_path(pname, dname=None, release=None, root=False):
     if root:
         doc_key = ''
@@ -37,6 +38,7 @@ def create_doc_db(pname, dname, release, url, syncer, parser):
             parser=parser, syncer=syncer)
     document.save()
     return document
+
 
 def list_doc_db(pname):
     docs = []

@@ -135,6 +135,7 @@ INSTALLED_APPS = (
     'project',
     'codebase',
     'doc',
+    'channel',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
