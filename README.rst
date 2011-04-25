@@ -13,5 +13,7 @@ Installation
   pip install sphinx
   pip install Py4J
   pip install ipython
+  pip install django-test-coverage
+  pip install chardet
 
  
