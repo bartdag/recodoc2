@@ -14,6 +14,7 @@ from django.conf import settings
 
 from project.models import RecoDocError
 from docutil.url_util import get_sanitized_url, is_local
+from docutil.etree_util import get_html_tree
 
 USER_AGENTS = ["Mozilla/5.0 (X11; U; Linux i686; ru; rv:1.9.3a5pre) Gecko/20100526 Firefox/3.7a5pre",
                "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)",
@@ -187,6 +188,35 @@ def get_encoding(content):
         return 'utf8'
 
 
+def download_html_tree(url, force=False, real_browser=False):
+    (content, encoding) = download_content(url, force, real_browser)
+    # I know, it's silly, but lxml does not support unicode
+    # with encoding... Oh WOW!
+    new_content = content.encode(encoding)
+    tree = get_html_tree(new_content, encoding)
+    return tree
+
+
+def download_content(file_from_path, force=False, real_browser=False):
+    url = get_sanitized_url(file_from_path)
+
+    try:
+        if not real_browser:
+            file_from = get_file_from(url)
+        else:
+            file_from = get_file_from_real_browser(url)
+
+        logger.info('Downloading {0}'.format(url))
+        content = file_from.read()
+        encoding = get_encoding(content)
+        content = unicode(content, encoding)
+        return (content, encoding)
+    except:
+        logger.info('Error while downloading a file: {0}'.format(
+            url))
+        raise RecoDocError('Error downloading {0}'.format(url))
+
+
 def download_file(file_from_path, file_to_path, force=False, binary=False,
         real_browser=False):
     url = get_sanitized_url(file_from_path)
@@ -228,4 +258,4 @@ def download_file(file_from_path, file_to_path, force=False, binary=False,
 
 
 def chunk_it(l, chunks):
-    return list(zip(*izip_longest(*[iter(l)]*chunks)))
+    return list(zip(*izip_longest(*[iter(l)] * chunks)))

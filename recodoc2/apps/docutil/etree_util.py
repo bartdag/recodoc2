@@ -7,6 +7,18 @@ XTEXT = etree.XPath("string()")
 XSCRIPTS = etree.XPath(".//script")
 
 
+def get_html_tree(ucontent, encoding=None):
+    if encoding is not None:
+        parser = etree.HTMLParser(remove_comments=True, encoding=encoding)
+    else:
+        parser = etree.HTMLParser(remove_comments=True)
+
+    tree = etree.fromstring(ucontent, parser)
+    tree = tree.getroottree()
+    clean_tree(tree)
+    return tree
+
+
 def clean_tree(tree):
     etree.strip_elements(tree, 'script', with_tail=False)
 

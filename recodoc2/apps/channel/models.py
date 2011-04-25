@@ -115,5 +115,25 @@ class Message(SourceElement):
 ### SYNCER MODEL - NOT PERSISTED ###
 class SupportChannelStatus(object):
 
-    def __init__(self, syncer_clazz):
-        self.syncer = syncer_clazz
+    def __init__(self, syncer_clazz, url):
+        self.syncer_clazz = syncer_clazz
+        self.url = url
+        self.toc_sections = []
+        self.entries = []
+
+
+class TocSection(object):
+
+    def __init__(self, index, url):
+        self.index = index
+        self.url = url
+        self.downloaded = False
+
+
+class TocEntry(object):
+
+    def __init__(self, index, url):
+        self.index = index
+        self.url = url
+        self.downloaded = False
+        self.local_paths = []

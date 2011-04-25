@@ -1,7 +1,9 @@
 from __future__ import unicode_literals
 import os.path
 import urlparse
+import urllib
 import httplib
+from django.conf import settings
 
 
 FILE_PROTOCOL = 'file://'
@@ -35,7 +37,7 @@ def sanitize_file_name(file_name, escape='--'):
     return file_name.replace('!', escape).replace('/', escape)
 
 
-def get_relative_url(base, url):
+def get_relative_url(url, base=settings.PROJECT_FS_ROOT):
     '''Given a base and a url, return the relative url from the base'''
     new_base = base
     if not base.endswith('/'):
@@ -150,3 +152,11 @@ def replace_space(url, lowerize=False):
     if lowerize:
         new_url = new_url.lower()
     return new_url
+
+
+def get_safe_local_id(url, index='', suffix='.html'):
+    parse_result = urlparse.urlparse(url)
+    last_path = os.path.split(parse_result.path)[1]
+    uid = last_path + '?' + parse_result.query + index + suffix
+    uid = urllib.quote_plus(uid)
+    return uid

@@ -120,8 +120,7 @@ class GenericParser(object):
 
     def parse_page(self, page_local_path, page_url, parse_refs=True):
         try:
-            relative_url = get_relative_url(settings.PROJECT_FS_ROOT,
-                        page_local_path)
+            relative_url = get_relative_url(page_local_path)
             page = Page(url=page_url,
                     file_path=relative_url,
                     document=self.document)
