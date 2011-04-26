@@ -3,7 +3,7 @@ import os
 import urlparse
 from lxml import etree
 from docutil.commands_util import download_html_tree
-from channel.syncer.generic_syncer import MessageSyncer
+from channel.syncer.generic_syncer import MessageSyncer, ThreadSyncer
 
 
 class ApacheMailSyncer(MessageSyncer):
@@ -42,3 +42,47 @@ class ApacheMailSyncer(MessageSyncer):
                 next_page_url = urlparse.urljoin(page_url, next_page_url)
                 break
         return next_page_url
+
+
+class PHPBBForumSyncer(ThreadSyncer):
+    ENTRY_PER_PAGE = 25
+    
+    section_url = \
+    'https://forum.hibernate.org/viewforum.php?f=1&sd=a&start={0}'
+
+    xnumber_pages = etree.XPath('//td[@class="nav"]/strong[2]')
+
+    xentries = etree.XPath('//tr/td[@class="row1"][2]/a')
+
+    xnext_links = etree.XPath('//td[@class="gensmall"]/b/a')
+
+    def _get_section_url(self, index):
+        url = self.section_url.format(self.ENTRY_PER_PAGE * index) 
+        return url
+
+    def _get_number_of_pages(self, url):
+        tree = download_html_tree(url)
+        number_of_pages = self.xnumber_pages(tree)
+        if len(number_of_pages) == 0:
+            return 1
+        else:
+            number = number_of_pages[0].text.strip()
+            return int(number)
+
+    def _parse_toc_entries(self, page_url, tree):
+        entry_urls = []
+        links = self.xentries(tree)
+        size = len(links)
+        for link in links[size - self.ENTRY_PER_PAGE:]:
+            url = urlparse.urljoin(page_url, link.attrib['href'])
+            entry_urls.append(url)
+        return entry_urls
+
+    def _get_next_entry_url(self, url, next_page_id, tree):
+        next_links = self.xnext_links(tree)
+        next_url = None
+        for link in next_links:
+            if link.text.strip() == 'next':
+                next_url = urlparse.urljoin(url, link.attrib['href'])
+                break
+        return next_url
