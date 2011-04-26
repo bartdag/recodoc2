@@ -46,7 +46,7 @@ class ApacheMailSyncer(MessageSyncer):
 
 class PHPBBForumSyncer(ThreadSyncer):
     ENTRY_PER_PAGE = 25
-    
+
     section_url = \
     'https://forum.hibernate.org/viewforum.php?f=1&sd=a&start={0}'
 
@@ -57,7 +57,7 @@ class PHPBBForumSyncer(ThreadSyncer):
     xnext_links = etree.XPath('//td[@class="gensmall"]/b/a')
 
     def _get_section_url(self, index):
-        url = self.section_url.format(self.ENTRY_PER_PAGE * index) 
+        url = self.section_url.format(self.ENTRY_PER_PAGE * index)
         return url
 
     def _get_number_of_pages(self, url):
@@ -82,7 +82,7 @@ class PHPBBForumSyncer(ThreadSyncer):
         next_links = self.xnext_links(tree)
         next_url = None
         for link in next_links:
-            if link.text.strip() == 'next':
+            if link.text.strip().lower() == 'next':
                 next_url = urlparse.urljoin(url, link.attrib['href'])
                 break
         return next_url

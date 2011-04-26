@@ -93,7 +93,7 @@ class ThreadSyncer(object):
 
         # We assume that the sections are always returned in the same order!
         for index in xrange(size, page_number):
-            section_url = self._get_section_url(self, index)
+            section_url = self._get_section_url(index)
             model.toc_sections.append(TocSection(index, section_url))
             index += 1
 
@@ -102,7 +102,6 @@ class ThreadSyncer(object):
 
     def toc_download_section(self, model, section):
         page_url = section.url
-        self._download_(page_url, )
         tree = download_html_tree(page_url)
         entry_urls = self._parse_toc_entries(page_url, tree)
 
@@ -124,13 +123,14 @@ class ThreadSyncer(object):
         page_id = 0
 
         while next_url is not None:
-            uid = get_safe_local_id(entry.url, '_page{0}'.format(page_id))
+            uid = get_safe_local_id(next_url, '_page{0}'.format(page_id))
             new_path = os.path.join(path, uid)
-            download_file(entry.url, new_path)
+            download_file(next_url, new_path)
             relative_path = get_relative_url(new_path)
             local_paths.append(relative_path)
             tree = download_html_tree(new_path)
             page_id += 1
-            next_url = self._get_next_entry_url(entry.url, page_id, tree)
+            next_url = self._get_next_entry_url(next_url, page_id, tree)
 
         entry.downloaded = True
+        entry.local_paths = local_paths

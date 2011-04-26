@@ -79,8 +79,8 @@ def toc_view(pname, cname):
 
 def toc_refresh(pname, cname):
     model = load_model(pname, STHREAD_PATH, cname)
-    syncer = import_clazz(model.syncer_clazz)()
     try:
+        syncer = import_clazz(model.syncer_clazz)()
         syncer.toc_refresh(model)
         dump_model(model, pname, STHREAD_PATH, cname)
     except Exception:

@@ -3,6 +3,7 @@ import cPickle
 import os
 import time
 import random
+import urlparse
 import urllib2
 import logging
 import shutil
@@ -117,9 +118,14 @@ def get_file_from(url):
         try:
             file_from = urllib2.urlopen(url)
             break
-        except:
+        except Exception:
             # Do not wait for local url.
             if is_local(url):
+                path = urlparse.urlparse(url).path
+                try:
+                    file_from = open(path)
+                except Exception:
+                    pass
                 break
             else:
                 trial += 1
@@ -208,11 +214,12 @@ def download_content(file_from_path, force=False, real_browser=False):
 
         logger.info('Downloading {0}'.format(url))
         content = file_from.read()
+        file_from.close()
         encoding = get_encoding(content)
         content = unicode(content, encoding)
         return (content, encoding)
-    except:
-        logger.info('Error while downloading a file: {0}'.format(
+    except Exception:
+        logger.exception('Error while downloading a file: {0}'.format(
             url))
         raise RecoDocError('Error downloading {0}'.format(url))
 
@@ -249,7 +256,9 @@ def download_file(file_from_path, file_to_path, force=False, binary=False,
             file_to.close()
         else:
             shutil.copyfileobj(file_from, file_to)
-    except:
+            file_from.close()
+            file_to.close()
+    except Exception:
         logger.info('Error while downloading a file: {0}'.format(
             url))
         if os.path.exists(file_to_path):
