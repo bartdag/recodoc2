@@ -169,6 +169,10 @@ class CodeElement(models.Model):
                 human_string += attribute.parameterelement.type_simple_name \
                         + ', '
             human_string += ')'
+        if self.kind.kind in \
+                {'field', 'enumeration value', 'annotation field'}:
+            human_string = self.fieldelement.type_simple_name
+            human_string += ' ' + self.fqn
         #elif self.kind.kind == 'method parameter':
             #method = self.attcontainer
             #clazz = method.containers.all()[0]
@@ -377,6 +381,54 @@ class SingleCodeReference(SourceElement):
     class Meta:
         ordering = ['index']
 
+
+class CodeBaseDiff(models.Model):
+    codebase_from = models.ForeignKey(CodeBase, null=True, blank=True,
+            related_name='diffs_from')
+    codebase_to = models.ForeignKey(CodeBase, null=True, blank=True,
+            related_name='diffs_to')
+    
+    added_packages = models.ManyToManyField(CodeElement, null=True, blank=True,
+            related_name='diffs_p_added')
+    removed_packages = models.ManyToManyField(CodeElement, null=True,
+            blank=True, related_name='diffs_p_removed')
+    packages_size_from = models.IntegerField(default=0)
+    packages_size_to = models.IntegerField(default=0)
+    
+    added_types = models.ManyToManyField(CodeElement, null=True, blank=True,
+            related_name='diffs_t_added')
+    removed_types = models.ManyToManyField(CodeElement, null=True, blank=True,
+            related_name='diffs_t_removed')
+    types_size_from = models.IntegerField(default=0)
+    types_size_to = models.IntegerField(default=0)
+    
+    added_methods = models.ManyToManyField(CodeElement, null=True, blank=True,
+            related_name='diffs_m_added')
+    removed_methods = models.ManyToManyField(CodeElement, null=True,
+            blank=True, related_name='diffs_m_removed')
+    methods_size_from = models.IntegerField(default=0)
+    methods_size_to = models.IntegerField(default=0)
+
+    added_fields = models.ManyToManyField(CodeElement, null=True, blank=True,
+            related_name='diffs_f_added')
+    removed_fields = models.ManyToManyField(CodeElement, null=True, blank=True,
+            related_name='diffs_f_removed')
+    fields_size_from = models.IntegerField(default=0)
+    fields_size_to = models.IntegerField(default=0)
+
+    added_enum_values = models.ManyToManyField(CodeElement, null=True, blank=True,
+            related_name='diffs_e_added')
+    removed_enum_values = models.ManyToManyField(CodeElement, null=True, blank=True,
+            related_name='diffs_e_removed')
+    enum_values_size_from = models.IntegerField(default=0)
+    enum_values_size_to = models.IntegerField(default=0)
+
+    added_ann_fields = models.ManyToManyField(CodeElement, null=True, blank=True,
+            related_name='diffs_a_added')
+    removed_ann_fields = models.ManyToManyField(CodeElement, null=True, blank=True,
+            related_name='diffs_a_removed')
+    ann_fields_size_from = models.IntegerField(default=0)
+    ann_fields_size_to = models.IntegerField(default=0)
 
 ### LINKS ###
 

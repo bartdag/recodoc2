@@ -22,6 +22,7 @@ from project.models import ProjectRelease
 from project.actions import CODEBASE_PATH
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
         SingleCodeReference, CodeSnippet
+from codebase.parser.java_diff import JavaDiffer
 
 
 PROJECT_FILE = '.project'
@@ -214,7 +215,7 @@ def create_code_element_kinds():
     kinds.append(CodeElementKind(kind='method parameter', is_attribute=True))
     kinds.append(CodeElementKind(kind='field'))
     kinds.append(CodeElementKind(kind='enumeration value'))
-    kinds.append(CodeElementKind(kind='annotation field', is_attribute=True))
+    kinds.append(CodeElementKind(kind='annotation field'))
 
     # XML
     kinds.append(CodeElementKind(kind='xml type', is_type=True))
@@ -277,6 +278,24 @@ def clear_code_elements(pname, bname, release, parser_name='-1'):
     if parser_name != '-1':
         query = query.filter(parser=parser_name)
     query.delete()
+
+
+def diff_codebases(pname, bname, release1, release2):
+    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release1)[0]
+    codebase_from = CodeBase.objects.filter(project_release=prelease1).\
+            filter(name=bname)[0]
+    prelease2 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release2)[0]
+    codebase_to = CodeBase.objects.filter(project_release=prelease2).\
+            filter(name=bname)[0]
+
+    # Maybe later, this will be more generic
+    differ = JavaDiffer()
+    return differ.diff(codebase_from, codebase_to)
+
+
+### ACTIONS USED BY OTHER ACTIONS ###
 
 
 def compute_code_words(codebase):
@@ -389,7 +408,7 @@ def classify_code_snippet(text, filters):
             language = JAVA_LANGUAGE
         else:
             language = OTHER_LANGUAGE
-    
+
         code = CodeSnippet(
                 language=language,
                 snippet_text=text,

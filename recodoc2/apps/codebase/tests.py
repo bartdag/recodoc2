@@ -14,7 +14,8 @@ from codebase.actions import start_eclipse, stop_eclipse, check_eclipse,\
                              create_code_db, create_code_local, list_code_db,\
                              list_code_local, link_eclipse, get_codebase_path,\
                              create_code_element_kinds, parse_code,\
-                             clear_code_elements, get_project_code_words
+                             clear_code_elements, get_project_code_words,\
+                            diff_codebases
 from project.models import Project
 from project.actions import create_project_local, create_project_db,\
                             create_release_db
@@ -119,6 +120,14 @@ class CodeParserTest(TransactionTestCase):
         shutil.copytree(from_path, to_path)
         link_eclipse('project1', 'core', '3.0')
 
+        create_code_local('project1', 'core', '3.1')
+        to_path = get_codebase_path('project1', 'core', '3.1')
+        to_path = os.path.join(to_path, 'src')
+        os.rmdir(to_path)
+        from_path = os.path.join(settings.TESTDATA, 'testproject2', 'src')
+        shutil.copytree(from_path, to_path)
+        link_eclipse('project1', 'core', '3.1')
+
     @classmethod
     def tearDownClass(cls):
         gateway = JavaGateway()
@@ -127,6 +136,8 @@ class CodeParserTest(TransactionTestCase):
         root = workspace.getRoot()
         pm = gateway.jvm.org.eclipse.core.runtime.NullProgressMonitor()
         project1 = root.getProject('project1core3.0')
+        project1.delete(True, True, pm)
+        project1 = root.getProject('project1core3.1')
         project1.delete(True, True, pm)
         time.sleep(1)
         gateway.close()
@@ -158,6 +169,44 @@ class CodeParserTest(TransactionTestCase):
         self.assertTrue('tag2' in code_words)
         self.assertTrue('dog' not in code_words)
         self.assertEqual(10, len(code_words))
+
+    @transaction.autocommit
+    def testJavaDiff(self):
+        create_code_db('project1', 'core', '3.0')
+        create_code_db('project1', 'core', '3.1')
+        parse_code('project1', 'core', '3.0', 'java')
+        parse_code('project1', 'core', '3.1', 'java')
+        cdiff = diff_codebases('project1', 'core', '3.0', '3.1')
+
+        self.assertEqual(4, cdiff.packages_size_from)
+        self.assertEqual(5, cdiff.packages_size_to)
+        self.assertEqual(1, cdiff.added_packages.count())
+        self.assertEqual(0, cdiff.removed_packages.count())
+
+        self.assertEqual(18, cdiff.types_size_from)
+        self.assertEqual(19, cdiff.types_size_to)
+        self.assertEqual(1, cdiff.added_types.count())
+        self.assertEqual(1, cdiff.removed_types.count())
+
+        self.assertEqual(44, cdiff.methods_size_from)
+        self.assertEqual(44, cdiff.methods_size_to)
+        self.assertEqual(1, cdiff.added_methods.count())
+        self.assertEqual(1, cdiff.removed_methods.count())
+
+        self.assertEqual(3, cdiff.fields_size_from)
+        self.assertEqual(4, cdiff.fields_size_to)
+        self.assertEqual(0, cdiff.added_fields.count())
+        self.assertEqual(0, cdiff.removed_fields.count())
+
+        self.assertEqual(6, cdiff.ann_fields_size_from)
+        self.assertEqual(5, cdiff.ann_fields_size_to)
+        self.assertEqual(0, cdiff.added_ann_fields.count())
+        self.assertEqual(1, cdiff.removed_ann_fields.count())
+
+        self.assertEqual(5, cdiff.enum_values_size_from)
+        self.assertEqual(7, cdiff.enum_values_size_to)
+        self.assertEqual(0, cdiff.added_enum_values.count())
+        self.assertEqual(0, cdiff.removed_enum_values.count())
 
     @transaction.autocommit
     def testJavaCodeParser(self):
