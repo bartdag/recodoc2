@@ -9,7 +9,7 @@ from django.conf import settings
 from docutil.str_util import clean_breaks
 from docutil.etree_util import clean_tree, get_word_count, XPathList,\
         SingleXPath, get_word_count_text, get_text_context, get_sentence
-from docutil.url_util import get_relative_url
+from docutil.url_util import get_relative_url, get_path
 from docutil.commands_util import chunk_it, import_clazz, get_encoding
 from docutil.progress_monitor import NullProgressMonitor
 from codebase.models import DOCUMENT_SOURCE
@@ -120,7 +120,7 @@ class GenericParser(object):
 
     def parse_page(self, page_local_path, page_url, parse_refs=True):
         try:
-            relative_url = get_relative_url(page_local_path)
+            relative_url = get_relative_url(get_path(page_local_path))
             page = Page(url=page_url,
                     file_path=relative_url,
                     document=self.document)

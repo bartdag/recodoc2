@@ -170,13 +170,13 @@ class UrlUtilTest(TestCase):
         self.assertEqual(uu.sanitize_file_name('hello--'), 'hello--')
 
     def test_get_relative_url(self):
-        self.assertEqual(uu.get_relative_url('/home/bart',
-            '/home/bart/foo/bar.txt'), 'foo/bar.txt')
-        self.assertEqual(uu.get_relative_url('/home/bart/',
-            '/home/bart/foo/bar.txt'), 'foo/bar.txt')
-        self.assertEqual(uu.get_relative_url('/',
-            '/foo/bar.txt'), 'foo/bar.txt')
-        self.assertEqual(uu.get_relative_url('/biz', '/foo/bar.txt'),
+        self.assertEqual(uu.get_relative_url(
+            '/home/bart/foo/bar.txt', '/home/bart'), 'foo/bar.txt')
+        self.assertEqual(uu.get_relative_url(
+            '/home/bart/foo/bar.txt', '/home/bart/'), 'foo/bar.txt')
+        self.assertEqual(uu.get_relative_url(
+            '/foo/bar.txt', '/'), 'foo/bar.txt')
+        self.assertEqual(uu.get_relative_url('/foo/bar.txt', '/biz'),
             '/foo/bar.txt')
 
     def test_is_local(self):

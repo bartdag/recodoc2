@@ -138,6 +138,7 @@ class PageMatcher(models.Model):
             related_name="match_froms")
     page_to = models.ForeignKey(Page, blank=True, null=True,
             related_name="match_tos")
+    confidence = models.FloatField(default=0.0)
     refactored = models.BooleanField(default=False)
     diff = models.ForeignKey(DocDiff, blank=True, null=True,
             related_name="page_matches")
@@ -148,6 +149,7 @@ class SectionMatcher(models.Model):
             related_name="match_froms")
     section_to = models.ForeignKey(Section, blank=True, null=True,
             related_name="match_tos")
+    confidence = models.FloatField(default=0.0)
     refactored = models.BooleanField(default=False)
     diff = models.ForeignKey(DocDiff, blank=True, null=True,
             related_name="section_matches")

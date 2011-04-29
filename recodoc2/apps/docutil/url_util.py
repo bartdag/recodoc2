@@ -68,6 +68,10 @@ def get_url_without_hash(url):
     return new_url
 
 
+def get_path(url):
+    return urlparse.urlparse(url).path
+
+
 def get_sanitized_file(url):
     (_, afile) = os.path.split(url)
     index = afile.find(HASH)

@@ -1,16 +1,17 @@
 from __future__ import unicode_literals
 from difflib import SequenceMatcher
-from doc.models import SectionMatcher, DocDiff, Section
+from doc.models import SectionMatcher, DocDiff, Section, PageMatcher
 
 
-ABS_THRESHOLD = 2
-RELATIVE_THRESHOLD = 1
+ABS_THRESHOLD = 2.0
+RELATIVE_THRESHOLD = 1.0
+RATIO_THRESHOLD = 0.85
 DEFAULT_DISTANCES = ((0.90, 0.75), (0.80, 0.50), (0.70, 0.25))
 
 
 def get_null_matches(from_elem, to_elems, factor):
     mr = MatcherResult(from_elem=from_elem, factor=factor)
-    mr.to_elems = dict(((to_elem.pk, [to_elem, 0.0]) for to_elem in to_elems))
+    mr.to_elems = {to_elem.pk: [to_elem, 0.0] for to_elem in to_elems}
     return mr
 
 
@@ -37,13 +38,17 @@ def sort_match_results(match_results):
             if to_pk not in matches:
                 matches[to_pk] = [result.to_elems[to_pk][0], 0.0]
             matches[to_pk][1] += result.to_elems[to_pk][1] * result.factor
-    sorted_matches = sorted(matches.values, key=lambda l: l[1])
+    sorted_matches = sorted(matches.values(), key=lambda l: l[1], reverse=True)
+
     return sorted_matches
 
 
 def has_best_match(sorted_results):
+    if len(sorted_results) <= 1:
+        return True
+
     return sorted_results[0][1] > ABS_THRESHOLD and \
-        sorted_results[0][1] - sorted_results[1][1] > RELATIVE_THRESHOLD
+        (sorted_results[0][1] - sorted_results[1][1]) > RELATIVE_THRESHOLD
 
 
 def get_best_match(match_results):
@@ -122,6 +127,15 @@ class ChildrenMatcher(object):
                 children = []
         return children
 
+    def _max_ratio(self, title, children_names):
+        max_ratio = 0.0
+        for child_name in children_names:
+            ratio = SequenceMatcher(None, title, child_name).ratio()
+            if ratio > max_ratio:
+                max_ratio = ratio
+
+        return max_ratio
+
     def match(self, from_elem, to_elems):
         children = self._children(from_elem)
         children_size = len(children)
@@ -133,12 +147,13 @@ class ChildrenMatcher(object):
         for to_elem in to_elems:
             to_children = self._children(to_elem)
             children_names = [child.title.strip() for child in to_children]
-            matches = 0
+            matches = 0.0
             for child in children:
-                if child.title.strip() in children_names:
-                    matches += 1
+                ratio = self._max_ratio(child.title.strip(), children_names)
+                if ratio >= RATIO_THRESHOLD:
+                    matches += RATIO_THRESHOLD + (ratio - RATIO_THRESHOLD)
 
-            conf = float(matches) / children_size
+            conf = matches / children_size
             mresult.to_elems[to_elem.pk][1] = conf
 
         return mresult
@@ -167,11 +182,14 @@ class SectionParentMatcher(object):
             ptnumber = parent.number.strip()
             if pnumber != '' and pnumber == ptnumber:
                 conf += 0.5
-            if ptitle == pttitle:
+
+            ratio = SequenceMatcher(None, ptitle, pttitle).ratio()
+            if ratio >= RATIO_THRESHOLD:
+                new_conf = RATIO_THRESHOLD + (ratio - RATIO_THRESHOLD)
                 if pnumber == '':
-                    conf += 1.0
+                    conf += new_conf
                 else:
-                    conf += 0.5
+                    conf += new_conf/2.0
             mresult.to_elems[to_elem.pk][1] = conf
 
         return mresult
@@ -182,12 +200,14 @@ class SectionPageMatcher(object):
     factor = 1.0
 
     def match(self, from_elem, to_elems):
-        mresult = MatcherResult(from_elem, to_elems, self.factor)
+        mresult = get_null_matches(from_elem, to_elems, self.factor)
         ptitle = from_elem.page.title.strip()
         for to_elem in to_elems:
             pttitle = to_elem.page.title.strip()
-            if ptitle == pttitle:
-                mresult.to_elems[to_elem.pk] = [to_elem, 1.0]
+            ratio = SequenceMatcher(None, ptitle, pttitle).ratio()
+            if ratio >= RATIO_THRESHOLD:
+                conf = RATIO_THRESHOLD + (ratio - RATIO_THRESHOLD)
+                mresult.to_elems[to_elem.pk] = [to_elem, conf]
         return mresult
 
 
@@ -209,11 +229,72 @@ class DocDiffer(object):
         self.match_pages(ddiff)
 
         self.match_sections(ddiff)
+        
+        return ddiff
 
     def match_pages(self, ddiff):
+        page_tos = list(ddiff.document_to.pages.all())
+        matched_tos = set()
         for page_from in ddiff.document_from.pages.all():
-            pass
+            best_match = self._match_page(page_from, page_tos)
+            if best_match is not None:
+                (page_to, confidence) = best_match
+                p_matcher = PageMatcher(
+                        page_from=page_from,
+                        page_to=page_to,
+                        confidence=confidence,
+                        diff=ddiff)
+                p_matcher.save()
+                matched_tos.add(page_to.pk)
+            else:
+                ddiff.removed_pages.add(page_from)
 
+        for page_to in page_tos:
+            if page_to.pk not in matched_tos:
+                ddiff.added_pages.add(page_to)
 
     def match_sections(self, ddiff):
-        pass
+        section_froms = list(Section.objects
+                .filter(page__document=ddiff.document_from).all())
+        section_tos = list(Section.objects
+                .filter(page__document=ddiff.document_to).all())
+        matched_tos = set()
+        for section_from in section_froms:
+            best_match = self._match_section(section_from, section_tos)
+            if best_match is not None:
+                (section_to, confidence) = best_match
+                s_matcher = SectionMatcher(
+                        section_from=section_from,
+                        section_to=section_to,
+                        confidence=confidence,
+                        diff=ddiff)
+                s_matcher.save()
+                matched_tos.add(section_to.pk)
+            else:
+                ddiff.removed_sections.add(section_from)
+
+        for section_to in section_tos:
+            if section_to.pk not in matched_tos:
+                ddiff.added_sections.add(section_to)
+
+    def _match_page(self, page_from, page_tos):
+        match_results = []
+        match_results.append(TitleMatcher().match(page_from, page_tos))
+        match_results.append(ChildrenMatcher().match(page_from, page_tos))
+        best_match = get_best_match(match_results)
+        return best_match
+
+    def _match_section(self, section_from, section_tos):
+        match_results = []
+        match_results.append(
+                SectionNumberMatcher().match(section_from, section_tos))
+        match_results.append(
+                TitleMatcher().match(section_from, section_tos))
+        match_results.append(
+                ChildrenMatcher().match(section_from, section_tos))
+        match_results.append(
+                SectionParentMatcher().match(section_from, section_tos))
+        match_results.append(
+                SectionPageMatcher().match(section_from, section_tos))
+        best_match = get_best_match(match_results)
+        return best_match

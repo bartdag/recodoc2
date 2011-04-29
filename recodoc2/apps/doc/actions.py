@@ -10,6 +10,7 @@ from project.models import ProjectRelease
 from project.actions import DOC_PATH
 from doc.models import DocumentStatus, Document, Page, Section
 from doc.parser.generic_parser import parse
+from doc.parser.doc_diff import DocDiffer
 
 
 def get_doc_path(pname, dname=None, release=None, root=False):
@@ -93,3 +94,19 @@ def parse_doc(pname, dname, release, parse_refs=True):
     parse(document, model.pages, parse_refs, progress_monitor)
 
     return document
+
+
+@transaction.autocommit
+def diff_doc(pname, dname, release1, release2):
+    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release1)[0]
+    document_from = Document.objects.filter(project_release=prelease1).\
+            filter(title=dname)[0]
+    prelease2 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release2)[0]
+    document_to = Document.objects.filter(project_release=prelease2).\
+            filter(title=dname)[0]
+
+    differ = DocDiffer()
+    return differ.diff_docs(document_from, document_to)
+
