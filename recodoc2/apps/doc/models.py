@@ -114,6 +114,47 @@ class Section(SourceElement):
         ordering = ['title']
 
 
+class DocDiff(models.Model):
+    document_from = models.ForeignKey(Document, blank=True, null=True,
+            related_name="diff_document_froms")
+    document_to = models.ForeignKey(Document, blank=True, null=True,
+            related_name="diff_document_tos")
+    removed_pages = models.ManyToManyField(Page, blank=True, null=True,
+            related_name="diff_removed_pages")
+    added_pages = models.ManyToManyField(Page, blank=True, null=True,
+            related_name="diff_added_pages")
+    removed_sections = models.ManyToManyField(Section, blank=True, null=True,
+            related_name="diff_removed_sections")
+    added_sections = models.ManyToManyField(Section, blank=True, null=True,
+            related_name="diff_added_sections")
+    pages_size_from = models.IntegerField(default=0)
+    pages_size_to = models.IntegerField(default=0)
+    sections_size_from = models.IntegerField(default=0)
+    sections_size_to = models.IntegerField(default=0)
+
+
+class PageMatcher(models.Model):
+    page_from = models.ForeignKey(Page, blank=True, null=True,
+            related_name="match_froms")
+    page_to = models.ForeignKey(Page, blank=True, null=True,
+            related_name="match_tos")
+    refactored = models.BooleanField(default=False)
+    diff = models.ForeignKey(DocDiff, blank=True, null=True,
+            related_name="page_matches")
+
+
+class SectionMatcher(models.Model):
+    section_from = models.ForeignKey(Section, blank=True, null=True,
+            related_name="match_froms")
+    section_to = models.ForeignKey(Section, blank=True, null=True,
+            related_name="match_tos")
+    refactored = models.BooleanField(default=False)
+    diff = models.ForeignKey(DocDiff, blank=True, null=True,
+            related_name="section_matches")
+
+
+### SYNCER MODEL ###
+
 class DocumentStatus(object):
     '''Contains the page that have been downloaded. Used by the syncer.
        Persisted in a pickle file, not in the db'''
