@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
-from project.models import ProjectRelease, SourceElement
+from project.models import Project, ProjectRelease, SourceElement
 
 
 DOCUMENT_SOURCE = 'd'
@@ -253,6 +253,9 @@ class CodeSnippet(SourceElement):
     '''A structured blurb of text representing a code snippets (e.g., Java
       statements, part of an XML configuration file, etc.)'''
 
+    project = models.ForeignKey(Project, null=True, blank=True)
+    '''Project the snippet belongs to'''
+
     language = models.CharField(max_length=2, null=True, blank=True,
             choices=LANGUAGES, default='j')
     '''Probable language of the snippet (e.g., java, xml)'''
@@ -302,6 +305,9 @@ class CodeSnippet(SourceElement):
 
 class SingleCodeReference(SourceElement):
     '''A reference to a single code element.'''
+
+    project = models.ForeignKey(Project, null=True, blank=True)
+    '''Project the reference belongs to'''
 
     content = models.TextField(null=True, blank=True)
     '''Textual content of the reference. Handle (custom format) if the code

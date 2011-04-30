@@ -304,6 +304,7 @@ class GenericParser(object):
             code.index = index
             code.sentence = sentence
             code.paragraph = text_context
+            code.project = self.document.project_release.project
             code.save()
             s_code_references.append(code)
 
@@ -319,6 +320,7 @@ class GenericParser(object):
         snippet.file_path = page.file_path
         snippet.source = DOCUMENT_SOURCE
         snippet.index = index
+        snippet.project = self.document.project_release.project
         snippet.save()
         snippets.append(snippet)
 

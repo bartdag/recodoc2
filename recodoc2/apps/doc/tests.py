@@ -497,7 +497,7 @@ class DocParser(TransactionTestCase):
         self.assertEqual(132, section.word_count)
         self.assertTrue(section.parent is None)
 
-    @unittest.skip('Usually works.')
+    #@unittest.skip('Usually works.')
     def test_maven_parse_joda162_doc_code(self):
         pname = 'project1'
         release = '3.0'

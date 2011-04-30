@@ -18,7 +18,7 @@ from docutil.str_util import tokenize
 from docutil.cache_util import get_value, get_codebase_key
 from docutil.commands_util import mkdir_safe, import_clazz
 from docutil.progress_monitor import CLILockProgressMonitor
-from project.models import ProjectRelease
+from project.models import ProjectRelease, Project
 from project.actions import CODEBASE_PATH
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
         SingleCodeReference, CodeSnippet
@@ -32,6 +32,9 @@ SRC_FOLDER = 'src'
 LIB_FOLDER = 'lib'
 
 PARSERS = dict(settings.CODE_PARSERS, **settings.CUSTOM_CODE_PARSERS)
+SNIPPET_PARSERS = dict(
+        settings.CODE_SNIPPET_PARSERS, 
+        **settings.CUSTOM_CODE_SNIPPET_PARSERS)
 
 PREFIX_CODEBASE_CODE_WORDS = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
                                 'cb_codewords'])
@@ -267,6 +270,25 @@ def parse_code(pname, bname, release, parser_name, opt_input=None):
     parser.parse(CLILockProgressMonitor())
 
     return codebase
+
+
+@transaction.autocommit
+def parse_snippets(pname, source, parser_name):
+    project = Project.objects.get(dir_name=pname)
+    parser_cls_name = SNIPPET_PARSERS[parser_name]
+    parser_cls = import_clazz(parser_cls_name)
+    snippet_parser = parser_cls(project, source)
+    snippet_parser.parse(CLILockProgressMonitor())
+    
+
+def clear_snippets(pname, language, source):
+    project = Project.objects.get(dir_name=pname)
+    to_delete = SingleCodeReference.objects.\
+            filter(snippet__language=language).\
+            filter(source=source).\
+            filter(project=project)
+    print('Snippets to delete: %i' % to_delete.count())
+    to_delete.delete()
 
 
 def clear_code_elements(pname, bname, release, parser_name='-1'):

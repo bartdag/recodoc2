@@ -173,6 +173,12 @@ CODE_PARSERS = {'java': 'codebase.parser.java_code_parser.JavaParser',
 
 CUSTOM_CODE_PARSERS = {}
 
+CODE_SNIPPET_PARSERS = {'java': 'codebase.parser.java_snippet_parser.JavaSnippetParser',
+                'xml': '',
+                }
+
+CUSTOM_CODE_SNIPPET_PARSERS = {}
+
 try:
     from localsettings import *
 except Exception:
