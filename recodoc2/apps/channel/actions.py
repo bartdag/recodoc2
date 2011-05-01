@@ -7,7 +7,8 @@ from docutil.commands_util import mkdir_safe, dump_model, load_model,\
     import_clazz
 from project.models import Project
 from project.actions import STHREAD_PATH
-from channel.models import SupportChannel, SupportChannelStatus
+from channel.models import SupportChannel, SupportChannelStatus,\
+        SupportThread, Message
 
 
 logger = logging.getLogger("recodoc.channel.actions")
@@ -57,6 +58,18 @@ def list_channels_local(pname):
         if os.path.isdir(os.path.join(channel_path, member)):
             local_channels.append(member)
     return local_channels
+
+
+def clear_channel_elements(pname, cname):
+    channel = SupportChannel.objects.filter(project_dir_name=pname).\
+            filter(name=cname)[0]
+    query = Message.objects.filter(sthread__channel=channel)
+    print('Deleting {0} messages'.format(query.count()))
+    for message in query.all():
+        message.code_references.all().delete()
+        message.code_snippets.all().delete()
+        message.delete()
+    SupportThread.objects.filter(channel=channel).delete()
 
 
 def toc_view(pname, cname):
