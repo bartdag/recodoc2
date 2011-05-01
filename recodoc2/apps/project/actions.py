@@ -25,6 +25,7 @@ def create_project_local(dir_name):
 def create_project_db(project_name, url, dir_name):
     project = Project(name=project_name, url=url, dir_name=dir_name)
     project.save()
+    return project
 
 
 def delete_project_local(dir_name):
@@ -43,6 +44,7 @@ def create_release_db(project_name, release_name, is_major=False):
     release = ProjectRelease(project=project, release=release_name,
                              is_major=is_major)
     release.save()
+    return release
 
 
 def list_projects_db():

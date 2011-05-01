@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import logging
 import os
 import time
 import shutil
@@ -7,15 +8,16 @@ from django.test import TestCase, TransactionTestCase
 from django.conf import settings
 from django.db import transaction
 from py4j.java_gateway import JavaGateway
+from docutil.commands_util import get_encoding
 from docutil.test_util import clean_test_dir
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
-                            MethodElement
+                            MethodElement, CodeSnippet
 from codebase.actions import start_eclipse, stop_eclipse, check_eclipse,\
                              create_code_db, create_code_local, list_code_db,\
                              list_code_local, link_eclipse, get_codebase_path,\
                              create_code_element_kinds, parse_code,\
                              clear_code_elements, get_project_code_words,\
-                            diff_codebases
+                             diff_codebases, parse_snippets 
 from project.models import Project
 from project.actions import create_project_local, create_project_db,\
                             create_release_db
@@ -42,6 +44,7 @@ class CodeSetup(TestCase):
         stop_eclipse()
 
     def setUp(self):
+        logging.basicConfig(level=logging.WARNING)
         settings.PROJECT_FS_ROOT = settings.PROJECT_FS_ROOT_TEST
         create_project_local('project1')
         create_project_db('Project 1', 'http://www.example1.com', 'project1')
@@ -146,8 +149,10 @@ class CodeParserTest(TransactionTestCase):
 
     @transaction.commit_on_success
     def setUp(self):
+        logging.basicConfig(level=logging.WARNING)
         create_code_element_kinds()
-        create_project_db('Project 1', 'http://www.example1.com', 'project1')
+        self.project = create_project_db('Project 1', 'http://www.example1.com',
+                'project1')
         create_release_db('project1', '3.0', True)
         create_release_db('project1', '3.1')
 
@@ -207,6 +212,57 @@ class CodeParserTest(TransactionTestCase):
         self.assertEqual(7, cdiff.enum_values_size_to)
         self.assertEqual(0, cdiff.added_enum_values.count())
         self.assertEqual(0, cdiff.removed_enum_values.count())
+
+    def load_snippets(self):
+        from_path = os.path.join(settings.TESTDATA, 'snippets')
+        snippets = []
+        for i, path in enumerate(sorted(os.listdir(from_path))):
+            if path.endswith('.java'):
+                with open(os.path.join(from_path, path)) as f:
+                    text = f.read()
+                    encoding = get_encoding(text)
+                    content = unicode(text, encoding)
+                    snippet = CodeSnippet(
+                        index = i,
+                        project = self.project,
+                        snippet_text = content,
+                        language = 'j',
+                        source = 'd',
+                        )
+                    snippet.save()
+                    snippets.append(snippet)
+                    
+        return snippets
+
+    @transaction.autocommit
+    def testJavaSnippetParser(self):
+        snippets = self.load_snippets()
+        parse_snippets('project1', 'd', 'java')
+        
+        # s1.java
+        snippet = CodeSnippet.objects.get(pk=snippets[0].pk)
+        contents = [
+                'T!T:zzzsnippet.A',
+                'T!T:zzzsnippet.A',
+                'M!M:zzzsnippet.A:A:java.lang.String',
+                'M!M:zzzsnippet.A:foo',
+                'M!M:UNKNOWNP.UNKNOWN:bar:int:boolean',
+                'T!T:zzzsnippet.B',
+                'M!M:zzzsnippet.B:baz:zzzsnippet.A',
+                'T!T:py4j.C',
+                'M!M:py4j.C:hello:java.lang.String',
+                'T!T:java.lang.Object',
+                'T!T:py4j.internal.D',
+                'M!M:py4j.internal.D:D:zzzsnippet.A',
+                'T!T:java.lang.System',
+                'F!F:java.lang.System:java.io.PrintStream:out',
+                'M!M:java.io.PrintStream:println:java.lang.String',
+                ]
+        self.assertEqual(len(contents),
+                snippet.single_code_references.count())
+        for content, ref in\
+                zip(contents, snippet.single_code_references.order_by('-index')):
+            self.assertEqual(content, ref.content)
 
     @transaction.autocommit
     def testJavaCodeParser(self):
