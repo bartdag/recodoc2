@@ -17,7 +17,7 @@ class CodeElementAdmin(admin.ModelAdmin):
     list_filter = ('codebase', 'kind', 'parser')
     list_display = ('pk', 'fqn', 'simple_name', 'kind', 'parser')
     list_display_links = ('fqn', 'simple_name')
-    search_fields = ['pk', 'simple_name', 'fqn']
+    search_fields = ['id', 'simple_name', 'fqn']
     filter_horizontal = ['containers', 'parents']
     raw_id_fields = ('attcontainer', 'containers', 'parents',
             'type_containers', 'type_attcontainers')
@@ -31,7 +31,7 @@ class SingleCodeReferenceAdmin(admin.ModelAdmin):
     list_display_links = ('content',)
 #    readonly_fields = ('potential_elements', 'code_element')
     list_filter = ('source', 'kind_hint', )
-    search_fields = ['pk', 'content']
+    search_fields = ['id', 'content']
     #raw_id_fields = ('code_element', 'potential_elements')
 #    filter_horizontal = ['potential_elements']
 

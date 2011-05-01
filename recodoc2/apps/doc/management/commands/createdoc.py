@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from optparse import make_option
 from django.core.management.base import NoArgsCommand
-from docs.actions import create_doc_db, create_doc_local
+from doc.actions import create_doc_db, create_doc_local
 from docutil.commands_util import recocommand
 from docutil.str_util import smart_decode
 

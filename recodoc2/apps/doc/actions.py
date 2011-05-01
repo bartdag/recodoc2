@@ -73,7 +73,7 @@ def clear_doc_elements(pname, dname, release):
             filter(release=release)[0]
     document = Document.objects.filter(project_release=prelease).\
             filter(title=dname)[0]
-    query = Section.objects.filter(document=document)
+    query = Section.objects.filter(page__document=document)
     print('Deleting %i sections' % query.count())
     for section in query.all():
         section.code_references.all().delete()

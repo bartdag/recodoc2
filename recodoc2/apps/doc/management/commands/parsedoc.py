@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from django.core.management.base import NoArgsCommand
-from docs.actions import parse_doc
+from doc.actions import parse_doc
 from optparse import make_option
 from docutil.commands_util import recocommand
 from docutil.str_util import smart_decode
