@@ -4,7 +4,7 @@ from django.core.management.base import NoArgsCommand
 
 from docutil.commands_util import recocommand
 from docutil.str_util import smart_decode
-from channel.actions import clear_channel_elements
+from channel.actions import toc_refresh
 
 
 class Command(NoArgsCommand):
@@ -15,10 +15,10 @@ class Command(NoArgsCommand):
             default='-1', help='Channel name'),
 
     )
-    help = "Clear a channel"
+    help = "Refresh/Init Channel Table of Contents"
 
     @recocommand
     def handle_noargs(self, **options):
         pname = smart_decode(options.get('pname'))
         cname = smart_decode(options.get('cname'))
-        clear_channel_elements(pname, cname)
+        toc_refresh(pname, cname)
