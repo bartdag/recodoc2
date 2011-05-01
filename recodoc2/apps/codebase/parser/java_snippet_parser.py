@@ -82,7 +82,8 @@ class JavaSnippetParser(object):
             else:
                 print('issue!')
             gc.collect()
-            progress_monitor.work('Parsed a Code Snippet', 1)
+            progress_monitor.work('Parsed a Code Snippet: pk={0}'
+                    .format(mcode.pk), 1)
 
         progress_monitor.done()
         self.gateway.close()
@@ -134,10 +135,7 @@ class JavaSnippetParser(object):
                         source=mcode.source,
                         index=(mcode.index * -1000) - i)
                 code.project = self.project
-                if hasattr(mcode, 'local_container'):
-                    code.local_container = mcode.local_container
-                if hasattr(mcode, 'mid_container'):
-                    code.mid_container = mcode.mid_container
-                if hasattr(mcode, 'global_container'):
-                    code.global_container = mcode.global_container
+                code.local_context = mcode.local_context
+                code.mid_context = mcode.mid_context
+                code.global_context = mcode.global_context
                 code.save()
