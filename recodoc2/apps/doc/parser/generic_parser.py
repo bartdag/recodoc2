@@ -343,6 +343,8 @@ class GenericParser(object):
         else:
             logger.warning('orphan ref {0}, path {1}, page {2}'
                     .format(reference.content, reference.xpath, page.title))
+            # Delete, otherwise, it won't be deleted when clearning document.
+            reference.delete()
 
     def _process_title_references(self, page, load, section):
         text_context = section.title
