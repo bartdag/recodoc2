@@ -25,8 +25,9 @@ class CodeElementAdmin(admin.ModelAdmin):
 
 
 class SingleCodeReferenceAdmin(admin.ModelAdmin):
-    fields = ('content', 'kind_hint', 'snippet', 'xpath', 'url', 'source',
-            'local_object_id', 'mid_object_id', 'global_object_id')
+    fields = ('content', 'kind_hint', 'sentence', 'paragraph', 'snippet',
+            'xpath', 'url', 'source', 'local_object_id', 'mid_object_id',
+            'global_object_id')
     list_display = ('content', 'kind_hint', 'source')
     list_display_links = ('content',)
 #    readonly_fields = ('potential_elements', 'code_element')
@@ -47,7 +48,7 @@ class CodeSnippetAdmin(admin.ModelAdmin):
     list_display = ('pk', 'language', 'source', 'local_object_id',
             'global_object_id',)
     list_filter = ('source', 'language', )
-    search_fields = ['pk', 'local_object_id', 'global_object_id', ]
+    search_fields = ['id', 'local_object_id', 'global_object_id', ]
     inlines = [SingleCodeReferenceInline]
 
 
