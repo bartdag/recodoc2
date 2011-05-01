@@ -62,6 +62,8 @@ def parse(document, pages, parse_refs=True,
     connection.close()
 
     # Split work
+    progress_monitor.info('Sending {0} chunks to worker pool'
+            .format(len(inputs)))
     pool = Pool(pool_size)
     for result in pool.imap_unordered(sub_process_parse, inputs, 1):
         progress_monitor.work('Parsed 1/{0} of the pages'.\
