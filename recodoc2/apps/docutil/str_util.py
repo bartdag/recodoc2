@@ -3,10 +3,14 @@ import re
 import unicodedata
 
 
+MONTHS = {'jan':1, 'feb':2, 'mar':3, 'apr':4, 'may':5, 'jun':6, 'jul':7, 'aug':8, 'sep':9, 'oct':10, 'nov':11, 'dec':12}
+
 CAMELCASE_TOKEN = re.compile(r'((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z]))')
 
 STOPPERS = {'.', '!', '?', '\n', '\r'}
 
+def get_month_as_int(month_str):
+    return MONTHS[month_str.lower()]
 
 def smart_decode(s):
     if isinstance(s, unicode):

@@ -55,7 +55,7 @@ class Person(models.Model):
     '''att.'''
 
     nickname = models.CharField(max_length=300, null=True, blank=True,
-            default='')
+            default='', db_index=True)
     '''nickname used on forums'''
 
     contributor = models.BooleanField(default=False)

@@ -288,7 +288,7 @@ class DocSetup(TestCase):
                 section_match.confidence))
 
 
-class DocParser(TransactionTestCase):
+class DocParserTest(TransactionTestCase):
     @transaction.commit_on_success
     def setUp(self):
         logging.basicConfig(level=logging.WARNING)

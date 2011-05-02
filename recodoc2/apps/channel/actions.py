@@ -2,11 +2,14 @@ from __future__ import unicode_literals
 import os
 import logging
 from django.conf import settings
+from django.db import transaction
 
+from docutil.progress_monitor import CLIProgressMonitor
 from docutil.commands_util import mkdir_safe, dump_model, load_model,\
     import_clazz
 from project.models import Project
 from project.actions import STHREAD_PATH
+from channel.parser import generic_parser
 from channel.models import SupportChannel, SupportChannelStatus,\
         SupportThread, Message
 
@@ -61,8 +64,8 @@ def list_channels_local(pname):
 
 
 def clear_channel_elements(pname, cname):
-    channel = SupportChannel.objects.filter(project_dir_name=pname).\
-            filter(name=cname)[0]
+    channel = SupportChannel.objects.filter(project__dir_name=pname).\
+            get(dir_name=cname)
     query = Message.objects.filter(sthread__channel=channel)
     print('Deleting {0} messages'.format(query.count()))
     for message in query.all():
@@ -153,3 +156,18 @@ def toc_download_entries(pname, cname, start=None, end=None, force=False):
             dump_model(model, pname, STHREAD_PATH, cname)
         except Exception:
             logger.exception('Error while downloading entry')
+
+
+@transaction.autocommit
+def parse_channel(pname, cname, parse_refs=True):
+    model = load_model(pname, STHREAD_PATH, cname)
+    channel = SupportChannel.objects.filter(project__dir_name=pname).\
+            get(dir_name=cname)
+    pm = CLIProgressMonitor()
+    generic_parser.parse_channel(channel, model, progress_monitor=pm,
+            parse_refs=parse_refs)
+    return channel
+
+
+def post_process_channel(pname, cname):
+    pass
