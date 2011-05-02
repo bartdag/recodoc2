@@ -12,6 +12,7 @@ from project.models import Project
 from project.actions import create_project_local, create_project_db,\
                             create_release_db, STHREAD_PATH
 from codebase.models import CodeElementKind, SingleCodeReference, CodeSnippet
+from codebase.actions import create_code_element_kinds
 from channel.models import SupportChannel, Message
 from channel.actions import create_channel_local, create_channel_db,\
         list_channels_db, list_channels_local, get_channel_path, toc_refresh,\
@@ -157,6 +158,7 @@ class ChannelParserTest(TransactionTestCase):
     def setUp(self):
         logging.basicConfig(level=logging.WARNING)
         settings.PROJECT_FS_ROOT = settings.PROJECT_FS_ROOT_TEST
+        create_code_element_kinds()
         create_project_local('project1')
         create_project_db('Project 1', 'http://www.example1.com', 'project1')
         create_release_db('project1', '3.0', True)
@@ -185,6 +187,13 @@ class ChannelParserTest(TransactionTestCase):
         cname = 'coreforum'
         toc_refresh(pname, cname)
         toc_download_section(pname, cname, start=0, end=1)
-        toc_download_entries(pname, cname, 10, 99)
-        parse_channel(pname, cname, False)
-        self.assertEqual(7, Message.objects.all().count())
+        toc_download_entries(pname, cname, 9, 99)
+        parse_channel(pname, cname, True)
+        self.assertEqual(8, Message.objects.all().count())
+        for message in Message.objects.all():
+            print('{0} by {1} on {2} (wc: {3})'.format(
+                message.title, message.author, message.msg_date,
+                message.word_count))
+            print('  {0} snippets and {1} references'.format(
+                message.code_snippets.count(),
+                message.code_references.count()))

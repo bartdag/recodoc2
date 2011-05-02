@@ -3,18 +3,24 @@ import subprocess
 import time
 import os
 import logging
+from functools import partial
 import enchant
 from py4j.java_gateway import JavaGateway
 from django.conf import settings
 from django.db import transaction
 from codeutil.parser import is_valid_match, find_parent_reference
-from codeutil.xml_element import XMLStrategy, XML_LANGUAGE, is_xml_snippet
+from codeutil.xml_element import XMLStrategy, XML_LANGUAGE, is_xml_snippet,\
+        is_xml_lines
 from codeutil.java_element import ClassMethodStrategy, MethodStrategy,\
         FieldStrategy, OtherStrategy, AnnotationStrategy, SQLFilter,\
-        BuilderFilter, JAVA_LANGUAGE, is_java_snippet
+        BuilderFilter, JAVA_LANGUAGE, is_java_snippet, is_java_lines,\
+        is_exception_trace_lines, JAVA_EXCEPTION_TRACE
 from codeutil.other_element import FileStrategy, IgnoreStrategy,\
-        IGNORE_KIND, EMAIL_PATTERN_RE, URL_PATTERN_RE, OTHER_LANGUAGE
-from docutil.str_util import tokenize
+        IGNORE_KIND, EMAIL_PATTERN_RE, URL_PATTERN_RE, OTHER_LANGUAGE,\
+        is_empty_lines
+from codeutil.reply_element import REPLY_LANGUAGE, is_reply_lines,\
+        is_reply_header, STOP_LANGUAGE, is_rest_reply
+from docutil.str_util import tokenize, find_sentence, find_paragraph
 from docutil.cache_util import get_value, get_codebase_key
 from docutil.commands_util import mkdir_safe, import_clazz
 from docutil.progress_monitor import CLILockProgressMonitor
@@ -443,7 +449,7 @@ def classify_code_snippet(text, filters):
 
 def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
         kinds_hierarchies=ALL_KINDS_HIERARCHIES, save_index=False,
-        strict=False):
+        strict=False, find_context=False):
     single_refs = []
     matches = []
     filtered = set()
@@ -473,6 +479,11 @@ def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
                     kind_hint=kinds[parent[2]])
             if save_index:
                 main_reference.index = index
+            if find_context:
+                main_reference.sentence = find_sentence(text, parent[0],
+                        parent[1])
+                main_reference.paragraph = find_paragraph(text, parent[0],
+                        parent[1])
             main_reference.save()
             single_refs.append(main_reference)
 
@@ -488,6 +499,11 @@ def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
                         parent_reference=parent_reference)
                 if save_index:
                     child_reference.index = index
+                if find_context:
+                    child_reference.sentence = find_sentence(text, child[0],
+                            child[1])
+                    child_reference.paragraph = find_paragraph(text, child[0],
+                            child[1])
                 child_reference.save()
                 single_refs.append(child_reference)
             index += 1
@@ -500,3 +516,19 @@ def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
         single_refs.append(code)
 
     return single_refs
+
+
+def get_default_p_classifiers():
+    p_classifiers = []
+
+    p_classifiers.append((is_empty_lines, REPLY_LANGUAGE))
+    p_classifiers.append((is_reply_lines, REPLY_LANGUAGE))
+    p_classifiers.append((is_reply_header, REPLY_LANGUAGE))
+    p_classifiers.append((is_rest_reply, STOP_LANGUAGE))
+    p_classifiers.append((
+        partial(is_java_lines, filters=get_default_filters()[JAVA_LANGUAGE]),
+        JAVA_LANGUAGE))
+    p_classifiers.append((is_exception_trace_lines, JAVA_EXCEPTION_TRACE))
+    p_classifiers.append((is_xml_lines, XML_LANGUAGE))
+
+    return p_classifiers

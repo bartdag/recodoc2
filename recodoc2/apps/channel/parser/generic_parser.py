@@ -6,10 +6,16 @@ import multiprocessing
 from traceback import print_exc
 from django.db import connection
 from django.conf import settings
+from docutil.str_util import clean_breaks, get_paragraphs, filter_paragraphs,\
+        REPLY_LANGUAGE, merge_lines
 from docutil.etree_util import get_word_count_text
 from docutil.progress_monitor import NullProgressMonitor
 from docutil.commands_util import chunk_it, import_clazz, download_html_tree
 from project.models import Person
+from codebase.actions import get_default_p_classifiers,\
+        get_default_kind_dict, get_java_strategies,\
+        parse_single_code_references
+from codebase.models import CHANNEL_SOURCE, CodeSnippet, SingleCodeReference
 from channel.models import SupportChannel, SupportThread, Message
 
 
@@ -81,10 +87,14 @@ class ParserLoad(object):
 
 class GenericParser(object):
 
+    LINE_THRESHOLD = 250
+
     def __init__(self, channel_pk, parse_refs, lock):
         self.lock = lock
         self.channel = SupportChannel.objects.get(pk=channel_pk)
         self.parse_refs = parse_refs
+        self.kinds = get_default_kind_dict()
+        self.kind_strategies = get_java_strategies()
 
     def parse_entry(self, local_paths, url):
         load = ParserLoad()
@@ -101,6 +111,10 @@ class GenericParser(object):
                 author = Person(nickname=nickname)
                 author.save()
         return author
+
+    def _skip_message(self, paragraphs):
+        count = sum((len(paragraph) for paragraph in paragraphs))
+        return (count, count > self.LINE_THRESHOLD)
 
 
 class GenericMailParser(GenericParser):
@@ -168,7 +182,80 @@ class GenericMailParser(GenericParser):
         return ucontent
 
     def _process_references(self, message, load, ucontent):
-        pass
+        lines = self._get_lines(message, load, ucontent)
+        paragraphs = get_paragraphs(lines)
+
+        (count, skip) = self._skip_message(paragraphs)
+        if skip:
+            logger.warning('Skipping message {0}:{1}. {2} lines'
+                    .format(message.pk, message.url, count))
+            return
+
+        (text_paragraphs, snippets) = filter_paragraphs(paragraphs,
+                get_default_p_classifiers())
+        self._parse_paragraphs(message, text_paragraphs)
+        self._save_snippets(message, snippets)
+
+    def _get_lines(self, message, load, ucontent):
+        lines = []
+        
+        if not message.title.lower().strip().startswith('re:'):
+            lines.append(clean_breaks(message.title))
+            lines.append('')
+
+        new_content = ucontent.replace('\r','').replace('\t', ' ')
+        content_lines = new_content.split('\n')
+        for content_line in content_lines:
+            content_line = content_line.replace('&lt;','<')\
+                    .replace('&gt;','>')
+            if not self._uninteresting_line(content_line):
+                lines.append(content_line)
+
+        return lines
+
+    def _uninteresting_line(self, line):
+        line = line.strip()
+        if line.startswith('From: ') or line.startswith('To: ') or \
+                line.startswith('Sent: ') or line.startswith('Subject: '):
+            return True
+        elif line.startswith('To unsubscribe, e-mail:'):
+            return True
+        elif line.startswith('For additional commands,'):
+            return True
+        else:
+            return False
+
+    def _parse_paragraphs(self, message, text_paragraphs):
+        for para_index, paragraph in enumerate(text_paragraphs):
+            text = merge_lines(paragraph, False)
+            kind_hint = self.kinds['unknown']
+            for i, code in enumerate(
+                    parse_single_code_references(
+                        text, kind_hint, self.kind_strategies,
+                        self.kinds, find_context=True)):
+                code.file_path = message.file_path
+                code.url = message.url
+                code.index = i + (para_index * 1000)
+                code.project = self.channel.project
+                code.local_context = message
+                code.save()
+
+    def _save_snippets(self, message, snippets):
+        for index, (snippet, language) in enumerate(snippets):
+            if language == REPLY_LANGUAGE:
+                continue
+            text = merge_lines(snippet)
+            code = CodeSnippet(
+                    file_path=message.file_path,
+                    url=message.url,
+                    language=language,
+                    source=CHANNEL_SOURCE,
+                    snippet_text=text,
+                    index=index)
+            code.local_context = message
+            code.project = self.channel.project
+            code.save()
+
 
 
 class GenericThreadParser(GenericParser):

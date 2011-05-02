@@ -11,14 +11,17 @@ logger = logging.getLogger("recodoc.codeutil.java")
 
 JAVA_LANGUAGE = 'j'
 
+JAVA_EXCEPTION_TRACE = 'jx'
+
 ### FUNCTIONS ###
+
 
 def clean_java_name(name):
     """Given a name, returns a tuple containing the simple name and the fully
     qualified name. Removes all array or generic artifacts.
     """
     # Replaces inner class artifact
-    clean_name_fqn = name.replace('$','.')
+    clean_name_fqn = name.replace('$', '.')
 
     # Clean Array
     index = clean_name_fqn.find('[')
@@ -29,26 +32,30 @@ def clean_java_name(name):
     index = clean_name_fqn.find('<')
     if index > -1:
         clean_name_fqn = clean_name_fqn[:index]
-    
+
     dot_index = clean_name_fqn.rfind('.')
     clean_name_simple = clean_name_fqn
     if dot_index > -1:
-        clean_name_simple = clean_name_fqn[dot_index+1:]
-        
+        clean_name_simple = clean_name_fqn[dot_index + 1:]
+
     return (clean_name_simple, clean_name_fqn)
 
 
 ### JAVA SNIPPET ###
 
 JAVA_END_CHARACTERS = set([';', '{', '}'])
-JAVA_START = ['@','//','/*','*/','**/']
-THRESHOLD_JAVA = 0.20
+JAVA_START = ['@', '//', '/*', '*/', '**/']
+THRESHOLD_JAVA = 0.20 
+
+### JAVA EXCEPTION TRACE ###
+
+THRESHOLD_EXCEPTION = 0.40
 
 
 # Filters
 
 class SQLFilter(object):
-    
+
     def filter(self, lines, long_line):
         begin = False
         end = False
@@ -56,13 +63,13 @@ class SQLFilter(object):
             begin = begin or line.strip().startswith('BEGIN')
             end = end or line.strip().startswith('END')
         return begin and end
-    
+
 
 class BuilderFilter(object):
-    
+
     def filter(self, lines, long_line):
         builder_syntax = False
-        
+
         for line in lines:
             if line.rstrip().endswith(';'):
                 builder_syntax = False
@@ -103,15 +110,15 @@ CALL_CHAIN_TARGET_RE = re.compile(r'''
     \([\s]*                               # opening parenthesis
     (                                     # first argument 'arg'
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
+    "[^"]*" |                             # or string
     '[^']*'                               # or char
-    )?                        
+    )?
     (?:[\s]*,[\s]*
     (                                     # other arguments
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*"                               # or string 
+    "[^"]*"                               # or string
     )
-    )*       
+    )*
     [\s]*\)                               # closing parenthesis
     (?:
     \.                                    # call chain
@@ -119,18 +126,18 @@ CALL_CHAIN_TARGET_RE = re.compile(r'''
     \([\s]*                               # opening parenthesis
     (                                     # first argument 'arg'
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
+    "[^"]*" |                             # or string
     '[^']*'                               # or char
-    )?                        
+    )?
     (?:[\s]*,[\s]*
     (                                     # other arguments
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
+    "[^"]*" |                             # or string
     '[^']*'                               # or char
     )
-    )*       
+    )*
     [\s]*\)                               # closing parenthesis
-    )+                               
+    )+
     [;]?                                  # optional ; at the end
     ''', re.VERBOSE)
 
@@ -141,16 +148,16 @@ CALL_CHAIN_RE = re.compile(r'''
     \([\s]*                               # opening parenthesis
     (                                     # first argument 'arg'
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
+    "[^"]*" |                             # or string
     '[^']*'                               # or char
-    )?                        
+    )?
     (?:[\s]*,[\s]*
     (                                     # other arguments
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
-    '[^']*'                               # or char 
+    "[^"]*" |                             # or string
+    '[^']*'                               # or char
     )
-    )*       
+    )*
     [\s]*\)                               # closing parenthesis
     (?:
     \.                                    # call chain
@@ -158,18 +165,18 @@ CALL_CHAIN_RE = re.compile(r'''
     \([\s]*                               # opening parenthesis
     (                                     # first argument 'arg'
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
+    "[^"]*" |                             # or string
     '[^']*'                               # or char
-    )?                        
+    )?
     (?:[\s]*,[\s]*
     (                                     # other arguments
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
+    "[^"]*" |                             # or string
     '[^']*'                               # or char
     )
-    )*       
+    )*
     [\s]*\)                               # closing parenthesis
-    )+                                    # One or more call 
+    )+                                    # One or more call
     [;]?                                  # optional ; at the end
     ''', re.VERBOSE)
 
@@ -181,16 +188,16 @@ SIMPLE_CALL_TARGET_RE = re.compile(r'''
     \([\s]*                               # opening parenthesis
     (                                     # first argument 'arg'
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
+    "[^"]*" |                             # or string
     '[^']*'                               # or char
-    )?                        
+    )?
     (?:[\s]*,[\s]*
     (                                     # other arguments
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
+    "[^"]*" |                             # or string
     '[^']*'                               # or char
     )
-    )*       
+    )*
     [\s]*\)                               # closing parenthesis
     [;]?                                  # optional ; at the end
     ''', re.VERBOSE)
@@ -202,16 +209,16 @@ SIMPLE_CALL_RE = re.compile(r'''
     \([\s]*                               # opening parenthesis
     (                                     # first argument 'arg'
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
-    '[^']*'                               # or char 
-    )?                        
+    "[^"]*" |                             # or string
+    '[^']*'                               # or char
+    )?
     (?:[\s]*,[\s]*
-    (                                     # other arguments
+    (
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
+    "[^"]*" |                             # or string
     '[^']*'                               # or char
     )
-    )*       
+    )*
     [\s]*\)                               # closing parenthesis
     [;]?                                  # optional ; at the end
     ''', re.VERBOSE)
@@ -222,16 +229,16 @@ SIMPLE_CALL_NO_TARGET_RE = re.compile(r'''
     \([\s]*                               # opening parenthesis
     (                                     # first argument 'arg'
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
+    "[^"]*" |                             # or string
     '[^']*'                               # or char
-    )?                        
+    )?
     (?:[\s]*,[\s]*
     (                                     # other arguments
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
+    "[^"]*" |                             # or string
     '[^']*'                               # or char
     )
-    )*       
+    )*
     [\s]*\)                               # closing parenthesis
     [;]?                                  # optional ; at the end
     ''', re.VERBOSE)
@@ -266,16 +273,16 @@ CONSTRUCTOR_CALL_RE = re.compile(r'''
     \([\s]*                               # opening parenthesis
     (                                     # first argument 'arg'
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
-    '[^']*'                               # or char 
-    )?                        
+    "[^"]*" |                             # or string
+    '[^']*'                               # or char
+    )?
     (?:[\s]*,[\s]*
     (                                     # other arguments
     [\w\-_<>.]* |                         # non string arg
-    "[^"]*" |                             # or string 
+    "[^"]*" |                             # or string
     '[^']*'                               # or char
     )
-    )*       
+    )*
     [\s]*\)                               # closing parenthesis
     [;]?                                  # optional ; at the end
     ''', re.VERBOSE)
@@ -293,7 +300,7 @@ FQN_RE = re.compile(r'''
 # Used if no FQN is found
 SIMPLE_NAME_RE = re.compile(r'''
     [\w_\-]+
-    ''',re.VERBOSE)
+    ''', re.VERBOSE)
 
 
 # This is the main camel case.
@@ -349,7 +356,7 @@ ANNOTATION_RE = re.compile(r'''
     (?P<annotation_name>        # Annotation name, possibly a FQN
     (?:[a-z][\w_\-]*\.)*
     [A-Z][\w_\-]*
-    )  
+    )
     ''', re.VERBOSE)
 
 
@@ -367,7 +374,7 @@ CLASS_DECLARATION_RE = re.compile(r'''
 
 ANONYMOUS_CLASS_DECLARATION_RE = re.compile(r'''
     ([^;{}()]*)            # anything is accepted except java lines
-    \bnew\s                # new 
+    \bnew\s                # new
     ([^;{}()]*)            # anything except java lines
     (\([^)]*\))            # parentheses
     [\s]*{
@@ -383,6 +390,20 @@ CONSTANT_RE = re.compile(r'''
     ''', re.VERBOSE)
 
 
+### REGEX EXCEPTION TRACES ###
+
+EXCEPTION_PATTERN1 = re.compile(r'''Exception:''')
+EXCEPTION_PATTERN2 = re.compile(r'''Caused by:''')
+EXCEPTION_PATTERN3 = re.compile(r'''^[\s]*\bat\b (?:[\w\s]+)(?:\.[\s\w]+)*\(''') # at org.springframework.context.support.AbstractApplic ationContext.getBean(
+EXCEPTION_PATTERN4 = re.compile(r'''^[\s]*at[\s]*$''') 
+EXCEPTION_PATTERN5 = re.compile(r'''\.(?:java|class)\:(?:\d+)\)''') # .java:223)
+EXCEPTION_PATTERN6 = re.compile(r'''\([\w\s]+\.(?:java|class)\:(?:\d+)''') # (Toto.java:223
+EXCEPTION_LINE_PATTERN = re.compile(r'''[\s]*at[\s]*(?:[\w\s]+)(?:\.[\s\w]+)*\(.*\.(?:j\s*a\s*v\s*a\s*|\s*c\s*l\s*a\s*s\s*s\s*)\:(?:\d+)\)''')
+
+EXCEPTION_PATTERNS = [EXCEPTION_PATTERN1, EXCEPTION_PATTERN2, 
+                      EXCEPTION_PATTERN3, EXCEPTION_PATTERN4,
+                      EXCEPTION_PATTERN5, EXCEPTION_PATTERN6]
+
 ### Java Body Recognition ###
 
 def is_cu_body(text):
@@ -395,6 +416,7 @@ def is_class_body(text):
     return ANONYMOUS_CLASS_DECLARATION_RE.match(new_text) is not None or\
            METHOD_DECLARATION_RE.match(new_text)
 
+
 ### Java Snippet Regognition ###
 
 def is_java_snippet(text, filters=None):
@@ -405,7 +427,7 @@ def get_clean_java_line(line):
     index = line.rfind('//')
     if index > -1:
         return line[:index].strip()
-    
+
     index = line.rfind('/*')
     if index > -1:
         return line[:index].strip()
@@ -429,16 +451,16 @@ def is_java_lines(lines, filters=None):
             new_line = line.strip()
             for start in JAVA_START:
                 if new_line.startswith(start):
-                    java_lines +=1
+                    java_lines += 1
                     break
     confidence = float(java_lines) / (len(lines) - empty_lines)
-    
+
     is_java_kind = confidence >= THRESHOLD_JAVA
 
     if confidence > 0:
         logger.info('Java Lines: {0} {1} {2}'
             .format(java_lines, len(lines) - empty_lines, str(lines)))
-    
+
     if is_java_kind and filters != None:
         long_text = su.join_text(lines, False)
         for filter in filters:
@@ -446,8 +468,32 @@ def is_java_lines(lines, filters=None):
                 is_java_kind = False
                 logger.info('Not Java Kind. {0}'.format(long_text))
                 break
-        
+
     return (is_java_kind, confidence)
+
+
+def is_exception_trace_lines(lines):
+    exception_lines = 0
+    for line in lines:
+        for pattern in EXCEPTION_PATTERNS:
+            if pattern.search(line):
+                exception_lines += 1
+                break
+            
+    lines_confidence = float(exception_lines) / len(lines)
+    one_line_confidence = 0.0
+    one_line = su.merge_lines(lines, False)
+    if EXCEPTION_LINE_PATTERN.search(one_line):
+        one_line_confidence = 1.0
+        
+    confidence = max(lines_confidence, one_line_confidence)
+    
+    if - 0.10 <= (confidence - THRESHOLD_EXCEPTION) <= 0:
+        logger.info('Almost reached EXCEPTION threshold')
+        logger.info(lines) 
+    
+    return (confidence >= THRESHOLD_EXCEPTION, confidence)
+
 
 
 ### Code Reference Identification and Classification ###
@@ -455,7 +501,7 @@ def is_java_lines(lines, filters=None):
 class ClassMethodStrategy(object):
 
     priority = 50
-    
+
     def match(self, text):
         matches = set()
         for m in SIMPLE_CALL_TARGET_RE.finditer(text):
@@ -477,20 +523,20 @@ class ClassMethodStrategy(object):
                         (child_match.start() + offset,
                          child_match.end() + offset,
                          'method', self.priority))
-            
-            # Basically, the first child should still refer to the container    
+
+            # Basically, the first child should still refer to the container
             first_child = [(m.start(), m.end(), 'method', self.priority)]
             matches.add(
                     create_match(
-                        (m.start(), m.end(), 'class', self.priority), 
+                        (m.start(), m.end(), 'class', self.priority),
                         first_child + children[1:]))
         return matches
 
-        
+
 class MethodStrategy(object):
-    
+
     priority = 25
-    
+
     def match(self, text):
         matches = set()
         for m in SIMPLE_CALL_RE.finditer(text):
@@ -511,7 +557,7 @@ class MethodStrategy(object):
                          child_match.end() + offset,
                          'method',
                          self.priority))
-                
+
             # Basically, children[0] is == m except that the target
             # would not be there
             matches.add(
@@ -523,12 +569,12 @@ class MethodStrategy(object):
                     create_match(
                         (m.start(), m.end(), 'method', self.priority)))
         return matches
-    
+
 
 class FieldStrategy(object):
 
     priority = 25
-    
+
     def match(self, text):
         matches = set()
         for m in FQN_RE.finditer(text):
@@ -549,7 +595,7 @@ class FieldStrategy(object):
 class OtherStrategy(object):
 
     priority = 15
-    
+
     def match(self, text):
         matches = set()
         for m in FQN_RE.finditer(text):
@@ -570,7 +616,8 @@ class OtherStrategy(object):
         for m in TYPE_IN_MIDDLE_RE.finditer(text):
             if m.group('dot') is None:
                 matches.add(create_match(
-                    (m.start('class'), m.end('class'), 'class', self.priority)))
+                    (m.start('class'), m.end('class'), 'class', self.priority))
+                    )
 
         return matches
 
@@ -578,10 +625,11 @@ class OtherStrategy(object):
 class AnnotationStrategy(object):
 
     priority = 25
-    
+
     def match(self, text):
         matches = set()
         for m in ANNOTATION_RE.finditer(text):
             matches.add(
-                    create_match((m.start(), m.end(), 'annotation', self.priority)))
+                    create_match(
+                        (m.start(), m.end(), 'annotation', self.priority)))
         return matches

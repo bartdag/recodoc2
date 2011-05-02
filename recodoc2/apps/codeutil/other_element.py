@@ -132,6 +132,12 @@ DEFINITION_ELEMENT_RE = re.compile(r'''
     ''', re.VERBOSE)
 
 
+### Paragraph Language Identification ###
+
+def is_empty_lines(lines):
+    return (sum(1 for line in lines if line.strip() != '') == 0, 1.0)
+
+
 ### Identification and Classification ###
 
 
