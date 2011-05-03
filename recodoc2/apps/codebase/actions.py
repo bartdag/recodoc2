@@ -8,7 +8,8 @@ import enchant
 from py4j.java_gateway import JavaGateway
 from django.conf import settings
 from django.db import transaction
-from codeutil.parser import is_valid_match, find_parent_reference
+from codeutil.parser import is_valid_match, find_parent_reference,\
+        create_match
 from codeutil.xml_element import XMLStrategy, XML_LANGUAGE, is_xml_snippet,\
         is_xml_lines
 from codeutil.java_element import ClassMethodStrategy, MethodStrategy,\
@@ -17,10 +18,10 @@ from codeutil.java_element import ClassMethodStrategy, MethodStrategy,\
         is_exception_trace_lines, JAVA_EXCEPTION_TRACE
 from codeutil.other_element import FileStrategy, IgnoreStrategy,\
         IGNORE_KIND, EMAIL_PATTERN_RE, URL_PATTERN_RE, OTHER_LANGUAGE,\
-        is_empty_lines
+        is_empty_lines, is_log_lines, LOG_LANGUAGE
 from codeutil.reply_element import REPLY_LANGUAGE, is_reply_lines,\
         is_reply_header, STOP_LANGUAGE, is_rest_reply
-from docutil.str_util import tokenize, find_sentence, find_paragraph
+from docutil.str_util import tokenize, find_sentence, find_paragraph, split_pos
 from docutil.cache_util import get_value, get_codebase_key
 from docutil.commands_util import mkdir_safe, import_clazz
 from docutil.progress_monitor import CLILockProgressMonitor
@@ -39,7 +40,7 @@ LIB_FOLDER = 'lib'
 
 PARSERS = dict(settings.CODE_PARSERS, **settings.CUSTOM_CODE_PARSERS)
 SNIPPET_PARSERS = dict(
-        settings.CODE_SNIPPET_PARSERS, 
+        settings.CODE_SNIPPET_PARSERS,
         **settings.CUSTOM_CODE_SNIPPET_PARSERS)
 
 PREFIX_CODEBASE_CODE_WORDS = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
@@ -285,7 +286,7 @@ def parse_snippets(pname, source, parser_name):
     parser_cls = import_clazz(parser_cls_name)
     snippet_parser = parser_cls(project, source)
     snippet_parser.parse(CLILockProgressMonitor())
-    
+
 
 def clear_snippets(pname, language, source):
     project = Project.objects.get(dir_name=pname)
@@ -447,25 +448,46 @@ def classify_code_snippet(text, filters):
     return code
 
 
-def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
-        kinds_hierarchies=ALL_KINDS_HIERARCHIES, save_index=False,
-        strict=False, find_context=False):
-    single_refs = []
+def parse_text_code_words(text, code_words):
+    # Because there is a chance that the FQN will match...
+    priority = 1
     matches = []
+    words = split_pos(text)
+    for (word, start, end) in words:
+        if word in code_words:
+            # Because at this stage, we force it to choose one only...
+            matches.append(create_match((start, end, 'class', priority)))
+    return matches
+
+
+def process_children_matches(text, matches, children, index, single_refs,
+        kinds, kinds_hierarchies, save_index, find_context):
+
+    for i, child in enumerate(children):
+        content = text[child[0]:child[1]]
+        parent_reference = find_parent_reference(child[2], single_refs,
+                        kinds_hierarchies)
+        child_reference = SingleCodeReference(
+                content=content,
+                kind_hint=kinds[child[2]],
+                child_index=i,
+                parent_reference=parent_reference)
+        if save_index:
+            child_reference.index = index
+        if find_context:
+            child_reference.sentence = find_sentence(text, child[0],
+                    child[1])
+            child_reference.paragraph = find_paragraph(text, child[0],
+                    child[1])
+        child_reference.save()
+        single_refs.append(child_reference)
+
+
+def process_matches(text, matches, single_refs, kinds, kinds_hierarchies,
+        save_index, find_context):
     filtered = set()
-    avoided = False
-
-    kind_text = kind_hint.kind
-    if kind_text not in kind_strategies:
-        kind_text = 'unknown'
-
-    for strategy in kind_strategies[kind_text]:
-        matches.extend(strategy.match(text))
-
-    # Sort to get correct indices
-    matches.sort(key=lambda match: match[0][0])
-
     index = 0
+    avoided = False
 
     for match in matches:
         if is_valid_match(match, matches, filtered):
@@ -488,27 +510,37 @@ def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
             single_refs.append(main_reference)
 
             # Process children
-            for i, child in enumerate(children):
-                content = text[child[0]:child[1]]
-                parent_reference = find_parent_reference(child[2], single_refs,
-                                kinds_hierarchies)
-                child_reference = SingleCodeReference(
-                        content=content,
-                        kind_hint=kinds[child[2]],
-                        child_index=i,
-                        parent_reference=parent_reference)
-                if save_index:
-                    child_reference.index = index
-                if find_context:
-                    child_reference.sentence = find_sentence(text, child[0],
-                            child[1])
-                    child_reference.paragraph = find_paragraph(text, child[0],
-                            child[1])
-                child_reference.save()
-                single_refs.append(child_reference)
+            process_children_matches(text, matches, children, index,
+                    single_refs, kinds, kinds_hierarchies, save_index,
+                    find_context)
             index += 1
         else:
             filtered.add(match)
+
+    return avoided
+
+
+def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
+        kinds_hierarchies=ALL_KINDS_HIERARCHIES, save_index=False,
+        strict=False, find_context=False, code_words=None):
+    single_refs = []
+    matches = []
+
+    kind_text = kind_hint.kind
+    if kind_text not in kind_strategies:
+        kind_text = 'unknown'
+
+    for strategy in kind_strategies[kind_text]:
+        matches.extend(strategy.match(text))
+
+    if code_words is not None:
+        matches.extend(parse_text_code_words(text, code_words))
+
+    # Sort to get correct indices
+    matches.sort(key=lambda match: match[0][0])
+
+    avoided = process_matches(text, matches, single_refs, kinds,
+            kinds_hierarchies, save_index, find_context)
 
     if len(single_refs) == 0 and not avoided and not strict:
         code = SingleCodeReference(content=text, kind_hint=kind_hint)
@@ -529,6 +561,7 @@ def get_default_p_classifiers():
         partial(is_java_lines, filters=get_default_filters()[JAVA_LANGUAGE]),
         JAVA_LANGUAGE))
     p_classifiers.append((is_exception_trace_lines, JAVA_EXCEPTION_TRACE))
+    p_classifiers.append((is_log_lines, LOG_LANGUAGE))
     p_classifiers.append((is_xml_lines, XML_LANGUAGE))
 
     return p_classifiers

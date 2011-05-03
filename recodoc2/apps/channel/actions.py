@@ -4,6 +4,7 @@ import logging
 from django.conf import settings
 from django.db import transaction
 
+from docutil.str_util import get_original_title
 from docutil.progress_monitor import CLIProgressMonitor
 from docutil.commands_util import mkdir_safe, dump_model, load_model,\
     import_clazz
@@ -170,4 +171,90 @@ def parse_channel(pname, cname, parse_refs=True):
 
 
 def post_process_channel(pname, cname):
-    pass
+    channel = SupportChannel.objects.filter(project__dir_name=pname).\
+            get(dir_name=cname)
+    progress_monitor = CLIProgressMonitor()
+
+    query = Message.objects.filter(sthread__isnull=True)
+    progress_monitor.start('Post Processing', query.count())
+    for message in query.all():
+        post_process_message(channel, message)
+        progress_monitor.work('Post processed a message', 1)
+    progress_monitor.done()
+
+    progress_monitor.start('Post Porcessing Threads', channel.threads.count())
+    for thread in channel.threads.iterator():
+        post_process_thread(channel, thread)
+        progress_monitor.work('Post processed a thread', 1)
+    progress_monitor.done()
+
+    query = Message.objects.filter(sthread__channel=channel)
+    progress_monitor.start('Post Processing References', query.count())
+    for message in query.all():
+        post_process_message_refs(message)
+        progress_monitor.work('Processed references', 1)
+    progress_monitor.done()
+
+    return channel
+
+
+### INTERNAL FUNCTIONS ###
+
+def post_process_message(channel, message):
+    original_title = get_original_title(message.title)
+
+    potential_threads = channel.threads.\
+            filter(title__iexact=original_title).\
+            filter(first_date__lte=message.msg_date).\
+            order_by('first_date')
+    count = potential_threads.count()
+    if count == 1:
+        potential_threads.all()[0].messages.add(message)
+    elif count > 1:
+        logger.warning("More than one thread for this title: {0}"
+                .format(original_title))
+        potential_threads.all()[0].messages.add(message)
+    else:
+        start_thread(message.title, message, channel)
+
+
+def post_process_thread(channel, thread):
+    messages = thread.messages.order_by('msg_date').all()
+    last_index = -1
+    for i, message in enumerate(messages):
+        message.index = i
+        message.save()
+        last_index = i
+    if last_index > -1:
+        thread.last_date = messages[last_index].msg_date
+    elif thread.last_date is None:
+        logger.error('This thread {0} has no message!'.format(thread.pk))
+        thread.last_date = None
+
+    thread.save()
+
+
+def start_thread(title, support_message, channel):
+    # This is a thread!
+
+    support_thread = SupportThread(
+            title=title,
+            first_date=support_message.msg_date,
+            url=support_message.url,
+            file_path=support_message.file_path,
+            channel=channel,
+            pages=1)
+    support_thread.save()
+    support_message.index = 0
+    support_message.save()
+    support_thread.messages.add(support_message)
+
+
+def post_process_message_refs(message):
+    sthread = message.sthread
+    for reference in message.code_references.all():
+        reference.global_context = sthread
+        reference.save()
+    for snippet in message.code_snippets.all():
+        snippet.global_context = sthread
+        snippet.save()

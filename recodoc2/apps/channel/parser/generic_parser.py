@@ -14,7 +14,7 @@ from docutil.commands_util import chunk_it, import_clazz, download_html_tree
 from project.models import Person
 from codebase.actions import get_default_p_classifiers,\
         get_default_kind_dict, get_java_strategies,\
-        parse_single_code_references
+        parse_single_code_references, get_project_code_words
 from codebase.models import CHANNEL_SOURCE, CodeSnippet, SingleCodeReference
 from channel.models import SupportChannel, SupportThread, Message
 
@@ -83,6 +83,7 @@ class ParserLoad(object):
         self.tree = None
         self.entry = None
         self.sub_entries = None
+        self.code_words = None
 
 
 class GenericParser(object):
@@ -96,8 +97,15 @@ class GenericParser(object):
         self.kinds = get_default_kind_dict()
         self.kind_strategies = get_java_strategies()
 
+    def _build_code_words(self, load):
+        # Build code words and put it in self.load
+        load.code_words = \
+            get_project_code_words(self.channel.project)
+
     def parse_entry(self, local_paths, url):
         load = ParserLoad()
+        self._build_code_words(load)
+
         for i, local_path in enumerate(local_paths):
             path = os.path.join(settings.PROJECT_FS_ROOT, local_path)
             load.tree = download_html_tree(path)
@@ -193,8 +201,8 @@ class GenericMailParser(GenericParser):
 
         (text_paragraphs, snippets) = filter_paragraphs(paragraphs,
                 get_default_p_classifiers())
-        self._parse_paragraphs(message, text_paragraphs)
-        self._save_snippets(message, snippets)
+        self._parse_paragraphs(message, load, text_paragraphs)
+        self._save_snippets(message, load, snippets)
 
     def _get_lines(self, message, load, ucontent):
         lines = []
@@ -225,14 +233,15 @@ class GenericMailParser(GenericParser):
         else:
             return False
 
-    def _parse_paragraphs(self, message, text_paragraphs):
+    def _parse_paragraphs(self, message, load, text_paragraphs):
         for para_index, paragraph in enumerate(text_paragraphs):
             text = merge_lines(paragraph, False)
             kind_hint = self.kinds['unknown']
             for i, code in enumerate(
                     parse_single_code_references(
                         text, kind_hint, self.kind_strategies,
-                        self.kinds, find_context=True)):
+                        self.kinds, find_context=True, strict=True,
+                        code_words=load.code_words)):
                 code.file_path = message.file_path
                 code.url = message.url
                 code.index = i + (para_index * 1000)
@@ -240,7 +249,7 @@ class GenericMailParser(GenericParser):
                 code.local_context = message
                 code.save()
 
-    def _save_snippets(self, message, snippets):
+    def _save_snippets(self, message, load, snippets):
         for index, (snippet, language) in enumerate(snippets):
             if language == REPLY_LANGUAGE:
                 continue

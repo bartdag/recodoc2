@@ -16,6 +16,26 @@ REPLY_LANGUAGE = 'r'
 OTHER_LANGUAGE = 'o'
 STOP_LANGUAGE = 's'
 
+SPLIT_PATTERN = re.compile(r"[\w']+|[.,!?;]")
+
+
+def get_original_title(title):
+    original_title = title.replace('re:','').replace('RE:','').\
+            replace('Re:','').replace('rE:','').strip()
+    return original_title
+
+
+def split_pos(text):
+    '''Split some text and return a list of tuples of the form
+       (word, start, end)'''
+    splits = []
+    for match in SPLIT_PATTERN.finditer(text):
+        word = match.group(0)
+        if word.isalnum():
+            splits.append((word,match.start(),match.end()))
+    return splits
+
+
 def get_month_as_int(month_str):
     return MONTHS[month_str.lower()]
 

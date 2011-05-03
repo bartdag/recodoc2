@@ -7,6 +7,11 @@ OTHER_LANGUAGE = 'o'
 
 IGNORE_KIND = 'ignore'
 
+LOG_STD_THRESHOLD = 0.4
+
+LOG_CONFIDENT_THRESHOLD = 0.3
+
+LOG_LANGUAGE = 'l'
 
 ### REGEX ###
 
@@ -132,11 +137,67 @@ DEFINITION_ELEMENT_RE = re.compile(r'''
     ''', re.VERBOSE)
 
 
+### LOG TRACE REGEX ###
+
+LOG_LEVEL_RE = re.compile(r'''
+    (?:\[)?
+    (DEBUG|INFO|WARNING|WARN|ERROR|CRITICAL)
+    (?:\])?
+    ''', re.VERBOSE)
+
+LOG_DATE_RE = re.compile(r'''
+    \d{2,4}
+    -|/
+    \d{2}
+    -|/
+    \d{2}
+    \s+
+    \d{2}
+    :|-
+    \d{2}
+    :|-
+    \d{2}
+    ,
+    \d{3}
+    ''', re.VERBOSE)
+
+LOG_SOURCE_LOCATION_RE = re.compile(r'''
+    \w+
+    :
+    \d+
+    ''', re.VERBOSE)
+
+
 ### Paragraph Language Identification ###
 
 def is_empty_lines(lines):
     return (sum(1 for line in lines if line.strip() != '') == 0, 1.0)
 
+
+def is_log_lines(lines):
+    log_lines = 0
+    empty_lines = 0
+    strong_hint = False
+    for line in lines:
+        if line.strip() == '':
+            empty_lines += 1
+        elif LOG_LEVEL_RE.search(line) is not None:
+            log_lines += 1
+            if LOG_DATE_RE.search(line) is not None or\
+               LOG_SOURCE_LOCATION_RE.search(line) is not None:
+                strong_hint = True
+        elif LOG_DATE_RE.search(line) is not None:
+            log_lines += 1
+        elif LOG_SOURCE_LOCATION_RE.search(line) is not None:
+            log_lines += 1
+    confidence = float(log_lines) / (len(lines) - empty_lines)
+
+    if strong_hint:
+        is_log_kind = confidence >= LOG_CONFIDENT_THRESHOLD
+    else:
+        is_log_kind = confidence >= LOG_STD_THRESHOLD
+
+    return (is_log_kind, confidence)
 
 ### Identification and Classification ###
 

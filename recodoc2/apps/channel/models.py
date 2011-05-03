@@ -41,8 +41,8 @@ class SupportThread(models.Model):
     title = models.CharField(max_length=500, default='', null=True, blank=True)
     '''at'''
 
-    thread_id = models.CharField(max_length=500, null=True, blank=True)
-    '''at'''
+    #thread_id = models.CharField(max_length=500, null=True, blank=True)
+    #'''at'''
 
     pages = models.IntegerField()
     '''Number of pages in support thread.'''
@@ -67,7 +67,7 @@ class SupportThread(models.Model):
 
     class Meta:
         order_with_respect_to = 'channel'
-        ordering = ['thread_id']
+        ordering = ['first_date']
 
 
 class Message(SourceElement):
@@ -75,7 +75,7 @@ class Message(SourceElement):
     title = models.CharField(max_length=500, null=True, blank=True)
     '''at'''
 
-    index = models.IntegerField(default=0)
+    index = models.IntegerField(default=-1)
     '''Index of the message in the thread. 0-based.'''
 
     msg_date = models.DateTimeField(null=True, blank=True)

@@ -16,7 +16,8 @@ from codebase.actions import create_code_element_kinds
 from channel.models import SupportChannel, Message
 from channel.actions import create_channel_local, create_channel_db,\
         list_channels_db, list_channels_local, get_channel_path, toc_refresh,\
-        toc_download_section, toc_download_entries, parse_channel
+        toc_download_section, toc_download_entries, parse_channel,\
+        post_process_channel
 
 
 class ChannelSetup(TestCase):
@@ -190,10 +191,45 @@ class ChannelParserTest(TransactionTestCase):
         toc_download_entries(pname, cname, 9, 99)
         parse_channel(pname, cname, True)
         self.assertEqual(8, Message.objects.all().count())
-        for message in Message.objects.all():
+        messages = list(Message.objects.all())
+        for message in messages:
             print('{0} by {1} on {2} (wc: {3})'.format(
                 message.title, message.author, message.msg_date,
                 message.word_count))
             print('  {0} snippets and {1} references'.format(
                 message.code_snippets.count(),
                 message.code_references.count()))
+            print('  Snippets:')
+            for code_snippet in message.code_snippets.all():
+                print('    {0}'.format(code_snippet.language))
+
+            for ref in message.code_references.all():
+                print('    {0}: {1}'.format(ref.kind_hint.kind, ref.content))
+
+        
+        # Test Snippets
+        third_to_last = messages[-3]
+        self.assertEqual('l', third_to_last.code_snippets.all()[0].language)
+        self.assertEqual('jx', third_to_last.code_snippets.all()[1].language)
+
+        # Test Refs
+        fourth_to_last = messages[-4]
+        refs = [ref.content.strip() for ref in
+                fourth_to_last.code_references.all()]
+        self.assertEqual(4, len(refs))
+        self.assertTrue('EasySSLProtocolSocketFactory' in refs)
+        self.assertTrue('SSL' in refs)
+
+        # Test Post-Processing!
+        channel = post_process_channel(pname, cname)
+        self.assertEqual(4, channel.threads.count())
+
+        second_thread = channel.threads.all()[1]
+        self.assertEqual(3, second_thread.messages.count())
+
+        indexes = [msg.index for msg in second_thread.messages.all()]
+        self.assertEqual([0, 1, 2], indexes)
+        self.assertFalse(second_thread.messages.all()[0].title.lower()
+                .startswith('re'))
+        self.assertTrue(second_thread.messages.all()[1].title.lower()
+                .startswith('re'))
