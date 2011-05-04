@@ -84,11 +84,27 @@ class ParserLoad(object):
         self.entry = None
         self.sub_entries = None
         self.code_words = None
+        self.entry_element = None
 
 
 class GenericParser(object):
 
     LINE_THRESHOLD = 250
+
+    xtitle = None
+    '''XPath to find the message title. Required'''
+
+    xauthor = None
+    '''XPath to find the message author. Required'''
+
+    xdate = None
+    '''XPath to find the message date. Required'''
+
+    xcontent = None
+    '''XPath to find the message content. Required'''
+
+    xsnippets = None
+    '''XPath to find the snippets in a message. Optional'''
 
     def __init__(self, channel_pk, parse_refs, lock):
         self.lock = lock
@@ -111,6 +127,54 @@ class GenericParser(object):
             load.tree = download_html_tree(path)
             self._parse_entry(path, local_path, url, i, load)
 
+    def _parse_message(self, path, relative_path, url, index, load):
+        message = Message(url=url, file_path=relative_path)
+        message.index = index
+
+        message.title = self._process_title(message, load)
+
+        author_text = self._process_author(message, load)
+        if author_text is not None:
+            message.author = self._get_author(author_text, self.lock)
+
+        message.msg_date = self._process_date(message, load)
+
+        ucontent = self._process_content(message, load)
+        snippet_elements = self._process_snippets(message, load)
+
+        message.word_count = get_word_count_text(ucontent)
+
+        message.save()
+
+        if self.parse_refs:
+            self._process_references(message, load, ucontent, snippet_elements)
+
+    def _process_title(self, message, load):
+        title = self.xtitle.get_text_from_parent(load.entry_element)
+        if title is None or title == '':
+            title = 'Default Title'
+            logger.warning('No title for message {0}'
+                    .format(message.file_path))
+        return title
+
+    def _process_author(self, message, load):
+        author_text = self.xauthor.get_text_from_parent(load.entry_element)
+        author_text = author_text.replace('&lt;', '<')
+        index = author_text.find('<')
+        if index > -1:
+            return author_text[:index].strip()
+        else:
+            return author_text.strip()
+
+    def _process_date(self, message, load):
+        date_text = self.xdate.get_text_from_parent(load.entry_element).strip()
+        date = self._process_date_text(message, load, date_text)
+        return date
+
+    def _process_date_text(self, message, load, date_text):
+        pass
+
+
     def _get_author(self, nickname, lock=None):
         with lock:
             try:
@@ -124,72 +188,18 @@ class GenericParser(object):
         count = sum((len(paragraph) for paragraph in paragraphs))
         return (count, count > self.LINE_THRESHOLD)
 
-
-class GenericMailParser(GenericParser):
-
-    xtitle = None
-    '''XPath to find the message title. Required'''
-
-    xauthor = None
-    '''XPath to find the message author. Required'''
-
-    xdate = None
-    '''XPath to find the message date. Required'''
-
-    xcontent = None
-    '''XPath to find the message content. Required'''
-
-    def __init__(self, channel_pk, parse_refs, lock):
-        super(GenericMailParser, self).__init__(channel_pk, parse_refs, lock)
-
-    def _parse_entry(self, path, relative_path, url, index, load):
-        message = Message(url=url, file_path=relative_path)
-
-        message.title = self._process_title(message, load)
-
-        author_text = self._process_author(message, load)
-        if author_text is not None:
-            message.author = self._get_author(author_text, self.lock)
-
-        message.msg_date = self._process_date(message, load)
-
-        ucontent = self._process_content(message, load)
-        message.word_count = get_word_count_text(ucontent)
-        message.save()
-
-        if self.parse_refs:
-            self._process_references(message, load, ucontent)
-
-    def _process_title(self, message, load):
-        title = self.xtitle.get_text_from_parent(load.tree)
-        if title is None or title == '':
-            title = 'Default Title'
-            logger.warning('No title for message {0}'
-                    .format(message.file_path))
-        return title
-
-    def _process_author(self, message, load):
-        author_text = self.xauthor.get_text_from_parent(load.tree)
-        author_text = author_text.replace('&lt;', '<')
-        index = author_text.find('<')
-        if index > -1:
-            return author_text[:index].strip()
-        else:
-            return author_text.strip()
-
-    def _process_date(self, message, load):
-        date_text = self.xdate.get_text_from_parent(load.tree).strip()
-        date = self._process_date_text(message, load, date_text)
-        return date
-
-    def _process_date_text(self, message, load, date_text):
-        pass
-
     def _process_content(self, message, load):
-        ucontent = self.xcontent.get_text_from_parent(load.tree).strip()
+        ucontent = self.xcontent.get_text_from_parent(load.entry_element)\
+                .strip()
         return ucontent
 
-    def _process_references(self, message, load, ucontent):
+    def _process_snippets(self, message, load):
+        if self.xsnippets is None:
+            return []
+        else:
+            return self.xsnippet.get_elements(load.entry_element)
+
+    def _process_references(self, message, load, ucontent, snippet_elements):
         lines = self._get_lines(message, load, ucontent)
         paragraphs = get_paragraphs(lines)
 
@@ -265,6 +275,16 @@ class GenericMailParser(GenericParser):
             code.project = self.channel.project
             code.save()
 
+
+class GenericMailParser(GenericParser):
+
+
+    def __init__(self, channel_pk, parse_refs, lock):
+        super(GenericMailParser, self).__init__(channel_pk, parse_refs, lock)
+
+    def _parse_entry(self, path, relative_path, url, index, load):
+        load.entry_element = load.tree
+        self._parse_message(path, relative_path, url, index, load)
 
 
 class GenericThreadParser(GenericParser):
