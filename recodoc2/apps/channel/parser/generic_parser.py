@@ -82,7 +82,7 @@ class ParserLoad(object):
     def __init__(self):
         self.tree = None
         self.entry = None
-        self.sub_entries = None
+        self.sub_entries = []
         self.code_words = None
         self.entry_element = None
 
@@ -103,9 +103,6 @@ class GenericParser(object):
     xcontent = None
     '''XPath to find the message content. Required'''
 
-    xsnippets = None
-    '''XPath to find the snippets in a message. Optional'''
-
     def __init__(self, channel_pk, parse_refs, lock):
         self.lock = lock
         self.channel = SupportChannel.objects.get(pk=channel_pk)
@@ -121,11 +118,20 @@ class GenericParser(object):
     def parse_entry(self, local_paths, url):
         load = ParserLoad()
         self._build_code_words(load)
+        self._pre_parse_entry(load, local_paths, url)
 
         for i, local_path in enumerate(local_paths):
             path = os.path.join(settings.PROJECT_FS_ROOT, local_path)
             load.tree = download_html_tree(path)
             self._parse_entry(path, local_path, url, i, load)
+
+        self._post_parse_entry(load)
+
+    def _pre_parse_entry(self, load, local_paths, url):
+        pass
+
+    def _post_parse_entry(self, load):
+        pass
 
     def _parse_message(self, path, relative_path, url, index, load):
         message = Message(url=url, file_path=relative_path)
@@ -140,14 +146,15 @@ class GenericParser(object):
         message.msg_date = self._process_date(message, load)
 
         ucontent = self._process_content(message, load)
-        snippet_elements = self._process_snippets(message, load)
 
         message.word_count = get_word_count_text(ucontent)
 
         message.save()
 
+        load.sub_entries.append(message)
+
         if self.parse_refs:
-            self._process_references(message, load, ucontent, snippet_elements)
+            self._process_references(message, load, ucontent)
 
     def _process_title(self, message, load):
         title = self.xtitle.get_text_from_parent(load.entry_element)
@@ -174,7 +181,6 @@ class GenericParser(object):
     def _process_date_text(self, message, load, date_text):
         pass
 
-
     def _get_author(self, nickname, lock=None):
         with lock:
             try:
@@ -193,13 +199,7 @@ class GenericParser(object):
                 .strip()
         return ucontent
 
-    def _process_snippets(self, message, load):
-        if self.xsnippets is None:
-            return []
-        else:
-            return self.xsnippet.get_elements(load.entry_element)
-
-    def _process_references(self, message, load, ucontent, snippet_elements):
+    def _process_references(self, message, load, ucontent):
         lines = self._get_lines(message, load, ucontent)
         paragraphs = get_paragraphs(lines)
 
@@ -216,16 +216,16 @@ class GenericParser(object):
 
     def _get_lines(self, message, load, ucontent):
         lines = []
-        
+
         if not message.title.lower().strip().startswith('re:'):
             lines.append(clean_breaks(message.title))
             lines.append('')
 
-        new_content = ucontent.replace('\r','').replace('\t', ' ')
+        new_content = ucontent.replace('\r', '').replace('\t', ' ')
         content_lines = new_content.split('\n')
         for content_line in content_lines:
-            content_line = content_line.replace('&lt;','<')\
-                    .replace('&gt;','>')
+            content_line = content_line.replace('&lt;', '<')\
+                    .replace('&gt;', '>')
             if not self._uninteresting_line(content_line):
                 lines.append(content_line)
 
@@ -272,12 +272,15 @@ class GenericParser(object):
                     snippet_text=text,
                     index=index)
             code.local_context = message
+
+            if load.entry is not None:
+                code.global_context = load.entry
+
             code.project = self.channel.project
             code.save()
 
 
 class GenericMailParser(GenericParser):
-
 
     def __init__(self, channel_pk, parse_refs, lock):
         super(GenericMailParser, self).__init__(channel_pk, parse_refs, lock)
@@ -289,8 +292,38 @@ class GenericMailParser(GenericParser):
 
 class GenericThreadParser(GenericParser):
 
+    xmessages = None
+    '''XPath to find messages in a thread. Required'''
+
+    msg_per_page = 10
+    '''Constant used to determine the index of the messages'''
+
     def __init__(self, channel_pk, parse_refs, lock):
         super(GenericThreadParser, self).__init__(channel_pk, parse_refs, lock)
 
+    def _pre_parse_entry(self, load, local_paths, url):
+        # TODO: Create a thread here!
+        sthread = SupportThread(
+                url=url,
+                file_path=local_paths[0],
+                pages=len(local_paths),
+                channel=self.channel
+                )
+        sthread.save()
+        load.entry = sthread
+
+    def _post_parse_entry(self, load):
+        # TODO: Thread first and last date.
+        sthread = load.entry
+        if len(load.sub_entries) > 0:
+            sthread.title = load.sub_entries[0].title
+            sthread.first_date = load.sub_entries[0].msg_date
+            sthread.last_date = load.sub_entries[-1].msg_date
+        sthread.save()
+
     def _parse_entry(self, path, relative_path, url, index, load):
-        pass
+        message_elements = self.xmessages.get_elements(load.tree)
+        for i, message_element in enumerate(message_elements):
+            load.entry_element = load.tree
+            msg_index = (index * self.msg_per_page) + i
+            self._parse_message(path, relative_path, url, msg_index, load)
