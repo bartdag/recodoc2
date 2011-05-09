@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import os
 import logging
 import unittest
+from datetime import datetime
 from django.test import TestCase, TransactionTestCase
 from django.conf import settings
 from django.db import transaction
@@ -233,3 +234,54 @@ class ChannelParserTest(TransactionTestCase):
                 .startswith('re'))
         self.assertTrue(second_thread.messages.all()[1].title.lower()
                 .startswith('re'))
+
+    @transaction.autocommit
+    def test_phpbb_parser(self):
+        create_channel_db('project1', 'cf', 'coreforum',
+                'channel.syncer.common_syncers.PHPBBForumSyncer',
+                'channel.parser.common_parsers.PHPBBForumParser',
+                'https://forum.hibernate.org/viewforum.php?f=1&start=0'
+                )
+        create_channel_local('project1', 'coreforum',
+                'channel.syncer.common_syncers.PHPBBForumSyncer',
+                'https://forum.hibernate.org/viewforum.php?f=1&start=0'
+                )
+        pname = 'project1'
+        cname = 'coreforum'
+        toc_refresh(pname, cname)
+        toc_download_section(pname, cname, start=0, end=2)
+        toc_download_entries(pname, cname, 1023, 1025)
+        parse_channel(pname, cname, True)
+        self.assertEqual(23, Message.objects.all().count())
+        messages = list(Message.objects.all())
+        for message in messages:
+            print('{0} by {1} on {2} (wc: {3})'.format(
+                message.title, message.author, message.msg_date,
+                message.word_count))
+            print('  {0} snippets and {1} references'.format(
+                message.code_snippets.count(),
+                message.code_references.count()))
+            print('  Snippets:')
+            for code_snippet in message.code_snippets.all():
+                print('    {0}'.format(code_snippet.language))
+
+            for ref in message.code_references.all():
+                print('    {0}: {1}'.format(ref.kind_hint.kind, ref.content))
+        
+        # Test Snippets
+        first_message = messages[0]
+        self.assertEqual('x', first_message.code_snippets.all()[0].language)
+
+        # Test Author
+        self.assertEqual(first_message.author.nickname, 'mhellkamp')
+
+        # Test Date
+        self.assertEqual(first_message.msg_date, datetime(2003, 8, 29, 10, 16))
+
+        # Test Refs
+        third_message = messages[2]
+        refs = [ref.content.strip() for ref in
+                third_message.code_references.all()]
+        self.assertEqual(4, len(refs))
+        self.assertTrue('DBCP' in refs)
+        self.assertTrue('C3P0' in refs)

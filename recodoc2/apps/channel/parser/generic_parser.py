@@ -15,7 +15,7 @@ from project.models import Person
 from codebase.actions import get_default_p_classifiers,\
         get_default_kind_dict, get_java_strategies,\
         parse_single_code_references, get_project_code_words
-from codebase.models import CHANNEL_SOURCE, CodeSnippet, SingleCodeReference
+from codebase.models import CHANNEL_SOURCE, CodeSnippet
 from channel.models import SupportChannel, SupportThread, Message
 
 
@@ -37,7 +37,7 @@ def sub_process_parse(einput):
             if entry_input is not None:
                 (local_paths, url) = entry_input
                 # Check if downloaded
-                if local_paths is not None or len(local_paths) > 0:
+                if local_paths is not None and len(local_paths) > 0:
                     parser.parse_entry(local_paths, url)
         return True
     except Exception:
@@ -158,7 +158,7 @@ class GenericParser(object):
 
     def _process_title(self, message, load):
         title = self.xtitle.get_text_from_parent(load.entry_element)
-        if title is None or title == '':
+        if title is None or title.strip() == '':
             title = 'Default Title'
             logger.warning('No title for message {0}'
                     .format(message.file_path))
@@ -302,7 +302,6 @@ class GenericThreadParser(GenericParser):
         super(GenericThreadParser, self).__init__(channel_pk, parse_refs, lock)
 
     def _pre_parse_entry(self, load, local_paths, url):
-        # TODO: Create a thread here!
         sthread = SupportThread(
                 url=url,
                 file_path=local_paths[0],
@@ -313,7 +312,6 @@ class GenericThreadParser(GenericParser):
         load.entry = sthread
 
     def _post_parse_entry(self, load):
-        # TODO: Thread first and last date.
         sthread = load.entry
         if len(load.sub_entries) > 0:
             sthread.title = load.sub_entries[0].title
@@ -321,9 +319,18 @@ class GenericThreadParser(GenericParser):
             sthread.last_date = load.sub_entries[-1].msg_date
         sthread.save()
 
-    def _parse_entry(self, path, relative_path, url, index, load):
+    def _get_messages(self, load):
         message_elements = self.xmessages.get_elements(load.tree)
+        return message_elements
+        
+    def _parse_entry(self, path, relative_path, url, index, load):
+        message_elements = self._get_messages(load)
         for i, message_element in enumerate(message_elements):
-            load.entry_element = load.tree
+            load.entry_element = message_element
             msg_index = (index * self.msg_per_page) + i
             self._parse_message(path, relative_path, url, msg_index, load)
+
+    def _process_content(self, message, load):
+        ucontent = self.xcontent.get_text_from_parent(load.entry_element)\
+                .strip()
+        return ucontent.replace('\n','\n\n')

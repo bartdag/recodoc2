@@ -332,7 +332,7 @@ class DocParserTest(TransactionTestCase):
         section = Section.objects.filter(page=page).filter(
                 number='2.3.1.').all()[0]
         self.assertEqual('2.3.1. Route computation', section.title)
-        self.assertEqual(180, section.word_count)
+        self.assertEqual(182, section.word_count)
         self.assertEqual('2.3.', section.parent.number)
 
         # With code snippets:

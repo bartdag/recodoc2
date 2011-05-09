@@ -149,8 +149,8 @@ class SingleXPath(object):
 
 
 class HierarchyXPath(SingleXPath):
-    def __init__(self, xpath_str, xpath_str_filter, xtext=XTEXT):
-        super(HierarchyXPath, self).__init__(xpath_str, xtext)
+    def __init__(self, xpath_str, xpath_str_filter):
+        super(HierarchyXPath, self).__init__(xpath_str, None)
         self.first_filter = etree.XPath(xpath_str_filter)
 
     def get_element_as_list(self, element):
@@ -182,5 +182,6 @@ class HierarchyXPath(SingleXPath):
         for bad_element in bad_elements:
             if bad_element in new_element:
                 new_element.remove(bad_element)
-        text = self.xtext(new_element)
+        text = new_element.xpath('.//text()')
+        text = '\n'.join(text)
         return normalize(text)
