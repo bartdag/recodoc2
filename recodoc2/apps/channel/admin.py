@@ -28,7 +28,7 @@ class MessageAdmin(admin.ModelAdmin):
     ordering = ('title',)
     list_filter = ('sthread__channel',)
     list_display = ('pk', 'sthread', 'title')
-    list_display_links = ('title',)
+    list_display_links = ('pk', 'title',)
     search_fields = ['title', 'id']
     inlines = [SingleCodeReferenceInline, CodeSnippetInline]
 
@@ -36,7 +36,7 @@ class MessageAdmin(admin.ModelAdmin):
 class MessageInline(admin.StackedInline):
     model = Message
     extra = 0
-    ordering = ('title',)
+    ordering = ('index',)
 
 
 class SThreadAdmin(admin.ModelAdmin):

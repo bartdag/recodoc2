@@ -279,9 +279,9 @@ class ChannelParserTest(TransactionTestCase):
         self.assertEqual(first_message.msg_date, datetime(2003, 8, 29, 10, 16))
 
         # Test Refs
-        third_message = messages[2]
+        second_message = messages[1]
         refs = [ref.content.strip() for ref in
-                third_message.code_references.all()]
+                second_message.code_references.all()]
         self.assertEqual(4, len(refs))
         self.assertTrue('DBCP' in refs)
         self.assertTrue('C3P0' in refs)
