@@ -149,6 +149,9 @@ class GenericParser(object):
 
         message.word_count = get_word_count_text(ucontent)
 
+        if load.entry is not None:
+            message.sthread = load.entry
+
         message.save()
 
         load.sub_entries.append(message)

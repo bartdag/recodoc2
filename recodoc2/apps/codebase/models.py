@@ -87,6 +87,14 @@ class CodeElementFilter(models.Model):
     fqn = models.CharField(max_length=500, null=True, blank=True)
     '''att.'''
 
+    include_snippet = models.BooleanField(default=True)
+    '''If False, code references are not matched against this filter
+       if they come from a code snippet.'''
+
+    one_ref_only = models.BooleanField(default=False)
+    '''If True, a code reference will be matched only if it is not
+       attached to other references.'''
+
     def __unicode__(self):
         return self.fqn
 

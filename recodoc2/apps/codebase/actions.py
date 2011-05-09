@@ -4,6 +4,7 @@ import time
 import os
 import logging
 from functools import partial
+from lxml import etree
 import enchant
 from py4j.java_gateway import JavaGateway
 from django.conf import settings
@@ -23,12 +24,12 @@ from codeutil.reply_element import REPLY_LANGUAGE, is_reply_lines,\
         is_reply_header, STOP_LANGUAGE, is_rest_reply
 from docutil.str_util import tokenize, find_sentence, find_paragraph, split_pos
 from docutil.cache_util import get_value, get_codebase_key
-from docutil.commands_util import mkdir_safe, import_clazz
+from docutil.commands_util import mkdir_safe, import_clazz, download_html_tree
 from docutil.progress_monitor import CLILockProgressMonitor
 from project.models import ProjectRelease, Project
 from project.actions import CODEBASE_PATH
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
-        SingleCodeReference, CodeSnippet
+        SingleCodeReference, CodeSnippet, CodeElementFilter
 from codebase.parser.java_diff import JavaDiffer
 
 
@@ -56,6 +57,15 @@ XML_KINDS_HIERARCHY = {'xml attribute': 'xml element',
                        'xml attribute value': 'xml attribute'}
 
 ALL_KINDS_HIERARCHIES = dict(JAVA_KINDS_HIERARCHY, **XML_KINDS_HIERARCHY)
+
+# Constants used by filter
+xtext = etree.XPath("string()")
+
+xpackage = etree.XPath("//h2")
+
+xmember_tables = etree.XPath("//body/table")
+
+xmembers = etree.XPath("tr/td[1]")
 
 logger = logging.getLogger("recodoc.codebase.actions")
 
@@ -324,7 +334,64 @@ def diff_codebases(pname, bname, release1, release2):
     return differ.diff(codebase_from, codebase_to)
 
 
+def create_filter_file(file_path, url):
+    new_file_path = os.path.join(settings.PROJECT_FS_ROOT, file_path)
+    if os.path.exists(new_file_path):
+        mode = 'a'
+    else:
+        mode = 'w'
+
+    with open(new_file_path, mode) as afile:
+        tree = download_html_tree(url)
+        package_name = get_package_name(tree)
+        tables = xmember_tables(tree)
+        for table in tables[1:-1]:
+            for member in xmembers(table):
+                member_string = "{0}.{1}".format(package_name, xtext(member))
+                afile.write(member_string + '\n')
+                print(member_string)
+
+
+def add_filter(pname, bname, release, filter_files):
+    prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    codebase = CodeBase.objects.filter(project_release=prelease).\
+            filter(name=bname)[0]
+    count = countfilter = 0
+    for filterfile in filter_files.split(','):
+        file_path = os.path.join(settings.PROJECT_FS_ROOT,
+                filterfile.strip() + '.txt')
+        with open(file_path) as afile:
+            for line in afile.readlines():
+                code_filter = CodeElementFilter(
+                        codebase=codebase,
+                        fqn=line.strip())
+                code_filter.save()
+                countfilter += 1
+            count += 1
+    print('Added {0} filter groups and {1} individual filters.'
+            .format(count, countfilter))
+
+
+def add_a_filter(pname, bname, release, filter_fqn, include_snippet=True,
+        one_ref_only=False):
+    prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    codebase = CodeBase.objects.filter(project_release=prelease).\
+            filter(name=bname)[0]
+    code_filter = CodeElementFilter(
+            codebase=codebase,
+            fqn=filter_fqn,
+            include_snippet=include_snippet,
+            one_ref_only=one_ref_only)
+    code_filter.save()
+
+
 ### ACTIONS USED BY OTHER ACTIONS ###
+
+def get_package_name(tree):
+    package_text = xtext(xpackage(tree)[0]).strip()
+    return package_text[len('Package '):]
 
 
 def compute_code_words(codebase):
