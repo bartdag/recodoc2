@@ -264,6 +264,9 @@ class CodeSnippet(SourceElement):
     project = models.ForeignKey(Project, null=True, blank=True)
     '''Project the snippet belongs to'''
 
+    project_release = models.ForeignKey(ProjectRelease, null=True, blank=True)
+    '''Project Release the reference belongs to. Optional.'''
+
     language = models.CharField(max_length=2, null=True, blank=True,
             choices=LANGUAGES, default='j')
     '''Probable language of the snippet (e.g., java, xml)'''
@@ -316,6 +319,9 @@ class SingleCodeReference(SourceElement):
 
     project = models.ForeignKey(Project, null=True, blank=True)
     '''Project the reference belongs to'''
+
+    project_release = models.ForeignKey(ProjectRelease, null=True, blank=True)
+    '''Project Release the reference belongs to. Optional.'''
 
     content = models.TextField(null=True, blank=True)
     '''Textual content of the reference. Handle (custom format) if the code
@@ -508,6 +514,9 @@ class CodeElementLink(models.Model):
 
     rationale = models.CharField(max_length=250)
     '''Rationale of this link... often a filter name?'''
+
+    linker_name = models.CharField(max_length=250)
+    '''Linker that created this link.'''
 
     release_link_set = models.ForeignKey(ReleaseLinkSet, blank=True, null=True)
     '''att.'''

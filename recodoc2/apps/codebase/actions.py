@@ -25,7 +25,8 @@ from codeutil.reply_element import REPLY_LANGUAGE, is_reply_lines,\
 from docutil.str_util import tokenize, find_sentence, find_paragraph, split_pos
 from docutil.cache_util import get_value, get_codebase_key
 from docutil.commands_util import mkdir_safe, import_clazz, download_html_tree
-from docutil.progress_monitor import CLILockProgressMonitor
+from docutil.progress_monitor import CLILockProgressMonitor, CLIProgressMonitor
+from docutil import cache_util
 from project.models import ProjectRelease, Project
 from project.actions import CODEBASE_PATH
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
@@ -40,9 +41,13 @@ SRC_FOLDER = 'src'
 LIB_FOLDER = 'lib'
 
 PARSERS = dict(settings.CODE_PARSERS, **settings.CUSTOM_CODE_PARSERS)
+
 SNIPPET_PARSERS = dict(
         settings.CODE_SNIPPET_PARSERS,
         **settings.CUSTOM_CODE_SNIPPET_PARSERS)
+
+LINKERS = dict(settings.LINKERS, **settings.CUSTOM_LINKERS)
+
 
 PREFIX_CODEBASE_CODE_WORDS = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
                                 'cb_codewords'])
@@ -385,6 +390,35 @@ def add_a_filter(pname, bname, release, filter_fqn, include_snippet=True,
             include_snippet=include_snippet,
             one_ref_only=one_ref_only)
     code_filter.save()
+
+
+def link_code(pname, bname, release, linker_name, source, source_release=None):
+    project = Project.objects.get(dir_name=pname)
+    prelease = ProjectRelease.objects.filter(project=project).\
+            filter(release=release)[0]
+    if source_release is not None:
+        srelease = ProjectRelease.objects.filter(project=project).\
+            filter(release=source_release)
+    else:
+        srelease = None
+    codebase = CodeBase.objects.filter(project_release=prelease).\
+            filter(name=bname)[0]
+    linker_cls_name = LINKERS[linker_name]
+    linker_cls = import_clazz(linker_cls_name)
+    linker = linker_cls(project, prelease, codebase, source, srelease)
+
+    progress_monitor = CLIProgressMonitor(min_step=1.0)
+    progress_monitor.info('Cache Count {0} miss of {1}'
+            .format(cache_util.cache_miss, cache_util.cache_total))
+
+    start = time.clock()
+
+    linker.link_references(progress_monitor)
+
+    stop = time.clock()
+    progress_monitor.info('Cache Count {0} miss of {1}'
+            .format(cache_util.cache_miss, cache_util.cache_total))
+    progress_monitor.info('Time: {0}'.format(stop - start))
 
 
 ### ACTIONS USED BY OTHER ACTIONS ###

@@ -13,6 +13,8 @@ JAVA_LANGUAGE = 'j'
 
 JAVA_EXCEPTION_TRACE = 'jx'
 
+HANDLE_SEPARATOR = ":"
+
 ### FUNCTIONS ###
 
 
@@ -39,6 +41,24 @@ def clean_java_name(name):
         clean_name_simple = clean_name_fqn[dot_index + 1:]
 
     return (clean_name_simple, clean_name_fqn)
+
+
+def get_annotation_name(name, is_handle):
+    pass
+    simple = fqn = None
+    if is_handle:
+        parts = name.split(HANDLE_SEPARATOR)
+        (simple, fqn) = clean_java_name(parts[1])
+    else:
+        match = ANNOTATION_PATTERN.match(name)
+        if match:
+            (simple, fqn) = clean_java_name(match.group('annotation'))
+            
+    return (su.safe_strip(simple), su.safe_strip(fqn))
+
+
+def get_class_name(name):
+    pass
 
 
 ### JAVA SNIPPET ###

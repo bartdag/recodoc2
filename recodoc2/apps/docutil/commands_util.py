@@ -8,6 +8,7 @@ import urllib2
 import logging
 import shutil
 import codecs
+import gc
 import chardet
 from itertools import izip_longest
 from django.db import transaction
@@ -32,6 +33,60 @@ MAX_DOWNLOAD_RETRY = 2
 MODEL_FILE = 'model.pkl'
 
 logger = logging.getLogger("recodoc.docutil.commands_util")
+
+
+def call_gc():
+    (gen0, gen1, gen2) = gc.get_count()
+    logger.info("Calling GC {0} garbage, {1}, {2}, {3}".
+            format(len(gc.garbage), gen0, gen1, gen2))
+    unreach = gc.collect()
+    (gen0, gen1, gen2) = gc.get_count()
+    print("Called GC {0} unreachable, {1} garbage, {2}, {3}, {4}".
+            format(unreach, len(gc.garbage), gen0, gen1, gen2))
+
+
+def queryset_iterator_plus(queryset, extra_object, chunksize=1000):
+    '''
+    Iterate over a Django Queryset ordered by the primary key
+
+    This method loads a maximum of chunksize (default: 1000) rows in it's
+    memory at the same time while django normally would load all rows in it's
+    memory. Using the iterator() method only causes it to not preload all the
+    classes.
+
+    Note that the implementation of the iterator does not support ordered
+    query sets.
+    '''
+    pk = 0
+    last_pk = queryset.order_by('-pk')[0].pk
+    queryset = queryset.order_by('pk')
+    while pk < last_pk:
+        for row in queryset.filter(pk__gt=pk)[:chunksize]:
+            pk = row.pk
+            yield (row, extra_object)
+        gc.collect()
+
+
+def queryset_iterator(queryset, chunksize=1000):
+    '''
+    Iterate over a Django Queryset ordered by the primary key
+
+    This method loads a maximum of chunksize (default: 1000) rows in it's
+    memory at the same time while django normally would load all rows in it's
+    memory. Using the iterator() method only causes it to not preload all the
+    classes.
+
+    Note that the implementation of the iterator does not support ordered
+    query sets.
+    '''
+    pk = 0
+    last_pk = queryset.order_by('-pk')[0].pk
+    queryset = queryset.order_by('pk')
+    while pk < last_pk:
+        for row in queryset.filter(pk__gt=pk)[:chunksize]:
+            pk = row.pk
+            yield row
+        gc.collect()
 
 
 def simple_decorator(decorator):

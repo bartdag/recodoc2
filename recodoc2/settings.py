@@ -136,6 +136,7 @@ INSTALLED_APPS = (
     'codebase',
     'doc',
     'channel',
+    'linkertest',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -173,11 +174,20 @@ CODE_PARSERS = {'java': 'codebase.parser.java_code_parser.JavaParser',
 
 CUSTOM_CODE_PARSERS = {}
 
-CODE_SNIPPET_PARSERS = {'java': 'codebase.parser.java_snippet_parser.JavaSnippetParser',
-                'xml': '',
-                }
+CODE_SNIPPET_PARSERS = {
+            'java': 'codebase.parser.java_snippet_parser.JavaSnippetParser',
+            'xml': '',
+            }
 
 CUSTOM_CODE_SNIPPET_PARSERS = {}
+
+LINKERS = {'javaclass': 'codebase.linker.java_linkers.JavaClassParser',
+           'javapostclass': 'codebase.linker.java_linkers.JavaPostClassParser',
+           'javamethod': 'codebase.linker.java_linkers.JavaMethodParser',
+           'javafield': 'codebase.linker.java_linkers.JavaFieldParser',
+           'javegeneric': 'codebase.linker.java_linkers.JavaGenericParser', }
+
+CUSTOM_LINKERS = {}
 
 try:
     from localsettings import *

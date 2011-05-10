@@ -135,6 +135,8 @@ class JavaSnippetParser(object):
                         source=mcode.source,
                         index=(mcode.index * -1000) - i)
                 code.project = self.project
+                if mcode.project_release is not None:
+                    code.project_release = mcode.project_release
                 code.local_context = mcode.local_context
                 code.mid_context = mcode.mid_context
                 code.global_context = mcode.global_context

@@ -19,9 +19,37 @@ STOP_LANGUAGE = 's'
 SPLIT_PATTERN = re.compile(r"[\w']+|[.,!?;]")
 
 
+def pairwise_simil(s1, s2):
+    if len(s1) == 1 or len(s2) == 1:
+        if s1 == s2:
+            return 1.0
+        else:
+            return 0.0
+
+    pairs1 = pairs(s1.upper().strip())
+    pairs2 = pairs(s2.upper().strip())
+    union = len(pairs1) + len(pairs2)
+    intersection = len(pairs1 & pairs2)
+    return (intersection * 2.0) / float(union)
+
+
+def pairs(s1):
+    myPairs = set()
+    for i, c in enumerate(s1[:-1]):
+        myPairs.add(c + s1[i + 1])
+    return myPairs
+
+
+def safe_strip(a_string):
+    if a_string is not None:
+        return a_string.strip()
+    else:
+        return None
+
+
 def get_original_title(title):
-    original_title = title.replace('re:','').replace('RE:','').\
-            replace('Re:','').replace('rE:','').strip()
+    original_title = title.replace('re:', '').replace('RE:', '').\
+            replace('Re:', '').replace('rE:', '').strip()
     return original_title
 
 
@@ -32,7 +60,7 @@ def split_pos(text):
     for match in SPLIT_PATTERN.finditer(text):
         word = match.group(0)
         if word.isalnum():
-            splits.append((word,match.start(),match.end()))
+            splits.append((word, match.start(), match.end()))
     return splits
 
 
