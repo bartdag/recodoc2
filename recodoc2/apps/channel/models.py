@@ -44,7 +44,7 @@ class SupportThread(models.Model):
     #thread_id = models.CharField(max_length=500, null=True, blank=True)
     #'''at'''
 
-    pages = models.IntegerField()
+    pages = models.IntegerField(default=1)
     '''Number of pages in support thread.'''
 
     first_date = models.DateTimeField(null=True, blank=True)

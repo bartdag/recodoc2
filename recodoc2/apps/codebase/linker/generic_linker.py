@@ -25,6 +25,10 @@ def save_link(scode_reference, code_element, potentials, linker):
                 project_release=code_element.codebase.project_release
                 )
         linkset.save()
+
+        # DEBUG
+        #print('Saving first link: {0}'.format(code_element.fqn))
+
         link = CodeElementLink(
                 code_reference=scode_reference,
                 code_element=code_element,
@@ -37,7 +41,7 @@ def save_link(scode_reference, code_element, potentials, linker):
         count = 1
     if potentials is not None and len(potentials) > 0:
         index = 1
-        for potential in enumerate(potentials):
+        for potential in potentials:
             if potential.pk != pk:
                 link = CodeElementLink(
                         code_reference=scode_reference,
@@ -63,7 +67,8 @@ class LinkerLog(object):
             self.release = 'default'
         
         self.name = 'linking-{0}-{1}-{2}-{3}-{4}.log'.format(kind_str, 
-                linker.project.dir_name, release, linker.name, linker.source)
+                linker.project.dir_name, self.release, linker.name,
+                linker.source)
         file_path = os.path.join(log_dir, self.name)
         self.log_file = codecs.open(file_path, 'a', encoding='utf8')
 
@@ -79,10 +84,14 @@ class LinkerLog(object):
 
     def log_type(self, simple_name, fqn, scode_reference, code_element,
             potentials, original_size):
+        potential_size = 0
+        if potentials is not None:
+            potential_size = len(potentials)
+
         log_file = self.log_file
         log_file.write('Type {0} - {1}\n'.format(simple_name, fqn))
         log_file.write('  Original Size: {0}\n'.format(original_size))
-        log_file.write('  Final Size: {0}\n'.format(len(potentials)))
+        log_file.write('  Final Size: {0}\n'.format(potential_size))
         log_file.write('  URL: {0}\n'.
                 format(scode_reference.local_context.url))
         log_file.write('  Ref pk: {0}\n'.format(scode_reference.pk))
@@ -129,3 +138,5 @@ class DefaultLinker(object):
         # For debug:
         if local_object_id is not None:
             refs = refs.filter(local_object_id=local_object_id)
+
+        return refs

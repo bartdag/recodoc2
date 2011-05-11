@@ -181,11 +181,11 @@ CODE_SNIPPET_PARSERS = {
 
 CUSTOM_CODE_SNIPPET_PARSERS = {}
 
-LINKERS = {'javaclass': 'codebase.linker.java_linkers.JavaClassParser',
-           'javapostclass': 'codebase.linker.java_linkers.JavaPostClassParser',
-           'javamethod': 'codebase.linker.java_linkers.JavaMethodParser',
-           'javafield': 'codebase.linker.java_linkers.JavaFieldParser',
-           'javegeneric': 'codebase.linker.java_linkers.JavaGenericParser', }
+LINKERS = {'javaclass': 'codebase.linker.java_linkers.JavaClassLinker',
+           'javapostclass': 'codebase.linker.java_linkers.JavaPostClassLinker',
+           'javamethod': 'codebase.linker.java_linkers.JavaMethodLinker',
+           'javafield': 'codebase.linker.java_linkers.JavaFieldLinker',
+           'javegeneric': 'codebase.linker.java_linkers.JavaGenericLinker', }
 
 CUSTOM_LINKERS = {}
 

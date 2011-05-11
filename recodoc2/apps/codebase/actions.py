@@ -398,7 +398,7 @@ def link_code(pname, bname, release, linker_name, source, source_release=None):
             filter(release=release)[0]
     if source_release is not None:
         srelease = ProjectRelease.objects.filter(project=project).\
-            filter(release=source_release)
+            filter(release=source_release)[0]
     else:
         srelease = None
     codebase = CodeBase.objects.filter(project_release=prelease).\

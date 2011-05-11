@@ -45,6 +45,7 @@ def create_channel_db(pname, channel_fullname, channel_dir_name, syncer,
             parser=parser,
             syncer=syncer)
     channel.save()
+    return channel
 
 
 def list_channels_db(pname):

@@ -148,6 +148,11 @@ class JavaClassLinker(gl.DefaultLinker):
         else:
             size = len(code_elements)
 
+        # DEBUG
+        print('DEBUG for {0}'.format(scode_reference.content))
+        for code_element in code_elements:
+            print(code_element.fqn)
+
         if size > 0:
             if size == 1:
                 # There is only one code element.
@@ -182,13 +187,13 @@ class JavaClassLinker(gl.DefaultLinker):
         # Custom filtering
         custom_filter = filters.CustomClassFilter()
         log.custom_filtered = custom_filter.filter(scode_reference,
-                return_code_element)[0] is None
+                return_code_element, log)[0] is None
         if log.custom_filtered:
             return_code_element = potentials = None
 
         # Logging
-        log.log_class(simple, fqn, scode_reference, code_element, potentials,
-                size)
+        log.log_type(simple, fqn, scode_reference, return_code_element,
+                potentials, size)
 
         return (return_code_element, potentials)
         

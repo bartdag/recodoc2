@@ -9,6 +9,7 @@ import logging
 import shutil
 import codecs
 import gc
+from traceback import print_exc
 import chardet
 from itertools import izip_longest
 from django.db import transaction
@@ -57,14 +58,20 @@ def queryset_iterator_plus(queryset, extra_object, chunksize=1000):
     Note that the implementation of the iterator does not support ordered
     query sets.
     '''
-    pk = 0
-    last_pk = queryset.order_by('-pk')[0].pk
-    queryset = queryset.order_by('pk')
-    while pk < last_pk:
-        for row in queryset.filter(pk__gt=pk)[:chunksize]:
-            pk = row.pk
-            yield (row, extra_object)
-        gc.collect()
+    try:
+        pk = 0
+        last_pk = queryset.order_by('-pk')[0].pk
+        queryset = queryset.order_by('pk')
+        while pk < last_pk:
+            for row in queryset.filter(pk__gt=pk)[:chunksize]:
+                pk = row.pk
+                yield (row, extra_object)
+            gc.collect()
+    except IndexError:
+        return
+    except Exception:
+        print_exc()
+        return
 
 
 def queryset_iterator(queryset, chunksize=1000):
@@ -79,14 +86,20 @@ def queryset_iterator(queryset, chunksize=1000):
     Note that the implementation of the iterator does not support ordered
     query sets.
     '''
-    pk = 0
-    last_pk = queryset.order_by('-pk')[0].pk
-    queryset = queryset.order_by('pk')
-    while pk < last_pk:
-        for row in queryset.filter(pk__gt=pk)[:chunksize]:
-            pk = row.pk
-            yield row
-        gc.collect()
+    try:
+        pk = 0
+        last_pk = queryset.order_by('-pk')[0].pk
+        queryset = queryset.order_by('pk')
+        while pk < last_pk:
+            for row in queryset.filter(pk__gt=pk)[:chunksize]:
+                pk = row.pk
+                yield row
+            gc.collect()
+    except IndexError:
+        return
+    except Exception:
+        print_exc()
+        return
 
 
 def simple_decorator(decorator):
