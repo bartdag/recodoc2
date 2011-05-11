@@ -212,6 +212,7 @@ class GenericParser(object):
                     .format(message.pk, message.url, count))
             return
 
+        self._process_title_references(message, load)
         (text_paragraphs, snippets) = filter_paragraphs(paragraphs,
                 get_default_p_classifiers())
         self._parse_paragraphs(message, load, text_paragraphs)
@@ -246,6 +247,26 @@ class GenericParser(object):
         else:
             return False
 
+    def _process_title_references(self, message, load):
+        text_context = message.title
+        sentence = message.title
+
+        kind_hint = self.kinds['unknown']
+        xpath = message.xpath
+        for code in parse_single_code_references(sentence, kind_hint,
+                self.kind_strategies, self.kinds, strict=True):
+            code.xpath = xpath
+            code.file_path = message.file_path
+            code.source = CHANNEL_SOURCE
+            code.index = -1
+            code.sentence = sentence
+            code.paragraph = text_context
+            code.title_context = message
+            code.local_context = message
+            if load.entry is not None:
+                code.global_context = load.entry
+            code.save()
+
     def _parse_paragraphs(self, message, load, text_paragraphs):
         for para_index, paragraph in enumerate(text_paragraphs):
             text = merge_lines(paragraph, False)
@@ -260,6 +281,8 @@ class GenericParser(object):
                 code.index = i + (para_index * 1000)
                 code.project = self.channel.project
                 code.local_context = message
+                if load.entry is not None:
+                    code.global_context = load.entry
                 code.save()
 
     def _save_snippets(self, message, load, snippets):

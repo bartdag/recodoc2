@@ -282,6 +282,7 @@ class ChannelParserTest(TransactionTestCase):
         second_message = messages[1]
         refs = [ref.content.strip() for ref in
                 second_message.code_references.all()]
-        self.assertEqual(4, len(refs))
+        # Because of the title 4 + 1 = 5
+        self.assertEqual(5, len(refs))
         self.assertTrue('DBCP' in refs)
         self.assertTrue('C3P0' in refs)
