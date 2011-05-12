@@ -18,6 +18,12 @@ HANDLE_SEPARATOR = ":"
 ### FUNCTIONS ###
 
 
+def is_field_ref(name):
+    strategy = FieldStrategy()
+    matches = strategy.match(name)
+    return len(matches) > 1
+
+
 def clean_java_name(name):
     """Given a name, returns a tuple containing the simple name and the fully
     qualified name. Removes all array or generic artifacts.
@@ -53,19 +59,70 @@ def get_annotation_name(name, is_handle):
         match = ANNOTATION_PATTERN.match(name)
         if match:
             (simple, fqn) = clean_java_name(match.group('annotation'))
-            
+
     return (su.safe_strip(simple), su.safe_strip(fqn))
 
 
-def get_class_name(name):
-    pass
+def get_class_name(name, is_handle, skip_fancy_search=False):
+    simple = fqn = None
+    if is_handle:
+        parts = name.split(HANDLE_SEPARATOR)
+        (simple, fqn) = clean_java_name(parts[1])
+    elif is_field_ref(name):
+        full_name = get_package_name(name)
+        (simple, fqn) = clean_java_name(full_name)
+    else:
+        new_content = name
+        match1 = CALL_CHAIN_TARGET_RE.search(name)
+        match2 = METHOD_SIGNATURE_TARGET_RE.search(name)
+        match3 = SIMPLE_CALL_TARGET_RE.search(name)
+
+        if match1 and not skip_fancy_search:
+            new_content = match1.group('target')
+        elif match2 and not skip_fancy_search:
+            new_content = match2.group('target')
+        elif match3 and not skip_fancy_search:
+            new_content = match3.group('target')
+        #elif not skip_fancy_search and is_field_ref(name):
+            #new_content = get_package_name(name)
+        else:
+            new_content = get_clean_name(name)
+
+        (simple, fqn) = clean_java_name(new_content)
+
+    return (simple.strip(), fqn.strip())
+
+
+def get_package_name(name, no_default=False):
+    package = name
+    dot_index = package.rfind('.')
+    if dot_index > -1:
+        package = package[:dot_index]
+    elif no_default:
+        package = None
+    return package
+
+
+def get_clean_name(content):
+    '''Strips unfriendly characters like parentheses, apostrophes, quotes,
+       etc. Gets the FQN first if there is one. Otherwise, try to find the
+       first simple name
+    '''
+    match1 = FQN_RE.search(content)
+    match2 = SIMPLE_NAME_RE.search(content)
+    if match1:
+        return match1.group(0)
+    elif match2:
+        return match2.group(0)
+    else:
+        return content
 
 
 ### JAVA SNIPPET ###
 
 JAVA_END_CHARACTERS = set([';', '{', '}'])
 JAVA_START = ['@', '//', '/*', '*/', '**/']
-THRESHOLD_JAVA = 0.20 
+THRESHOLD_JAVA = 0.20
 
 ### JAVA EXCEPTION TRACE ###
 
@@ -414,15 +471,16 @@ CONSTANT_RE = re.compile(r'''
 
 EXCEPTION_PATTERN1 = re.compile(r'''Exception:''')
 EXCEPTION_PATTERN2 = re.compile(r'''Caused by:''')
-EXCEPTION_PATTERN3 = re.compile(r'''^[\s]*\bat\b (?:[\w\s]+)(?:\.[\s\w]+)*\(''') # at org.springframework.context.support.AbstractApplic ationContext.getBean(
-EXCEPTION_PATTERN4 = re.compile(r'''^[\s]*at[\s]*$''') 
-EXCEPTION_PATTERN5 = re.compile(r'''\.(?:java|class)\:(?:\d+)\)''') # .java:223)
-EXCEPTION_PATTERN6 = re.compile(r'''\([\w\s]+\.(?:java|class)\:(?:\d+)''') # (Toto.java:223
+EXCEPTION_PATTERN3 = re.compile(r'''^[\s]*\bat\b (?:[\w\s]+)(?:\.[\s\w]+)*\(''')  # at org.springframework.context.support.AbstractApplic ationContext.getBean(
+EXCEPTION_PATTERN4 = re.compile(r'''^[\s]*at[\s]*$''')
+EXCEPTION_PATTERN5 = re.compile(r'''\.(?:java|class)\:(?:\d+)\)''')  # .java:223)
+EXCEPTION_PATTERN6 = re.compile(r'''\([\w\s]+\.(?:java|class)\:(?:\d+)''')  # (Toto.java:223
 EXCEPTION_LINE_PATTERN = re.compile(r'''[\s]*at[\s]*(?:[\w\s]+)(?:\.[\s\w]+)*\(.*\.(?:j\s*a\s*v\s*a\s*|\s*c\s*l\s*a\s*s\s*s\s*)\:(?:\d+)\)''')
 
-EXCEPTION_PATTERNS = [EXCEPTION_PATTERN1, EXCEPTION_PATTERN2, 
+EXCEPTION_PATTERNS = [EXCEPTION_PATTERN1, EXCEPTION_PATTERN2,
                       EXCEPTION_PATTERN3, EXCEPTION_PATTERN4,
                       EXCEPTION_PATTERN5, EXCEPTION_PATTERN6]
+
 
 ### Java Body Recognition ###
 
@@ -499,21 +557,20 @@ def is_exception_trace_lines(lines):
             if pattern.search(line):
                 exception_lines += 1
                 break
-            
+
     lines_confidence = float(exception_lines) / len(lines)
     one_line_confidence = 0.0
     one_line = su.merge_lines(lines, False)
     if EXCEPTION_LINE_PATTERN.search(one_line):
         one_line_confidence = 1.0
-        
+
     confidence = max(lines_confidence, one_line_confidence)
-    
+
     if - 0.10 <= (confidence - THRESHOLD_EXCEPTION) <= 0:
         logger.info('Almost reached EXCEPTION threshold')
-        logger.info(lines) 
-    
-    return (confidence >= THRESHOLD_EXCEPTION, confidence)
+        logger.info(lines)
 
+    return (confidence >= THRESHOLD_EXCEPTION, confidence)
 
 
 ### Code Reference Identification and Classification ###

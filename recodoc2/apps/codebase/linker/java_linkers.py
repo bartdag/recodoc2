@@ -99,6 +99,15 @@ class JavaClassLinker(gl.DefaultLinker):
         call_gc()
 
         # Enumerations
+        enum_refs = self._get_query(self.enum_kind, local_object_id)
+        ecount = enum_refs.count()
+        progress_monitor.info('Enumeration count: {0}'.format(ecount))
+        try:
+            self._link_enumerations(queryset_iterator(enum_refs), ecount,
+                    progress_monitor)
+        except Exception:
+            logger.exception('Error while processing enumerations.')
+        call_gc()
 
         # All types (including classes!)
 
@@ -137,6 +146,42 @@ class JavaClassLinker(gl.DefaultLinker):
         log.close()
         progress_monitor.done()
         print('Associated {0} annotations'.format(count))
+
+    def _link_enumerations(self, enum_refs, ecount, progress_monitor):
+        count = 0 
+        progress_monitor.start('Parsing enumerations', ecount)
+        log = gl.LinkerLog(self, self.enum_kind)
+        
+        for scode_reference in enum_refs:
+            if scode_reference.declaration:
+                progress_monitor.work('Skipped declaration', 1)
+                continue
+
+            (simple, fqn) = je.get_annotation_name(scode_reference.content,
+                    scode_reference.snippet is not None)
+
+            if simple is not None:
+                prefix = '{0}{1}{2}'.format(PREFIX_ENUMERATION_LINKER, EXACT,
+                    cu.get_codebase_key(self.codebase))
+                code_elements = cu.get_value(
+                        prefix, 
+                        simple,
+                        gl.get_type_code_elements,
+                        [simple, self.codebase, self.enum_kind])
+
+                (code_element, potentials) = self.get_code_element(
+                        scode_reference, code_elements, simple, fqn, log)
+                count += gl.save_link(scode_reference, code_element,
+                        potentials, self)
+
+                if not log.custom_filtered:
+                    reclassify_java(code_element, scode_reference)
+
+            progress_monitor.work('Processed enumeration', 1)
+
+        log.close()
+        progress_monitor.done()
+        print('Associated {0} enumerations'.format(count))
 
     def get_code_element(self, scode_reference, code_elements, simple, fqn,
             log, insensitive=False):
