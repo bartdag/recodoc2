@@ -19,17 +19,17 @@ SNIPPET_TYPE = 'zzzsnippet.ZZZSnippet'
 
 
 ### CACHE PREFIXES ###
-PREFIX_UNKNOWN = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX, 'UNKNOWN'])
-PREFIX_ANNOTATION_LINKER = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
-    'javaannlinker'])
-PREFIX_ENUMERATION_LINKER = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
-    'javaannlinker'])
-PREFIX_CLASS_LINKER = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
-    'javaclslinker'])
-PREFIX_CLASS_POST_LINKER = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
-    'javaclspostlinker'])
-PREFIX_GENERIC_LINKER = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
-    'javagenlinker'])
+PREFIX_UNKNOWN = settings.CACHE_MIDDLEWARE_KEY_PREFIX + 'UNKNOWN'
+PREFIX_ANNOTATION_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
+    'javaannlinker'
+PREFIX_ENUMERATION_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
+    'javaenumlinker'
+PREFIX_CLASS_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
+    'javaclslinker'
+PREFIX_CLASS_POST_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
+    'javaclspostlinker'
+PREFIX_GENERIC_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
+    'javagenlinker'
 
 UNKNOWN_KEY = 'UNKNOWN'
 
@@ -110,6 +110,15 @@ class JavaClassLinker(gl.DefaultLinker):
         call_gc()
 
         # All types (including classes!)
+        class_refs = self._get_query(self.class_kind, local_object_id)
+        ccount = class_refs.count()
+        progress_monitor.info('Class count: {0}'.format(ccount))
+        try:
+            self._link_classes(queryset_iterator(class_refs), ccount,
+                    progress_monitor)
+        except Exception:
+            logger.exception('Error while processing classes.')
+        call_gc()
 
     def _link_annotations(self, ann_refs, acount, progress_monitor):
         count = 0 
@@ -183,6 +192,69 @@ class JavaClassLinker(gl.DefaultLinker):
         progress_monitor.done()
         print('Associated {0} enumerations'.format(count))
 
+    def _link_classes(self, class_refs, ccount, progress_monitor):
+        count = 0 
+        progress_monitor.start('Parsing classes', ccount)
+        log = gl.LinkerLog(self, self.enum_kind)
+        
+        for scode_reference in class_refs:
+            if scode_reference.declaration:
+                progress_monitor.work('Skipped declaration', 1)
+                continue
+
+            (simple, fqn) = je.get_annotation_name(scode_reference.content,
+                    scode_reference.snippet is not None)
+            case_insensitive = scode_reference.snippet == None and\
+                    self.source != 'd'
+
+            if case_insensitive:
+                exact = False
+                exact_prefix = IEXACT
+            else:
+                exact = True
+                exact_prefix = EXACT
+
+            if simple is not None:
+                prefix = '{0}{1}{2}'.format(PREFIX_CLASS_LINKER, exact_prefix,
+                    cu.get_codebase_key(self.codebase))
+                code_elements = []
+                code_elements.extend(cu.get_value(
+                        prefix, 
+                        simple,
+                        gl.get_type_code_elements,
+                        [simple, self.codebase, self.class_kind, exact]))
+
+                prefix = '{0}{1}{2}'.format(PREFIX_ANNOTATION_LINKER,
+                        exact_prefix, cu.get_codebase_key(self.codebase))
+                code_elements.extend(cu.get_value(
+                        prefix, 
+                        simple,
+                        gl.get_type_code_elements,
+                        [simple, self.codebase, self.ann_kind, exact]))
+
+                prefix = '{0}{1}{2}'.format(PREFIX_ENUMERATION_LINKER,
+                        exact_prefix, cu.get_codebase_key(self.codebase))
+                code_elements.extend(cu.get_value(
+                        prefix, 
+                        simple,
+                        gl.get_type_code_elements,
+                        [simple, self.codebase, self.enum_kind, exact]))
+
+                (code_element, potentials) = self.get_code_element(
+                        scode_reference, code_elements, simple, fqn, log,
+                        not exact)
+                count += gl.save_link(scode_reference, code_element,
+                        potentials, self)
+
+                if not log.custom_filtered:
+                    reclassify_java(code_element, scode_reference)
+
+            progress_monitor.work('Processed class', 1)
+
+        log.close()
+        progress_monitor.done()
+        print('Associated {0} classes'.format(count))
+
     def get_code_element(self, scode_reference, code_elements, simple, fqn,
             log, insensitive=False):
         log.reset_variables()
@@ -232,7 +304,7 @@ class JavaClassLinker(gl.DefaultLinker):
         # Custom filtering
         custom_filter = filters.CustomClassFilter()
         log.custom_filtered = custom_filter.filter(scode_reference,
-                return_code_element, log)[0] is None
+                return_code_element, log).activated
         if log.custom_filtered:
             return_code_element = potentials = None
 

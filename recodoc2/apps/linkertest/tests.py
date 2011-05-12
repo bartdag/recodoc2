@@ -194,7 +194,7 @@ class CodeParserTest(TransactionTestCase):
         coderef1 = SingleCodeReference(
                 project=self.project,
                 project_release=self.releasedb,
-                content='p1.Clazz1',
+                content='clazz1',
                 source='s',
                 kind_hint=self.class_kind,
                 local_context=message1,
@@ -214,6 +214,18 @@ class CodeParserTest(TransactionTestCase):
                 )
         coderef2.save()
         self.code_refs.append(coderef2)
+
+        coderef3 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='Disco',
+                source='s',
+                kind_hint=self.class_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef3.save()
+        self.code_refs.append(coderef3)
 
         snippet_content = r'''
 
@@ -249,9 +261,9 @@ class CodeParserTest(TransactionTestCase):
                 self.release)
         link_code(self.pname, 'core', self.release, 'javaclass', 's',
                 None)
+
         code_ref1 = self.code_refs[0]
         code_ref1 = SingleCodeReference.objects.get(pk=code_ref1.pk)
-        print(code_ref1.content)
         self.assertEqual(
                 'p1.Annotation1',
                 code_ref1.release_links.all()[0].first_link.code_element.fqn)
@@ -264,8 +276,30 @@ class CodeParserTest(TransactionTestCase):
                 ann_ref = code_ref
                 break
 
-        print(ann_ref.content)
         self.assertEqual(
                 'Annotation1',
                 ann_ref.release_links.all()[0]
                     .first_link.code_element.simple_name)
+
+        # Test class insensitive comparison
+        code_ref3 = self.code_refs[2]
+        code_ref3 = SingleCodeReference.objects.get(pk=code_ref3.pk)
+        self.assertEqual(
+                'Clazz1',
+                code_ref3.release_links.all()[0]
+                .first_link.code_element.simple_name)
+
+        # Test enum in class.
+        code_ref4 = self.code_refs[3]
+        code_ref4 = SingleCodeReference.objects.get(pk=code_ref4.pk)
+        self.assertEqual(
+                'Enum1',
+                code_ref4.release_links.all()[0]
+                .first_link.code_element.simple_name)
+
+        # Test reclassification
+        code_ref5 = self.code_refs[4]
+        code_ref5 = SingleCodeReference.objects.get(pk=code_ref5.pk)
+        self.assertEqual(
+                'unknown',
+                code_ref5.kind_hint.kind)

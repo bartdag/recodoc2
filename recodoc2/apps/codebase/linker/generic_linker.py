@@ -10,10 +10,15 @@ def get_unknown_kind():
     return CodeElementKind.objects.get(kind='unknown')
 
 
-def get_type_code_elements(simple_name, codebase, kind):
-    return list(CodeElement.objects.filter(kind=kind).\
-            filter(simple_name=simple_name).\
-            filter(codebase=codebase).all())
+def get_type_code_elements(simple_name, codebase, kind, exact=True):
+    if exact:
+        return list(CodeElement.objects.filter(kind=kind).\
+                filter(simple_name=simple_name).\
+                filter(codebase=codebase).all())
+    else:
+        return list(CodeElement.objects.filter(kind=kind).\
+                filter(simple_name__iexact=simple_name).\
+                filter(codebase=codebase).all())
 
 
 def save_link(scode_reference, code_element, potentials, linker):
