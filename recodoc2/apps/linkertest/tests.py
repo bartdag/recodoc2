@@ -8,6 +8,7 @@ from django.db import transaction
 from django.test import TransactionTestCase
 from django.conf import settings
 from docutil.test_util import clean_test_dir
+import docutil.cache_util as cu
 from doc.models import Page, Section
 from doc.actions import create_doc_local, create_doc_db
 from channel.models import SupportThread, Message
@@ -54,6 +55,7 @@ class CodeParserTest(TransactionTestCase):
 
     @transaction.commit_on_success
     def setUp(self):
+        cu.clear_cache()
         self.pname = 'project1'
         self.release = '3.0'
         logging.basicConfig(level=logging.WARNING)
@@ -72,6 +74,7 @@ class CodeParserTest(TransactionTestCase):
     def tearDown(self):
         Project.objects.all().delete()
         CodeElementKind.objects.all().delete()
+        cu.clear_cache()
 
     def create_codebase(self):
         create_code_db(self.pname, 'core', self.release)
@@ -119,7 +122,7 @@ class CodeParserTest(TransactionTestCase):
                 content='@Annotation2',
                 source='d',
                 kind_hint=self.ann_kind,
-                local_context=section11,
+                local_context=section1,
                 mid_context=section1,
                 global_context=page1
                 )
@@ -305,3 +308,17 @@ class CodeParserTest(TransactionTestCase):
         self.assertEqual(
                 'unknown',
                 code_ref5.kind_hint.kind)
+
+        # Test post-processing
+        code_ref2 = self.code_refs[1]
+        code_ref2 = SingleCodeReference.objects.get(pk=code_ref2.pk)
+        self.assertEqual('highest_frequency',
+                code_ref2.release_links.all()[0].first_link.rationale)
+
+        self.assertEqual('heuristic_depth',
+                code_ref3.release_links.all()[0].first_link.rationale)
+        self.assertEqual('p1.Clazz1',
+                code_ref3.release_links.all()[0]
+                .first_link.code_element.fqn)
+        self.assertEqual('heuristic_depth',
+                code_ref4.release_links.all()[0].first_link.rationale)
