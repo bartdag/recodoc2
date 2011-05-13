@@ -8,7 +8,8 @@ import docutil.cache_util as cu
 import codeutil.java_element as je
 import codebase.linker.generic_linker as gl
 import codebase.linker.filters as filters
-from codebase.models import CodeElementKind, SingleCodeReference, CodeElement
+from codebase.models import CodeElementKind, SingleCodeReference, \
+        CodeElement, ReleaseLinkSet
 
 ### PPA CONSTANTS ###
 HANDLE_SEPARATOR = ":"
@@ -33,11 +34,17 @@ PREFIX_GENERIC_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
 
 UNKNOWN_KEY = 'UNKNOWN'
 
+
 ### QUERY CONSTANTS FOR FILTERS ###
 SIMPLE = 'SIMPLE'
 FQN = 'FQN'
 EXACT = 'EXACT'
 IEXACT = 'IEXACT'
+
+
+# THRESHOLDS
+FQN_SIMILARITY_THRESHOLD = 0.80
+
 
 logger = logging.getLogger("recodoc.codebase.linker")
 
@@ -73,6 +80,10 @@ def reclassify_java(code_element, scode_reference):
     return reclassified
 
 
+def get_package_freq():
+    pass
+
+
 class JavaClassLinker(gl.DefaultLinker):
     name = 'javaclass'
 
@@ -85,7 +96,6 @@ class JavaClassLinker(gl.DefaultLinker):
 
     def link_references(self, progress_monitor=NullProgressMonitor(),
             local_object_id=None):
-        pass
 
         # Annotations
         ann_refs = self._get_query(self.ann_kind, local_object_id)
@@ -123,7 +133,7 @@ class JavaClassLinker(gl.DefaultLinker):
     def _link_annotations(self, ann_refs, acount, progress_monitor):
         count = 0 
         progress_monitor.start('Parsing annotations', acount)
-        log = gl.LinkerLog(self, self.ann_kind)
+        log = gl.LinkerLog(self, self.ann_kind.kind)
         
         for scode_reference in ann_refs:
             if scode_reference.declaration:
@@ -159,7 +169,7 @@ class JavaClassLinker(gl.DefaultLinker):
     def _link_enumerations(self, enum_refs, ecount, progress_monitor):
         count = 0 
         progress_monitor.start('Parsing enumerations', ecount)
-        log = gl.LinkerLog(self, self.enum_kind)
+        log = gl.LinkerLog(self, self.enum_kind.kind)
         
         for scode_reference in enum_refs:
             if scode_reference.declaration:
@@ -195,7 +205,7 @@ class JavaClassLinker(gl.DefaultLinker):
     def _link_classes(self, class_refs, ccount, progress_monitor):
         count = 0 
         progress_monitor.start('Parsing classes', ccount)
-        log = gl.LinkerLog(self, self.enum_kind)
+        log = gl.LinkerLog(self, self.class_kind.kind)
         
         for scode_reference in class_refs:
             if scode_reference.declaration:
@@ -286,19 +296,25 @@ class JavaClassLinker(gl.DefaultLinker):
                 fqn_lower = fqn.lower()
                 sims = [su.pairwise_simil(fqn_lower, code_element.fqn.lower())
                         for code_element in code_elements]
-                index = sims.index(max(sims))
+                max_sim = max(sims)
+                index = sims.index(max_sim)
                 return_code_element = code_elements[index]
                 del(potentials[index])
                 potentials.insert(0, return_code_element)
+                if max_sim >= FQN_SIMILARITY_THRESHOLD:
+                    potentials = potentials[:1]
                 log.insensitive = True
             else:
                 # Do a case sensitive comparison on the fqn
                 sims = [su.pairwise_simil(fqn, code_element.fqn)
                         for code_element in code_elements]
-                index = sims.index(max(sims))
+                max_sim = max(sims)
+                index = sims.index(max_sim)
                 return_code_element = code_elements[index]
                 del(potentials[index])
                 potentials.insert(0, return_code_element)
+                if max_sim >= FQN_SIMILARITY_THRESHOLD:
+                    potentials = potentials[:1]
                 log.sensitive = True
        
         # Custom filtering
@@ -317,6 +333,77 @@ class JavaClassLinker(gl.DefaultLinker):
 
 class JavaPostClassLinker(gl.DefaultLinker):
     name = 'javapostclass'
+
+    def link_references(self, progress_monitor=NullProgressMonitor(),
+            local_object_id=None):
+        
+        # Get link to filter.
+        linksets = ReleaseLinkSet.objects\
+                .filter(project_release=self.prelease)\
+                .filter(first_link__code_element__kind__is_type=True)
+
+        count = linksets.count()
+        progress_monitor.start('Post-Processing Classes', count)
+        log = gl.LinkerLog(self, 'type')
+
+        print('LinkSet COUNT {0}'.format(linksets.count()))
+        for linkset in queryset_iterator(linksets):
+            scode_reference = linkset.code_reference
+            lcount = linkset.links.count()
+            if lcount <= 1:
+                log.log_type('', '', scode_reference,
+                        linkset.first_link.code_element,
+                        [linkset.first_link], lcount, 'onlyone')
+                progress_monitor.work('Skipped a linkset.', 1)
+                continue
+            
+            local_ctx_id = scode_reference.local_object_id
+            source = scode_reference.source
+            prefix = '{0}{1}{2}'.format(PREFIX_CLASS_POST_LINKER,
+                cu.get_codebase_key(self.codebase), source)
+            package_freq = cu.get_value(
+                    prefix, 
+                    local_ctx_id,
+                    get_package_freq,
+                    [local_ctx_id, source, self.prelease])
+
+            # Find package with highest frequency
+            code_element = self._find_package_by_freq(linkset, package_freq)
+            rationale = 'highest_frequency'
+
+            # Heuristic
+            if code_element is None:
+                code_element = self._find_package_by_depth(linkset,
+                        package_freq)
+                rationale = 'heuristic_depth'
+
+            # Update links
+            if code_element is not None:
+                linkset.first_link.code_element = code_element
+                linkset.first_link.linker_name = self.name
+                linkset.first_link.rationale = rationale
+                linkset.first_link.save()
+                for link in linkset.links.all()[1:]:
+                    link.delete()
+                log.log_type('', '', scode_reference,
+                        linkset.first_link.code_element,
+                        [linkset.first_link], lcount, rationale)
+            else:
+                potentials =\
+                    [link.code_element for link in linkset.links.all()]
+                log.log_type('', '', scode_reference,
+                        linkset.first_link.code_element,
+                        potentials, lcount, 'nomatch')
+
+            progress_monitor.work('Processed a linkset.', 1)
+
+        progress_monitor.done()
+
+    def _find_package_by_depth(self, linkset, package_freq):
+        pass
+
+    def _find_package_by_freq(self, linkset, package_freq):
+        pass
 
 
 class JavaMethodLinker(gl.DefaultLinker):

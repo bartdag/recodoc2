@@ -88,13 +88,14 @@ class LinkerLog(object):
         self.log_file.close()
 
     def log_type(self, simple_name, fqn, scode_reference, code_element,
-            potentials, original_size):
+            potentials, original_size, rationale=None):
         potential_size = 0
         if potentials is not None:
             potential_size = len(potentials)
 
         log_file = self.log_file
         log_file.write('Type {0} - {1}\n'.format(simple_name, fqn))
+        log_file.write('  Content: {0}\n'.format(scode_reference.content))
         log_file.write('  Original Size: {0}\n'.format(original_size))
         log_file.write('  Final Size: {0}\n'.format(potential_size))
         log_file.write('  URL: {0}\n'.
@@ -107,6 +108,10 @@ class LinkerLog(object):
         log_file.write('  Snippet: {0}\n'.
                 format(scode_reference.snippet is not None))
         log_file.write('  Custom Filtered: {0}\n'.format(self.custom_filtered))
+
+        if rationale is not None:
+            log_file.write('  Rationale: {0}\n'.format(rationale))
+
         log_file.write('  Filtering\n')
         log_file.write('    Strategy {0} {1} {2} {3}\n'.format(
             self.one, self.arbitrary, self.insensitive, self.sensitive))

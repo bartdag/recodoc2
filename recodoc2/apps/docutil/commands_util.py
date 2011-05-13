@@ -68,7 +68,7 @@ def queryset_iterator_plus(queryset, extra_object, chunksize=1000):
                 yield (row, extra_object)
             gc.collect()
     except IndexError:
-        return
+        return []
     except Exception:
         print_exc()
         return
@@ -96,7 +96,7 @@ def queryset_iterator(queryset, chunksize=1000):
                 yield row
             gc.collect()
     except IndexError:
-        return
+        return []
     except Exception:
         print_exc()
         return

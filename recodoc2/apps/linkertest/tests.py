@@ -261,6 +261,8 @@ class CodeParserTest(TransactionTestCase):
                 self.release)
         link_code(self.pname, 'core', self.release, 'javaclass', 's',
                 None)
+        link_code(self.pname, 'core', self.release, 'javapostclass', '',
+                None)
 
         code_ref1 = self.code_refs[0]
         code_ref1 = SingleCodeReference.objects.get(pk=code_ref1.pk)

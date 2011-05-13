@@ -518,7 +518,8 @@ class CodeElementLink(models.Model):
     linker_name = models.CharField(max_length=250)
     '''Linker that created this link.'''
 
-    release_link_set = models.ForeignKey(ReleaseLinkSet, blank=True, null=True)
+    release_link_set = models.ForeignKey(ReleaseLinkSet, blank=True,
+            null=True, related_name="links")
     '''att.'''
 
     first_link = models.OneToOneField(ReleaseLinkSet, blank=True, null=True,
