@@ -47,8 +47,7 @@ XML parsing
   code is not ported yet to this new version.*
 
 
-Documentation Analysis
-~~~~~~~~~~~~~~~~~~~~~~
+**Documentation Analysis**
 
 crawling
   Given a URL, downloads all the documentation pages of an HTML document.
@@ -78,7 +77,7 @@ snippet classification
 
 snippet parsing
   Compiles Java code snippets to resolve and infer missing types. Parses
-  snippets (Java and XML) to extra a list of code-like terms.
+  snippets (Java and XML) to extract a list of code-like terms.
 
 code-like terms classification
   Classifies code-like terms into likely code element kind. For example, the
@@ -120,8 +119,8 @@ General Requirements
 Requirements for Code Analysis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-These libraries and programs are required to analyze Java codebases. Code
-Analysis is also a prerequisite for Java snippet parsing, model linking,
+These libraries and programs are required to analyze Java codebases. Analyzing
+Java codebases is a prerequisite for Java snippet parsing, model linking,
 documentation improvements recommendation. If you plan to only use Support
 Channel or Documentation Analysis, you do not need these libraries and
 programs.
@@ -182,7 +181,8 @@ Step 2. Install the required dependencies
 Step 3. Install the optional dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First, install the following Python libraries
+These dependencies are only required if you want to analyze Java code. First,
+install the following Python libraries:
 
 ::
 
@@ -201,7 +201,7 @@ Then, install Py4J in Eclipse using the following update site:
 Finally, install PPA in Eclipse using the following update site:
 ``http://www.sable.mcgill.ca/ppa/site_1.2.x``.
 
-Since PPA is updated frequently but not released regularly, you might be better
+Since PPA is updated frequently but not released often, you might be better
 downloading it and building the update site locally. The source code is
 `located on bitbucket <https://bitbucket.org/barthe/ppa/wiki/Home>`_.  
 
@@ -286,8 +286,46 @@ If you see these lines instead, there was an error and you should contact me:
 User Guide
 ----------
 
+TBD
+
 Creating a project
 ~~~~~~~~~~~~~~~~~~
+
+TBD
+
+
+Analyzing a codebase
+~~~~~~~~~~~~~~~~~~~~
+
+TBD
+
+
+Analyzing documentation
+~~~~~~~~~~~~~~~~~~~~~~~
+
+TBD
+
+
+Analyzing support channels
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TBD
+
+Analyzing code snippets
+~~~~~~~~~~~~~~~~~~~~~~~
+
+TBD
+
+Linking models
+~~~~~~~~~~~~~~
+
+TBD
+
+
+Recommendations
+~~~~~~~~~~~~~~~
+
+TBD
 
 
 License
