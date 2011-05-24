@@ -347,7 +347,8 @@ Creating a project
 ~~~~~~~~~~~~~~~~~~
 
 Create a project by issuing this command. Note that a project will be created
-in the database and a folder will be created in the Recodoc data directory.
+in the database and a folder will be created in the Recodoc data directory
+specified in the PROJECT_FS_ROOT variable in the localsettings.py file.
 
 ::
 
@@ -405,6 +406,42 @@ Then, we get the table of contents. This should not take long.
 ::
 
   ./manage.py tocrefresh --pname hclient --cname usermail
+  ./manage.py tocview --pname hclient --cname usermail
+
+The next step is to download the table of contents sections. A section is a
+page listing messages or threads. For example, there is one section for each
+month in a mailing list and one section for each page listing threads in a
+forum.
+
+::
+  
+  # This will download sections in increments of 50. This is recommended. 
+  ./manage.py tocdownload --pname hclient --cname usermail --start 0 --end 50
+  ./manage.py tocdownload --pname hclient --cname usermail --start 50 --end 100
+  ./manage.py tocdownload --pname hclient --cname usermail --start 100 --end -1
+  ./manage.py tocview --pname hclient --cname usermail
+
+  # You can also download all sections in one go:
+  ./manage.py tocdownload --pname hclient --cname usermail --start 0 --end -1
+  ./manage.py tocview --pname hclient --cname usermail
+
+You can now download the individual messages or threads. Each message/thread
+is identified by an index. Indexes are incremented by 1000 for each table of
+contents sections. For example, the first (hypothetical) 50 messages in
+December 2010 are indexed from 0 to 49. The first 25 messages in January 2011
+are indexed from 1000 to 1024 and so on.
+
+::
+
+  ./manage.py tocviewentries --pname hclient --cname usermail
+  ./manage.py tocdownloadentries --pname hclient --cname usermail --start 0 --end 1000
+  ./manage.py tocdownloadentries --pname hclient --cname usermail --start 1000 --end 2000
+  ./manage.py tocviewentries --pname hclient --cname usermail
+  # Continue until -1
+
+Ensure that the pages are actually downloaded in the
+PROJECT_FS_ROOT/hclient/channel/usermail directory.
+
   
 
 Analyzing code snippets
