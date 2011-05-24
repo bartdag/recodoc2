@@ -59,7 +59,7 @@ MEDIA_ROOT = ''
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 MEDIA_URL = ''
 
-STATIC_ROOT = os.path.normapth(os.path.join(HERE, '..static/'))
+STATIC_ROOT = os.path.normpath(os.path.join(HERE, '..static/'))
 
 TEMPLATE_DIRS = (
     os.path.normpath(os.path.join(HERE, '../templates')),

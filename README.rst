@@ -228,15 +228,20 @@ First, clone the Recodoc git repository.
   cd $HOME
   mkdir projects
   cd projects
-  git clone git@github.com:bartdag/recodoc2.git
+  git clone -b develop git@github.com:bartdag/recodoc2.git
 
 
-Then, copy and configure the localsettings file.
+Then, copy and edit the localsettings file. The file is heavily commented and
+there are only a few steps to follow.
 
 ::
 
   cd recodoc2/recodoc2
   cp localsettings_template.py localsettings.py
+  vim localsettings.py
+
+
+
 
 User Guide
 ----------
