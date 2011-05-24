@@ -48,13 +48,13 @@ class ProjectRelease(models.Model):
 class Person(models.Model):
     '''A person asks and answers questions.'''
 
-    name = models.CharField(max_length=300, null=True, blank=True, default='')
+    name = models.CharField(max_length=255, null=True, blank=True, default='')
     '''real name. not used now.'''
 
     email = models.EmailField(null=True, blank=True)
     '''att.'''
 
-    nickname = models.CharField(max_length=300, null=True, blank=True,
+    nickname = models.CharField(max_length=255, null=True, blank=True,
             default='', db_index=True)
     '''nickname used on forums'''
 
