@@ -235,16 +235,13 @@ If you want to contribute to Recodoc, install the following Python programs:
   pip install sphinx
 
 
-Step 5. Download Recodoc
-~~~~~~~~~~~~~~~~~~~~~~~~
+Step 5. Download and Install Recodoc
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 First, clone the Recodoc git repository.
 
 ::
 
-  cd $HOME
-  mkdir projects
-  cd projects
   git clone -b develop git@github.com:bartdag/recodoc2.git
 
 
