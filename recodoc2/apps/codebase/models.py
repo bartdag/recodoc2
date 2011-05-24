@@ -55,7 +55,7 @@ class CodeElementKind(models.Model):
     '''A Code Element Kind determines the kind of code elements and
        references: e.g., a method, a field, an xml attribute.'''
 
-    kind = models.CharField(max_length=500, null=True, blank=True, unique=True)
+    kind = models.CharField(max_length=255, null=True, blank=True, unique=True)
     '''att.'''
 
     is_type = models.BooleanField(default=False)

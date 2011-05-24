@@ -47,7 +47,8 @@ XML parsing
   code is not ported yet to this new version.*
 
 
-**Documentation Analysis**
+Documentation Analysis
+~~~~~~~~~~~~~~~~~~~~~~
 
 crawling
   Given a URL, downloads all the documentation pages of an HTML document.
@@ -114,6 +115,9 @@ General Requirements
 ~~~~~~~~~~~~~~~~~~~~
 
 * Python 2.7 (Python 2.6 or 3.0+ will not work).
+* PostgreSQL, MySQL, or Oracle. Any recent version will do. *Note: sqlite will
+  not work because Recodoc uses multiple processes to speed up the parsers and
+  sqlite does not like that.*
 
 
 Requirements for Code Analysis
@@ -136,7 +140,6 @@ These libraries and programs should be installed to improve the performance and
 the usage/maintenance of Recodoc:
 
 * memcached
-* PostgreSQL
 * virtualenv
 * ipython (for interacting with the model through a Python shell)
 
@@ -177,6 +180,15 @@ Step 2. Install the required dependencies
   pip install Py4J
   pip install chardet
 
+  # For MySQL
+  pip install MySQL-python
+
+  # For PostgreSQL (requires gcc. otherwise download the binary)
+  pip install psycopg2
+
+If you want to install pyscopg2 without compiling it (e.g., on windows),
+download the `binary package <http://www.initd.org/psycopg/download/>`_.
+
 
 Step 3. Install the optional dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -185,9 +197,6 @@ These dependencies are only required if you want to analyze Java code. First,
 install the following Python libraries:
 
 ::
-
-  # This is for postgresql databases
-  pip install psycopg2
 
   # This is for memcached
   pip install pylibmc

@@ -10,7 +10,7 @@ class RecoDocError(Exception):
 class Project(models.Model):
     '''A project.'''
 
-    name = models.CharField(max_length=300, unique=True)
+    name = models.CharField(max_length=255, unique=True)
     '''att.'''
 
     url = models.URLField()
