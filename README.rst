@@ -132,7 +132,7 @@ Requirements for Code Analysis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These libraries and programs are required to analyze Java codebases. Analyzing
-Java codebases is a prerequisite for Java snippet parsing, model linking,
+Java codebases is a prerequisite for Java snippet parsing, model linking, and
 documentation improvements recommendation. If you plan to only use Support
 Channel or Documentation Analysis, you do not need these libraries and
 programs.
