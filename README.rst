@@ -347,8 +347,7 @@ Creating a project
 ~~~~~~~~~~~~~~~~~~
 
 Create a project by issuing this command. Note that a project will be created
-in the database and a folder will be created in the Recodoc data directory
-(specified in the localsettings.py file under PROJECT_FS_ROOT).
+in the database and a folder will be created in the Recodoc data directory.
 
 ::
 
@@ -380,11 +379,11 @@ Analyzing support channels
 
 To analyze a support channel, you will need to perform the following steps:
 
-# Get a table of contents of all the threads or messages.
-# Get the url of all threads and messages.
-# Download all pages containing each thread or messages.
-# Parse each page to generate a model of threads and messages and identify the
-  code snippets and the code-like terms.
+#. Get a table of contents of all the threads or messages.
+#. Get the url of all threads and messages.
+#. Download all pages containing each thread or messages.
+#. Parse each page to generate a model of threads and messages and identify the
+   code snippets and the code-like terms.
 
 For example, for a mailing, the table of content is the list of urls for each
 month (December 2010, January 2011, etc.). For a forum, this is the list of
@@ -406,54 +405,7 @@ Then, we get the table of contents. This should not take long.
 ::
 
   ./manage.py tocrefresh --pname hclient --cname usermail
-  ./manage.py tocview --pname hclient --cname usermail
-
-The last command should show you the number of pages Recodoc found in the table
-of contents (e.g., number of months for mailing lists, number of threads pages
-for forums).
-
-Then, we need to get the url of all the threads/messages. You can either do it
-in one go (risky if the server throws you out) or in increments. Note that this
-operation can take a while (a few minutes for large forums).
-
-::
-
-  # In one go
-  ./manage.py tocdownload --pname hclient --cname usermail --start 0 --end -1
-
-  # In increments
-  ./manage.py tocdownload --pname hclient --cname usermail --start 0 --end 10
-  ./manage.py tocdownload --pname hclient --cname usermail --start 10 --end 20
-
-The next steps will probably take some time and I recommend that you divide it
-in increments. You will download the HTML pages containing the threads or the
-messages. 
-
-Each HTML page is associated to an index. The index can be quite big because it
-is incremented by 1000 for each section in the table of contents (e.g., the
-indexes of the 100 messages in December 2010 range from 0 to 99, the indexes
-of the 50 messages in January 2011 range from 1000 to 1049, the indexes of the
-30 messages in February 2011 range from 2000 to 2029, etc.).
-
-
-::
-
-  # To view the number of threads/messages to download
-  ./manage.py tocviewentries --pname hclient --cname usermail
-
-  # To download the messages/threads in the first section of the table of
-  # contents.
-  ./manage.py tocdownloadentries --pname hclient --cname usermail --start 0 --end 1000
-  ./manage.py tocdownloadentries --pname hclient --cname usermail --start 1000 --end 2000
-  ./manage.py tocviewentries --pname hclient --cname usermail
   
-  # Tip, if an entry is already downloaded, Recodoc won't download it again so
-  # you can do things like:
-  ./manage.py tocdownloadentries --pname hclient --cname usermail --start 0 --end 3000
-
-Make sure that the messages are correctly downloaded on your computer. The
-pages should be in: ``PROJECT_FS_ROOT/hclient/support/usermail``.
-
 
 Analyzing code snippets
 ~~~~~~~~~~~~~~~~~~~~~~~
