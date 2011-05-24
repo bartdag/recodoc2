@@ -3,6 +3,7 @@ import subprocess
 import time
 import os
 import logging
+from collections import defaultdict
 from functools import partial
 from lxml import etree
 import enchant
@@ -16,7 +17,7 @@ from codeutil.xml_element import XMLStrategy, XML_LANGUAGE, is_xml_snippet,\
 from codeutil.java_element import ClassMethodStrategy, MethodStrategy,\
         FieldStrategy, OtherStrategy, AnnotationStrategy, SQLFilter,\
         BuilderFilter, JAVA_LANGUAGE, is_java_snippet, is_java_lines,\
-        is_exception_trace_lines, JAVA_EXCEPTION_TRACE
+        is_exception_trace_lines, JAVA_EXCEPTION_TRACE, clean_java_name
 from codeutil.other_element import FileStrategy, IgnoreStrategy,\
         IGNORE_KIND, EMAIL_PATTERN_RE, URL_PATTERN_RE, OTHER_LANGUAGE,\
         is_empty_lines, is_log_lines, LOG_LANGUAGE
@@ -49,10 +50,13 @@ SNIPPET_PARSERS = dict(
 LINKERS = dict(settings.LINKERS, **settings.CUSTOM_LINKERS)
 
 
-PREFIX_CODEBASE_CODE_WORDS = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
-                                'cb_codewords'])
-PREFIX_PROJECT_CODE_WORDS = ''.join([settings.CACHE_MIDDLEWARE_KEY_PREFIX,
-                                'project_codewords'])
+PREFIX_CODEBASE_CODE_WORDS = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
+                                'cb_codewords'
+PREFIX_PROJECT_CODE_WORDS = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
+                                'project_codewords'
+
+PREFIX_CODEBASE_FILTERS = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
+                                'cb_filters'
 
 JAVA_KINDS_HIERARCHY = {'field': 'class',
                         'method': 'class',
@@ -422,6 +426,26 @@ def link_code(pname, bname, release, linker_name, source, source_release=None):
 
 
 ### ACTIONS USED BY OTHER ACTIONS ###
+
+def compute_filters(codebase):
+    filters = CodeElementFilter.objects.filter(codebase=codebase).all()
+
+    simple_filters = defaultdict(list)
+    for cfilter in filters:
+        simple_name = clean_java_name(cfilter.fqn)[0]
+        simple_filters[simple_name].append(cfilter)
+    
+    fqn_filters = {cfilter.fqn: cfilter for cfilter in filters}
+
+    return (simple_filters, fqn_filters)
+
+
+def get_filters(codebase):
+    return get_value(PREFIX_CODEBASE_FILTERS,
+        get_codebase_key(codebase),
+        compute_filters,
+        [codebase])
+
 
 def get_package_name(tree):
     package_text = xtext(xpackage(tree)[0]).strip()

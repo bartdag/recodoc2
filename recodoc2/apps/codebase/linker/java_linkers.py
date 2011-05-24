@@ -348,8 +348,9 @@ class JavaClassLinker(gl.DefaultLinker):
 
         # Custom filtering
         custom_filter = filters.CustomClassFilter()
-        log.custom_filtered = custom_filter.filter(scode_reference,
-                return_code_element, log).activated
+        filter_input = filters.FilterInput(scode_reference, potentials,
+            fqn, log)
+        log.custom_filtered = custom_filter.filter(filter_input).activated
         if log.custom_filtered:
             return_code_element = potentials = None
 
