@@ -161,6 +161,13 @@ def replace_space(url, lowerize=False):
 def get_safe_local_id(url, index='', suffix='.html'):
     parse_result = urlparse.urlparse(url)
     last_path = os.path.split(parse_result.path)[1]
+
+    # This is the case where the url ends with a slash...
+    # We remove the slash and get the last bit, probably a uid by itself.
+    if last_path == '':
+        url_path = parse_result.path[:-1]
+        last_path = os.path.split(url_path)[1]
+
     uid = last_path + '?' + parse_result.query + index + suffix
     uid = urllib.quote_plus(uid)
     return uid

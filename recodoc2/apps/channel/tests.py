@@ -64,7 +64,7 @@ class ChannelSetup(TestCase):
                 'foo.parser', 'http://yo.com')
         self.assertEqual(2, len(list_channels_db('project1')))
 
-    @unittest.skip('Usually works.')
+    #@unittest.skip('Usually works.')
     def test_apache_syncer(self):
         create_channel_db('project1', 'cf', 'coreforum',
                 'channel.syncer.common_syncers.ApacheMailSyncer', 'foo.parser',
@@ -82,7 +82,7 @@ class ChannelSetup(TestCase):
                 'http://mail-archives.apache.org/mod_mbox/hc-httpclient-users/200410.mbox/date',
                 model.toc_sections[0].url)
         self.assertFalse(model.toc_sections[0].downloaded)
-        self.assertEqual(79, len(model.toc_sections))
+        self.assertTrue(len(model.toc_sections) >= 79)
         for i in xrange(0, 79):
             self.assertEqual(i, model.toc_sections[i].index)
 
@@ -108,7 +108,7 @@ class ChannelSetup(TestCase):
                 model.entries[0].local_paths[0])
         self.assertTrue(os.path.exists(path))
 
-    @unittest.skip('Usually works.')
+    #@unittest.skip('Usually works.')
     def test_phpbb_syncer(self):
         create_channel_db('project1', 'cf', 'coreforum',
                 'channel.syncer.common_syncers.PHPBBForumSyncer', 'foo.parser',

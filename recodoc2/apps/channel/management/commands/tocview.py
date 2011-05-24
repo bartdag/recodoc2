@@ -11,7 +11,7 @@ class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list + (
         make_option('--pname', action='store', dest='pname',
             default='-1', help='Project unix name'),
-        make_option('--cname', action='store', dest='bname',
+        make_option('--cname', action='store', dest='cname',
             default='-1', help='Channel name'),
 
     )

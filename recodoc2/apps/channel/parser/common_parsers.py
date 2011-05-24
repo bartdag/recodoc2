@@ -126,3 +126,7 @@ class PHPBBForumParser(GenericThreadParser):
                 )
 
         return date
+
+
+class FUDEclipseForumParser(GenericThreadParser):
+    pass

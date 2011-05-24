@@ -93,7 +93,7 @@ class ThreadSyncer(object):
 
         # We assume that the sections are always returned in the same order!
         for index in xrange(size, page_number):
-            section_url = self._get_section_url(index)
+            section_url = self._get_section_url(model.url, index)
             model.toc_sections.append(TocSection(index, section_url))
             index += 1
 

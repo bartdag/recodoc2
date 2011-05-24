@@ -1,7 +1,9 @@
 from __future__ import unicode_literals
 import os
 import urlparse
+import re
 from lxml import etree
+from docutil.etree_util import get_text
 from docutil.commands_util import download_html_tree
 from channel.syncer.generic_syncer import MessageSyncer, ThreadSyncer
 
@@ -56,7 +58,8 @@ class PHPBBForumSyncer(ThreadSyncer):
 
     xnext_links = etree.XPath('//td[@class="gensmall"]/b/a')
 
-    def _get_section_url(self, index):
+
+    def _get_section_url(self, base_url, index):
         url = self.section_url.format(self.ENTRY_PER_PAGE * index)
         return url
 
@@ -86,3 +89,53 @@ class PHPBBForumSyncer(ThreadSyncer):
                 next_url = urlparse.urljoin(url, link.attrib['href'])
                 break
         return next_url
+
+
+class FUDEclipseForumSyncer(ThreadSyncer):
+    
+    ENTRY_PER_PAGE = 40
+
+    section_url = '{0}1/{1}/'
+
+    xnumber_pages =\
+            etree.XPath('//table[@class="wa"]//td[@class="vt"]/span[1]')
+
+    xtext = etree.XPath('string()')
+
+    xentries = etree.XPath('//table[@class="pad"]//a[@class="big"]')
+
+    xnext_links = None
+
+    page_regex = re.compile(r'Pages \((\d+)\)')
+
+    def _get_number_of_pages(self, url):
+        tree = download_html_tree(url)
+        number_of_pages = self.xnumber_pages(tree)
+        if len(number_of_pages) == 0:
+            return 1
+        else:
+            number_element = number_of_pages[0]
+            number = get_text(number_element)
+            match = self.page_regex.search(number)
+            if match:
+                return int(match.group(1))
+            else:
+                return 1
+
+    def _get_section_url(self, base_url, index):
+        url = self.section_url.format(base_url, index * self.ENTRY_PER_PAGE)
+        return url
+
+    def _parse_toc_entries(self, page_url, tree):
+        entry_urls = []
+        links = self.xentries(tree)
+        for link in links:
+            url = urlparse.urljoin('http://www.eclipse.org/forums/',
+                    link.attrib['href'])
+            print(url)
+            entry_urls.append(url)
+        return entry_urls
+
+    def _get_next_entry_url(self, url, next_page_id, tree):
+        # It seems that all messages are presented on the same page.
+        return None
