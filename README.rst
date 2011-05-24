@@ -123,6 +123,9 @@ Please note that PostgreSQL is strongly recommended because it has less
 limitations than MySQL and the default configuration is better for Recodoc
 needs. Recodoc was developed with PostgreSQL, and lightly tested with MySQL.
 
+If you do not have experience configuring PostgreSQL or MySQL, you can use one
+of their useful GUI tools: `pgAdmin <http://www.pgadmin.org/>`_ and `MySQL Workbench <http://wb.mysql.com/>`_.
+
 
 Requirements for Code Analysis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -254,7 +257,7 @@ there are only a few steps to follow.
   vim localsettings.py
 
 Initialize the database by running the following command and creating an admin
-user:
+user (one index might fail to install if you use MySQL):
 
 ::
 
@@ -286,6 +289,9 @@ You should see these lines at the end:
   Ran x tests in xs
 
   OK
+
+If you use MySQL, you may see some error messages at the end of the unit tests:
+as long as the OK is printed, you should ignore these annoying error messages.
 
 If you see these lines instead, there was an error and you should contact me:
 
