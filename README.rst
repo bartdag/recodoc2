@@ -47,7 +47,8 @@ XML parsing
   code is not ported yet to this new version.*
 
 
-**Documentation Analysis**
+Documentation Analysis
+~~~~~~~~~~~~~~~~~~~~~~
 
 crawling
   Given a URL, downloads all the documentation pages of an HTML document.
@@ -57,7 +58,8 @@ parsing
   code snippets.
 
 
-**Support Channel Analysis**
+Support Channel Analysis
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 crawling
   Given a URL to a forum or a mailing list archive, downloads all the messages.
@@ -67,7 +69,8 @@ parsing
   messages, code-like terms, code snippets.
 
 
-**Code-like Terms and Snippets Analysis**
+Code-like Terms and Snippets Analysis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 snippet classification
   Classifies code snippets into the following categories: Java code snippet,
@@ -82,7 +85,8 @@ code-like terms classification
   word ``FooBar`` is classified as a ``class``.
 
 
-**Model Linking**
+Model Linking
+~~~~~~~~~~~~~
 
 Java model linking
   Links Java codebases with Java code-like terms found in documentation and support
@@ -93,7 +97,8 @@ XML model linking
   channels. *The code is not ported yet to this new version.*
   
 
-**Documentation Improvements Recommendation**
+Documentation Improvements Recommendation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is currently being implemented.
 
@@ -155,6 +160,10 @@ If you want to install the dependencies globally, skip this step.
   cd $HOME
   mkdir .virtualenvs
   virtualenv --no-site-package --distribute .virtualenvs/recodoc2
+
+  # The following step will activate the virtual environment.
+  # It is assumed that the next steps are performed while
+  # the environment is activated.
   source .virtualenvs/recodoc2/bin/activate
 
 
@@ -207,6 +216,33 @@ If you want to contribute to Recodoc, install the following Python programs:
   pip install coverage
   pip install django-test-coverage
   pip install sphinx
+
+
+Step 5. Download Recodoc
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+First, clone the Recodoc git repository.
+
+::
+
+  cd $HOME
+  mkdir projects
+  cd projects
+  git clone git@github.com:bartdag/recodoc2.git
+
+
+Then, copy and configure the localsettings file.
+
+::
+
+  cd recodoc2/recodoc2
+  cp localsettings_template.py localsettings.py
+
+User Guide
+----------
+
+Creating a project
+~~~~~~~~~~~~~~~~~~
 
 
 License
