@@ -240,7 +240,47 @@ there are only a few steps to follow.
   cp localsettings_template.py localsettings.py
   vim localsettings.py
 
+Initialize the database by running the following command and creating an admin
+user:
 
+::
+
+  ./manage.py syncdb
+
+  # Alternatively, if manage.py does not have execution permission:
+  python manage.py syncdb
+
+
+Finally, run one of the following unit tests to ensure that everything was
+installed correctly. These tests do not require Eclipse/Java.
+
+::
+
+  # Test Documentation Analysis.
+  ./manage.py test doc
+
+  # Test Support Channel Analysis. Can take 30 seconds.
+  ./manage.py test channel
+
+  # Test some utility functions
+  ./manage.py test docutil
+
+
+You should see these lines at the end:
+
+::
+
+  Ran x tests in xs
+
+  OK
+
+If you see these lines instead, there was an error and you should contact me:
+
+::
+
+  Ran x tests in xs
+
+  FAILED (failures=x, skipped=x)  
 
 
 User Guide
