@@ -50,7 +50,7 @@ class PHPBBForumSyncer(ThreadSyncer):
     ENTRY_PER_PAGE = 25
 
     section_url = \
-    'https://forum.hibernate.org/viewforum.php?f=1&sd=a&start={0}'
+    '{0}&sd=a&start={1}'
 
     xnumber_pages = etree.XPath('//td[@class="nav"]/strong[2]')
 
@@ -60,7 +60,7 @@ class PHPBBForumSyncer(ThreadSyncer):
 
 
     def _get_section_url(self, base_url, index):
-        url = self.section_url.format(self.ENTRY_PER_PAGE * index)
+        url = self.section_url.format(base_url, self.ENTRY_PER_PAGE * index)
         return url
 
     def _get_number_of_pages(self, url):

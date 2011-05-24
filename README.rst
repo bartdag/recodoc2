@@ -315,7 +315,7 @@ A list of all the available commands are available by issuing the help command:
 
   ./manage.py help
 
-  # For a specific command:
+  # Print info about a specific command and its options:
 
   ./manage.py help createproject
 
@@ -335,8 +335,9 @@ Initializing Recodoc
 ~~~~~~~~~~~~~~~~~~~~
 
 The following step will create a bunch of metadata in the database. It should
-complete quickly and without error. This command should only be issued once
-after running the ``syncdb`` command.
+complete quickly and without error: this is thus a good first step!
+
+This command should only be issued once after running the ``syncdb`` command.
 
 ::
 
@@ -346,16 +347,23 @@ after running the ``syncdb`` command.
 Creating a project
 ~~~~~~~~~~~~~~~~~~
 
-Create a project by issuing this command. Note that a project will be created
-in the database and a folder will be created in the Recodoc data directory
-specified in the PROJECT_FS_ROOT variable in the localsettings.py file.
+Create a project by issuing the following command. 
 
 ::
 
   ./manage.py createproject --pname hclient --pfullname 'HttpClient Library' --url 'http://hc.apache.org/httpcomponents-client-ga/index.html' --local
 
+Note that a project will be created in the database and a folder will be
+created in the Recodoc data directory specified in the PROJECT_FS_ROOT
+variable in the localsettings.py file. Commands that begin by "create" usually
+create a model in the database. They can optionnally initialize the required
+directory structure if the ``--local`` flag is provided. Alternatively, there
+is always the possibility to invoke the "createXlocal" command. The rationale
+is that sometimes, it can be useful to transfer the local data, but not the
+database from one machine to another.
+
 If you want to analyze the code and the documentation of a project, you need to
-create ``releases`` (e.g., 3.0, 3.1)
+create ``project releases``:
 
 ::
 
@@ -386,10 +394,6 @@ To analyze a support channel, you will need to perform the following steps:
 #. Parse each page to generate a model of threads and messages and identify the
    code snippets and the code-like terms.
 
-For example, for a mailing, the table of content is the list of urls for each
-month (December 2010, January 2011, etc.). For a forum, this is the list of
-urls of each page in the forum (Threads 0 to 40, Threads 41 to 80, etc.).
-
 
 First, we create a channel:
 
@@ -408,17 +412,18 @@ Then, we get the table of contents. This should not take long.
   ./manage.py tocrefresh --pname hclient --cname usermail
   ./manage.py tocview --pname hclient --cname usermail
 
-The next step is to download the table of contents sections. A section is a
-page listing messages or threads. For example, there is one section for each
-month in a mailing list and one section for each page listing threads in a
-forum.
+The next step is to download the sections in the table of contents. A section
+is a page listing messages or threads. For example, for a mailing list, a
+section is a page for a month (e.g., the page showing all messages for
+December 2010). For a forum, a section is a page in the forum index (Page 1
+for threads 0 to 40, Page 2 for threads 41 to 80, etc.).
 
 ::
   
-  # This will download sections in increments of 50. This is recommended. 
-  ./manage.py tocdownload --pname hclient --cname usermail --start 0 --end 50
-  ./manage.py tocdownload --pname hclient --cname usermail --start 50 --end 100
-  ./manage.py tocdownload --pname hclient --cname usermail --start 100 --end -1
+  # This will download sections in increment of 50. This is recommended. 
+  ./manage.py tocdownload --pname hclient --cname usermail --start 0 --end 20
+  ./manage.py tocdownload --pname hclient --cname usermail --start 20 --end 40
+  ./manage.py tocdownload --pname hclient --cname usermail --start 40 --end -1
   ./manage.py tocview --pname hclient --cname usermail
 
   # You can also download all sections in one go:
@@ -440,7 +445,7 @@ are indexed from 1000 to 1024 and so on.
   # Continue until -1
 
 Ensure that the pages are actually downloaded in the
-PROJECT_FS_ROOT/hclient/channel/usermail directory.
+``PROJECT_FS_ROOT/hclient/channel/usermail`` directory.
 
   
 

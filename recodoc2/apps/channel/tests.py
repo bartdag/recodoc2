@@ -112,11 +112,11 @@ class ChannelSetup(TestCase):
     def test_phpbb_syncer(self):
         create_channel_db('project1', 'cf', 'coreforum',
                 'channel.syncer.common_syncers.PHPBBForumSyncer', 'foo.parser',
-                'https://forum.hibernate.org/viewforum.php?f=1&start=0'
+                'https://forum.hibernate.org/viewforum.php?f=1'
                 )
         create_channel_local('project1', 'coreforum',
                 'channel.syncer.common_syncers.PHPBBForumSyncer',
-                'https://forum.hibernate.org/viewforum.php?f=1&start=0'
+                'https://forum.hibernate.org/viewforum.php?f=1'
                 )
         pname = 'project1'
         cname = 'coreforum'
@@ -153,6 +153,53 @@ class ChannelSetup(TestCase):
         self.assertTrue(os.path.exists(path))
         path = os.path.join(settings.PROJECT_FS_ROOT,
                 model.entries[49].local_paths[1])
+        self.assertTrue(os.path.exists(path))
+
+    #@unittest.skip('Usually works.')
+    def test_fudeclipse_syncer(self):
+        create_channel_db('project1', 'cf', 'coreforum',
+                'channel.syncer.common_syncers.FUDEclipseForumSyncer',
+                'foo.parser',
+                'http://www.eclipse.org/forums/index.php/sf/thread/13/'
+                )
+        create_channel_local('project1', 'coreforum',
+                'channel.syncer.common_syncers.FUDEclipseForumSyncer',
+                'http://www.eclipse.org/forums/index.php/sf/thread/13/'
+                )
+        pname = 'project1'
+        cname = 'coreforum'
+        toc_refresh(pname, cname)
+        model = load_model(pname, STHREAD_PATH, cname)
+        self.assertEqual(
+                'http://www.eclipse.org/forums/index.php/sf/thread/13/1/0/',
+                model.toc_sections[0].url)
+        self.assertFalse(model.toc_sections[0].downloaded)
+
+        self.assertTrue(len(model.toc_sections) >= 247)
+        for i in xrange(0, 247):
+            self.assertEqual(i, model.toc_sections[i].index)
+
+        toc_download_section(pname, cname, start=0, end=4)
+        model = load_model(pname, STHREAD_PATH, cname)
+        self.assertTrue(model.toc_sections[0].downloaded)
+        self.assertTrue(model.toc_sections[1].downloaded)
+        self.assertTrue(model.toc_sections[2].downloaded)
+        self.assertTrue(model.toc_sections[3].downloaded)
+        self.assertFalse(model.toc_sections[4].downloaded)
+
+        self.assertEqual(160, len(model.entries))
+        self.assertEqual(0, model.entries[0].index)
+        self.assertFalse(model.entries[0].downloaded)
+        self.assertEqual(1000, model.entries[40].index)
+        self.assertEqual(1001, model.entries[41].index)
+        #self.assertTrue(model.entries[26].url.find('t=59') > -1)
+
+        toc_download_entries(pname, cname, 1039, 1040)
+        model = load_model(pname, STHREAD_PATH, cname)
+        self.assertTrue(model.entries[79].downloaded)
+        self.assertFalse(model.entries[80].downloaded)
+        path = os.path.join(settings.PROJECT_FS_ROOT,
+                model.entries[79].local_paths[0])
         self.assertTrue(os.path.exists(path))
 
 class ChannelParserTest(TransactionTestCase):
@@ -240,11 +287,11 @@ class ChannelParserTest(TransactionTestCase):
         create_channel_db('project1', 'cf', 'coreforum',
                 'channel.syncer.common_syncers.PHPBBForumSyncer',
                 'channel.parser.common_parsers.PHPBBForumParser',
-                'https://forum.hibernate.org/viewforum.php?f=1&start=0'
+                'https://forum.hibernate.org/viewforum.php?f=1'
                 )
         create_channel_local('project1', 'coreforum',
                 'channel.syncer.common_syncers.PHPBBForumSyncer',
-                'https://forum.hibernate.org/viewforum.php?f=1&start=0'
+                'https://forum.hibernate.org/viewforum.php?f=1'
                 )
         pname = 'project1'
         cname = 'coreforum'
