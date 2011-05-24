@@ -115,16 +115,17 @@ General Requirements
 ~~~~~~~~~~~~~~~~~~~~
 
 * Python 2.7 (Python 2.6 or 3.0+ will not work).
-* PostgreSQL(>=8.4), MySQL (>=5.0.3), or Oracle. Any recent version will do.
-  *Note: sqlite will not work because Recodoc uses multiple processes to speed
-  up the parsers and sqlite does not like that.*
+* PostgreSQL(>=8.4), MySQL (>=5.0.3), or Oracle. *Note: sqlite will not work
+  because Recodoc uses multiple processes to speed up the parsers and sqlite
+  does not like that.*
 
 Please note that PostgreSQL is strongly recommended because it has less
 limitations than MySQL and the default configuration is better for Recodoc
 needs. Recodoc was developed with PostgreSQL, and lightly tested with MySQL.
 
 If you do not have experience configuring PostgreSQL or MySQL, you can use one
-of their useful GUI tools: `pgAdmin <http://www.pgadmin.org/>`_ and `MySQL Workbench <http://wb.mysql.com/>`_.
+of their useful GUI tools: `pgAdmin <http://www.pgadmin.org/>`_ and `MySQL
+Workbench <http://wb.mysql.com/>`_.
 
 
 Requirements for Code Analysis
