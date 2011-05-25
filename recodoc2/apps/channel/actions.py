@@ -178,6 +178,17 @@ def parse_channel(pname, cname, parse_refs=True):
     return channel
 
 
+@transaction.autocommit
+def debug_channel(pname, cname, parse_refs=True, entry_url=None):
+    model = load_model(pname, STHREAD_PATH, cname)
+    channel = SupportChannel.objects.filter(project__dir_name=pname).\
+            get(dir_name=cname)
+    pm = CLIProgressMonitor()
+    generic_parser.debug_channel(channel, model, progress_monitor=pm,
+            parse_refs=parse_refs, entry_url=entry_url)
+    return channel
+
+
 def post_process_channel(pname, cname):
     channel = SupportChannel.objects.filter(project__dir_name=pname).\
             get(dir_name=cname)
@@ -205,8 +216,8 @@ def post_process_channel(pname, cname):
 
     return channel
 
-def json_snippet(pname, cname, output_path):
 
+def json_snippet(pname, cname, output_path):
     channel = SupportChannel.objects.filter(project__dir_name=pname).\
             get(dir_name=cname)
     

@@ -48,6 +48,39 @@ def sub_process_parse(einput):
         connection.close()
 
 
+def debug_channel(channel, model, progress_monitor=NullProgressMonitor(),
+        parse_refs=True, entry_url=None):
+    manager = multiprocessing.Manager()
+    lock = manager.RLock()
+    work_units = BUCKET_PER_WORKER
+
+    # Prepare Input
+    entries = []
+    for entry in model.entries:
+        if entry.url == entry_url:
+            entries.append((entry.local_paths, entry.url))
+            entry.parsed = True
+    entries_chunks = chunk_it(entries, work_units)
+    inputs = []
+    for entry_chunk in entries_chunks:
+        inputs.append((channel.parser, channel.pk, entry_chunk, parse_refs,
+            lock))
+
+    # Close connection to allow the new processes to create their own
+    connection.close()
+
+    progress_monitor.start('Parsing Channel Entries', len(inputs))
+    progress_monitor.info('Sending {0} chunks to worker pool'
+            .format(len(inputs)))
+    pool = multiprocessing.Pool(1)
+    for result in pool.imap_unordered(sub_process_parse, inputs,
+            BUCKET_PER_WORKER):
+        progress_monitor.work('Parsed a chunk', 1)
+
+    pool.close()
+    progress_monitor.done()
+
+
 def parse_channel(channel, model, pool_size=DEFAULT_POOL_SIZE,
         progress_monitor=NullProgressMonitor(), parse_refs=True):
     manager = multiprocessing.Manager()
@@ -93,7 +126,7 @@ class ParserLoad(object):
 
 class GenericParser(object):
 
-    LINE_THRESHOLD = 250
+    LINE_THRESHOLD = settings.CHANNEL_LINE_THRESHOLD
 
     xtitle = None
     '''XPath to find the message title. Required'''
@@ -150,6 +183,9 @@ class GenericParser(object):
         message.msg_date = self._process_date(message, load)
 
         ucontent = self._process_content(message, load)
+
+        print(url)
+        print('CONTENT DEBUG:\n {0}'.format(ucontent))
 
         message.word_count = get_word_count_text(ucontent)
 
@@ -361,6 +397,11 @@ class GenericThreadParser(GenericParser):
             self._parse_message(path, relative_path, url, msg_index, load)
 
     def _process_content(self, message, load):
-        ucontent = self.xcontent.get_text_from_parent(load.entry_element)\
-                .strip()
-        return ucontent.replace('\n','\n\n')
+        try:
+            ucontent = self.xcontent.get_text_from_parent(load.entry_element,
+                    complex_text=True).strip()
+        except Exception:
+            print_exc()
+            ucontent = ''
+        return ucontent
+        #return ucontent.replace('\n','\n\n')

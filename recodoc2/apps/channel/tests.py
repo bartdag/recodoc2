@@ -64,7 +64,7 @@ class ChannelSetup(TestCase):
                 'foo.parser', 'http://yo.com')
         self.assertEqual(2, len(list_channels_db('project1')))
 
-    @unittest.skip('Usually works.')
+    #@unittest.skip('Usually works.')
     def test_apache_syncer(self):
         create_channel_db('project1', 'cf', 'coreforum',
                 'channel.syncer.common_syncers.ApacheMailSyncer', 'foo.parser',
@@ -108,7 +108,7 @@ class ChannelSetup(TestCase):
                 model.entries[0].local_paths[0])
         self.assertTrue(os.path.exists(path))
 
-    @unittest.skip('Usually works.')
+    #@unittest.skip('Usually works.')
     def test_phpbb_syncer(self):
         create_channel_db('project1', 'cf', 'coreforum',
                 'channel.syncer.common_syncers.PHPBBForumSyncer', 'foo.parser',
@@ -155,7 +155,7 @@ class ChannelSetup(TestCase):
                 model.entries[49].local_paths[1])
         self.assertTrue(os.path.exists(path))
 
-    @unittest.skip('Usually works.')
+    #@unittest.skip('Usually works.')
     def test_fudeclipse_syncer(self):
         create_channel_db('project1', 'cf', 'coreforum',
                 'channel.syncer.common_syncers.FUDEclipseForumSyncer',
@@ -302,6 +302,7 @@ class ChannelParserTest(TransactionTestCase):
         self.assertEqual(23, Message.objects.all().count())
         messages = list(Message.objects.all())
         for message in messages:
+            print(message.url)
             print('{0} by {1} on {2} (wc: {3})'.format(
                 message.title, message.author, message.msg_date,
                 message.word_count))
@@ -382,5 +383,5 @@ class ChannelParserTest(TransactionTestCase):
         # Test Refs
         refs = [ref.content.strip() for ref in
                 first_message.code_references.all()]
-        self.assertEqual(2, len(refs))
+        self.assertEqual(3, len(refs))
         self.assertTrue('ActivityElements' in refs)

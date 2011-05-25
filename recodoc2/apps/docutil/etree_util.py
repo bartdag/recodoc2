@@ -1,10 +1,73 @@
 from __future__ import unicode_literals
 from copy import deepcopy
 from lxml import etree
-from docutil.str_util import normalize, find_list, find_sentence
+from docutil.str_util import normalize, find_list, find_sentence,\
+        smart_decode
 
 XTEXT = etree.XPath("string()")
 XSCRIPTS = etree.XPath(".//script")
+PARAGRAPHS = {'div', 'p'}
+
+
+def texttail(text, tail):
+    if text is None:
+        text = ''
+    else:
+        text = text + ' '
+
+    if tail is None:
+        tail = ''
+
+    return '{0}{1}'.format(text, tail).strip()
+
+
+def get_recursive_text(element, text_parts):
+    # Terminal
+    if element.tag == 'pre':
+        text_parts.append('')
+        text_parts.append(XTEXT(element))
+        text_parts.append('')
+    # Terminal
+    elif element.tag == 'br':
+        tail = element.tail
+        # This is a lone <br>
+        if tail is None:
+            text_parts.append('')
+        else:
+            text_parts.append(smart_decode(tail).strip())
+    else:
+        if element.tag in PARAGRAPHS:
+            text_parts.append('')
+
+        text = element.text
+        if text is None:
+            text = ''
+
+        # If it is a paragraph, separate the content.
+        # Otherwise, inline the content with previous line.
+        if element.tag in PARAGRAPHS or len(text_parts) == 0:
+            text_parts.append(smart_decode(text).strip())
+        else:
+            text_parts[-1] = '{0} {1}'.format(
+                    text_parts[-1], smart_decode(text).strip())
+
+        for child in element:
+            get_recursive_text(child, text_parts)
+
+        if element.tag in PARAGRAPHS:
+            text_parts.append('')
+        
+        tail = element.tail
+        if tail is None:
+            tail = ''
+
+        # If it is a paragraph, separate the content.
+        # Otherwise, inline the content with previous line.
+        if element.tag in PARAGRAPHS or len(text_parts) == 0:
+            text_parts.append(smart_decode(tail).strip())
+        else:
+            text_parts[-1] = '{0} {1}'.format(
+                    text_parts[-1], smart_decode(tail).strip())
 
 
 def get_html_tree(ucontent, encoding=None):
@@ -163,14 +226,14 @@ class HierarchyXPath(SingleXPath):
                 elements.append(child)
         return elements
 
-    def get_text_from_parent(self, parent, index=0):
+    def get_text_from_parent(self, parent, index=0, complex_text=False):
         text = ''
         elem = self.get_element(parent, index)
         if elem is not None:
-            text = self.get_text(elem)
+            text = self.get_text(elem, complex_text)
         return normalize(text)
 
-    def get_text(self, element):
+    def get_text(self, element, complex_text=False):
         '''Computes the text of this element by creating a deepcopy of the
            element, removing the bad children, getting the text
            representation.
@@ -182,6 +245,10 @@ class HierarchyXPath(SingleXPath):
         for bad_element in bad_elements:
             if bad_element in new_element:
                 new_element.remove(bad_element)
-        text = new_element.xpath('.//text()')
-        text = '\n'.join(text)
+        if complex_text:
+            text_parts = []
+            get_recursive_text(new_element, text_parts)
+        else:
+            text_parts = new_element.xpath('.//text()')
+        text = '\n'.join(text_parts)
         return normalize(text)
