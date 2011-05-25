@@ -62,6 +62,11 @@ class SupportThread(models.Model):
             object_id_field='global_object_id')
     '''att.'''
 
+    code_snippets = generic.GenericRelation(CodeSnippet,
+            content_type_field='global_content_type',
+            object_id_field='global_object_id')
+    '''att.'''
+
     def __unicode__(self):
         return self.title
 
@@ -137,3 +142,4 @@ class TocEntry(object):
         self.url = url
         self.downloaded = False
         self.local_paths = []
+        self.parsed = False

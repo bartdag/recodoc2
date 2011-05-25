@@ -444,10 +444,25 @@ are indexed from 1000 to 1024 and so on.
   ./manage.py tocviewentries --pname hclient --cname usermail
   # Continue until -1
 
-Ensure that the pages are actually downloaded in the
+You can see that the pages are downloaded in the
 ``PROJECT_FS_ROOT/hclient/channel/usermail`` directory.
 
-  
+Finally, if you want to parse these messages and generate a model
+(channel/support threads/messages/code-like terms/code snippets), you can
+execute this command:
+
+::
+
+  ./manage.py parsechannel --pname hclient --cname usermail
+
+If it ever happens that an error occurred while parsing or that you find a bug
+in your parser, you can delete the generated model from the db with this
+command:
+
+::
+
+  ./manage.py clearchannel --pname hclient --cname usermail
+
 
 Analyzing code snippets
 ~~~~~~~~~~~~~~~~~~~~~~~

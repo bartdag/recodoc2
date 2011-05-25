@@ -132,7 +132,6 @@ class FUDEclipseForumSyncer(ThreadSyncer):
         for link in links:
             url = urlparse.urljoin('http://www.eclipse.org/forums/',
                     link.attrib['href'])
-            print(url)
             entry_urls.append(url)
         return entry_urls
 

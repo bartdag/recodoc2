@@ -55,7 +55,11 @@ def parse_channel(channel, model, pool_size=DEFAULT_POOL_SIZE,
     work_units = pool_size * BUCKET_PER_WORKER
 
     # Prepare Input
-    entries = [(entry.local_paths, entry.url) for entry in model.entries]
+    entries = []
+    for entry in model.entries:
+        if not entry.parsed:
+            entries.append((entry.local_paths, entry.url))
+            entry.parsed = True
     entries_chunks = chunk_it(entries, work_units)
     inputs = []
     for entry_chunk in entries_chunks:

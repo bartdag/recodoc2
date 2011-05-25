@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 import os
 import logging
+import codecs
+import json
 from django.conf import settings
 from django.db import transaction
 
@@ -119,6 +121,8 @@ def toc_download_section(pname, cname, start=None, end=None, force=False):
         try:
             syncer.toc_download_section(model, section)
             dump_model(model, pname, STHREAD_PATH, cname)
+
+            print('Downloaded section {0}'.format(section.index))
         except Exception:
             logger.exception('Error while downloading toc section')
 
@@ -156,6 +160,8 @@ def toc_download_entries(pname, cname, start=None, end=None, force=False):
         try:
             syncer.download_entry(entry, channel_path)
             dump_model(model, pname, STHREAD_PATH, cname)
+
+            print('Downloaded {0}'.format(entry.url))
         except Exception:
             logger.exception('Error while downloading entry')
 
@@ -168,6 +174,7 @@ def parse_channel(pname, cname, parse_refs=True):
     pm = CLIProgressMonitor()
     generic_parser.parse_channel(channel, model, progress_monitor=pm,
             parse_refs=parse_refs)
+    dump_model(model, pname, STHREAD_PATH, cname)
     return channel
 
 
@@ -197,6 +204,22 @@ def post_process_channel(pname, cname):
     progress_monitor.done()
 
     return channel
+
+def json_snippet(pname, cname, output_path):
+
+    channel = SupportChannel.objects.filter(project__dir_name=pname).\
+            get(dir_name=cname)
+    
+    stack_traces = []
+
+    for sthread in channel.threads.iterator():
+        url = sthread.url
+        for snippet in sthread.code_snippets.all():
+            if snippet.language == 'jx':
+                stack_traces.append((url, snippet.snippet_text))
+
+    with codecs.open(output_path, 'w', 'utf8') as json_file:
+        json.dump(stack_traces, json_file)
 
 
 ### INTERNAL FUNCTIONS ###
