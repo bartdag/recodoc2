@@ -64,7 +64,7 @@ class ChannelSetup(TestCase):
                 'foo.parser', 'http://yo.com')
         self.assertEqual(2, len(list_channels_db('project1')))
 
-    #@unittest.skip('Usually works.')
+    @unittest.skip('Usually works.')
     def test_apache_syncer(self):
         create_channel_db('project1', 'cf', 'coreforum',
                 'channel.syncer.common_syncers.ApacheMailSyncer', 'foo.parser',
@@ -108,7 +108,7 @@ class ChannelSetup(TestCase):
                 model.entries[0].local_paths[0])
         self.assertTrue(os.path.exists(path))
 
-    #@unittest.skip('Usually works.')
+    @unittest.skip('Usually works.')
     def test_phpbb_syncer(self):
         create_channel_db('project1', 'cf', 'coreforum',
                 'channel.syncer.common_syncers.PHPBBForumSyncer', 'foo.parser',
@@ -155,7 +155,7 @@ class ChannelSetup(TestCase):
                 model.entries[49].local_paths[1])
         self.assertTrue(os.path.exists(path))
 
-    #@unittest.skip('Usually works.')
+    @unittest.skip('Usually works.')
     def test_fudeclipse_syncer(self):
         create_channel_db('project1', 'cf', 'coreforum',
                 'channel.syncer.common_syncers.FUDEclipseForumSyncer',
@@ -333,3 +333,54 @@ class ChannelParserTest(TransactionTestCase):
         self.assertEqual(5, len(refs))
         self.assertTrue('DBCP' in refs)
         self.assertTrue('C3P0' in refs)
+
+    @transaction.autocommit
+    def test_fudeclipse_parser(self):
+        create_channel_db('project1', 'cf', 'coreforum',
+                'channel.syncer.common_syncers.FUDEclipseForumSyncer',
+                'channel.parser.common_parsers.FUDEclipseForumParser',
+                'http://www.eclipse.org/forums/index.php/sf/thread/59/'
+                )
+        create_channel_local('project1', 'coreforum',
+                'channel.syncer.common_syncers.FUDEclipseForumSyncer',
+                'http://www.eclipse.org/forums/index.php/sf/thread/59/'
+                )
+        pname = 'project1'
+        cname = 'coreforum'
+        toc_refresh(pname, cname)
+        toc_download_section(pname, cname, start=0, end=2)
+        toc_download_entries(pname, cname, 0, 6)
+        parse_channel(pname, cname, True)
+        self.assertEqual(18, Message.objects.all().count())
+        messages = list(Message.objects.all())
+        for message in messages:
+            print('{0} by {1} on {2} (wc: {3})'.format(
+                message.title, message.author, message.msg_date,
+                message.word_count))
+            print('  {0} snippets and {1} references'.format(
+                message.code_snippets.count(),
+                message.code_references.count()))
+            print('  Snippets:')
+            for code_snippet in message.code_snippets.all():
+                print('    {0}'.format(code_snippet.language))
+
+            for ref in message.code_references.all():
+                print('    {0}: {1}'.format(ref.kind_hint.kind, ref.content))
+        
+        first_message = messages[0]
+
+        # Test Title
+        self.assertEqual(first_message.title, 
+            'looping back to a previous step')
+
+        # Test Author
+        self.assertEqual(first_message.author.nickname, 'No real name')
+
+        # Test Date
+        self.assertEqual(first_message.msg_date, datetime(2010, 8, 26, 7, 50))
+
+        # Test Refs
+        refs = [ref.content.strip() for ref in
+                first_message.code_references.all()]
+        self.assertEqual(2, len(refs))
+        self.assertTrue('ActivityElements' in refs)

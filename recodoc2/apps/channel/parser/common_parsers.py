@@ -129,4 +129,46 @@ class PHPBBForumParser(GenericThreadParser):
 
 
 class FUDEclipseForumParser(GenericThreadParser):
-    pass
+    
+    xmessages = SingleXPath('//table[@class="MsgTable"]')
+
+    xtitle = SingleXPath('.//a[@class="MsgSubText"]')
+
+    xauthor = SingleXPath(
+            './/table[@class="ContentTable"]//td[@class="msgud"]/a[1]')
+
+    xdate = SingleXPath('.//span[@class="DateText"]')
+
+    # Here we do not remove blockquote and cite, because they are
+    # sometimes used to post code. Yeah. Great :-(
+    xcontent = HierarchyXPath('.//span[@class="MsgBodyText"]',
+            './/div[@class="codehead"]')
+
+    date_regex = re.compile(r'''
+        (?P<dayweek>\w{3}),\s
+        (?P<day>\d{2})\s
+        (?P<month>\w+)\s
+        (?P<year>\d{4})\s
+        (?P<hour>\d{2}):
+        (?P<minute>\d{2})
+        ''', re.VERBOSE)
+
+    def __init__(self, channel_pk, parse_refs, lock):
+        super(FUDEclipseForumParser, self).__init__(channel_pk, parse_refs, lock)
+
+    def _process_date_text(self, message, load, date_text):
+        match = self.date_regex.search(date_text)
+        if match is None:
+            logger.error('This date text does not match expected pattern: {0}'
+                    .format(date_text))
+            return None
+
+        date = datetime(
+                int(match.group('year')),
+                get_month_as_int(match.group('month')),
+                int(match.group('day')),
+                int(match.group('hour')),
+                int(match.group('minute')),
+                )
+
+        return date
