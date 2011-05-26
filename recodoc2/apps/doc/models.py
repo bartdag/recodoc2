@@ -158,6 +158,18 @@ class SectionMatcher(models.Model):
             related_name="section_matches")
 
 
+class SectionChanger(models.Model):
+    section_from = models.ForeignKey(Section, blank=True, null=True,
+            related_name="changed_froms")
+    section_to = models.ForeignKey(Section, blank=True, null=True,
+            related_name="changed_tos")
+    words_from = models.IntegerField(default=0)
+    words_to = models.IntegerField(default=0)
+    change = models.FloatField(default=0.0)
+    diff = models.ForeignKey(DocDiff, blank=True, null=True,
+            related_name="section_changes")
+
+
 ### SYNCER MODEL ###
 
 class DocumentStatus(object):

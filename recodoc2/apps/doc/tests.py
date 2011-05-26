@@ -343,7 +343,7 @@ class DocParserTest(TransactionTestCase):
         self.assertEqual('2.', section.parent.number)
         self.assertTrue(section.parent.parent is None)
 
-    #@unittest.skip('Usually works.')
+    @unittest.skip('Usually works.')
     def test_docbook_parse_sp25_doc(self):
         pname = 'project1'
         release = '3.0'
@@ -381,7 +381,7 @@ class DocParserTest(TransactionTestCase):
         self.assertEqual('22.', section.parent.number)
         self.assertTrue(section.parent.parent is None)
 
-    #@unittest.skip('Usually works.')
+    @unittest.skip('Usually works.')
     def test_docbook_parse_hib3_doc(self):
         pname = 'project1'
         release = '3.0'
@@ -419,7 +419,7 @@ class DocParserTest(TransactionTestCase):
         self.assertEqual('12.', section.parent.number)
         self.assertTrue(section.parent.parent is None)
 
-    #@unittest.skip('Usually works.')
+    @unittest.skip('Usually works.')
     def test_maven_parse_joda162_doc(self):
         pname = 'project1'
         release = '3.0'
@@ -458,7 +458,7 @@ class DocParserTest(TransactionTestCase):
         self.assertEqual(2, section.word_count)
         self.assertTrue(section.parent is None)
 
-    #@unittest.skip('Usually works.')
+    @unittest.skip('Usually works.')
     def test_maven_parse_htclient_doc(self):
         pname = 'project1'
         release = '3.0'
@@ -497,7 +497,7 @@ class DocParserTest(TransactionTestCase):
         self.assertEqual(132, section.word_count)
         self.assertTrue(section.parent is None)
 
-    #@unittest.skip('Usually works.')
+    @unittest.skip('Usually works.')
     def test_maven_parse_joda162_doc_code(self):
         pname = 'project1'
         release = '3.0'
