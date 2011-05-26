@@ -450,6 +450,9 @@ class CodeBaseDiff(models.Model):
     ann_fields_size_from = models.IntegerField(default=0)
     ann_fields_size_to = models.IntegerField(default=0)
 
+    def __unicode__(self):
+        return 'Diff {0} - {1}'.format(self.codebase_from, self.codebase_to)
+
 ### LINKS ###
 
 class ReleaseLinkSet(models.Model):

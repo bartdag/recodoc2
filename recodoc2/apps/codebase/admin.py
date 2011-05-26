@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
-        SingleCodeReference, CodeSnippet, CodeElementFilter, ParameterElement
+        SingleCodeReference, CodeSnippet, CodeElementFilter,\
+        ParameterElement, CodeBaseDiff
 from django.contrib import admin
 
 
@@ -56,10 +57,20 @@ class CodeElementFilterAdmin(admin.ModelAdmin):
     list_filter = ('codebase', )
     search_fields = ('fqn', )
 
-
+class CodeBaseDiffAdmin(admin.ModelAdmin):
+    fields = ('codebase_from', 'codebase_to', 'packages_size_from',
+            'packages_size_to', 'types_size_from', 'types_size_to',
+            'methods_size_from', 'methods_size_to', 'fields_size_from',
+            'fields_size_to', 'enum_values_size_from', 'enum_values_size_to',
+            'ann_fields_size_from', 'ann_fields_size_to', 'added_packages',
+            'removed_packages', 'added_types', 'removed_types')
+    readonly_fields = ('added_packages', 'removed_packages', 'added_types',
+        'removed_types')
+    
 admin.site.register(CodeBase)
 admin.site.register(CodeElementFilter, CodeElementFilterAdmin)
 admin.site.register(CodeElementKind)
 admin.site.register(CodeElement, CodeElementAdmin)
 admin.site.register(SingleCodeReference, SingleCodeReferenceAdmin)
 admin.site.register(CodeSnippet, CodeSnippetAdmin)
+admin.site.register(CodeBaseDiff, CodeBaseDiffAdmin)
