@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from difflib import SequenceMatcher
-from doc.models import SectionMatcher, DocDiff, Section, PageMatcher
+from doc.models import SectionMatcher, DocDiff, Section, PageMatcher,\
+        SectionChanger
 
 
 ABS_THRESHOLD = 2.0
@@ -229,6 +230,8 @@ class DocDiffer(object):
         self.match_pages(ddiff)
 
         self.match_sections(ddiff)
+
+        self.compute_changes(ddiff)
         
         return ddiff
 
@@ -276,6 +279,28 @@ class DocDiffer(object):
         for section_to in section_tos:
             if section_to.pk not in matched_tos:
                 ddiff.added_sections.add(section_to)
+
+    def compute_changes(self, ddiff):
+        for section_matcher in ddiff.section_matches.all():
+            section_from = section_matcher.section_from
+            section_to = section_matcher.section_to
+            words_from = section_from.word_count
+            words_to = section_to.word_count
+
+            if words_from > 0:
+                change_words = (float(words_to - words_from) /
+                        float(words_from)) * 100.0
+            else:
+                change_words = words_to * 100.0
+
+            if words_from != words_to:
+                change = SectionChanger(section_from=section_from,
+                        section_to=section_to,
+                        words_from=words_from,
+                        words_to=words_to,
+                        change=change_words,
+                        diff=ddiff)
+                change.save()
 
     def _match_page(self, page_from, page_tos):
         match_results = []
