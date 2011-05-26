@@ -68,6 +68,11 @@ def list_channels_local(pname):
 
 
 def clear_channel_elements(pname, cname):
+    model = load_model(pname, STHREAD_PATH, cname)
+    for entry in model.entries:
+        entry.parsed = False
+    dump_model(model, pname, STHREAD_PATH, cname)
+
     channel = SupportChannel.objects.filter(project__dir_name=pname).\
             get(dir_name=cname)
     query = Message.objects.filter(sthread__channel=channel)
@@ -220,7 +225,7 @@ def post_process_channel(pname, cname):
 def json_snippet(pname, cname, output_path):
     channel = SupportChannel.objects.filter(project__dir_name=pname).\
             get(dir_name=cname)
-    
+
     stack_traces = []
 
     for sthread in channel.threads.iterator():

@@ -184,8 +184,8 @@ class GenericParser(object):
 
         ucontent = self._process_content(message, load)
 
-        print(url)
-        print('CONTENT DEBUG:\n {0}'.format(ucontent))
+        #print(url)
+        #print('CONTENT DEBUG:\n {0}'.format(ucontent))
 
         message.word_count = get_word_count_text(ucontent)
 
