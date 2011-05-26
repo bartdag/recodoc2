@@ -132,6 +132,9 @@ class DocDiff(models.Model):
     sections_size_from = models.IntegerField(default=0)
     sections_size_to = models.IntegerField(default=0)
 
+    def __unicode__(self):
+        return 'Diff {0} - {1}'.format(self.document_from, self.document_to)
+
 
 class PageMatcher(models.Model):
     page_from = models.ForeignKey(Page, blank=True, null=True,

@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.contrib.contenttypes import generic
 from codebase.models import SingleCodeReference, CodeSnippet
-from doc.models import Document, Page, Section
+from doc.models import Document, Page, Section, DocDiff
 
 
 class SingleCodeReferenceInline(generic.GenericTabularInline):
@@ -58,6 +58,12 @@ class DocumentAdmin(admin.ModelAdmin):
     inlines = [PageInline]
 
 
+class DocDiffAdmin(admin.ModelAdmin):
+    readonly_fields = ('removed_pages', 'added_pages', 'removed_sections',
+            'added_sections')
+
+
 admin.site.register(Document, DocumentAdmin)
 admin.site.register(Page, PageAdmin)
 admin.site.register(Section, SectionAdmin)
+admin.site.register(DocDiff, DocDiffAdmin)
