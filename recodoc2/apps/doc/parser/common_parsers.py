@@ -37,14 +37,30 @@ class NumberDotParentMixin(object):
     def _find_section_parent(self, page, load, sections, sections_number):
         for section in sections:
             indexes = find_list(section.number, '.')
-            if len(indexes) > 1:
+            number_of_dots = len(indexes)
+            parent_number1 = parent_number2 = None
+            end_with_dot = section.number.strip().endswith('.')
+
+            if end_with_dot and number_of_dots > 1:
                 # e.g., if section.number = 2.3.4.
                 # then parent_number = 2.3.
-                parent_number = section.number[:indexes[-2] + 1]
-                if parent_number in sections_number:
-                    section.parent = sections_number[parent_number]
-                    section.save()
+                # unlikely parent_number = 2.3
+                parent_number1 = section.number[:indexes[-2] + 1]
+                parent_number2 = section.number[:indexes[-2]]
+            elif not end_with_dot and number_of_dots > 0:
+                # e.g., if section number = 2.3.4
+                # then likely parent_number = 2.3
+                # unlikely parent_number 2.3.
+                parent_number1 = section.number[:indexes[-1]]
+                parent_number2 = section.number[:indexes[-1] + 1]
 
+            if parent_number1 is not None and parent_number1 in sections_number:
+                section.parent = sections_number[parent_number1]
+                section.save()
+            elif parent_number2 is not None and \
+                    parent_number2 in sections_number:
+                section.parent = sections_number[parent_number2]
+                section.save()
 
 class XPathParentMixin(object):
 

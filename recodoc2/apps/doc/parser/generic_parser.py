@@ -345,8 +345,13 @@ class GenericParser(object):
                 reference.global_context = parent_section.page
                 reference.save()
         else:
+            content = None
+            try:
+                content = reference.content
+            except Exception:
+                content = 'SNIPPET'
             logger.warning('orphan ref {0}, path {1}, page {2}'
-                    .format(reference.content, reference.xpath, page.title))
+                    .format(content, reference.xpath, page.title))
             # Delete, otherwise, it won't be deleted when clearning document.
             reference.delete()
 
