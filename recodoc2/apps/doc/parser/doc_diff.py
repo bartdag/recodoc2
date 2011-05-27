@@ -256,6 +256,8 @@ class DocDiffer(object):
             if page_to.pk not in matched_tos:
                 ddiff.added_pages.add(page_to)
 
+        print('Finished matching pages')
+
     def match_sections(self, ddiff):
         section_froms = list(Section.objects
                 .filter(page__document=ddiff.document_from).all())
@@ -275,10 +277,14 @@ class DocDiffer(object):
                 matched_tos.add(section_to.pk)
             else:
                 ddiff.removed_sections.add(section_from)
+            print('Matched section {0}'.format(section_from.title))
 
         for section_to in section_tos:
             if section_to.pk not in matched_tos:
                 ddiff.added_sections.add(section_to)
+                print('Matched section to')
+
+        print('Finished matching sections')
 
     def compute_changes(self, ddiff):
         for section_matcher in ddiff.section_matches.all():
@@ -301,6 +307,8 @@ class DocDiffer(object):
                         change=change_words,
                         diff=ddiff)
                 change.save()
+
+        print('Finished computing changes')
 
     def _match_page(self, page_from, page_tos):
         match_results = []
