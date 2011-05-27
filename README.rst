@@ -450,7 +450,7 @@ Codediffs).
 Analyzing documentation
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-TBD
+To analyze the documentation of a project... TBD
 
 
 Analyzing support channels
@@ -465,7 +465,7 @@ To analyze a support channel, you will need to perform the following steps:
    code snippets and the code-like terms.
 
 
-First, we create a channel:
+First, create a channel using the following command:
 
 ::
   
@@ -475,7 +475,12 @@ First, we create a channel:
   --url 'http://mail-archives.apache.org/mod_mbox/hc-httpclient-users/' --local
 
 
-Then, we get the table of contents. This should not take long.
+Note that the ``syncer`` and ``parser`` parameters refer to the Python class
+responsible for crawling the channel (syncer) and generating a model from it
+(parser). 
+
+After you have created the channel structure, you need to retrieve the table
+of contents. This should not take long.
 
 ::
 
@@ -490,7 +495,7 @@ for threads 0 to 40, Page 2 for threads 41 to 80, etc.).
 
 ::
   
-  # This will download sections in increment of 50. This is recommended. 
+  # This will download sections in increment of 20. This is recommended. 
   ./manage.py tocdownload --pname hclient --cname usermail --start 0 --end 20
   ./manage.py tocdownload --pname hclient --cname usermail --start 20 --end 40
   ./manage.py tocdownload --pname hclient --cname usermail --start 40 --end -1
