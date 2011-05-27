@@ -8,6 +8,7 @@ from docutil.url_util import get_local_url, get_url_without_hash,\
         ensure_path_exists, get_path_from_url, get_sanitized_url
 from docutil.commands_util import get_encoding, download_file
 from doc.models import DocumentPage, DocumentLink
+from traceback import print_exc
 
 
 class GenericSyncer(object):
@@ -61,6 +62,7 @@ class GenericSyncer(object):
                 self.pages[page.local_url] = page
                 self.process_links(page)
             except:
+                print_exc()
                 self.page_error(input_url, self.pages)
         return self.pages
 
