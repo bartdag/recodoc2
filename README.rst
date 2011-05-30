@@ -450,7 +450,27 @@ Codediffs).
 Analyzing documentation
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-To analyze the documentation of a project... TBD
+Execute the following command to create the appropriate model and directory
+structure:
+
+::
+    ./manage.py createdoc --pname htclient --release 4.0 --dname clienttut \
+    --parser doc.parser.common_parsers.NewDocBookParser \
+    --url "file:///local_path/httpcomponents-client-4.0.1/tutorial/html/index.html" \
+    --local
+
+The ``url`` parameter can be a local or remote (e.g., http) path. The
+documentation will be downloaded starting from this URL.
+
+The ``parser`` parameter refers to the Python class responsible for generating
+a model from the documents. There is also an optional ``syncer`` parameter if
+the documentation is not contained in a subdirectory (e.g., a wiki has a flat
+structure when it comes to URL so if you use the default "syncer", all pages
+in the wiki will be included, not just the ones that are related to the
+developer documentation.
+
+
+
 
 
 Analyzing support channels
@@ -477,7 +497,7 @@ First, create a channel using the following command:
 
 Note that the ``syncer`` and ``parser`` parameters refer to the Python class
 responsible for crawling the channel (syncer) and generating a model from it
-(parser). 
+(parser).
 
 After you have created the channel structure, you need to retrieve the table
 of contents. This should not take long.

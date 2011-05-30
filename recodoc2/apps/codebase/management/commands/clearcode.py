@@ -15,7 +15,7 @@ class Command(NoArgsCommand):
             default='-1', help='Code Base name'),
         make_option('--release', action='store', dest='release',
             default='-1', help='Project Release'),
-        make_option('--parser', action='store_true', dest='link',
+        make_option('--parser', action='store', dest='parser',
             default='-1', help='Parser used to create the code elements '
             '(optional)'),
 
