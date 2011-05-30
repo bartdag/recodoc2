@@ -13,8 +13,9 @@ class AttributeCodeElementAdmin(admin.TabularInline):
 
 
 class CodeElementAdmin(admin.ModelAdmin):
-    fields = ('simple_name', 'fqn', 'kind', 'parser', 'attcontainer',
-            'type_attcontainers', 'containers', 'type_containers', 'parents')
+    fields = ('simple_name', 'fqn', 'kind', 'deprecated', 'parser',
+            'attcontainer', 'type_attcontainers', 'containers', 
+            'type_containers', 'parents')
     list_filter = ('codebase', 'kind', 'parser')
     list_display = ('pk', 'fqn', 'simple_name', 'kind', 'parser')
     list_display_links = ('fqn', 'simple_name')
@@ -57,15 +58,22 @@ class CodeElementFilterAdmin(admin.ModelAdmin):
     list_filter = ('codebase', )
     search_fields = ('fqn', )
 
+
 class CodeBaseDiffAdmin(admin.ModelAdmin):
     fields = ('codebase_from', 'codebase_to', 'packages_size_from',
             'packages_size_to', 'types_size_from', 'types_size_to',
-            'methods_size_from', 'methods_size_to', 'fields_size_from',
+            'methods_size_from', 'methods_size_to', 'dep_types_size_from',
+            'dep_types_size_to',
+            'dep_methods_size_from', 'dep_methods_size_to', 'fields_size_from',
             'fields_size_to', 'enum_values_size_from', 'enum_values_size_to',
             'ann_fields_size_from', 'ann_fields_size_to', 'added_packages',
-            'removed_packages', 'added_types', 'removed_types')
+            'removed_packages', 'added_types', 'removed_types',
+            'added_deprecated_types', 'removed_deprecated_types',
+            'added_deprecated_methods', 'removed_deprecated_methods')
     readonly_fields = ('added_packages', 'removed_packages', 'added_types',
-        'removed_types')
+        'removed_types', 'added_deprecated_types', 'removed_deprecated_types',
+        'added_deprecated_methods', 'removed_deprecated_methods')
+
     
 admin.site.register(CodeBase)
 admin.site.register(CodeElementFilter, CodeElementFilterAdmin)

@@ -61,6 +61,20 @@ class JavaDiffer(object):
             cdiff.codebase_to.code_elements.filter(
                     kind__kind='annotation field').count()
 
+        cdiff.dep_methods_size_from = \
+            cdiff.codebase_from.code_elements.filter(
+                    kind__kind='method').filter(deprecated=True).count()
+        cdiff.dep_methods_size_to = \
+            cdiff.codebase_to.code_elements.filter(
+                    kind__kind='method').filter(deprecated=True).count()
+
+        cdiff.dep_types_size_from = \
+            cdiff.codebase_from.code_elements.filter(
+                    kind__is_type=True).filter(deprecated=True).count()
+        cdiff.dep_types_size_to = \
+            cdiff.codebase_to.code_elements.filter(
+                    kind__is_type=True).filter(deprecated=True).count()
+
         cdiff.save()
 
     def _diff_packages(self, cdiff, fpackages, tpackages):
@@ -102,15 +116,27 @@ class JavaDiffer(object):
             if from_fqn not in to_fqns:
                 from_type = from_fqns[from_fqn]
                 cdiff.removed_types.add(from_type)
+                if from_type.deprecated:
+                    # BIG VERSION BUMP!
+                    cdiff.removed_deprecated_types.add(from_type)
             else:
                 from_type = from_fqns[from_fqn]
                 to_type = to_fqns[from_fqn]
                 types.append((from_type, to_type))
+                if from_type.deprecated and not to_type.deprecated:
+                    # STRANGE!
+                    cdiff.removed_deprecated_types.add(from_type)
+                elif not from_type.deprecated and to_type.deprecated:
+                    # NORMAL CASE!
+                    cdiff.added_deprecated_types.add(to_type)
 
         for to_fqn in to_fqns:
             if to_fqn not in from_fqns:
                 to_type = to_fqns[to_fqn]
                 cdiff.added_types.add(to_type)
+                if to_type.deprecated:
+                    # STRANGE!
+                    cdiff.added_deprecated_types.add(to_type)
 
         for (ftype, ttype) in types:
             self._diff_type(cdiff, ftype, ttype)
@@ -122,6 +148,16 @@ class JavaDiffer(object):
                 ttype.containees.filter(kind__kind='method').all())
         self._diff_type_members(cdiff, from_fqns, to_fqns,
                 cdiff.removed_methods, cdiff.added_methods)
+
+        from_fqns = dict((method.human_string(), method) for method in
+                ftype.containees.filter(kind__kind='method')\
+                        .filter(deprecated=True).all())
+        to_fqns = dict((method.human_string(), method) for method in
+                ttype.containees.filter(kind__kind='method')\
+                        .filter(deprecated=True).all())
+        self._diff_type_members(cdiff, from_fqns, to_fqns,
+                cdiff.removed_deprecated_methods,
+                cdiff.added_deprecated_methods)
 
         from_fqns = dict((method.human_string(), method) for method in
                 ftype.containees.filter(kind__kind='field').all())
@@ -144,7 +180,8 @@ class JavaDiffer(object):
         self._diff_type_members(cdiff, from_fqns, to_fqns,
                 cdiff.removed_ann_fields, cdiff.added_ann_fields)
 
-    def _diff_type_members(self, cdiff, from_fqns, to_fqns, removed, added):
+    def _diff_type_members(self, cdiff, from_fqns, to_fqns, removed, added,
+            func=None):
         for from_fqn in from_fqns:
             if from_fqn not in to_fqns:
                 from_type = from_fqns[from_fqn]

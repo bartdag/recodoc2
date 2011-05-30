@@ -117,6 +117,9 @@ class CodeElement(models.Model):
     kind = models.ForeignKey(CodeElementKind, null=True, blank=True)
     '''att.'''
 
+    deprecated = models.BooleanField(default=False)
+    '''att.'''
+
     eclipse_handle = models.CharField(max_length=500, null=True, blank=True)
     '''Handle that can be used to identify the code element in an Eclipse
        workspace.'''
@@ -449,6 +452,20 @@ class CodeBaseDiff(models.Model):
             related_name='diffs_a_removed')
     ann_fields_size_from = models.IntegerField(default=0)
     ann_fields_size_to = models.IntegerField(default=0)
+
+    added_deprecated_types = models.ManyToManyField(CodeElement, null=True,
+            blank=True, related_name='diffs_dep_t_added')
+    removed_deprecated_types = models.ManyToManyField(CodeElement, null=True,
+            blank=True, related_name='diffs_dep_t_removed')
+    dep_types_size_from = models.IntegerField(default=0)
+    dep_types_size_to = models.IntegerField(default=0)
+
+    added_deprecated_methods = models.ManyToManyField(CodeElement, null=True,
+            blank=True, related_name='diffs_dep_m_added')
+    removed_deprecated_methods = models.ManyToManyField(CodeElement, null=True,
+            blank=True, related_name='diffs_dep_m_removed')
+    dep_methods_size_from = models.IntegerField(default=0)
+    dep_methods_size_to = models.IntegerField(default=0)
 
     def __unicode__(self):
         return 'Diff {0} - {1}'.format(self.codebase_from, self.codebase_to)

@@ -136,12 +136,14 @@ class CUWorker(Thread):
         type_binding = jtype.resolveBinding()
         java_element = type_binding.getJavaElement()
         (simple_name, fqn) = clean_java_name(type_binding.getQualifiedName())
+        deprecated = type_binding.isDeprecated()
 
         type_code_element = CodeElement(codebase=self.codebase,
                 simple_name=simple_name,
                 fqn=fqn,
                 eclipse_handle=java_element.getHandleIdentifier(),
-                parser=JAVA_PARSER)
+                parser=JAVA_PARSER,
+                deprecated=deprecated)
 
         node_type = jtype.getNodeType()
         if node_type == self.annotation_type:
@@ -207,6 +209,7 @@ class CUWorker(Thread):
             params_length = len(parameters)
             (return_simple_name, return_fqn) = clean_java_name(
                     method_binding.getReturnType().getQualifiedName())
+            deprecated = method_binding.isDeprecated()
             method_code_element = MethodElement(codebase=self.codebase,
                     kind=self.method_kind, simple_name=simple_name,
                     fqn=fqn,
@@ -214,7 +217,8 @@ class CUWorker(Thread):
                     eclipse_handle=java_element.getHandleIdentifier(),
                     return_simple_name=return_simple_name,
                     return_fqn=return_fqn,
-                    parser=JAVA_PARSER)
+                    parser=JAVA_PARSER,
+                    deprecated=deprecated)
 
             # method container
             method_code_element.save()
@@ -237,6 +241,12 @@ class CUWorker(Thread):
                         attcontainer=method_code_element,
                         parser=JAVA_PARSER)
                 parameter_code_element.save()
+
+            # If we ever need to get the deprecated replace
+            # method.getJavadoc()
+            # method.tags()
+            # look for tag.getTagName() == 'deprecated'
+            # look at subtag link or just plain text...
 
     def _is_private(self, binding):
         return self.Modifier.isPrivate(binding.getModifiers())
