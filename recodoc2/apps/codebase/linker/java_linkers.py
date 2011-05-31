@@ -9,8 +9,8 @@ import docutil.cache_util as cu
 import codeutil.java_element as je
 import codebase.linker.generic_linker as gl
 import codebase.linker.filters as filters
-from codebase.models import CodeElementKind, SingleCodeReference, \
-        CodeElement, ReleaseLinkSet
+from codebase.models import CodeElementKind, ReleaseLinkSet, MethodElement,\
+        MethodInfo
 
 ### PPA CONSTANTS ###
 HANDLE_SEPARATOR = ":"
@@ -28,6 +28,8 @@ PREFIX_ENUMERATION_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
     'javaenumlinker'
 PREFIX_CLASS_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
     'javaclslinker'
+PREFIX_METHOD_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
+    'javamethodlinker'
 PREFIX_CLASS_POST_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
     'javaclspostlinker'
 PREFIX_GENERIC_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
@@ -498,6 +500,205 @@ class JavaPostClassLinker(gl.DefaultLinker):
 
 class JavaMethodLinker(gl.DefaultLinker):
     name = 'javamethod'
+
+    def __init__(self, project, prelease, codebase, source, srelease=None):
+        super(JavaMethodLinker, self).__init__(project, prelease, codebase,
+                source, srelease)
+        self.method_kind = CodeElementKind.objects.get(kind='method')
+        self.method_filters = [
+
+                ]
+
+    def link_references(self, progress_monitor=NullProgressMonitor(),
+            local_object_id=None):
+
+        method_refs = self._get_query(self.method_kind, local_object_id)
+        mcount = method_refs.count()
+        progress_monitor.info('Method count: {0}'.format(mcount))
+        try:
+            self._link_methods(queryset_iterator(method_refs), mcount,
+                    progress_monitor)
+        except Exception:
+            logger.exception('Error while processing methods')
+
+        call_gc()
+
+    def _link_methods(self, method_refs, mcount, progress_monitor):
+        count = 0
+        progress_monitor.start('Parsing methods', mcount)
+        log = gl.LinkerLog(self, self.method_kind.kind)
+
+        for scode_reference in method_refs:
+            method_info = self._get_method_info(scode_reference)
+            code_elements = self._get_method_elements(method_info)
+
+            (code_element, potentials) = self.get_code_element(
+                    scode_reference, code_elements, method_info, log)
+            count += gl.save_link(scode_reference, code_element, potentials,
+                    self)
+
+            if not log.custom_filtered:
+                reclassify_java(code_element, scode_reference)
+
+            progress_monitor.work('Processed method', 1)
+
+        log.close()
+        progress_monitor.done()
+        print('Associated {0} methods'.format(mcount))
+
+    def _get_method_elements(self, method_info):
+            prefix = '{0}{1}'.format(PREFIX_METHOD_LINKER,
+                cu.get_codebase_key(self.codebase))
+            method_name = method_info.method_name
+            code_elements = cu.get_value(
+                    prefix,
+                    method_name,
+                    gl.get_type_code_elements,
+                    [method_name, self.codebase, self.method_kind, True,
+                        MethodElement])
+
+            return list(code_elements.all())
+
+    def _get_method_info(self, scode_reference, skip_complex_search=False):
+        method_name = fqn_container = nb_params = type_params = None
+        
+        if scode_reference.snippet != None:
+            parts = scode_reference.content.split(HANDLE_SEPARATOR)
+            (method_name, fqn_container, nb_params, type_params) = \
+                    self._get_method_info_snippet(parts)
+        else:
+            content = scode_reference.content
+            match1 = je.CALL_CHAIN_RE.search(content)
+            match2 = je.METHOD_DECLARATION_RE.search(content)
+            match3 = je.METHOD_SIGNATURE_RE.search(content)
+            match4 = je.SIMPLE_CALL_RE.search(content)
+            
+            if match1 and not skip_complex_search:
+                (method_name, fqn_container) = self._get_method_header(match1)
+                eindex = content.index(')')
+                sindex = content.index('(')
+                nb_params = len(content[:eindex].split(','))
+                if len(content[sindex:eindex]) == 1:
+                    # This means that there was no parameter, so no ','
+                    nb_params = 0
+            elif match2 and not skip_complex_search:
+                method_name = match2.group('method_name')
+                eindex = content.index(')')
+                sindex = content.index('(')
+                nb_params = len(content[:eindex].split(','))
+                if len(content[sindex:eindex]) == 1:
+                    # This means that there was no parameter, so no ','
+                    nb_params = 0
+            elif match3 and not skip_complex_search:
+                (method_name, fqn_container) = self._get_method_header(match3)
+                (nb_params, type_params) = self._get_method_params(match3)
+            elif match4 and not skip_complex_search:
+                (method_name, fqn_container) = self._get_method_header(match4)
+                (nb_params, type_params) = self._get_method_params(match4)
+            else:
+                if len(content.strip()) > 0:
+                    method_name = je.get_clean_name(content)
+
+        if type_params is not None:
+            type_params = \
+                    [su.safe_strip(type_param) for type_param in type_params]
+            
+        return MethodInfo(su.safe_strip(method_name),
+                su.safe_strip(fqn_container), nb_params, type_params)
+
+    def _get_method_info_snippet(self, parts):
+        method_name = fqn_container = nb_params = type_params = None
+        
+        try:
+            method_name = parts[2]
+            fqn_container = parts[1]
+            type_params = parts[3:]
+            nb_params = len(type_params)
+        except Exception:
+            logger.exception('An exception has occurred')
+        
+        return (method_name, fqn_container, nb_params, type_params)
+
+    def _get_method_header(self, match):
+        fqn_container = None
+        groupdict = match.groupdict()
+        method_name = groupdict['method_name']
+        if 'target' in groupdict:
+            target = groupdict['target']
+            if target is not None and len(target.strip()) > 0:
+                fqn_container = je.clean_java_name(groupdict['target'])[1]
+        return (method_name, fqn_container)
+        
+    def _get_method_params(self, match):
+        nb_params = type_params = None
+        if match.group('first_argument_type') == None:
+            nb_params = 0
+        elif match.group(4) == None:
+            # Other arguments
+            nb_params = 1
+            type_params = [match.group(3)]
+        else:
+            nb_params = len(match.string[match.end(2):].strip(','))
+            type_params = [match.group(3)]
+            type_params.extend([None for _ in xrange(1, nb_params)])
+        
+        if type_params is not None:
+            for i, type_param in enumerate(type_params):
+                if type_param is not None:
+                    type_param = type_param.strip()
+                    atype = je.find_type(type_param)
+                    if atype is not None:
+                        type_params[i] = atype
+
+        return (nb_params, type_params)
+
+    def get_code_element(self, scode_reference, code_elements, method_info, log):
+        log.reset_variables()
+        return_code_element = None
+        potentials = code_elements
+        if code_elements is None:
+            size = 0
+            potentials = []
+        else:
+            size = len(code_elements)
+
+        print('DEBUG FOR {0}'.format(scode_reference.content))
+        for code_element in code_elements:
+            print(code_element.fqn)
+
+        filter_results = []
+        
+        method_name = method_info.method_name
+        params = method_info.type_params
+        fqn_container = method_info.fqn_container
+
+        for afilter in self.method_filters:
+            finput = filters.FilterInput(scode_reference, potentials,
+                    method_name, log,fqn_container, params, filter_results)
+            result = afilter.filter(finput)
+            potentials = result.potentials
+            filter_results.append(result)
+        # TODO Write filtering loop
+        # TODO Write a simple filter
+        # TODO Write a few tests!
+        # TODO Write a filtering loop for classes too
+        # TODO Transform the processing into a filter (maybe?)
+        # TODO Write .custom_filtered method from filter
+        # TODO Remove code_element in filter output. It is not useful.
+
+
+        potentials_size = len(potentials)
+        if potentials_size == 1:
+            return_code_element = potentials[0]
+            log.arbitrary = False
+        elif potentials_size > 1:
+            return_code_element = potentials[0]
+            log.arbitrary = True
+
+        # Logging
+        log.log_method(method_info, scode_reference, return_code_element,
+                potentials, size, filter_results)
+        return (return_code_element, potentials)
 
 
 class JavaFieldLinker(gl.DefaultLinker):

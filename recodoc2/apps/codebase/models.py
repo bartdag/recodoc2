@@ -550,3 +550,14 @@ class CodeElementLink(models.Model):
 
     class Meta:
         ordering = ['index']
+
+
+### Transient Classes ###
+
+class MethodInfo(object):
+    
+    def __init__(self, method_name, fqn_container, nb_params, type_params):
+        self.method_name = method_name
+        self.fqn_container = fqn_container
+        self.nb_params = nb_params
+        self.type_params = type_params

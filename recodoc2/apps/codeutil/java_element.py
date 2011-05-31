@@ -128,6 +128,22 @@ def get_clean_name(content):
         return content
 
 
+def find_type(value):
+    atype = None
+    if value.startswith('"') and \
+        value.endswith('"'):
+        atype = 'java.lang.String'
+    elif value == 'false' or value == 'true':
+        atype = 'boolean'
+    elif value.isdigit():
+        atype = 'int'
+    elif value.startswith("'") and \
+        value.endswith("'"):
+        atype = 'char'
+
+    return atype
+
+
 ### JAVA SNIPPET ###
 
 JAVA_END_CHARACTERS = set([';', '{', '}'])
