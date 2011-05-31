@@ -4,7 +4,19 @@ import docutil.str_util as su
 from docutil.commands_util import simple_decorator
 from codebase.actions import get_filters
 
+
 CUSTOM_FILTERS = {'CustomClassFilter', 'CustomClassMemberFilter'}
+
+
+OBJECT_METHODS = {-1: set(['clone', 'equals', 'finalize', 'getClass',
+                           'hashCode', 'notify', 'notifyAll', 'toString', 
+                           'wait']),
+                  0: set(['clone', 'finalize', 'getClass', 'hashCode',
+                          'notify', 'notifyAll', 'toString', 'wait']),
+                  1: set(['equals', 'wait']),
+                  2: set(['wait'])
+                  }
+
 
 @simple_decorator
 def empty_potentials(f):
@@ -107,8 +119,30 @@ class CustomClassMemberFilter(object):
     pass
 
 
-class StandardLibraryFilter(object):
-    pass
+class ObjectMethodsFilter(object):
+    
+    @empty_potentials
+    def filter(self, filter_input):
+        element_name = filter_input.element_name
+        potentials = filter_input.potentials
+        params = filter_input.params
+        scode_reference = filter_input.scode_reference
+
+        size = 0
+        if params is not None:
+            size = len(params)
+
+        if scode_reference.snippet is not None or size > 0:
+            methods = OBJECT_METHODS[size]
+        else:
+            methods = OBJECT_METHODS[-1]
+
+        if element_name in methods:
+            result = FilterResult(self, True, [])
+        else:
+            result = FilterResult(self, False, potentials)
+
+        return result
 
 
 class ExampleFilter(object):
