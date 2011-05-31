@@ -123,6 +123,9 @@ class JavaClassLinker(gl.DefaultLinker):
         self.ann_kind = CodeElementKind.objects.get(kind='annotation')
         self.class_kind = CodeElementKind.objects.get(kind='class')
         self.enum_kind = CodeElementKind.objects.get(kind='enumeration')
+        self.class_filters = [
+                filters.CustomClassFilter(),
+                ]
 
     def link_references(self, progress_monitor=NullProgressMonitor(),
             local_object_id=None):
@@ -348,13 +351,19 @@ class JavaClassLinker(gl.DefaultLinker):
                     potentials = [return_code_element]
                 log.sensitive = True
 
-        # Custom filtering
-        custom_filter = filters.CustomClassFilter()
-        filter_input = filters.FilterInput(scode_reference, potentials,
-            fqn, log)
-        log.custom_filtered = custom_filter.filter(filter_input).activated
-        if log.custom_filtered:
-            return_code_element = potentials = None
+        filter_results = []
+        for afilter in self.class_filters:
+            finput = filters.FilterInput(scode_reference, potentials,
+                    fqn, log, None, None, filter_results)
+            result = afilter.filter(finput)
+            potentials = result.potentials
+            filter_results.append(result)
+
+        potentials_size = len(potentials)
+        if potentials_size > 0:
+            return_code_element = potentials[0]
+
+        log.custom_filtered = filters.custom_filtered(filter_results)
 
         # Logging
         log.log_type(simple, fqn, scode_reference, return_code_element,
@@ -506,7 +515,8 @@ class JavaMethodLinker(gl.DefaultLinker):
                 source, srelease)
         self.method_kind = CodeElementKind.objects.get(kind='method')
         self.method_filters = [
-
+                filters.ParameterNumberFilter(),
+                filters.ParameterTypeFilter(),
                 ]
 
     def link_references(self, progress_monitor=NullProgressMonitor(),
@@ -557,7 +567,7 @@ class JavaMethodLinker(gl.DefaultLinker):
                     [method_name, self.codebase, self.method_kind, True,
                         MethodElement])
 
-            return list(code_elements.all())
+            return code_elements
 
     def _get_method_info(self, scode_reference, skip_complex_search=False):
         method_name = fqn_container = nb_params = type_params = None
@@ -577,18 +587,29 @@ class JavaMethodLinker(gl.DefaultLinker):
                 (method_name, fqn_container) = self._get_method_header(match1)
                 eindex = content.index(')')
                 sindex = content.index('(')
-                nb_params = len(content[:eindex].split(','))
-                if len(content[sindex:eindex]) == 1:
+                params_text = content[sindex+1:eindex]
+
+                if len(params_text) == 0:
                     # This means that there was no parameter, so no ','
                     nb_params = 0
+                else:
+                    params = params_text.split(',')
+                    nb_params = len(params)
+                    type_params = [param.strip() for param in params]
+
             elif match2 and not skip_complex_search:
                 method_name = match2.group('method_name')
                 eindex = content.index(')')
                 sindex = content.index('(')
-                nb_params = len(content[:eindex].split(','))
-                if len(content[sindex:eindex]) == 1:
+                params_text = content[sindex+1:eindex]
+
+                if len(params_text) == 0:
                     # This means that there was no parameter, so no ','
                     nb_params = 0
+                else:
+                    params = params_text.split(',')
+                    nb_params = len(params)
+                    type_params = [param.strip() for param in params]
             elif match3 and not skip_complex_search:
                 (method_name, fqn_container) = self._get_method_header(match3)
                 (nb_params, type_params) = self._get_method_params(match3)
@@ -598,6 +619,15 @@ class JavaMethodLinker(gl.DefaultLinker):
             else:
                 if len(content.strip()) > 0:
                     method_name = je.get_clean_name(content)
+
+            # Convert literals
+            if type_params is not None:
+                for i, type_param in enumerate(type_params):
+                    if type_param is not None:
+                        type_param = type_param.strip()
+                        atype = je.find_type(type_param)
+                        if atype is not None:
+                            type_params[i] = atype
 
         if type_params is not None:
             type_params = \
@@ -631,24 +661,25 @@ class JavaMethodLinker(gl.DefaultLinker):
         
     def _get_method_params(self, match):
         nb_params = type_params = None
-        if match.group('first_argument_type') == None:
+        if match.group(3) == None:
+            # First argument
             nb_params = 0
         elif match.group(4) == None:
             # Other arguments
             nb_params = 1
             type_params = [match.group(3)]
         else:
-            nb_params = len(match.string[match.end(2):].strip(','))
-            type_params = [match.group(3)]
-            type_params.extend([None for _ in xrange(1, nb_params)])
-        
-        if type_params is not None:
-            for i, type_param in enumerate(type_params):
-                if type_param is not None:
-                    type_param = type_param.strip()
-                    atype = je.find_type(type_param)
-                    if atype is not None:
-                        type_params[i] = atype
+            text = match.string[match.end(2):]
+            eindex = text.index(')')
+            sindex = text.index('(')
+            params_text = text[sindex+1:eindex]
+            if len(params_text) == 0:
+                # This means that there was no parameter, so no ','
+                nb_params = 0
+            else:
+                params = params_text.split(',')
+                nb_params = len(params)
+                type_params = [param.strip() for param in params]
 
         return (nb_params, type_params)
 
@@ -678,19 +709,24 @@ class JavaMethodLinker(gl.DefaultLinker):
             result = afilter.filter(finput)
             potentials = result.potentials
             filter_results.append(result)
-        # TODO Write filtering loop
-        # TODO Write a simple filter
-        # TODO Write a few tests!
-        # TODO Write a filtering loop for classes too
-        # TODO Transform the processing into a filter (maybe?)
-        # TODO Write .custom_filtered method from filter
-        # TODO Remove code_element in filter output. It is not useful.
 
+        # TODO
+        # Write param type filter
+        # Write object filter
+        # Write custom filter
+        # Write context filter
+        # Write context hierarchy filter
+        # Write context return type filter
+        # Write context name similarity filter
+        # Write abstract type filter
+        # Write strict filter
+        # Transform the class link processing into a filter (maybe?)
+
+        log.custom_filtered = filters.custom_filtered(filter_results)
 
         potentials_size = len(potentials)
         if potentials_size == 1:
             return_code_element = potentials[0]
-            log.arbitrary = False
         elif potentials_size > 1:
             return_code_element = potentials[0]
             log.arbitrary = True

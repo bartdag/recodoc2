@@ -23,11 +23,11 @@ SPLIT_PATTERN = re.compile(r"[\w']+|[.,!?;]")
 
 
 def pairwise_simil(s1, s2):
-    if len(s1) == 1 or len(s2) == 1:
-        if s1 == s2:
-            return 1.0
-        else:
-            return 0.0
+    if s1 == s2:
+        return 1.0
+
+    if (len(s1) == 1 or len(s2) == 1) and s1 != s2:
+        return 0.0
 
     pairs1 = pairs(s1.upper().strip())
     pairs2 = pairs(s2.upper().strip())
