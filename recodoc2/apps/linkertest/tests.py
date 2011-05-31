@@ -306,6 +306,31 @@ class CodeParserTest(TransactionTestCase):
         coderef9.save()
         self.code_refs.append(coderef9)
 
+        coderef10 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='list.add(foo)',
+                source='s',
+                kind_hint=self.class_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef10.save()
+        self.code_refs.append(coderef10)
+
+        coderef11 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='list.add(foo)',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message2,
+                global_context=thread1,
+                parent_reference=coderef10,
+                )
+        coderef11.save()
+        self.code_refs.append(coderef11)
+
         snippet_content = r'''
 
         @Annotation1
@@ -504,4 +529,11 @@ class CodeParserTest(TransactionTestCase):
         code_ref11 = SingleCodeReference.objects.get(pk=code_ref11.pk)
         method_log = DEBUG_LOG[code_ref11.pk][0]
         self.assertTrue(method_log['ObjectMethodsFilter'][0])
+        self.assertEqual(0, method_log['final size'])
+
+        # Test method custom filter
+        code_ref13 = self.code_refs[12]
+        code_ref13 = SingleCodeReference.objects.get(pk=code_ref13.pk)
+        method_log = DEBUG_LOG[code_ref13.pk][0]
+        self.assertTrue(method_log['custom filtered'])
         self.assertEqual(0, method_log['final size'])

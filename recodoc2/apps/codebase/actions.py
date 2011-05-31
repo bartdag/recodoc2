@@ -432,10 +432,10 @@ def compute_filters(codebase):
 
     simple_filters = defaultdict(list)
     for cfilter in filters:
-        simple_name = clean_java_name(cfilter.fqn)[0]
+        simple_name = clean_java_name(cfilter.fqn)[0].lower()
         simple_filters[simple_name].append(cfilter)
     
-    fqn_filters = {cfilter.fqn: cfilter for cfilter in filters}
+    fqn_filters = {cfilter.fqn.lower(): cfilter for cfilter in filters}
 
     return (simple_filters, fqn_filters)
 

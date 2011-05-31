@@ -516,6 +516,7 @@ class JavaMethodLinker(gl.DefaultLinker):
         self.method_kind = CodeElementKind.objects.get(kind='method')
         self.method_filters = [
                 filters.ObjectMethodsFilter(),
+                filters.CustomClassMemberFilter(),
                 filters.ParameterNumberFilter(),
                 filters.ParameterTypeFilter(),
                 ]
@@ -712,8 +713,8 @@ class JavaMethodLinker(gl.DefaultLinker):
             filter_results.append(result)
 
         # TODO
-        # Write param type filter
-        # Write object filter
+        # Write param type filter (done)
+        # Write object filter (done)
         # Write custom filter
         # Write context filter
         # Write context hierarchy filter
