@@ -21,6 +21,10 @@ public class RecodocClient extends GeneralClient {
 	public void callMethod10(String s) {
 		
 	}
+	
+	public void add(Object obj) {
+		
+	}
 
 	@Override
 	public boolean equals(Object obj) {

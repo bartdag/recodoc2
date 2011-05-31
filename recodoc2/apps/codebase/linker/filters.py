@@ -56,6 +56,37 @@ def custom_filtered(filter_results):
     return cfiltered
 
 
+def valid_filter(reference, code_filter):
+    # Check that snippets are ok
+    valid = reference.snippet is None or code_filter.include_snippet 
+
+    # Check that compound references are ok
+    valid = valid and (not code_filter.one_ref_only or 
+            (reference.parent_reference is None and 
+            reference.child_references.count() == 0))
+
+    return valid
+
+
+def custom_filter(filter_inst, potentials, scode_reference, simple, fqn):
+    (simple_filters, fqn_filters) = get_filters(get_codebase(potentials))
+    simple = simple.lower()
+    fqn = fqn.lower()
+    result = FilterResult(filter_inst, False, potentials)
+
+    if fqn in fqn_filters:
+        afilter = fqn_filters[fqn] 
+        if valid_filter(scode_reference, afilter):
+            result = FilterResult(filter_inst, True, [])
+    elif fqn == simple and simple in simple_filters:
+        for afilter in simple_filters[simple]:
+            if valid_filter(scode_reference, afilter):
+                result = FilterResult(filter_inst, True, [])
+                break
+
+    return result
+
+
 class FilterResult(object):
 
     def __init__(self, afilter, activated, potentials):
@@ -71,7 +102,11 @@ class FilterInput(object):
         self.scode_reference = scode_reference
         self.potentials = potentials
         self.element_name = element_name
+
+        if fqn_container is not None:
+            fqn_container = fqn_container.strip()
         self.fqn_container = fqn_container
+        
         self.params = params
         self.log = log
 
@@ -83,40 +118,35 @@ class FilterInput(object):
 
 class CustomClassFilter(object):
 
-    def valid_filter(self, reference, afilter):
-        # Check that snippets are ok
-        valid = reference.snippet is None or afilter.include_snippet 
-
-        # Check that compound references are ok
-        valid = valid and (not afilter.one_ref_only or 
-                (reference.parent_reference is None and 
-                reference.child_references.count() == 0))
-
-        return valid
-
     @empty_potentials
     def filter(self, filter_input):
         element_name = filter_input.element_name
         potentials = filter_input.potentials
-        (simple_filters, fqn_filters) = get_filters(get_codebase(potentials))
-
-        (simple, fqn) = je.clean_java_name(element_name, True) 
-        result = FilterResult(self, False, potentials)
-
-        if fqn in fqn_filters:
-            afilter = fqn_filters[fqn] 
-            if self.valid_filter(filter_input.scode_reference, afilter):
-                result = FilterResult(self, True, [])
-        elif fqn == simple and simple in simple_filters:
-            for afilter in simple_filters[simple]:
-                if self.valid_filter(filter_input.scode_reference, afilter):
-                    result = FilterResult(self, True, [])
+        scode_reference = filter_input.scode_reference
+        (simple, fqn) = je.clean_java_name(element_name, True)
+        
+        result = custom_filter(self, potentials, scode_reference, simple, fqn)
 
         return result
 
 
 class CustomClassMemberFilter(object):
-    pass
+    
+    @empty_potentials
+    def filter(self, filter_input):
+        fqn_container = filter_input.fqn_container
+        potentials = filter_input.potentials
+        scode_reference = filter_input.scode_reference
+        
+        result = FilterResult(self, False, potentials)
+
+        if fqn_container is not None and fqn_container != '':
+            (simple, fqn) = je.clean_java_name(fqn_container, True)
+
+            result = custom_filter(self, potentials, scode_reference, simple,
+                    fqn)
+
+        return result
 
 
 class ObjectMethodsFilter(object):
