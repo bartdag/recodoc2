@@ -13,7 +13,9 @@ from doc.models import Page, Section
 from doc.actions import create_doc_local, create_doc_db
 from channel.models import SupportThread, Message
 from channel.actions import create_channel_local, create_channel_db
-from codebase.models import CodeElementKind, SingleCodeReference, CodeSnippet
+from codebase.linker.generic_linker import DEBUG_LOG
+from codebase.models import CodeElementKind, SingleCodeReference,\
+        CodeSnippet, CodeElementFilter
 from codebase.actions import start_eclipse, stop_eclipse,\
                              create_code_db, create_code_local,\
                              link_eclipse, get_codebase_path,\
@@ -29,6 +31,7 @@ class CodeParserTest(TransactionTestCase):
     def setUpClass(cls):
         time.sleep(1)
         settings.PROJECT_FS_ROOT = settings.PROJECT_FS_ROOT_TEST
+        settings.DEBUG = True
         start_eclipse()
         create_project_local('project1')
         create_code_local('project1', 'core', '3.0')
@@ -77,7 +80,7 @@ class CodeParserTest(TransactionTestCase):
         cu.clear_cache()
 
     def create_codebase(self):
-        create_code_db(self.pname, 'core', self.release)
+        self.codebase = create_code_db(self.pname, 'core', self.release)
         parse_code(self.pname, 'core', self.release, 'java')
 
     def create_documentation(self):
@@ -230,12 +233,38 @@ class CodeParserTest(TransactionTestCase):
         coderef3.save()
         self.code_refs.append(coderef3)
 
+        coderef4 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='RecodocClient',
+                source='s',
+                kind_hint=self.class_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef4.save()
+        self.code_refs.append(coderef4)
+
+        coderef5 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='foo.RecodocClient',
+                source='s',
+                kind_hint=self.class_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef5.save()
+        self.code_refs.append(coderef5)
+
         snippet_content = r'''
 
         @Annotation1
         public class FooBar {
           public void main(String arg) {
             System.out.println();
+            RecodocClient obj = new RecodocClient();
+            List list = null;
           }
         '''
 
@@ -255,8 +284,23 @@ class CodeParserTest(TransactionTestCase):
         parse_snippets(self.pname, 'd', 'java')
         parse_snippets(self.pname, 's', 'java')
 
+    def create_filters(self):
+        afilter = CodeElementFilter(
+                codebase=self.codebase,
+                fqn='java.util.List',
+                include_snippet=True,
+                one_ref_only=False)
+        afilter.save()
+        afilter = CodeElementFilter(
+                codebase=self.codebase,
+                fqn='RecodocClient',
+                include_snippet=False,
+                one_ref_only=True)
+        afilter.save()
+
     def test_linker(self):
         self.create_codebase()
+        self.create_filters()
         self.create_documentation()
         self.create_channel()
         self.parse_snippets()
@@ -322,3 +366,44 @@ class CodeParserTest(TransactionTestCase):
                 .first_link.code_element.fqn)
         self.assertEqual('heuristic_depth',
                 code_ref4.release_links.all()[0].first_link.rationale)
+
+        # Test type custom filter (single ref)
+        code_ref6 = self.code_refs[5]
+        code_ref6 = SingleCodeReference.objects.get(pk=code_ref6.pk)
+        # Not reclassified because custom filtered!
+        self.assertEqual(
+                'class',
+                code_ref6.kind_hint.kind)
+        type_log = DEBUG_LOG[code_ref6.pk][0]
+        self.assertEqual(0, type_log['final size'])
+        self.assertTrue(type_log['custom filtered'])
+
+        # Test type custom filter (compound ref)
+        code_ref7 = self.code_refs[6]
+        code_ref7 = SingleCodeReference.objects.get(pk=code_ref7.pk)
+        self.assertEqual(
+                'RecodocClient',
+                code_ref7.release_links.all()[0]
+                .first_link.code_element.simple_name)
+
+        # Test List in snippet
+        custom_filtered = []
+        for code_ref in snippet2.single_code_references.all():
+            if code_ref.content.find('List') > -1:
+                if (len(DEBUG_LOG[code_ref.pk]) > 0):
+                    custom_filtered.append(
+                            DEBUG_LOG[code_ref.pk][0]['custom filtered'])
+        self.assertEqual(1, len(custom_filtered))
+        for customf in custom_filtered:
+            self.assertTrue(customf)
+
+        # Test RecodocClient in snippet
+        custom_filtered = []
+        for code_ref in snippet2.single_code_references.all():
+            if code_ref.content.find('RecodocClient') > -1:
+                if (len(DEBUG_LOG[code_ref.pk]) > 0):
+                    custom_filtered.append(
+                            DEBUG_LOG[code_ref.pk][0]['custom filtered'])
+        self.assertEqual(2, len(custom_filtered))
+        for customf in custom_filtered:
+            self.assertFalse(customf)

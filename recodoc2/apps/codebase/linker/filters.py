@@ -1,7 +1,19 @@
 from __future__ import unicode_literals
 import codeutil.java_element as je
+from docutil.commands_util import simple_decorator
 from codebase.actions import get_filters
 
+
+@simple_decorator
+def empty_potentials(f):
+    def newf(*args, **kargs):
+        filter_input = args[1]
+        potentials = filter_input.potentials
+        if potentials is None or len(potentials) == 0:
+            return FilterResult(False, None, [])
+        else:
+            return f(*args, **kargs)
+    return newf
 
 
 def get_safe_element(potentials):
@@ -48,18 +60,77 @@ class FilterInput(object):
 
 class CustomClassFilter(object):
 
+    def valid_filter(self, reference, afilter):
+        # Check that snippets are ok
+        valid = reference.snippet is None or afilter.include_snippet 
+
+        # Check that compound references are ok
+        valid = valid and (not afilter.one_ref_only or 
+                (reference.parent_reference is None and 
+                reference.child_references.count() == 0))
+
+        return valid
+
+    @empty_potentials
     def filter(self, filter_input):
         element_name = filter_input.element_name
         potentials = filter_input.potentials
         (simple_filters, fqn_filters) = get_filters(get_codebase(potentials))
 
-        (simple, fqn) = je.clean_java_name(element_name) 
+        (simple, fqn) = je.clean_java_name(element_name, True) 
+        result = FilterResult(False, get_safe_element(potentials), potentials)
 
-        # If fqn is in fqn_filters
-        # And if filter agrees with ref, filter out!
-        # If fqn != simple and fqn not in fqn_filters
-        # Pass
-        # If simple is in simple_filters
-        # And if one filter agrees with ref, filter out!
+        if fqn in fqn_filters:
+            afilter = fqn_filters[fqn] 
+            if self.valid_filter(filter_input.scode_reference, afilter):
+                result = FilterResult(True, None, [])
+        elif fqn == simple and simple in simple_filters:
+            for afilter in simple_filters[simple]:
+                if self.valid_filter(filter_input.scode_reference, afilter):
+                    result = FilterResult(True, None, [])
 
-        return FilterResult(False, get_safe_element(potentials), potentials)
+        return result
+
+
+class CustomClassMemberFilter(object):
+    pass
+
+
+class StandardLibraryFilter(object):
+    pass
+
+
+class ExampleFilter(object):
+    pass
+
+
+class ParameterNumberFilter(object):
+    pass
+
+
+class ParameterTypeFilter(object):
+    pass
+
+
+class ContextFilter(object):
+    pass
+
+
+class ContextReturnTypeFilter(object):
+    pass
+
+
+class ContextHierarchyFilter(object):
+    pass
+
+
+class ContextNameSimilarity(object):
+    pass
+
+
+class AbstractTypeFilter(object):
+    pass
+
+
+class StrictFilter(object):
+    pass
