@@ -90,7 +90,16 @@ def custom_filter(filter_inst, potentials, scode_reference, simple, fqn):
 class FilterResult(object):
 
     def __init__(self, afilter, activated, potentials):
-        self.name = afilter.__class__.__name__
+        try:
+            self.name = afilter.get_filter_name()
+        except Exception:
+            self.name = afilter.__class__.__name__
+        
+        try:
+            self.context_filter = afilter.is_context_filter()
+        except Exception:
+            self.context_filter = False
+
         self.activated = activated
         self.potentials = potentials
 

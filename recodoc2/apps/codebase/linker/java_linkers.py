@@ -716,7 +716,8 @@ class JavaMethodLinker(gl.DefaultLinker):
         # TODO
         # Write param type filter (done)
         # Write object filter (done)
-        # Write custom filter
+        # Write custom filter (done)
+        # Write exception filter (done)
         # Write context filter
         # Write context hierarchy filter
         # Write context return type filter
