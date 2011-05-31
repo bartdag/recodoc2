@@ -294,6 +294,18 @@ class CodeParserTest(TransactionTestCase):
         coderef8.save()
         self.code_refs.append(coderef8)
 
+        coderef9 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='equals()',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef9.save()
+        self.code_refs.append(coderef9)
+
         snippet_content = r'''
 
         @Annotation1
@@ -486,3 +498,10 @@ class CodeParserTest(TransactionTestCase):
                 .first_link.code_element.parameters()[0].type_fqn)
         method_log = DEBUG_LOG[code_ref10.pk][0]
         self.assertTrue(method_log['ParameterTypeFilter'][0])
+
+        # Test method object filter
+        code_ref11 = self.code_refs[10]
+        code_ref11 = SingleCodeReference.objects.get(pk=code_ref11.pk)
+        method_log = DEBUG_LOG[code_ref11.pk][0]
+        self.assertTrue(method_log['ObjectMethodsFilter'][0])
+        self.assertEqual(0, method_log['final size'])
