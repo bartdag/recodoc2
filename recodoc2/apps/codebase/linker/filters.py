@@ -175,6 +175,22 @@ class ObjectMethodsFilter(object):
         return result
 
 
+class ExceptionFilter(object):
+
+    @empty_potentials
+    def filter(self, filter_input):
+        fqn_container = filter_input.fqn_container
+        potentials = filter_input.potentials
+
+        if fqn_container is not None and \
+            fqn_container.lower().endswith('exception'):
+            result = FilterResult(self, True, [])
+        else:
+            result = FilterResult(self, False, potentials)
+
+        return result
+
+
 class ExampleFilter(object):
     pass
 

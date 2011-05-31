@@ -516,6 +516,7 @@ class JavaMethodLinker(gl.DefaultLinker):
         self.method_kind = CodeElementKind.objects.get(kind='method')
         self.method_filters = [
                 filters.ObjectMethodsFilter(),
+                filters.ExceptionFilter(),
                 filters.CustomClassMemberFilter(),
                 filters.ParameterNumberFilter(),
                 filters.ParameterTypeFilter(),
