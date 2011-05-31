@@ -1,8 +1,10 @@
 from __future__ import unicode_literals
 import codeutil.java_element as je
+import docutil.str_util as su
 from docutil.commands_util import simple_decorator
 from codebase.actions import get_filters
 
+CUSTOM_FILTERS = {'CustomClassFilter', 'CustomClassMemberFilter'}
 
 @simple_decorator
 def empty_potentials(f):
@@ -29,6 +31,17 @@ def ref_in_snippet(code_reference):
 
 def is_single_ref(code_reference):
     pass
+
+
+def custom_filtered(filter_results):
+    cfiltered = False
+
+    for filter_result in filter_results:
+        if filter_result.name in CUSTOM_FILTERS:
+            cfiltered = filter_result.activated
+            break
+
+    return cfiltered
 
 
 class FilterResult(object):
@@ -103,11 +116,153 @@ class ExampleFilter(object):
 
 
 class ParameterNumberFilter(object):
-    pass
+    
+    @empty_potentials
+    def filter(self, filter_input):
+        params = filter_input.params
+        potentials = filter_input.potentials
+        scode_reference = filter_input.scode_reference
+
+        result = FilterResult(self, False, potentials)
+
+        size = 0
+        if params is not None:
+            size = len(params)
+
+        # If this is not a snippet, it might just be a method
+        # name without the parameters.
+        # In a snippet, the number of parameters is usually right.
+        if size > 0 or scode_reference.snippet is not None:
+            new_potentials = []    
+            for method_element in potentials:
+                if method_element.parameters_length == size:
+                    new_potentials.append(method_element)
+
+            if len(new_potentials) > 0:
+                result = FilterResult(self, True, new_potentials)
+
+        return result
 
 
 class ParameterTypeFilter(object):
-    pass
+
+    PARAM_SIMILARITY_THRESHOLD = 0.80
+    PARAM_SIZE_THRESHOLD = 0.50
+
+    def __init__(self, simple_match=True, package_match=True):
+        self.simple_match = simple_match
+        self.package_match = package_match
+
+    def _compute_match(self, actual_params, formal_params):
+        matches = 0
+        size = len(actual_params)
+
+        if size != formal_params.count():
+            matches = 0
+        else:
+            actuals = [je.clean_java_name(actual_param)[0]
+                    for actual_param in actual_params]
+            formals = [formal_param.type_simple_name
+                    for formal_param in formal_params]
+            for (actual, formal) in zip(actuals, formals):
+                similarity = su.pairwise_simil(actual.lower(),
+                        formal.lower())
+                if similarity >= self.PARAM_SIMILARITY_THRESHOLD:
+                    matches += 1
+        
+        # We don't want to far half-matches methods because this is too
+        # fragile.
+        if (float(matches) / float(size)) < self.PARAM_SIZE_THRESHOLD:
+            matches = 0
+
+        return matches
+
+    def _compute_partial_pkg_match(self, actual_pkg, formal_pkg):
+        actual_parts = actual_pkg.split('.')
+        formal_parts = formal_pkg.split('.')
+        matches = 0
+
+        for (actual_part, formal_part) in zip(actual_parts, formal_parts):
+            if actual_part == formal_part:
+                matches += 1
+            else:
+                break
+
+        matches = float(matches) / max(len(actual_parts),
+                len(formal_parts))
+
+        return matches
+
+    def _compute_package_match(self, actual_params, formal_params):
+        matches = 0
+        size = len(actual_params)
+
+        if size != formal_params.count():
+            matches = 0
+        else:
+            actuals = [je.get_package_name(actual_param, True)
+                    for actual_param in actual_params]
+            formals = [je.get_package_name(formal_param.type_fqn, True)
+                    for formal_param in formal_params]
+            for (actual, formal) in zip(actuals, formals):
+                if actual is None or formal is None:
+                    continue
+                elif actual == formal:
+                    matches += 1
+                else:
+                    matches = self._compute_partial_pkg_match(actual, formal)
+
+        return matches
+
+    def _get_method_by_param(self, potentials, params, filter_input):
+        new_potentials = []
+        maximum = 1
+        for method_element in potentials:
+            matches = self._compute_match(params, method_element.parameters())
+            if matches > maximum:
+                new_potentials = [method_element]
+                maximum = matches
+            elif matches == maximum:
+                new_potentials.append(method_element)
+
+        return new_potentials
+
+    def _get_method_by_param_package(self, potentials, params, filter_input):
+        new_potentials = []
+        maximum = 0
+        for method_element in potentials:
+            matches = self._compute_package_match(params,
+                    method_element.parameters())
+            if matches > maximum:
+                new_potentials = [method_element]
+                maximum = matches
+            elif matches == maximum:
+                new_potentials.append(method_element)
+
+        return new_potentials
+
+    @empty_potentials
+    def filter(self, filter_input):
+        params = filter_input.params
+        potentials = filter_input.potentials
+
+        result = FilterResult(self, False, potentials)
+
+        if params is not None and len(params) > 0:
+            new_potentials = []
+
+            if self.simple_match:
+                new_potentials = self._get_method_by_param(potentials, params,
+                        filter_input)
+
+            if len(new_potentials) == 0 and self.package_match:
+                new_potentials = self._get_method_by_param_package(potentials,
+                        params, filter_input)
+
+            if len(new_potentials) > 0:
+                result = FilterResult(self, True, new_potentials)
+
+        return result
 
 
 class ContextFilter(object):

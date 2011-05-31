@@ -150,17 +150,66 @@ class LinkerLog(object):
         DEBUG_LOG[scode_reference.pk].append(type_log)
 
     def log_method(self, method_info, scode_reference, return_code_element,
-            potentials, original_size, filters):
-        pass
+            potentials, original_size, fresults):
+
+        potential_size = 0
+        if potentials is not None:
+            potential_size = len(potentials)
+
+        log_file = self.log_file
+        log_file.write('Method {0} - {1}\n'.format(method_info.method_name,
+            method_info.type_params))
+        log_file.write('  Content: {0}\n'.format(scode_reference.content))
+        log_file.write('  Original Size: {0}\n'.format(original_size))
+        log_file.write('  Final Size: {0}\n'.format(potential_size))
+        log_file.write('  URL: {0}\n'.
+                format(scode_reference.local_context.url))
+        log_file.write('  Ref pk: {0}\n'.format(scode_reference.pk))
+        log_file.write('  Local pk: {0}\n'.
+                format(scode_reference.local_object_id))
+
+        log_file.write('  Release: {0}\n'.format(self.release))
+        log_file.write('  Snippet: {0}\n'.
+                format(scode_reference.snippet is not None))
+        log_file.write('  Custom Filtered: {0}\n'.format(self.custom_filtered))
+
+        log_file.write('  Filtering\n')
+        for fresult in fresults:
+            log_file.write('    {0}: {1} - {2}\n'.format(
+                fresult.name, fresult.activated, len(fresult.potentials)))
+        
+        if return_code_element is not None:
+            log_file.write('  Element: {0}\n'.
+                    format(return_code_element.human_string()))
+
+        if potentials is not None:
+            for potential in potentials[1:]:
+                log_file.write('  Potential: {0}\n'.
+                        format(potential.human_string()))
+
+        log_file.write('\n\n')
+        
+        self.debug_log_method(method_info, scode_reference,
+                return_code_element, potentials, original_size, fresults)
 
     def debug_log_method(self, method_info, scode_reference, 
-            return_code_element, potentials, original_size, filters):
-        pass
+            return_code_element, potentials, original_size, fresults):
+        if not settings.DEBUG:
+            return
 
+        potential_size = 0
+        if potentials is not None:
+            potential_size = len(potentials)
 
+        method_log = {} 
+        method_log['original size'] = original_size
+        method_log['final size'] = potential_size
+        method_log['custom filtered'] = self.custom_filtered
+        for fresult in fresults:
+            method_log[fresult.name] = (fresult.activated,
+                    len(fresult.potentials))
 
-
-
+        DEBUG_LOG[scode_reference.pk].append(method_log)
 
 
 class DefaultLinker(object):

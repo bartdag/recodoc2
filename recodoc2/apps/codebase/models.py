@@ -155,7 +155,7 @@ class CodeElement(models.Model):
     '''Parser that generated this code element (e.g., java, schema, dtd)'''
 
     def parameters(self):
-        return ParameterElement.objects.filter(attcontainer=self)
+        return ParameterElement.objects.filter(attcontainer=self).all()
 
     def human_string(self):
         human_string = self.fqn

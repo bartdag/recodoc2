@@ -70,6 +70,7 @@ class CodeParserTest(TransactionTestCase):
         self.ann_kind = CodeElementKind.objects.get(kind='annotation')
         self.class_kind = CodeElementKind.objects.get(kind='class')
         self.enum_kind = CodeElementKind.objects.get(kind='enumeration')
+        self.method_kind = CodeElementKind.objects.get(kind='method')
         self.code_refs = []
         self.code_snippets = []
 
@@ -257,6 +258,42 @@ class CodeParserTest(TransactionTestCase):
         coderef5.save()
         self.code_refs.append(coderef5)
 
+        coderef6 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='callMethod1("hello")',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef6.save()
+        self.code_refs.append(coderef6)
+
+        coderef7 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='callMethod1("hello", 2)',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef7.save()
+        self.code_refs.append(coderef7)
+
+        coderef8 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='callMethod1(p3.Foo, p3.Bar)',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef8.save()
+        self.code_refs.append(coderef8)
+
         snippet_content = r'''
 
         @Annotation1
@@ -279,6 +316,12 @@ class CodeParserTest(TransactionTestCase):
                 )
         snippet1.save()
         self.code_snippets.append(snippet1)
+
+    def create_documentation2(self):
+        page1 = Page.objects.get(title='HTTP Server')
+        section1 = Section.objects.get(title='Implementing foo bar')
+        section11 = Section.objects.get(number='1.1')
+        section2 = Section.objects.get(number='2.')
 
     def parse_snippets(self):
         parse_snippets(self.pname, 'd', 'java')
@@ -303,12 +346,17 @@ class CodeParserTest(TransactionTestCase):
         self.create_filters()
         self.create_documentation()
         self.create_channel()
+        self.create_documentation2()
         self.parse_snippets()
         link_code(self.pname, 'core', self.release, 'javaclass', 'd',
                 self.release)
         link_code(self.pname, 'core', self.release, 'javaclass', 's',
                 None)
         link_code(self.pname, 'core', self.release, 'javapostclass', '',
+                None)
+        link_code(self.pname, 'core', self.release, 'javamethod', 'd',
+                self.release)
+        link_code(self.pname, 'core', self.release, 'javamethod', 's',
                 None)
 
         code_ref1 = self.code_refs[0]
@@ -400,10 +448,41 @@ class CodeParserTest(TransactionTestCase):
         # Test RecodocClient in snippet
         custom_filtered = []
         for code_ref in snippet2.single_code_references.all():
-            if code_ref.content.find('RecodocClient') > -1:
+            if code_ref.content.find('RecodocClient') > -1 and\
+                code_ref.kind_hint.kind == 'class':
                 if (len(DEBUG_LOG[code_ref.pk]) > 0):
                     custom_filtered.append(
                             DEBUG_LOG[code_ref.pk][0]['custom filtered'])
         self.assertEqual(2, len(custom_filtered))
         for customf in custom_filtered:
             self.assertFalse(customf)
+
+        # Test method param number filter
+        code_ref8 = self.code_refs[7]
+        code_ref8 = SingleCodeReference.objects.get(pk=code_ref8.pk)
+        self.assertEqual('callMethod1',
+                code_ref8.release_links.all()[0]
+                .first_link.code_element.simple_name)
+        self.assertEqual(1,
+                code_ref8.release_links.all()[0]
+                .first_link.code_element.parameters().count())
+        method_log = DEBUG_LOG[code_ref8.pk][0]
+        self.assertTrue(method_log['ParameterNumberFilter'][0])
+
+        # Test method param type filter
+        code_ref9 = self.code_refs[8]
+        code_ref9 = SingleCodeReference.objects.get(pk=code_ref9.pk)
+        self.assertEqual('String',
+                code_ref9.release_links.all()[0]
+                .first_link.code_element.parameters()[0].type_simple_name)
+        method_log = DEBUG_LOG[code_ref9.pk][0]
+        self.assertTrue(method_log['ParameterTypeFilter'][0])
+
+        # Test method param type package filter
+        code_ref10 = self.code_refs[9]
+        code_ref10 = SingleCodeReference.objects.get(pk=code_ref10.pk)
+        self.assertEqual('p3.RecodocClient',
+                code_ref10.release_links.all()[0]
+                .first_link.code_element.parameters()[0].type_fqn)
+        method_log = DEBUG_LOG[code_ref10.pk][0]
+        self.assertTrue(method_log['ParameterTypeFilter'][0])
