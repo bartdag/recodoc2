@@ -16,13 +16,6 @@ def empty_potentials(f):
     return newf
 
 
-def get_safe_element(potentials):
-    if potentials is None or len(potentials) == 0:
-        return None
-    else:
-        return potentials[0]
-
-
 def get_codebase(potentials):
     if potentials is None or len(potentials) == 0:
         return None
@@ -40,22 +33,27 @@ def is_single_ref(code_reference):
 
 class FilterResult(object):
 
-    def __init__(self, activated, code_element, potentials):
+    def __init__(self, afilter, activated, potentials):
+        self.name = afilter.__class__.__name__
         self.activated = activated
-        self.code_element = code_element
         self.potentials = potentials
 
 
 class FilterInput(object):
 
     def __init__(self, scode_reference, potentials, element_name, log,
-            fqn_container=None, params=None):
+            fqn_container=None, params=None, fresults=None):
         self.scode_reference = scode_reference
         self.potentials = potentials
         self.element_name = element_name
         self.fqn_container = fqn_container
         self.params = params
         self.log = log
+
+        if fresults is None:
+            fresults = []
+        self.fresults = fresults
+        self.fresultsd = {fresult.name: fresult for fresult in fresults}
 
 
 class CustomClassFilter(object):
@@ -78,16 +76,16 @@ class CustomClassFilter(object):
         (simple_filters, fqn_filters) = get_filters(get_codebase(potentials))
 
         (simple, fqn) = je.clean_java_name(element_name, True) 
-        result = FilterResult(False, get_safe_element(potentials), potentials)
+        result = FilterResult(self, False, potentials)
 
         if fqn in fqn_filters:
             afilter = fqn_filters[fqn] 
             if self.valid_filter(filter_input.scode_reference, afilter):
-                result = FilterResult(True, None, [])
+                result = FilterResult(self, True, [])
         elif fqn == simple and simple in simple_filters:
             for afilter in simple_filters[simple]:
                 if self.valid_filter(filter_input.scode_reference, afilter):
-                    result = FilterResult(True, None, [])
+                    result = FilterResult(self, True, [])
 
         return result
 

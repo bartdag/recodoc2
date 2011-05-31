@@ -12,13 +12,14 @@ def get_unknown_kind():
     return CodeElementKind.objects.get(kind='unknown')
 
 
-def get_type_code_elements(simple_name, codebase, kind, exact=True):
+def get_type_code_elements(simple_name, codebase, kind, exact=True,
+        cls=CodeElement):
     if exact:
-        return list(CodeElement.objects.filter(kind=kind).\
+        return list(cls.objects.filter(kind=kind).\
                 filter(simple_name=simple_name).\
                 filter(codebase=codebase).all())
     else:
-        return list(CodeElement.objects.filter(kind=kind).\
+        return list(cls.objects.filter(kind=kind).\
                 filter(simple_name__iexact=simple_name).\
                 filter(codebase=codebase).all())
 
@@ -147,6 +148,14 @@ class LinkerLog(object):
         type_log['custom filtered'] = self.custom_filtered
 
         DEBUG_LOG[scode_reference.pk].append(type_log)
+
+    def log_method(self, method_info, scode_reference, return_code_element,
+            potentials, original_size, filters):
+        pass
+
+    def debug_log_method(self, method_info, scode_reference, 
+            return_code_element, potentials, original_size, filters):
+        pass
 
 
 
