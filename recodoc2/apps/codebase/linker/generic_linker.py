@@ -1,10 +1,12 @@
 from __future__ import unicode_literals
 import os
 import codecs
+from collections import defaultdict
 from django.conf import settings
 from codebase.models import SingleCodeReference, CodeElement, ReleaseLinkSet,\
         CodeElementLink, CodeElementKind
 
+DEBUG_LOG = defaultdict(list)
 
 def get_unknown_kind():
     return CodeElementKind.objects.get(kind='unknown')
@@ -126,6 +128,30 @@ class LinkerLog(object):
                         format(potential.human_string()))
 
         log_file.write('\n\n')
+        self.debug_log_type(simple_name, fqn, scode_reference, code_element,
+                potentials, original_size, rationale)
+
+    def debug_log_type(self, simple_name, fqn, scode_reference, code_element,
+            potentials, original_size, rationale=None):
+        if not settings.DEBUG:
+            return
+
+        potential_size = 0
+        if potentials is not None:
+            potential_size = len(potentials)
+
+        type_log = {} 
+        type_log['original size'] = original_size
+        type_log['final size'] = potential_size
+        type_log['rationale'] = rationale
+        type_log['custom filtered'] = self.custom_filtered
+
+        DEBUG_LOG[scode_reference.pk].append(type_log)
+
+
+
+
+
 
 
 class DefaultLinker(object):
