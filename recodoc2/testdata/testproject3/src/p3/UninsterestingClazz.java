@@ -8,4 +8,8 @@ public class UninsterestingClazz {
 	public void method200() {
 		
 	}
+	
+	public void callMethod1000() {
+		
+	}
 }

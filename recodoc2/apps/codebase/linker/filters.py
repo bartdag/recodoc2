@@ -407,9 +407,10 @@ class ParameterTypeFilter(object):
 
 class ContextFilter(object):
     
-    def __init__(self, context_level, hierarchy=False):
+    def __init__(self, context_level, hierarchy=False, returnt=False):
         self.context_level = context_level
         self.hierarchy = hierarchy
+        self.returnt = returnt
 
         if context_level == ctx.LOCAL:
             self.func = ctx.local_filter
@@ -422,10 +423,14 @@ class ContextFilter(object):
 
     def get_filter_name(self):
         hierarchy = ''
+        returnt = ''
         if self.hierarchy:
             hierarchy = 'Hierarchy'
+        if self.returnt:
+            returnt = 'Return'
 
-        return '{0}ContextFilter{1}'.format(self.context_level, hierarchy)
+        return '{0}{1}ContextFilter{2}'.format(self.context_level, returnt,
+                hierarchy)
 
     def _get_potentials(self, potentials, context_types):
         fqns = [context_type.fqn for context_type in context_types]
@@ -451,7 +456,15 @@ class ContextFilter(object):
             # This is mainly a performance optimization
             return result
 
-        if self.hierarchy:
+        if self.returnt and not self.hierarchy:
+            context_types = ctx.get_context_return_types(context_id,
+                    scode_reference.source, self.func,
+                    get_codebase(potentials), self.context_level)
+        elif self.returnt and self.hierarchy:
+            context_types = ctx.get_context_return_types_hierarchy(context_id,
+                    scode_reference.source, self.func,
+                    get_codebase(potentials), self.context_level)
+        elif self.hierarchy:
             context_types = ctx.get_context_types_hierarchy(context_id,
                     scode_reference.source, self.func,
                     get_codebase(potentials), self.context_level)
@@ -467,10 +480,6 @@ class ContextFilter(object):
                 result = FilterResult(self, True, new_potentials)
 
         return result
-
-
-class ContextReturnTypeFilter(object):
-    pass
 
 
 class ImmediateContextFilter(object):
