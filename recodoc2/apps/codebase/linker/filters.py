@@ -678,4 +678,7 @@ class AbstractTypeFilter(object):
 
 
 class StrictFilter(object):
-    pass
+    
+    @empty_potentials
+    def filter(self, filter_input):
+        pass
