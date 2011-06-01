@@ -403,11 +403,23 @@ class ContextFilter(object):
     pass
 
 
+class ContextHierarchyFilter(object):
+    pass
+
+
 class ContextReturnTypeFilter(object):
     pass
 
 
-class ContextHierarchyFilter(object):
+class ContextReturnTypeHierarchyFilter(object):
+    pass
+
+
+class ImmediateContextFilter(object):
+    pass
+
+
+class ImmediateContextHierarchyFilter(object):
     pass
 
 
@@ -474,13 +486,11 @@ class ContextNameSimilarityFilter(object):
     def filter(self, filter_input):
         fqn_container = filter_input.fqn_container
         potentials = filter_input.potentials
-        scode_reference = filter_input.scode_reference
 
         result = FilterResult(self, False, potentials)
 
         if (fqn_container is not None and 
-                fqn_container != je.UNKNOWN_CONTAINER and
-                scode_reference.snippet is None):
+                fqn_container != je.UNKNOWN_CONTAINER):
             new_potentials = self._get_potentials_by_similarity(potentials,
                     fqn_container)
 

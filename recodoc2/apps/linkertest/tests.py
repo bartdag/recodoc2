@@ -13,6 +13,7 @@ from doc.models import Page, Section
 from doc.actions import create_doc_local, create_doc_db
 from channel.models import SupportThread, Message
 from channel.actions import create_channel_local, create_channel_db
+import codebase.linker.context as ctx
 from codebase.linker.generic_linker import DEBUG_LOG
 from codebase.models import CodeElementKind, SingleCodeReference,\
         CodeSnippet, CodeElementFilter
@@ -139,6 +140,7 @@ class CodeParserTest(TransactionTestCase):
         public class FooBar {
           public void main(String arg) {
             System.out.println();
+            RecodocClient rc = new RecodocClient();
           }
         '''
 
@@ -344,6 +346,7 @@ class CodeParserTest(TransactionTestCase):
         coderef12.save()
         self.code_refs.append(coderef12)
 
+        # Index = 14
         coderef13 = SingleCodeReference(
                 project=self.project,
                 project_release=self.releasedb,
@@ -356,6 +359,7 @@ class CodeParserTest(TransactionTestCase):
         coderef13.save()
         self.code_refs.append(coderef13)
 
+        # Index = 15
         coderef14 = SingleCodeReference(
                 project=self.project,
                 project_release=self.releasedb,
@@ -368,6 +372,43 @@ class CodeParserTest(TransactionTestCase):
                 )
         coderef14.save()
         self.code_refs.append(coderef14)
+
+        coderef15 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='getClient2()',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef15.save()
+        self.code_refs.append(coderef15)
+
+        # Index = 17
+        coderef16 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='method100()',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef16.save()
+        self.code_refs.append(coderef16)
+
+        coderef17 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='method200()',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef17.save()
+        self.code_refs.append(coderef17)
 
         snippet_content = r'''
 
@@ -396,7 +437,21 @@ class CodeParserTest(TransactionTestCase):
         page1 = Page.objects.get(title='HTTP Server')
         section1 = Section.objects.get(title='Implementing foo bar')
         section11 = Section.objects.get(number='1.1')
-        section2 = Section.objects.get(number='2.')
+        #section2 = Section.objects.get(number='2.')
+
+        # Index = 19
+        coderef1 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='ChildClazz',
+                source='d',
+                kind_hint=self.class_kind,
+                local_context=section11,
+                mid_context=section1,
+                global_context=page1
+                )
+        coderef1.save()
+        self.code_refs.append(coderef1)
 
     def parse_snippets(self):
         parse_snippets(self.pname, 'd', 'java')
@@ -415,6 +470,150 @@ class CodeParserTest(TransactionTestCase):
                 include_snippet=False,
                 one_ref_only=True)
         afilter.save()
+
+    def test_context(self):
+        self.create_codebase()
+        self.create_filters()
+        self.create_documentation()
+        self.create_channel()
+        self.create_documentation2()
+        self.parse_snippets()
+        link_code(self.pname, 'core', self.release, 'javaclass', 'd',
+                self.release)
+        link_code(self.pname, 'core', self.release, 'javaclass', 's',
+                None)
+        link_code(self.pname, 'core', self.release, 'javapostclass', '',
+                None)
+        
+        code_ref20 = self.code_refs[19]
+        code_ref20 = SingleCodeReference.objects.get(pk=code_ref20.pk)
+
+        print('DEBUG CONTEXT')
+        print(code_ref20.content)
+
+        # Local Context
+        context_types = ctx.get_context_types(
+                code_ref20.local_object_id,
+                code_ref20.source,
+                ctx.local_filter,
+                self.codebase,
+                ctx.LOCAL)
+        fqn = [context_type.fqn for context_type in context_types]
+        print(fqn)
+        self.assertTrue('p1.ChildClazz' in fqn)
+        self.assertEqual(1, len(fqn))
+
+        context_types = ctx.get_context_types_hierarchy(
+                code_ref20.local_object_id,
+                code_ref20.source,
+                ctx.local_filter,
+                self.codebase,
+                ctx.LOCAL)
+        fqn = [context_type.fqn for context_type in context_types]
+        print(fqn)
+        self.assertTrue('p1.InterfaceClazz' in fqn)
+        self.assertEqual(3, len(fqn))
+
+        # Mid Context
+        context_types = ctx.get_context_types(
+                code_ref20.mid_object_id,
+                code_ref20.source,
+                ctx.mid_filter,
+                self.codebase,
+                ctx.MIDDLE)
+        fqn = [context_type.fqn for context_type in context_types]
+        print(fqn)
+        self.assertEqual(3, len(fqn))
+        self.assertTrue('p1.ChildClazz' in fqn)
+        self.assertTrue('p1.Annotation1' in fqn)
+        self.assertTrue('p1.Annotation2' in fqn)
+
+        context_types = ctx.get_context_types_hierarchy(
+                code_ref20.mid_object_id,
+                code_ref20.source,
+                ctx.mid_filter,
+                self.codebase,
+                ctx.MIDDLE)
+        fqn = [context_type.fqn for context_type in context_types]
+        print(fqn)
+        self.assertEqual(5, len(fqn))
+        self.assertTrue('p1.InterfaceClazz' in fqn)
+
+        # Global Context
+        context_types = ctx.get_context_types(
+                code_ref20.global_object_id,
+                code_ref20.source,
+                ctx.global_filter,
+                self.codebase,
+                ctx.GLOBAL)
+        fqn = [context_type.fqn for context_type in context_types]
+        print(fqn)
+        self.assertEqual(3, len(fqn))
+        self.assertTrue('p1.Annotation2' in fqn)
+
+        context_types = ctx.get_context_types_hierarchy(
+                code_ref20.global_object_id,
+                code_ref20.source,
+                ctx.global_filter,
+                self.codebase,
+                ctx.GLOBAL)
+        fqn = [context_type.fqn for context_type in context_types]
+        print(fqn)
+        self.assertEqual(5, len(fqn))
+        self.assertTrue('p1.InterfaceClazz' in fqn)
+
+        # Snippet
+        snippet1 = self.code_snippets[0]
+        context_types = ctx.get_context_types(
+                snippet1.pk,
+                snippet1.source,
+                ctx.snippet_filter,
+                self.codebase,
+                ctx.SNIPPET)
+        fqn = [context_type.fqn for context_type in context_types]
+        print(fqn)
+        self.assertEqual(2, len(fqn))
+        self.assertTrue('p3.RecodocClient' in fqn)
+
+        context_types = ctx.get_context_types_hierarchy(
+                snippet1.pk,
+                snippet1.source,
+                ctx.snippet_filter,
+                self.codebase,
+                ctx.SNIPPET)
+        fqn = [context_type.fqn for context_type in context_types]
+        print(fqn)
+        self.assertEqual(4, len(fqn))
+        self.assertTrue('p3.IGeneralClient' in fqn)
+
+        # Return Type
+        link_code(self.pname, 'core', self.release, 'javamethod', 'd',
+                self.release)
+        link_code(self.pname, 'core', self.release, 'javamethod', 's',
+                None)
+        code_ref16 = self.code_refs[15]
+        code_ref16 = SingleCodeReference.objects.get(pk=code_ref16.pk)
+        context_types = ctx.get_context_return_types(
+                code_ref16.local_object_id,
+                code_ref16.source,
+                ctx.local_filter,
+                self.codebase,
+                ctx.LOCAL)
+        fqn = [context_type.fqn for context_type in context_types]
+        print(fqn)
+        self.assertEqual(1, len(fqn))
+        self.assertTrue('p3.RecodocClient2' in fqn)
+
+        context_types = ctx.get_context_return_types_hierarchy(
+                code_ref16.local_object_id,
+                code_ref16.source,
+                ctx.local_filter,
+                self.codebase,
+                ctx.LOCAL)
+        fqn = [context_type.fqn for context_type in context_types]
+        print(fqn)
+        self.assertEqual(2, len(fqn))
+        self.assertTrue('p3.RecodocClient2Parent' in fqn)
 
     def test_linker(self):
         self.create_codebase()

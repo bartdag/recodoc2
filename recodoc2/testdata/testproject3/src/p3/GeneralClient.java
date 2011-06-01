@@ -6,4 +6,8 @@ public class GeneralClient implements IGeneralClient {
 		
 	}
 	
+	public RecodocClient2 getClient2() {
+		return null;
+	}
+	
 }
