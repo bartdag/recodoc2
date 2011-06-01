@@ -7,6 +7,7 @@ import docutil.cache_util as cu
 from docutil.commands_util import simple_decorator
 from codebase.actions import get_filters
 
+PREFIX_GETCONTAINER = settings.CACHE_MIDDLEWARE_KEY_PREFIX + 'GETCONTAINER'
 
 CUSTOM_FILTERS = {'CustomClassFilter', 'CustomClassMemberFilter'}
 
@@ -20,8 +21,6 @@ OBJECT_METHODS = {-1: set(['clone', 'equals', 'finalize', 'getClass',
                   2: set(['wait'])
                   }
 
-
-PREFIX_GETCONTAINER = settings.CACHE_MIDDLEWARE_KEY_PREFIX + 'GETCONTAINER'
 
 
 logger = logging.getLogger("recodoc.codebase.linker.filters")
