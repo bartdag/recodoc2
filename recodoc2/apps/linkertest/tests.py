@@ -331,6 +331,44 @@ class CodeParserTest(TransactionTestCase):
         coderef11.save()
         self.code_refs.append(coderef11)
 
+        coderef12 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='nonexistentmethod',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message2,
+                global_context=thread1,
+                parent_reference=coderef10,
+                )
+        coderef12.save()
+        self.code_refs.append(coderef12)
+
+        coderef13 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='recodoc.callMethod10(foo)',
+                source='s',
+                kind_hint=self.class_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef13.save()
+        self.code_refs.append(coderef13)
+
+        coderef14 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='recodoc.callMethod10(foo)',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message2,
+                global_context=thread1,
+                parent_reference=coderef13,
+                )
+        coderef14.save()
+        self.code_refs.append(coderef14)
+
         snippet_content = r'''
 
         @Annotation1
@@ -401,7 +439,7 @@ class CodeParserTest(TransactionTestCase):
         self.assertEqual(
                 'p1.Annotation1',
                 code_ref1.release_links.all()[0].first_link.code_element.fqn)
-        
+
         snippet2 = self.code_snippets[1]
         snippet2 = CodeSnippet.objects.get(pk=snippet2.pk)
         ann_ref = None
@@ -537,3 +575,20 @@ class CodeParserTest(TransactionTestCase):
         method_log = DEBUG_LOG[code_ref13.pk][0]
         self.assertTrue(method_log['custom filtered'])
         self.assertEqual(0, method_log['final size'])
+
+        # Test filter decorator
+        code_ref14 = self.code_refs[13]
+        code_ref14 = SingleCodeReference.objects.get(pk=code_ref14.pk)
+        method_log = DEBUG_LOG[code_ref14.pk][0]
+        self.assertFalse(method_log['ParameterTypeFilter'][0])
+        self.assertEqual(0, method_log['final size'])
+
+        # Test name similarity
+        code_ref16 = self.code_refs[15]
+        code_ref16 = SingleCodeReference.objects.get(pk=code_ref16.pk)
+        method_log = DEBUG_LOG[code_ref16.pk][0]
+        self.assertTrue(method_log['ContextNameSimilarityFilter'][0])
+        self.assertEqual('p3.RecodocClient',
+                code_ref16.release_links.all()[0]
+                .first_link.code_element.containers.all()[0].fqn)
+        self.assertEqual(1, method_log['final size'])
