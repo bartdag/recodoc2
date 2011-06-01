@@ -643,7 +643,38 @@ class ContextNameSimilarityFilter(object):
 
 
 class AbstractTypeFilter(object):
-    pass
+    
+    def _get_potentials(self, potentials):
+        new_potentials = []
+
+        for potential in potentials:
+            container = get_container(potential)
+
+            if container is None:
+                size = 0
+            else:
+                descendants = ctx.get_descendants(container)
+                size = len(descendants)
+            new_potentials.append((potential, size))
+
+        new_potentials.sort(key=lambda v: v[1], reverse=True)
+
+        return [potential[0] for potential in new_potentials]
+
+    @empty_potentials
+    def filter(self, filter_input):
+        potentials = filter_input.potentials
+
+        result = FilterResult(self, False, potentials)
+        
+        new_potentials = self._get_potentials(potentials)
+        
+        # Here we check for more than one potential, otherwise,
+        # There was no sorting!
+        if len(new_potentials) > 1:
+            result = FilterResult(self, True, new_potentials)
+
+        return result
 
 
 class StrictFilter(object):

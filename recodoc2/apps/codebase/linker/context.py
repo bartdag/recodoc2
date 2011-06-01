@@ -137,7 +137,7 @@ def get_context_types_value(context_id, source, filter_func, codebase):
     #print(query.count())
     query = filter_func(query, context_id)
     #print(query.count())
-    
+
     context_types = []
     pk_set = set()
 
@@ -148,6 +148,7 @@ def get_context_types_value(context_id, source, filter_func, codebase):
             pk_set.add(code_element.pk)
 
     return context_types
+
 
 def get_hierarchy_value(code_element):
     hierarchy = [code_element]
