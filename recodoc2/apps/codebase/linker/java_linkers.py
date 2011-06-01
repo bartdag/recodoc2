@@ -520,6 +520,8 @@ class JavaMethodLinker(gl.DefaultLinker):
                 filters.CustomClassMemberFilter(),
                 filters.ParameterNumberFilter(),
                 filters.ParameterTypeFilter(),
+                filters.ImmediateContextFilter(),
+                filters.ImmediateContextHierarchyFilter(),
                 filters.ContextNameSimilarityFilter(),
                 ]
 
@@ -575,7 +577,7 @@ class JavaMethodLinker(gl.DefaultLinker):
 
     def _get_method_info(self, scode_reference, skip_complex_search=False):
         method_name = fqn_container = nb_params = type_params = None
-        
+
         if scode_reference.snippet != None:
             parts = scode_reference.content.split(HANDLE_SEPARATOR)
             (method_name, fqn_container, nb_params, type_params) = \
@@ -586,12 +588,12 @@ class JavaMethodLinker(gl.DefaultLinker):
             match2 = je.METHOD_DECLARATION_RE.search(content)
             match3 = je.METHOD_SIGNATURE_RE.search(content)
             match4 = je.SIMPLE_CALL_RE.search(content)
-            
+
             if match1 and not skip_complex_search:
                 (method_name, fqn_container) = self._get_method_header(match1)
                 eindex = content.index(')')
                 sindex = content.index('(')
-                params_text = content[sindex+1:eindex]
+                params_text = content[sindex + 1:eindex]
 
                 if len(params_text) == 0:
                     # This means that there was no parameter, so no ','
@@ -605,7 +607,7 @@ class JavaMethodLinker(gl.DefaultLinker):
                 method_name = match2.group('method_name')
                 eindex = content.index(')')
                 sindex = content.index('(')
-                params_text = content[sindex+1:eindex]
+                params_text = content[sindex + 1:eindex]
 
                 if len(params_text) == 0:
                     # This means that there was no parameter, so no ','
@@ -636,13 +638,13 @@ class JavaMethodLinker(gl.DefaultLinker):
         if type_params is not None:
             type_params = \
                     [su.safe_strip(type_param) for type_param in type_params]
-            
+
         return MethodInfo(su.safe_strip(method_name),
                 su.safe_strip(fqn_container), nb_params, type_params)
 
     def _get_method_info_snippet(self, parts):
         method_name = fqn_container = nb_params = type_params = None
-        
+
         try:
             method_name = parts[2]
             fqn_container = parts[1]
@@ -650,7 +652,7 @@ class JavaMethodLinker(gl.DefaultLinker):
             nb_params = len(type_params)
         except Exception:
             logger.exception('An exception has occurred')
-        
+
         return (method_name, fqn_container, nb_params, type_params)
 
     def _get_method_header(self, match):
@@ -662,7 +664,7 @@ class JavaMethodLinker(gl.DefaultLinker):
             if target is not None and len(target.strip()) > 0:
                 fqn_container = je.clean_java_name(groupdict['target'])[1]
         return (method_name, fqn_container)
-        
+
     def _get_method_params(self, match):
         nb_params = type_params = None
         if match.group(3) == None:
@@ -676,7 +678,7 @@ class JavaMethodLinker(gl.DefaultLinker):
             text = match.string[match.end(2):]
             eindex = text.index(')')
             sindex = text.index('(')
-            params_text = text[sindex+1:eindex]
+            params_text = text[sindex + 1:eindex]
             if len(params_text) == 0:
                 # This means that there was no parameter, so no ','
                 nb_params = 0
@@ -687,7 +689,8 @@ class JavaMethodLinker(gl.DefaultLinker):
 
         return (nb_params, type_params)
 
-    def get_code_element(self, scode_reference, code_elements, method_info, log):
+    def get_code_element(self, scode_reference, code_elements, method_info,
+            log):
         log.reset_variables()
         return_code_element = None
         potentials = code_elements
@@ -697,19 +700,20 @@ class JavaMethodLinker(gl.DefaultLinker):
         else:
             size = len(code_elements)
 
-        print('DEBUG FOR {0}'.format(scode_reference.content))
+        print('DEBUG FOR {0}:{1}'.format(scode_reference.pk,
+            scode_reference.content))
         for code_element in code_elements:
             print(code_element.fqn)
 
         filter_results = []
-        
+
         method_name = method_info.method_name
         params = method_info.type_params
         fqn_container = method_info.fqn_container
 
         for afilter in self.method_filters:
             finput = filters.FilterInput(scode_reference, potentials,
-                    method_name, log,fqn_container, params, filter_results)
+                    method_name, log, fqn_container, params, filter_results)
             result = afilter.filter(finput)
             potentials = result.potentials
             filter_results.append(result)

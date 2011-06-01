@@ -80,6 +80,7 @@ class CodeParserTest(TransactionTestCase):
         Project.objects.all().delete()
         CodeElementKind.objects.all().delete()
         cu.clear_cache()
+        DEBUG_LOG.clear()
 
     def create_codebase(self):
         self.codebase = create_code_db(self.pname, 'core', self.release)
@@ -453,6 +454,62 @@ class CodeParserTest(TransactionTestCase):
         coderef1.save()
         self.code_refs.append(coderef1)
 
+    def create_channel2(self):
+        thread1 = SupportThread.objects.get(title='HTTP Server Question')
+        message2 = Message.objects.get(title='RE: HTTP Server Question')
+
+        # Index = 20
+        coderef1 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='GeneralClient.getClient2()',
+                source='s',
+                kind_hint=self.class_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef1.save()
+        self.code_refs.append(coderef1)
+
+        coderef2 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='GeneralClient.getClient2()',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message2,
+                global_context=thread1,
+                parent_reference=coderef1,
+                )
+        coderef2.save()
+        self.code_refs.append(coderef2)
+
+        # Index = 22
+        coderef3 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='RecodocClient.getClient2()',
+                source='s',
+                kind_hint=self.class_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef3.save()
+        self.code_refs.append(coderef3)
+
+        coderef4 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='RecodocClient.getClient2()',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message2,
+                global_context=thread1,
+                parent_reference=coderef3,
+                )
+        coderef4.save()
+        self.code_refs.append(coderef4)
+
     def parse_snippets(self):
         parse_snippets(self.pname, 'd', 'java')
         parse_snippets(self.pname, 's', 'java')
@@ -621,6 +678,7 @@ class CodeParserTest(TransactionTestCase):
         self.create_documentation()
         self.create_channel()
         self.create_documentation2()
+        self.create_channel2()
         self.parse_snippets()
         link_code(self.pname, 'core', self.release, 'javaclass', 'd',
                 self.release)
@@ -789,5 +847,24 @@ class CodeParserTest(TransactionTestCase):
         self.assertTrue(method_log['ContextNameSimilarityFilter'][0])
         self.assertEqual('p3.RecodocClient',
                 code_ref16.release_links.all()[0]
+                .first_link.code_element.containers.all()[0].fqn)
+        self.assertEqual(1, method_log['final size'])
+
+        # Test immediate context filter
+        code_ref22 = self.code_refs[21]
+        code_ref22 = SingleCodeReference.objects.get(pk=code_ref22.pk)
+        method_log = DEBUG_LOG[code_ref22.pk][0]
+        self.assertTrue(method_log['ImmediateContextFilter'][0])
+        self.assertEqual('p3.GeneralClient',
+                code_ref22.release_links.all()[0]
+                .first_link.code_element.containers.all()[0].fqn)
+        self.assertEqual(1, method_log['final size'])
+
+        code_ref24 = self.code_refs[23]
+        code_ref24 = SingleCodeReference.objects.get(pk=code_ref24.pk)
+        method_log = DEBUG_LOG[code_ref24.pk][0]
+        self.assertTrue(method_log['ImmediateContextHierarchyFilter'][0])
+        self.assertEqual('p3.GeneralClient',
+                code_ref24.release_links.all()[0]
                 .first_link.code_element.containers.all()[0].fqn)
         self.assertEqual(1, method_log['final size'])
