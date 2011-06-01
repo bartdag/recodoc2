@@ -16,11 +16,6 @@ public class Clazz1 {
 		return super.toString();
 	}
 	
-	public void callMethod10(String s) {
-		
-	}
+
 	
-	public void callMethod1000() {
-		
-	}
 }

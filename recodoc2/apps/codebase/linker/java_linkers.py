@@ -536,6 +536,7 @@ class JavaMethodLinker(gl.DefaultLinker):
                 filters.ContextFilter(ctx.GLOBAL),
                 filters.ContextFilter(ctx.GLOBAL, True),
                 filters.ContextNameSimilarityFilter(),
+                filters.AbstractTypeFilter(),
                 ]
 
     def link_references(self, progress_monitor=NullProgressMonitor(),

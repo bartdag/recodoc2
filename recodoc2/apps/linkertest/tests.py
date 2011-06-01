@@ -214,6 +214,13 @@ class CodeParserTest(TransactionTestCase):
                 )
         message5.save()
 
+        message6 = Message(
+                title='RE: RE: HTTP Server Question',
+                index=0,
+                sthread=thread1
+                )
+        message6.save()
+
         coderef1 = SingleCodeReference(
                 project=self.project,
                 project_release=self.releasedb,
@@ -473,6 +480,7 @@ class CodeParserTest(TransactionTestCase):
         message2 = Message.objects.get(title='RE: HTTP Server Question')
         thread2 = SupportThread.objects.get(title='Http client question')
         message4 = Message.objects.get(title='RE: Http client question')
+        message5 = Message.objects.get(title='RE: RE: HTTP Server Question')
 
         # Index = 20
         coderef1 = SingleCodeReference(
@@ -538,6 +546,32 @@ class CodeParserTest(TransactionTestCase):
                 )
         coderef5.save()
         self.code_refs.append(coderef5)
+
+        # Index = 25
+        coderef6 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='callMethod10()',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message5,
+                global_context=thread1,
+                )
+        coderef6.save()
+        self.code_refs.append(coderef6)
+
+        # Index = 26
+        coderef7 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='callMethod1000()',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message5,
+                global_context=thread1,
+                )
+        coderef7.save()
+        self.code_refs.append(coderef7)
 
     def parse_snippets(self):
         parse_snippets(self.pname, 'd', 'java')
@@ -669,7 +703,7 @@ class CodeParserTest(TransactionTestCase):
                 ctx.SNIPPET)
         fqn = [context_type.fqn for context_type in context_types]
         print(fqn)
-        self.assertEqual(4, len(fqn))
+        self.assertEqual(5, len(fqn))
         self.assertTrue('p3.IGeneralClient' in fqn)
 
         # Return Type
@@ -943,3 +977,14 @@ class CodeParserTest(TransactionTestCase):
                 code_ref19.release_links.all()[0]
                 .first_link.code_element.containers.all()[0].fqn)
         self.assertEqual(1, method_log['final size'])
+
+        # Test global filter
+        code_ref26 = self.code_refs[25]
+        code_ref26 = SingleCodeReference.objects.get(pk=code_ref26.pk)
+        method_log = DEBUG_LOG[code_ref26.pk][0]
+        print(method_log)
+        self.assertTrue(method_log['AbstractTypeFilter'][0])
+        self.assertEqual('p3.RecodocClient',
+                code_ref26.release_links.all()[0]
+                .first_link.code_element.containers.all()[0].fqn)
+        self.assertEqual(2, method_log['final size'])
