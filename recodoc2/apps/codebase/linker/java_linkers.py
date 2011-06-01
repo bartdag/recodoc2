@@ -520,6 +520,7 @@ class JavaMethodLinker(gl.DefaultLinker):
                 filters.CustomClassMemberFilter(),
                 filters.ParameterNumberFilter(),
                 filters.ParameterTypeFilter(),
+                filters.ContextNameSimilarityFilter(),
                 ]
 
     def link_references(self, progress_monitor=NullProgressMonitor(),

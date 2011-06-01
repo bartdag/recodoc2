@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
+import logging
+from django.conf import settings
 import codeutil.java_element as je
 import docutil.str_util as su
+import docutil.cache_util as cu
 from docutil.commands_util import simple_decorator
 from codebase.actions import get_filters
 
@@ -18,16 +21,59 @@ OBJECT_METHODS = {-1: set(['clone', 'equals', 'finalize', 'getClass',
                   }
 
 
+PREFIX_GETCONTAINER = settings.CACHE_MIDDLEWARE_KEY_PREFIX + 'GETCONTAINER'
+
+
+logger = logging.getLogger("recodoc.codebase.linker.filters")
+
+
 @simple_decorator
 def empty_potentials(f):
     def newf(*args, **kargs):
+        filter_inst = args[0]
         filter_input = args[1]
         potentials = filter_input.potentials
         if potentials is None or len(potentials) == 0:
-            return FilterResult(False, None, [])
+            return FilterResult(filter_inst, False, potentials)
         else:
             return f(*args, **kargs)
     return newf
+
+
+@simple_decorator
+def context_filter(f):
+    def newf(*args, **kargs):
+        filter_inst = args[0]
+        filter_input = args[1]
+        fresults = filter_input.fresults
+        potentials = filter_input.potentials
+        context_filtered = False
+
+        for fresult in fresults:
+            if fresult.context_filter and fresult.activated:
+                context_filtered = True
+                break
+        
+        if context_filtered:
+            return FilterResult(filter_inst, False, potentials)
+        else:
+            return f(*args, **kargs)
+    return newf
+
+
+def get_container_value(code_element):
+    containers = code_element.containers.all()
+    if containers.count() == 0:
+        logger.error('BIG ERROR pk={0} element={1}'.format(
+            code_element.pk,code_element.human_string()))
+        return None
+    else:
+        return containers[0]
+
+
+def get_container(code_element):
+    return cu.get_value(PREFIX_GETCONTAINER, code_element.pk,
+            get_container_value, [code_element])
 
 
 def get_codebase(potentials):
@@ -366,8 +412,83 @@ class ContextHierarchyFilter(object):
     pass
 
 
-class ContextNameSimilarity(object):
-    pass
+class ContextNameSimilarityFilter(object):
+   
+    DIFFERENCE_THRESHOLD = 0.2
+    
+    PAIRWISE_THRESHOLD = 0.4
+
+    HIGH_SIMILARITY = 0.95
+
+    def _get_common_token_ratio(self, container_tokens, potential_tokens):
+        max_token = max(len(container_tokens), len(potential_tokens))
+        count = 0
+        for token in container_tokens:
+            if token in potential_tokens:
+                count += 1
+                
+        return float(count) / float(max_token)
+
+    def _get_potentials_by_similarity(self, potentials, fqn_container):
+        new_potentials = []
+        max_similarity = 0.0
+
+        (container_simple, _) = je.clean_java_name(fqn_container)
+        container_tokens = [token.lower() 
+                for token in su.tokenize(container_simple)]
+        container_simple_lower = container_simple.lower()
+        similarities = []
+
+        for potential in potentials:
+            (simple, _) = je.clean_java_name(get_container(potential).fqn)
+            potential_tokens = [token.lower()
+                for token in su.tokenize(simple)]
+            simple_lower = simple.lower()
+            common_token = self._get_common_token_ratio(container_tokens,
+                    potential_tokens)
+            psimilarity = su.pairwise_simil(container_simple_lower,
+                    simple_lower)
+
+            # This is the minimum required by this filter:
+            if common_token == 0.0 or psimilarity < self.PAIRWISE_THRESHOLD:
+                continue
+
+            similarity = max(common_token, psimilarity)
+            if similarity > max_similarity:
+                max_similarity = similarity
+
+            similarities.append((potential, similarity))
+
+        # Only keep the elements that match the threshold
+        # Or accept elements that are fuzzily near the max_similarity
+        if max_similarity < self.HIGH_SIMILARITY:
+            max_similarity = max_similarity - self.DIFFERENCE_THRESHOLD
+
+        for (potential, similarity) in similarities:
+            if similarity >= max_similarity:
+                new_potentials.append(potential)
+
+        return new_potentials
+
+    @empty_potentials
+    @context_filter
+    def filter(self, filter_input):
+        fqn_container = filter_input.fqn_container
+        potentials = filter_input.potentials
+        scode_reference = filter_input.scode_reference
+
+        result = FilterResult(self, False, potentials)
+
+        if (fqn_container is not None and 
+                fqn_container != je.UNKNOWN_CONTAINER and
+                scode_reference.snippet is None):
+            new_potentials = self._get_potentials_by_similarity(potentials,
+                    fqn_container)
+
+            if len(new_potentials) > 0:
+                result = FilterResult(self, True, new_potentials)
+
+        return result
 
 
 class AbstractTypeFilter(object):

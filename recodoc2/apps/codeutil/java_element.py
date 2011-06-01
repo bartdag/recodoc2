@@ -8,7 +8,6 @@ import docutil.str_util as su
 logger = logging.getLogger("recodoc.codeutil.java")
 
 ### CONSTANTS ###
-
 JAVA_LANGUAGE = 'j'
 
 JAVA_EXCEPTION_TRACE = 'jx'
@@ -16,6 +15,8 @@ JAVA_EXCEPTION_TRACE = 'jx'
 HANDLE_SEPARATOR = ":"
 
 SNIPPET_PACKAGE = 'zzzsnippet'
+
+UNKNOWN_CONTAINER = 'UNKNOWNP.UNKNOWN'
 
 SNIPPET_PACKAGE_LEN = len(SNIPPET_PACKAGE)
 
