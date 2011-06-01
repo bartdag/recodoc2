@@ -923,3 +923,23 @@ class CodeParserTest(TransactionTestCase):
                 method_ref.release_links.all()[0]
                 .first_link.code_element.containers.all()[0].fqn)
         self.assertEqual(1, method_log['final size'])
+
+        # Test return type
+        code_ref18 = self.code_refs[17]
+        code_ref18 = SingleCodeReference.objects.get(pk=code_ref18.pk)
+        method_log = DEBUG_LOG[code_ref18.pk][0]
+        self.assertTrue(method_log['locReturnContextFilter'][0])
+        self.assertEqual('p3.RecodocClient2',
+                code_ref18.release_links.all()[0]
+                .first_link.code_element.containers.all()[0].fqn)
+        self.assertEqual(1, method_log['final size'])
+
+        # Test return type hierarchy
+        code_ref19 = self.code_refs[18]
+        code_ref19 = SingleCodeReference.objects.get(pk=code_ref19.pk)
+        method_log = DEBUG_LOG[code_ref19.pk][0]
+        self.assertTrue(method_log['locReturnContextFilterHierarchy'][0])
+        self.assertEqual('p3.RecodocClient2Parent',
+                code_ref19.release_links.all()[0]
+                .first_link.code_element.containers.all()[0].fqn)
+        self.assertEqual(1, method_log['final size'])

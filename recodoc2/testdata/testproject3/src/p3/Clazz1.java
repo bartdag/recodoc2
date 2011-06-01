@@ -19,4 +19,8 @@ public class Clazz1 {
 	public void callMethod10(String s) {
 		
 	}
+	
+	public void callMethod1000() {
+		
+	}
 }
