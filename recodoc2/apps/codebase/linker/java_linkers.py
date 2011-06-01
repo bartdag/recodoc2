@@ -537,6 +537,7 @@ class JavaMethodLinker(gl.DefaultLinker):
                 filters.ContextFilter(ctx.GLOBAL, True),
                 filters.ContextNameSimilarityFilter(),
                 filters.AbstractTypeFilter(),
+                filters.StrictFilter(),
                 ]
 
     def link_references(self, progress_monitor=NullProgressMonitor(),
@@ -733,15 +734,6 @@ class JavaMethodLinker(gl.DefaultLinker):
             filter_results.append(result)
 
         # TODO
-        # Write param type filter (done)
-        # Write object filter (done)
-        # Write custom filter (done)
-        # Write exception filter (done)
-        # Write context filter
-        # Write context hierarchy filter
-        # Write context return type filter
-        # Write context name similarity filter
-        # Write abstract type filter
         # Write strict filter
         # Transform the class link processing into a filter (maybe?)
 

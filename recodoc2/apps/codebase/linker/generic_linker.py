@@ -175,8 +175,9 @@ class LinkerLog(object):
 
         log_file.write('  Filtering\n')
         for fresult in fresults:
-            log_file.write('    {0}: {1} - {2}\n'.format(
-                fresult.name, fresult.activated, len(fresult.potentials)))
+            log_file.write('    {0} {1}: {2} - {3}\n'.format(
+                fresult.name, fresult.options, fresult.activated,
+                len(fresult.potentials)))
         
         if return_code_element is not None:
             log_file.write('  Element: {0}\n'.

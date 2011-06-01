@@ -982,9 +982,14 @@ class CodeParserTest(TransactionTestCase):
         code_ref26 = self.code_refs[25]
         code_ref26 = SingleCodeReference.objects.get(pk=code_ref26.pk)
         method_log = DEBUG_LOG[code_ref26.pk][0]
-        print(method_log)
         self.assertTrue(method_log['AbstractTypeFilter'][0])
         self.assertEqual('p3.RecodocClient',
                 code_ref26.release_links.all()[0]
                 .first_link.code_element.containers.all()[0].fqn)
         self.assertEqual(2, method_log['final size'])
+
+        code_ref27 = self.code_refs[26]
+        code_ref27 = SingleCodeReference.objects.get(pk=code_ref27.pk)
+        method_log = DEBUG_LOG[code_ref27.pk][0]
+        self.assertTrue(method_log['StrictFilter'][0])
+        self.assertEqual(0, method_log['final size'])

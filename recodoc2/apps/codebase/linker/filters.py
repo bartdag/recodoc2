@@ -46,20 +46,26 @@ def context_filter(f):
         filter_inst = args[0]
         filter_inst.__class__.is_context_filter = is_context_filter
         filter_input = args[1]
-        fresults = filter_input.fresults
         potentials = filter_input.potentials
-        context_filtered = False
-
-        for fresult in fresults:
-            if fresult.context_filter and fresult.activated:
-                context_filtered = True
-                break
+        context_filtered = is_context_filtered(filter_input)
 
         if context_filtered:
             return FilterResult(filter_inst, False, potentials)
         else:
             return f(*args, **kargs)
     return newf
+
+
+def is_context_filtered(filter_input):
+    fresults = filter_input.fresults
+    context_filtered = False
+
+    for fresult in fresults:
+        if fresult.context_filter and fresult.activated:
+            context_filtered = True
+            break
+
+    return context_filtered
 
 
 def is_context_filter(self):
@@ -140,7 +146,7 @@ def custom_filter(filter_inst, potentials, scode_reference, simple, fqn):
 
 class FilterResult(object):
 
-    def __init__(self, afilter, activated, potentials):
+    def __init__(self, afilter, activated, potentials, options=''):
         try:
             self.name = afilter.get_filter_name()
         except Exception:
@@ -153,6 +159,7 @@ class FilterResult(object):
 
         self.activated = activated
         self.potentials = potentials
+        self.options = options
 
 
 class FilterInput(object):
@@ -678,7 +685,44 @@ class AbstractTypeFilter(object):
 
 
 class StrictFilter(object):
+    PARAM_THRESHOLD = 3
+    TOKEN_THRESHOLD = 3
     
+    def _get_tokens(self, method_name):
+        getter_setter = method_name.startswith('get') or \
+            method_name.startswith('set')
+
+        token_size = len(su.tokenize(method_name))
+
+        if getter_setter:
+            token_size -= 1
+
+        return token_size
+
     @empty_potentials
     def filter(self, filter_input):
-        pass
+        element_name = filter_input.element_name
+        potentials = filter_input.potentials
+        new_potentials = potentials
+        params = filter_input.params
+        size = len(potentials)
+        options = ''
+        context_filtered = is_context_filtered(filter_input)
+        strict_filtered = True
+
+        if context_filtered:
+            options = 'context'
+            strict_filtered = False
+        elif size == 1 and params is not None and len(params) >= self.PARAM_THRESHOLD:
+            options = 'params'
+            strict_filtered = False
+        elif size == 1 and self._get_tokens(element_name) >= self.TOKEN_THRESHOLD:
+            options = 'token'
+            strict_filtered = False
+
+        if strict_filtered:
+            new_potentials = []
+
+        result = FilterResult(self, strict_filtered, new_potentials, options)
+
+        return result
