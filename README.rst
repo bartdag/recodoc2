@@ -244,6 +244,9 @@ First, clone the Recodoc git repository.
 
   git clone -b develop git@github.com:bartdag/recodoc2.git
 
+  # alternatively, using mercurial:
+  hg clone https://barthe@bitbucket.org/barthe/recodoc2
+
 
 Then, copy and edit the localsettings file. The file is heavily commented and
 there are only a few steps to follow.
