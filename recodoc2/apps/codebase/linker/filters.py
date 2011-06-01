@@ -5,6 +5,8 @@ import codeutil.java_element as je
 import docutil.str_util as su
 import docutil.cache_util as cu
 from docutil.commands_util import simple_decorator
+from codebase.models import CodeElement
+import codebase.linker.context as ctx
 from codebase.actions import get_filters
 
 PREFIX_GETCONTAINER = settings.CACHE_MIDDLEWARE_KEY_PREFIX + 'GETCONTAINER'
@@ -13,14 +15,13 @@ CUSTOM_FILTERS = {'CustomClassFilter', 'CustomClassMemberFilter'}
 
 
 OBJECT_METHODS = {-1: set(['clone', 'equals', 'finalize', 'getClass',
-                           'hashCode', 'notify', 'notifyAll', 'toString', 
+                           'hashCode', 'notify', 'notifyAll', 'toString',
                            'wait']),
                   0: set(['clone', 'finalize', 'getClass', 'hashCode',
                           'notify', 'notifyAll', 'toString', 'wait']),
                   1: set(['equals', 'wait']),
                   2: set(['wait'])
                   }
-
 
 
 logger = logging.getLogger("recodoc.codebase.linker.filters")
@@ -43,6 +44,7 @@ def empty_potentials(f):
 def context_filter(f):
     def newf(*args, **kargs):
         filter_inst = args[0]
+        filter_inst.__class__.is_context_filter = is_context_filter
         filter_input = args[1]
         fresults = filter_input.fresults
         potentials = filter_input.potentials
@@ -52,7 +54,7 @@ def context_filter(f):
             if fresult.context_filter and fresult.activated:
                 context_filtered = True
                 break
-        
+
         if context_filtered:
             return FilterResult(filter_inst, False, potentials)
         else:
@@ -60,11 +62,15 @@ def context_filter(f):
     return newf
 
 
+def is_context_filter(self):
+    return True
+
+
 def get_container_value(code_element):
     containers = code_element.containers.all()
     if containers.count() == 0:
         logger.error('BIG ERROR pk={0} element={1}'.format(
-            code_element.pk,code_element.human_string()))
+            code_element.pk, code_element.human_string()))
         return None
     else:
         return containers[0]
@@ -103,11 +109,11 @@ def custom_filtered(filter_results):
 
 def valid_filter(reference, code_filter):
     # Check that snippets are ok
-    valid = reference.snippet is None or code_filter.include_snippet 
+    valid = reference.snippet is None or code_filter.include_snippet
 
     # Check that compound references are ok
-    valid = valid and (not code_filter.one_ref_only or 
-            (reference.parent_reference is None and 
+    valid = valid and (not code_filter.one_ref_only or
+            (reference.parent_reference is None and
             reference.child_references.count() == 0))
 
     return valid
@@ -120,7 +126,7 @@ def custom_filter(filter_inst, potentials, scode_reference, simple, fqn):
     result = FilterResult(filter_inst, False, potentials)
 
     if fqn in fqn_filters:
-        afilter = fqn_filters[fqn] 
+        afilter = fqn_filters[fqn]
         if valid_filter(scode_reference, afilter):
             result = FilterResult(filter_inst, True, [])
     elif fqn == simple and simple in simple_filters:
@@ -139,7 +145,7 @@ class FilterResult(object):
             self.name = afilter.get_filter_name()
         except Exception:
             self.name = afilter.__class__.__name__
-        
+
         try:
             self.context_filter = afilter.is_context_filter()
         except Exception:
@@ -160,7 +166,7 @@ class FilterInput(object):
         if fqn_container is not None:
             fqn_container = fqn_container.strip()
         self.fqn_container = fqn_container
-        
+
         self.params = params
         self.log = log
 
@@ -178,20 +184,20 @@ class CustomClassFilter(object):
         potentials = filter_input.potentials
         scode_reference = filter_input.scode_reference
         (simple, fqn) = je.clean_java_name(element_name, True)
-        
+
         result = custom_filter(self, potentials, scode_reference, simple, fqn)
 
         return result
 
 
 class CustomClassMemberFilter(object):
-    
+
     @empty_potentials
     def filter(self, filter_input):
         fqn_container = filter_input.fqn_container
         potentials = filter_input.potentials
         scode_reference = filter_input.scode_reference
-        
+
         result = FilterResult(self, False, potentials)
 
         if fqn_container is not None and fqn_container != '':
@@ -204,7 +210,7 @@ class CustomClassMemberFilter(object):
 
 
 class ObjectMethodsFilter(object):
-    
+
     @empty_potentials
     def filter(self, filter_input):
         element_name = filter_input.element_name
@@ -250,7 +256,7 @@ class ExampleFilter(object):
 
 
 class ParameterNumberFilter(object):
-    
+
     @empty_potentials
     def filter(self, filter_input):
         params = filter_input.params
@@ -267,7 +273,7 @@ class ParameterNumberFilter(object):
         # name without the parameters.
         # In a snippet, the number of parameters is usually right.
         if size > 0 or scode_reference.snippet is not None:
-            new_potentials = []    
+            new_potentials = []
             for method_element in potentials:
                 if method_element.parameters_length == size:
                     new_potentials.append(method_element)
@@ -303,7 +309,7 @@ class ParameterTypeFilter(object):
                         formal.lower())
                 if similarity >= self.PARAM_SIMILARITY_THRESHOLD:
                     matches += 1
-        
+
         # We don't want to far half-matches methods because this is too
         # fragile.
         if (float(matches) / float(size)) < self.PARAM_SIZE_THRESHOLD:
@@ -416,17 +422,92 @@ class ContextReturnTypeHierarchyFilter(object):
 
 
 class ImmediateContextFilter(object):
-    pass
+
+    def _get_potentials(self, potentials, fqn_container):
+        new_potentials = []
+        (imm_simple, imm_fqn) = je.clean_java_name(fqn_container)
+        imm_simple = imm_simple.lower()
+        imm_fqn = imm_fqn.lower()
+
+        for potential in potentials:
+            (simple, fqn) = je.clean_java_name(get_container(potential).fqn)
+            simple = simple.lower()
+            fqn = fqn.lower()
+            if imm_simple != imm_fqn:
+                if fqn == imm_fqn:
+                    new_potentials.append(potential)
+            elif simple == imm_simple:
+                new_potentials.append(potential)
+
+        return new_potentials
+
+    @empty_potentials
+    @context_filter
+    def filter(self, filter_input):
+        fqn_container = filter_input.fqn_container
+        potentials = filter_input.potentials
+
+        result = FilterResult(self, False, potentials)
+
+        if fqn_container is not None and \
+                fqn_container != je.UNKNOWN_CONTAINER:
+            new_potentials = self._get_potentials(potentials, fqn_container)
+
+            if len(new_potentials) > 0:
+                result = FilterResult(self, True, new_potentials)
+
+        return result
 
 
 class ImmediateContextHierarchyFilter(object):
-    pass
+
+    def _get_potentials(self, potentials, fqn_container):
+        new_potentials = []
+        (imm_simple, imm_fqn) = je.clean_java_name(fqn_container)
+        imm_simple = imm_simple.lower()
+        imm_fqn = imm_fqn.lower()
+
+        for potential in potentials:
+            container = get_container(potential)
+            if container is None:
+                continue
+            hierarchy = ctx.get_hierarchy(container)
+            for element in hierarchy:
+                (simple, fqn) = je.clean_java_name(element.fqn)
+                simple = simple.lower()
+                fqn = fqn.lower()
+                if imm_simple != imm_fqn:
+                    if fqn == imm_fqn:
+                        new_potentials.append(potential)
+                        break
+                elif simple == imm_simple:
+                    new_potentials.append(potential)
+                    break
+
+        return new_potentials
+
+    @empty_potentials
+    @context_filter
+    def filter(self, filter_input):
+        fqn_container = filter_input.fqn_container
+        potentials = filter_input.potentials
+
+        result = FilterResult(self, False, potentials)
+
+        if fqn_container is not None and \
+                fqn_container != je.UNKNOWN_CONTAINER:
+            new_potentials = self._get_potentials(potentials, fqn_container)
+
+            if len(new_potentials) > 0:
+                result = FilterResult(self, True, new_potentials)
+
+        return result
 
 
 class ContextNameSimilarityFilter(object):
-   
+
     DIFFERENCE_THRESHOLD = 0.2
-    
+
     PAIRWISE_THRESHOLD = 0.4
 
     HIGH_SIMILARITY = 0.95
@@ -437,7 +518,7 @@ class ContextNameSimilarityFilter(object):
         for token in container_tokens:
             if token in potential_tokens:
                 count += 1
-                
+
         return float(count) / float(max_token)
 
     def _get_potentials_by_similarity(self, potentials, fqn_container):
@@ -445,7 +526,7 @@ class ContextNameSimilarityFilter(object):
         max_similarity = 0.0
 
         (container_simple, _) = je.clean_java_name(fqn_container)
-        container_tokens = [token.lower() 
+        container_tokens = [token.lower()
                 for token in su.tokenize(container_simple)]
         container_simple_lower = container_simple.lower()
         similarities = []
@@ -489,7 +570,7 @@ class ContextNameSimilarityFilter(object):
 
         result = FilterResult(self, False, potentials)
 
-        if (fqn_container is not None and 
+        if (fqn_container is not None and
                 fqn_container != je.UNKNOWN_CONTAINER):
             new_potentials = self._get_potentials_by_similarity(potentials,
                     fqn_container)
