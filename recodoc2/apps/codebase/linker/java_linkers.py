@@ -7,6 +7,7 @@ from docutil.commands_util import call_gc, queryset_iterator
 import docutil.str_util as su
 import docutil.cache_util as cu
 import codeutil.java_element as je
+import codebase.linker.context as ctx
 import codebase.linker.generic_linker as gl
 import codebase.linker.filters as filters
 from codebase.models import CodeElementKind, ReleaseLinkSet, MethodElement,\
@@ -522,6 +523,14 @@ class JavaMethodLinker(gl.DefaultLinker):
                 filters.ParameterTypeFilter(),
                 filters.ImmediateContextFilter(),
                 filters.ImmediateContextHierarchyFilter(),
+                filters.ContextFilter(ctx.SNIPPET),
+                filters.ContextFilter(ctx.SNIPPET, True),
+                filters.ContextFilter(ctx.LOCAL),
+                filters.ContextFilter(ctx.LOCAL, True),
+                filters.ContextFilter(ctx.MIDDLE),
+                filters.ContextFilter(ctx.MIDDLE, True),
+                filters.ContextFilter(ctx.GLOBAL),
+                filters.ContextFilter(ctx.GLOBAL, True),
                 filters.ContextNameSimilarityFilter(),
                 ]
 

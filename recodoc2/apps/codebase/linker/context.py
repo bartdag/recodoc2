@@ -199,6 +199,25 @@ def get_hierarchy(code_element):
             get_hierarchy_value, [code_element])
 
 
+def get_context_id(scode_reference, context_level):
+    context_id = -1
+
+    if context_level == LOCAL:
+        context_id = scode_reference.local_object_id
+    elif context_level == MIDDLE:
+        context_id = scode_reference.mid_object_id
+    elif context_level == GLOBAL:
+        context_id = scode_reference.global_object_id
+    elif context_level == SNIPPET:
+        if scode_reference.snippet is not None:
+            context_id = scode_reference.snippet.pk
+
+    if context_id is None:
+        context_id = -1
+
+    return context_id
+
+
 def local_filter(query, context_id):
     return query.filter(code_reference__local_object_id=context_id)
 

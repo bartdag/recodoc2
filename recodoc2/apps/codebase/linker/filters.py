@@ -406,18 +406,70 @@ class ParameterTypeFilter(object):
 
 
 class ContextFilter(object):
-    pass
+    
+    def __init__(self, context_level, hierarchy=False):
+        self.context_level = context_level
+        self.hierarchy = hierarchy
 
+        if context_level == ctx.LOCAL:
+            self.func = ctx.local_filter
+        elif context_level == ctx.MIDDLE:
+            self.func = ctx.mid_filter
+        elif context_level == ctx.GLOBAL:
+            self.func = ctx.global_filter
+        elif context_level == ctx.SNIPPET:
+            self.func = ctx.snippet_filter
 
-class ContextHierarchyFilter(object):
-    pass
+    def get_filter_name(self):
+        hierarchy = ''
+        if self.hierarchy:
+            hierarchy = 'Hierarchy'
+
+        return '{0}ContextFilter{1}'.format(self.context_level, hierarchy)
+
+    def _get_potentials(self, potentials, context_types):
+        fqns = [context_type.fqn for context_type in context_types]
+        new_potentials = []
+
+        for potential in potentials:
+            container = get_container(potential)
+            if container is not None and container.fqn in fqns:
+                new_potentials.append(potential)
+
+        return new_potentials
+
+    @empty_potentials
+    @context_filter
+    def filter(self, filter_input):
+        potentials = filter_input.potentials
+        scode_reference = filter_input.scode_reference
+        context_id = ctx.get_context_id(scode_reference, self.context_level)
+
+        result = FilterResult(self, False, potentials)
+
+        if context_id == -1:
+            # This is mainly a performance optimization
+            return result
+
+        if self.hierarchy:
+            context_types = ctx.get_context_types_hierarchy(context_id,
+                    scode_reference.source, self.func,
+                    get_codebase(potentials), self.context_level)
+        else:
+            context_types = ctx.get_context_types(context_id,
+                    scode_reference.source, self.func,
+                    get_codebase(potentials), self.context_level)
+
+        if len(context_types) > 0:
+            new_potentials = self._get_potentials(potentials, context_types)
+
+            if len(new_potentials) > 0:
+                result = FilterResult(self, True, new_potentials)
+
+        return result
 
 
 class ContextReturnTypeFilter(object):
-    pass
-
-
-class ContextReturnTypeHierarchyFilter(object):
     pass
 
 

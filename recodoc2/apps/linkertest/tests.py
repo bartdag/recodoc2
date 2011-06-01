@@ -59,6 +59,7 @@ class CodeParserTest(TransactionTestCase):
 
     @transaction.commit_on_success
     def setUp(self):
+        DEBUG_LOG.clear()
         cu.clear_cache()
         self.pname = 'project1'
         self.release = '3.0'
@@ -173,6 +174,11 @@ class CodeParserTest(TransactionTestCase):
                 channel=channel)
         thread2.save()
 
+        thread3 = SupportThread(
+                title='Random Question',
+                channel=channel)
+        thread3.save()
+
         message1 = Message(
                 title='HTTP Server Question',
                 index=0,
@@ -200,6 +206,13 @@ class CodeParserTest(TransactionTestCase):
                 sthread=thread2
                 )
         message4.save()
+        
+        message5 = Message(
+                title='Random Question',
+                index=0,
+                sthread=thread3
+                )
+        message5.save()
 
         coderef1 = SingleCodeReference(
                 project=self.project,
@@ -354,8 +367,8 @@ class CodeParserTest(TransactionTestCase):
                 content='recodoc.callMethod10(foo)',
                 source='s',
                 kind_hint=self.class_kind,
-                local_context=message2,
-                global_context=thread1,
+                local_context=message5,
+                global_context=thread3,
                 )
         coderef13.save()
         self.code_refs.append(coderef13)
@@ -367,8 +380,8 @@ class CodeParserTest(TransactionTestCase):
                 content='recodoc.callMethod10(foo)',
                 source='s',
                 kind_hint=self.method_kind,
-                local_context=message2,
-                global_context=thread1,
+                local_context=message5,
+                global_context=thread3,
                 parent_reference=coderef13,
                 )
         coderef14.save()
@@ -414,11 +427,12 @@ class CodeParserTest(TransactionTestCase):
         snippet_content = r'''
 
         @Annotation1
-        public class FooBar {
+        public class FooBar extends FooBarSuper {
           public void main(String arg) {
             System.out.println();
             RecodocClient obj = new RecodocClient();
             List list = null;
+            aFoo.callMethod10();
           }
         '''
 
@@ -457,6 +471,8 @@ class CodeParserTest(TransactionTestCase):
     def create_channel2(self):
         thread1 = SupportThread.objects.get(title='HTTP Server Question')
         message2 = Message.objects.get(title='RE: HTTP Server Question')
+        thread2 = SupportThread.objects.get(title='Http client question')
+        message4 = Message.objects.get(title='RE: Http client question')
 
         # Index = 20
         coderef1 = SingleCodeReference(
@@ -509,6 +525,19 @@ class CodeParserTest(TransactionTestCase):
                 )
         coderef4.save()
         self.code_refs.append(coderef4)
+
+        # Index = 24
+        coderef5 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='callMethod10()',
+                source='s',
+                kind_hint=self.method_kind,
+                local_context=message4,
+                global_context=thread2,
+                )
+        coderef5.save()
+        self.code_refs.append(coderef5)
 
     def parse_snippets(self):
         parse_snippets(self.pname, 'd', 'java')
@@ -648,11 +677,11 @@ class CodeParserTest(TransactionTestCase):
                 self.release)
         link_code(self.pname, 'core', self.release, 'javamethod', 's',
                 None)
-        code_ref16 = self.code_refs[15]
-        code_ref16 = SingleCodeReference.objects.get(pk=code_ref16.pk)
+        code_ref14 = self.code_refs[13]
+        code_ref14 = SingleCodeReference.objects.get(pk=code_ref14.pk)
         context_types = ctx.get_context_return_types(
-                code_ref16.local_object_id,
-                code_ref16.source,
+                code_ref14.local_object_id,
+                code_ref14.source,
                 ctx.local_filter,
                 self.codebase,
                 ctx.LOCAL)
@@ -662,8 +691,8 @@ class CodeParserTest(TransactionTestCase):
         self.assertTrue('p3.RecodocClient2' in fqn)
 
         context_types = ctx.get_context_return_types_hierarchy(
-                code_ref16.local_object_id,
-                code_ref16.source,
+                code_ref14.local_object_id,
+                code_ref14.source,
                 ctx.local_filter,
                 self.codebase,
                 ctx.LOCAL)
@@ -866,5 +895,31 @@ class CodeParserTest(TransactionTestCase):
         self.assertTrue(method_log['ImmediateContextHierarchyFilter'][0])
         self.assertEqual('p3.GeneralClient',
                 code_ref24.release_links.all()[0]
+                .first_link.code_element.containers.all()[0].fqn)
+        self.assertEqual(1, method_log['final size'])
+
+        # Test global filter
+        code_ref25 = self.code_refs[24]
+        code_ref25 = SingleCodeReference.objects.get(pk=code_ref25.pk)
+        method_log = DEBUG_LOG[code_ref25.pk][0]
+        self.assertTrue(method_log['globContextFilter'][0])
+        self.assertEqual('p3.RecodocClient',
+                code_ref25.release_links.all()[0]
+                .first_link.code_element.containers.all()[0].fqn)
+        self.assertEqual(1, method_log['final size'])
+
+        # Test snippet filter
+        snippet2 = self.code_snippets[1]
+        snippet2 = CodeSnippet.objects.get(pk=snippet2.pk)
+        method_ref = None
+        for code_ref in snippet2.single_code_references.all():
+            if code_ref.kind_hint.pk == self.method_kind.pk and\
+                    code_ref.content.find('callMethod10') > -1:
+                method_ref = code_ref
+                break
+        method_log = DEBUG_LOG[method_ref.pk][0]
+        self.assertTrue(method_log['snipContextFilter'][0])
+        self.assertEqual('p3.RecodocClient',
+                method_ref.release_links.all()[0]
                 .first_link.code_element.containers.all()[0].fqn)
         self.assertEqual(1, method_log['final size'])
