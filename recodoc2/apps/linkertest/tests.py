@@ -73,10 +73,10 @@ class CodeParserTest(TransactionTestCase):
         self.class_kind = CodeElementKind.objects.get(kind='class')
         self.enum_kind = CodeElementKind.objects.get(kind='enumeration')
         self.method_kind = CodeElementKind.objects.get(kind='method')
-        self.ann_field_kind = CodeElementKind.objects.get(kind=
-                'annotation field')
-        self.enum_value_kind = CodeElementKind.objects.get(kind=
-                'enumeration value')
+        self.ann_field_kind = CodeElementKind.objects.get(
+                kind='annotation field')
+        self.enum_value_kind = CodeElementKind.objects.get(
+                kind='enumeration value')
         self.field_kind = CodeElementKind.objects.get(kind='field')
         self.code_refs = []
         self.code_snippets = []
@@ -212,7 +212,7 @@ class CodeParserTest(TransactionTestCase):
                 sthread=thread2
                 )
         message4.save()
-        
+
         message5 = Message(
                 title='Random Question',
                 index=0,
@@ -605,6 +605,19 @@ class CodeParserTest(TransactionTestCase):
         coderef9.save()
         self.code_refs.append(coderef9)
 
+        # Index = 29
+        coderef10 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='callMethod10',
+                source='s',
+                kind_hint=self.field_kind,
+                local_context=message4,
+                global_context=thread2,
+                )
+        coderef10.save()
+        self.code_refs.append(coderef10)
+
     def parse_snippets(self):
         parse_snippets(self.pname, 'd', 'java')
         parse_snippets(self.pname, 's', 'java')
@@ -636,7 +649,7 @@ class CodeParserTest(TransactionTestCase):
                 None)
         link_code(self.pname, 'core', self.release, 'javapostclass', '',
                 None)
-        
+
         code_ref20 = self.code_refs[19]
         code_ref20 = SingleCodeReference.objects.get(pk=code_ref20.pk)
 
@@ -788,6 +801,10 @@ class CodeParserTest(TransactionTestCase):
         link_code(self.pname, 'core', self.release, 'javafield', 'd',
                 self.release)
         link_code(self.pname, 'core', self.release, 'javafield', 's',
+                None)
+        link_code(self.pname, 'core', self.release, 'javageneric', 'd',
+                self.release)
+        link_code(self.pname, 'core', self.release, 'javageneric', 's',
                 None)
 
         code_ref1 = self.code_refs[0]
@@ -1066,5 +1083,13 @@ class CodeParserTest(TransactionTestCase):
                 .first_link.code_element.containers.all()[0].fqn)
         self.assertEqual(1, field_log['final size'])
 
-        
-
+        # Test generic linker
+        code_ref30 = self.code_refs[29]
+        code_ref30 = SingleCodeReference.objects.get(pk=code_ref30.pk)
+        field_log = DEBUG_LOG[code_ref30.pk][1]
+        self.assertTrue(field_log['globContextFilter'][0])
+        self.assertEqual('p3.RecodocClient',
+                code_ref30.release_links.all()[0]
+                .first_link.code_element.containers.all()[0].fqn)
+        self.assertEqual(1, field_log['final size'])
+        self.assertEqual('javageneric', field_log['linker'])

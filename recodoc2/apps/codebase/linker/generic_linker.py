@@ -152,6 +152,7 @@ class LinkerLog(object):
         type_log['final size'] = potential_size
         type_log['rationale'] = rationale
         type_log['custom filtered'] = self.custom_filtered
+        type_log['linker'] = self.linker.name
 
         DEBUG_LOG[scode_reference.pk].append(type_log)
 
@@ -212,6 +213,7 @@ class LinkerLog(object):
         method_log['original size'] = original_size
         method_log['final size'] = potential_size
         method_log['custom filtered'] = self.custom_filtered
+        method_log['linker'] = self.linker.name
         for fresult in fresults:
             method_log[fresult.name] = (fresult.activated,
                     len(fresult.potentials))
@@ -275,6 +277,7 @@ class LinkerLog(object):
         field_log['original size'] = original_size
         field_log['final size'] = potential_size
         field_log['custom filtered'] = self.custom_filtered
+        field_log['linker'] = self.linker.name
         for fresult in fresults:
             field_log[fresult.name] = (fresult.activated,
                     len(fresult.potentials))
