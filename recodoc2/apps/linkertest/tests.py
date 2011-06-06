@@ -73,6 +73,11 @@ class CodeParserTest(TransactionTestCase):
         self.class_kind = CodeElementKind.objects.get(kind='class')
         self.enum_kind = CodeElementKind.objects.get(kind='enumeration')
         self.method_kind = CodeElementKind.objects.get(kind='method')
+        self.ann_field_kind = CodeElementKind.objects.get(kind=
+                'annotation field')
+        self.enum_value_kind = CodeElementKind.objects.get(kind=
+                'enumeration value')
+        self.field_kind = CodeElementKind.objects.get(kind='field')
         self.code_refs = []
         self.code_snippets = []
 
@@ -138,12 +143,13 @@ class CodeParserTest(TransactionTestCase):
 
         snippet_content = r'''
 
-        @Annotation1
+        @Annotation1(foobarbaz=2)
         public class FooBar {
           public void main(String arg) {
             System.out.println();
             RecodocClient rc = new RecodocClient();
           }
+        }
         '''
 
         snippet1 = CodeSnippet(
@@ -573,6 +579,32 @@ class CodeParserTest(TransactionTestCase):
         coderef7.save()
         self.code_refs.append(coderef7)
 
+        # Index = 27
+        coderef8 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='AM',
+                source='s',
+                kind_hint=self.field_kind,
+                local_context=message5,
+                global_context=thread1,
+                )
+        coderef8.save()
+        self.code_refs.append(coderef8)
+
+        # Index = 28
+        coderef9 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='CLIENT_NAME',
+                source='s',
+                kind_hint=self.field_kind,
+                local_context=message5,
+                global_context=thread1,
+                )
+        coderef9.save()
+        self.code_refs.append(coderef9)
+
     def parse_snippets(self):
         parse_snippets(self.pname, 'd', 'java')
         parse_snippets(self.pname, 's', 'java')
@@ -752,6 +784,10 @@ class CodeParserTest(TransactionTestCase):
         link_code(self.pname, 'core', self.release, 'javamethod', 'd',
                 self.release)
         link_code(self.pname, 'core', self.release, 'javamethod', 's',
+                None)
+        link_code(self.pname, 'core', self.release, 'javafield', 'd',
+                self.release)
+        link_code(self.pname, 'core', self.release, 'javafield', 's',
                 None)
 
         code_ref1 = self.code_refs[0]
@@ -993,3 +1029,42 @@ class CodeParserTest(TransactionTestCase):
         method_log = DEBUG_LOG[code_ref27.pk][0]
         self.assertTrue(method_log['StrictFilter'][0])
         self.assertEqual(0, method_log['final size'])
+
+        # Test annotation field
+        #snippet1 = self.code_snippets[0]
+        #snippet1 = CodeSnippet.objects.get(pk=snippet1.pk)
+        #field_ref = None
+        #for code_ref in snippet1.single_code_references.all():
+            #if code_ref.kind_hint.pk == self.ann_field_kind.pk and\
+                    #code_ref.content.find('foobarbaz') > -1:
+                #field_ref = code_ref
+                #break
+        #field_log = DEBUG_LOG[field_ref.pk][0]
+        #self.assertEqual('p1.Annotation1',
+                #method_ref.release_links.all()[0]
+                #.first_link.code_element.containers.all()[0].fqn)
+        #self.assertEqual(1, field_log['final size'])
+
+        # Test enum value
+        code_ref28 = self.code_refs[27]
+        code_ref28 = SingleCodeReference.objects.get(pk=code_ref28.pk)
+        field_log = DEBUG_LOG[code_ref28.pk][0]
+        self.assertTrue(field_log['globContextFilter'][0])
+        self.assertEqual(1, field_log['original size'])
+        self.assertEqual('p1.Enum1',
+                code_ref28.release_links.all()[0]
+                .first_link.code_element.containers.all()[0].fqn)
+        self.assertEqual(1, field_log['final size'])
+
+        # Test field
+        code_ref29 = self.code_refs[28]
+        code_ref29 = SingleCodeReference.objects.get(pk=code_ref29.pk)
+        field_log = DEBUG_LOG[code_ref29.pk][0]
+        self.assertTrue(field_log['globContextFilter'][0])
+        self.assertEqual('p3.RecodocClient',
+                code_ref29.release_links.all()[0]
+                .first_link.code_element.containers.all()[0].fqn)
+        self.assertEqual(1, field_log['final size'])
+
+        
+

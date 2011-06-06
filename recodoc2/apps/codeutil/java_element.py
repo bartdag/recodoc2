@@ -145,6 +145,14 @@ def find_type(value):
     return atype
 
 
+def clean_potential_annotation(name):
+    new_name = name
+    index = name.find('@')
+    if index > -1:
+        new_name = name[index+1:]
+    return new_name
+
+
 ### JAVA SNIPPET ###
 
 JAVA_END_CHARACTERS = set([';', '{', '}'])

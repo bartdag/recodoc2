@@ -11,7 +11,7 @@ import codebase.linker.context as ctx
 import codebase.linker.generic_linker as gl
 import codebase.linker.filters as filters
 from codebase.models import CodeElementKind, ReleaseLinkSet, MethodElement,\
-        MethodInfo
+        MethodInfo, FieldElement
 
 ### PPA CONSTANTS ###
 HANDLE_SEPARATOR = ":"
@@ -31,6 +31,12 @@ PREFIX_CLASS_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
     'javaclslinker'
 PREFIX_METHOD_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
     'javamethodlinker'
+PREFIX_ANN_FIELD_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
+    'javaannfieldlinker'
+PREFIX_ENUM_VAL_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
+    'javaenumvallinker'
+PREFIX_FIELD_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
+    'javafieldlinker'
 PREFIX_CLASS_POST_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
     'javaclspostlinker'
 PREFIX_GENERIC_LINKER = settings.CACHE_MIDDLEWARE_KEY_PREFIX +\
@@ -575,7 +581,7 @@ class JavaMethodLinker(gl.DefaultLinker):
 
         log.close()
         progress_monitor.done()
-        print('Associated {0} methods'.format(mcount))
+        print('Associated {0} methods'.format(count))
 
     def _get_method_elements(self, method_info):
             prefix = '{0}{1}'.format(PREFIX_METHOD_LINKER,
@@ -715,10 +721,10 @@ class JavaMethodLinker(gl.DefaultLinker):
         else:
             size = len(code_elements)
 
-        print('DEBUG FOR {0}:{1}'.format(scode_reference.pk,
-            scode_reference.content))
-        for code_element in code_elements:
-            print(code_element.fqn)
+        #print('DEBUG FOR {0}:{1}'.format(scode_reference.pk,
+            #scode_reference.content))
+        #for code_element in code_elements:
+            #print(code_element.fqn)
 
         filter_results = []
 
@@ -732,10 +738,6 @@ class JavaMethodLinker(gl.DefaultLinker):
             result = afilter.filter(finput)
             potentials = result.potentials
             filter_results.append(result)
-
-        # TODO
-        # Write strict filter
-        # Transform the class link processing into a filter (maybe?)
 
         log.custom_filtered = filters.custom_filtered(filter_results)
 
@@ -755,6 +757,233 @@ class JavaMethodLinker(gl.DefaultLinker):
 class JavaFieldLinker(gl.DefaultLinker):
     name = 'javafield'
 
+    def __init__(self, project, prelease, codebase, source, srelease=None):
+        super(JavaFieldLinker, self).__init__(project, prelease, codebase,
+                source, srelease)
+        self.field_kind = CodeElementKind.objects.get(kind='field')
+        self.ann_field_kind =\
+            CodeElementKind.objects.get(kind='annotation field')
+        self.enum_value_kind =\
+            CodeElementKind.objects.get(kind='enumeration value')
+        self.field_filters = [
+                filters.ExceptionFilter(),
+                filters.CustomClassMemberFilter(),
+                filters.ImmediateContextFilter(),
+                filters.ImmediateContextHierarchyFilter(),
+                filters.ContextFilter(ctx.SNIPPET),
+                filters.ContextFilter(ctx.SNIPPET, True),
+                filters.ContextFilter(ctx.SNIPPET, False, True),
+                filters.ContextFilter(ctx.SNIPPET, True, True),
+                filters.ContextFilter(ctx.LOCAL),
+                filters.ContextFilter(ctx.LOCAL, True),
+                filters.ContextFilter(ctx.LOCAL, False, True),
+                filters.ContextFilter(ctx.LOCAL, True, True),
+                filters.ContextFilter(ctx.MIDDLE),
+                filters.ContextFilter(ctx.MIDDLE, True),
+                filters.ContextFilter(ctx.GLOBAL),
+                filters.ContextFilter(ctx.GLOBAL, True),
+                filters.ContextNameSimilarityFilter(),
+                filters.AbstractTypeFilter(),
+                filters.StrictFilter(),
+                ]
+
+    def link_references(self, progress_monitor=NullProgressMonitor(),
+            local_object_id=None):
+
+        # Annotation Field
+        ann_refs = self._get_query(self.ann_field_kind, local_object_id)
+        acount = ann_refs.count()
+        progress_monitor.info('Annotation Field count: {0}'.format(acount))
+        try:
+            self._link_ann_fields(queryset_iterator(ann_refs), acount,
+                    progress_monitor)
+        except Exception:
+            logger.exception('Error while processing annotation fields')
+        call_gc()
+
+        # Enumeration Values
+        enum_refs = self._get_query(self.enum_value_kind, local_object_id)
+        ecount = enum_refs.count()
+        progress_monitor.info('Enumeration Value count: {0}'.format(ecount))
+        try:
+            self._link_enum_values(queryset_iterator(enum_refs), ecount,
+                    progress_monitor)
+        except Exception:
+            logger.exception('Error while processing enumeration values')
+        call_gc()
+
+        # Fields
+        field_refs = self._get_query(self.field_kind, local_object_id)
+        fcount = field_refs.count()
+        progress_monitor.info('Field count: {0}'.format(fcount))
+        try:
+            self._link_fields(queryset_iterator(field_refs), fcount,
+                    progress_monitor)
+        except Exception:
+            logger.exception('Error while processing fields')
+        call_gc()
+
+    def _link_ann_fields(self, ann_refs, acount, progress_monitor):
+        count = 0
+        progress_monitor.start('Parsing annotation fields', acount)
+        log = gl.LinkerLog(self, self.ann_field_kind.kind)
+
+        for scode_reference in ann_refs:
+            (field_name, fqn_container) = self._get_field_name(scode_reference)
+            code_elements = self._get_field_elements(field_name,
+                    PREFIX_ANN_FIELD_LINKER, self.ann_field_kind)
+
+            (code_element, potentials) = self.get_code_element(
+                    scode_reference, code_elements, field_name, fqn_container,
+                    log)
+            count += gl.save_link(scode_reference, code_element, potentials,
+                    self)
+
+            if not log.custom_filtered:
+                reclassify_java(code_element, scode_reference)
+
+            progress_monitor.work('Processed ann field', 1)
+
+        log.close()
+        progress_monitor.done()
+        print('Associated {0} ann fields'.format(count))
+
+    def _link_enum_values(self, enum_refs, ecount, progress_monitor):
+        count = 0
+        progress_monitor.start('Parsing enumeration values', ecount)
+        log = gl.LinkerLog(self, self.enum_value_kind.kind)
+
+        for scode_reference in enum_refs:
+            (field_name, fqn_container) = self._get_field_name(scode_reference)
+            code_elements = self._get_field_elements(field_name,
+                    PREFIX_ENUM_VAL_LINKER, self.enum_value_kind)
+
+            (code_element, potentials) = self.get_code_element(
+                    scode_reference, code_elements, field_name, fqn_container,
+                    log)
+            count += gl.save_link(scode_reference, code_element, potentials,
+                    self)
+
+            if not log.custom_filtered:
+                reclassify_java(code_element, scode_reference)
+
+            progress_monitor.work('Processed enum value', 1)
+
+        log.close()
+        progress_monitor.done()
+        print('Associated {0} enum values'.format(count))
+
+    def _link_fields(self, field_refs, acount, progress_monitor):
+        count = 0
+        progress_monitor.start('Parsing fields', acount)
+        log = gl.LinkerLog(self, self.field_kind.kind)
+
+        for scode_reference in field_refs:
+            (field_name, fqn_container) = self._get_field_name(scode_reference)
+            code_elements = []
+            code_elements.extend(self._get_field_elements(field_name,
+                    PREFIX_FIELD_LINKER, self.field_kind))
+            code_elements.extend(self._get_field_elements(field_name,
+                    PREFIX_ENUM_VAL_LINKER, self.enum_value_kind))
+            code_elements.extend(self._get_field_elements(field_name,
+                    PREFIX_ANN_FIELD_LINKER, self.ann_field_kind))
+
+            (code_element, potentials) = self.get_code_element(
+                    scode_reference, code_elements, field_name, fqn_container,
+                    log)
+            count += gl.save_link(scode_reference, code_element, potentials,
+                    self)
+
+            if not log.custom_filtered:
+                reclassify_java(code_element, scode_reference)
+
+            progress_monitor.work('Processed field', 1)
+
+        log.close()
+        progress_monitor.done()
+        print('Associated {0} fields'.format(count))
+
+    def _get_field_name(self, scode_reference):
+        field_name = fqn_container = None
+        
+        if scode_reference.snippet != None:
+            parts = scode_reference.content.split(HANDLE_SEPARATOR)
+            (field_name, fqn_container) = \
+                    self._get_field_name_from_snippet(parts)
+        else:
+            content = je.get_clean_name(scode_reference.content)
+            (field_name, fqn) = je.clean_java_name(content)
+            if fqn != field_name:
+                fqn = je.get_package_name(fqn)
+                fqn_container = je.clean_potential_annotation(fqn)
+            
+        return (su.safe_strip(field_name), su.safe_strip(fqn_container))
+
+    def _get_field_name_from_snippet(self, parts):
+        field_name = fqn_container = None
+        
+        try:
+            if parts[0].startswith('M'):
+                # This is an annotation field
+                field_name = parts[2]
+            else:
+                field_name = parts[3]
+            fqn_container = parts[1]
+        except Exception:
+            logger.exception('Error while parsing field name from snippet')
+        
+        return (field_name, fqn_container)
+
+    def _get_field_elements(self, field_name, prefix, kind):
+        prefix = '{0}{1}'.format(prefix, cu.get_codebase_key(self.codebase))
+        code_elements = cu.get_value(
+                prefix,
+                field_name,
+                gl.get_type_code_elements,
+                [field_name, self.codebase, kind, True,
+                    FieldElement])
+
+        return code_elements
+
+    def get_code_element(self, scode_reference, code_elements, field_name,
+            fqn_container, log):
+        log.reset_variables()
+        return_code_element = None
+        potentials = code_elements
+        if code_elements is None:
+            size = 0
+            potentials = []
+        else:
+            size = len(code_elements)
+
+        print('DEBUG FOR {0}:{1}'.format(scode_reference.pk,
+            scode_reference.content))
+        for code_element in code_elements:
+            print(code_element.fqn)
+
+        filter_results = []
+
+        for afilter in self.field_filters:
+            finput = filters.FilterInput(scode_reference, potentials,
+                    field_name, log, fqn_container, None, filter_results)
+            result = afilter.filter(finput)
+            potentials = result.potentials
+            filter_results.append(result)
+
+        log.custom_filtered = filters.custom_filtered(filter_results)
+
+        potentials_size = len(potentials)
+        if potentials_size == 1:
+            return_code_element = potentials[0]
+        elif potentials_size > 1:
+            return_code_element = potentials[0]
+            log.arbitrary = True
+
+        # Logging
+        log.log_field(field_name, fqn_container, scode_reference,
+                return_code_element, potentials, size, filter_results)
+        return (return_code_element, potentials)
+            
 
 class JavaGenericLinker(gl.DefaultLinker):
     name = 'javageneric'

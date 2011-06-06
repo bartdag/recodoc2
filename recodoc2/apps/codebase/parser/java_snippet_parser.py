@@ -31,7 +31,8 @@ class JavaSnippetParser(object):
 
     def _load(self):
         self.gateway = JavaGateway(start_callback_server=False)
-        self.PPAUtil = self.gateway.jvm.ca.mcgill.cs.swevo.ppa.ui.PPAUtil
+        self.PPACoreUtil = \
+                self.gateway.jvm.ca.mcgill.cs.swevo.ppa.util.PPACoreUtil
         self.class_kind = CodeElementKind.objects.get(kind='class')
         self.unknown_kind = CodeElementKind.objects.get(kind='unknown')
         self.method_kind = CodeElementKind.objects.get(kind='method')
@@ -62,8 +63,8 @@ class JavaSnippetParser(object):
                 try:
                     cu = self._get_cu(text, options)
                     if cu != None:
-                        visitor = self.gateway.jvm.ca.mcgill.cs.swevo.ppa.ui.\
-                                NameMapVisitor(True, True, True)
+                        visitor = self.gateway.jvm.ca.mcgill.cs.swevo.ppa.\
+                                util.NameMapVisitor(True, True, True)
                         cu.accept(visitor)
                         self._process_name(
                                 visitor.getBindings(),
@@ -76,7 +77,7 @@ class JavaSnippetParser(object):
                             .format(mcode.pk, text))
                 finally:
                     try:
-                        self.PPAUtil.cleanUpAll(self.REQUEST_NAME)
+                        self.PPACoreUtil.cleanUpAll(self.REQUEST_NAME)
                     except Exception:
                         print_exc()
             else:
@@ -91,12 +92,12 @@ class JavaSnippetParser(object):
     def _get_cu(self, text, options):
         try:
             if is_cu_body(text):
-                cu = self.PPAUtil.getCU(text, options, self.REQUEST_NAME)
+                cu = self.PPACoreUtil.getCU(text, options, self.REQUEST_NAME)
             elif is_class_body(text):
-                cu = self.PPAUtil.getSnippet(text, options, True,
+                cu = self.PPACoreUtil.getSnippet(text, options, True,
                         self.REQUEST_NAME)
             else:
-                cu = self.PPAUtil.getSnippet(text, options, False,
+                cu = self.PPACoreUtil.getSnippet(text, options, False,
                         self.REQUEST_NAME)
         except Exception:
             cu = None
