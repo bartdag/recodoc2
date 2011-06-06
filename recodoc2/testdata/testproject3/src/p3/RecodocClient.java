@@ -2,6 +2,8 @@ package p3;
 
 public class RecodocClient extends GeneralClient {
 
+	public final static String CLIENT_NAME = "constant";
+	
 	public void callMethod1() {
 		
 	}
