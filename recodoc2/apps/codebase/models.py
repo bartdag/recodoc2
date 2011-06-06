@@ -410,21 +410,21 @@ class CodeBaseDiff(models.Model):
             related_name='diffs_from')
     codebase_to = models.ForeignKey(CodeBase, null=True, blank=True,
             related_name='diffs_to')
-    
+
     added_packages = models.ManyToManyField(CodeElement, null=True, blank=True,
             related_name='diffs_p_added')
     removed_packages = models.ManyToManyField(CodeElement, null=True,
             blank=True, related_name='diffs_p_removed')
     packages_size_from = models.IntegerField(default=0)
     packages_size_to = models.IntegerField(default=0)
-    
+
     added_types = models.ManyToManyField(CodeElement, null=True, blank=True,
             related_name='diffs_t_added')
     removed_types = models.ManyToManyField(CodeElement, null=True, blank=True,
             related_name='diffs_t_removed')
     types_size_from = models.IntegerField(default=0)
     types_size_to = models.IntegerField(default=0)
-    
+
     added_methods = models.ManyToManyField(CodeElement, null=True, blank=True,
             related_name='diffs_m_added')
     removed_methods = models.ManyToManyField(CodeElement, null=True,
@@ -439,17 +439,17 @@ class CodeBaseDiff(models.Model):
     fields_size_from = models.IntegerField(default=0)
     fields_size_to = models.IntegerField(default=0)
 
-    added_enum_values = models.ManyToManyField(CodeElement, null=True, blank=True,
-            related_name='diffs_e_added')
-    removed_enum_values = models.ManyToManyField(CodeElement, null=True, blank=True,
-            related_name='diffs_e_removed')
+    added_enum_values = models.ManyToManyField(CodeElement, null=True,
+            blank=True, related_name='diffs_e_added')
+    removed_enum_values = models.ManyToManyField(CodeElement, null=True,
+            blank=True, related_name='diffs_e_removed')
     enum_values_size_from = models.IntegerField(default=0)
     enum_values_size_to = models.IntegerField(default=0)
 
-    added_ann_fields = models.ManyToManyField(CodeElement, null=True, blank=True,
-            related_name='diffs_a_added')
-    removed_ann_fields = models.ManyToManyField(CodeElement, null=True, blank=True,
-            related_name='diffs_a_removed')
+    added_ann_fields = models.ManyToManyField(CodeElement, null=True,
+            blank=True, related_name='diffs_a_added')
+    removed_ann_fields = models.ManyToManyField(CodeElement, null=True,
+            blank=True, related_name='diffs_a_removed')
     ann_fields_size_from = models.IntegerField(default=0)
     ann_fields_size_to = models.IntegerField(default=0)
 
@@ -469,6 +469,7 @@ class CodeBaseDiff(models.Model):
 
     def __unicode__(self):
         return 'Diff {0} - {1}'.format(self.codebase_from, self.codebase_to)
+
 
 ### LINKS ###
 
@@ -555,7 +556,7 @@ class CodeElementLink(models.Model):
 ### Transient Classes ###
 
 class MethodInfo(object):
-    
+
     def __init__(self, method_name, fqn_container, nb_params, type_params):
         self.method_name = method_name
         self.fqn_container = fqn_container

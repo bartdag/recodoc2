@@ -13,6 +13,11 @@ def get_unknown_kind():
     return CodeElementKind.objects.get(kind='unknown')
 
 
+def get_any_code_element(simple_name, codebase):
+    return list(CodeElement.objects.filter(simple_name__iexact=simple_name).\
+            filter(codebase=codebase).all())
+
+
 def get_type_code_elements(simple_name, codebase, kind, exact=True,
         cls=CodeElement):
     if exact:
