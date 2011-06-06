@@ -956,10 +956,10 @@ class JavaFieldLinker(gl.DefaultLinker):
         else:
             size = len(code_elements)
 
-        print('DEBUG FOR {0}:{1}'.format(scode_reference.pk,
-            scode_reference.content))
-        for code_element in code_elements:
-            print(code_element.fqn)
+        #print('DEBUG FOR {0}:{1}'.format(scode_reference.pk,
+            #scode_reference.content))
+        #for code_element in code_elements:
+            #print(code_element.fqn)
 
         filter_results = []
 
@@ -1005,7 +1005,7 @@ class JavaGenericLinker(gl.DefaultLinker):
         self.class_kinds = set([self.class_kind, self.enum_kind,
             self.ann_kind])
         self.field_kinds = set([self.field_kind, self.ann_field_kind,
-            self.enum_value])
+            self.enum_value_kind])
 
         self.class_linker = JavaClassLinker(project, prelease, codebase,
                 source, srelease)
@@ -1047,7 +1047,7 @@ class JavaGenericLinker(gl.DefaultLinker):
                     gl.get_any_code_element,
                     [simple, self.codebase])
 
-            classified_elements = self._classify_elements(code_elements)
+            classified_elements = self._classify_code_elements(code_elements)
             class_tuples.append((reference, simple, fqn) + classified_elements)
 
         count = self._process_tuples(class_tuples, progress_monitor)

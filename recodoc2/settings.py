@@ -172,7 +172,7 @@ LINKERS = {'javaclass': 'codebase.linker.java_linkers.JavaClassLinker',
            'javapostclass': 'codebase.linker.java_linkers.JavaPostClassLinker',
            'javamethod': 'codebase.linker.java_linkers.JavaMethodLinker',
            'javafield': 'codebase.linker.java_linkers.JavaFieldLinker',
-           'javegeneric': 'codebase.linker.java_linkers.JavaGenericLinker', }
+           'javageneric': 'codebase.linker.java_linkers.JavaGenericLinker', }
 
 CUSTOM_LINKERS = {}
 
