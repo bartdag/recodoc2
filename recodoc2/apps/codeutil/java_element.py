@@ -50,7 +50,7 @@ def clean_java_name(name, remove_snippet=False):
     if remove_snippet:
         index = clean_name_fqn.find(SNIPPET_PACKAGE)
         if index > -1:
-            clean_name_fqn = clean_name_fqn[SNIPPET_PACKAGE_LEN+1:]
+            clean_name_fqn = clean_name_fqn[SNIPPET_PACKAGE_LEN + 1:]
 
     dot_index = clean_name_fqn.rfind('.')
     clean_name_simple = clean_name_fqn
@@ -149,7 +149,7 @@ def clean_potential_annotation(name):
     new_name = name
     index = name.find('@')
     if index > -1:
-        new_name = name[index+1:]
+        new_name = name[index + 1:]
     return new_name
 
 

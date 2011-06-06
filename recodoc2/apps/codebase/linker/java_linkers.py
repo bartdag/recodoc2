@@ -905,7 +905,7 @@ class JavaFieldLinker(gl.DefaultLinker):
 
     def _get_field_name(self, scode_reference):
         field_name = fqn_container = None
-        
+
         if scode_reference.snippet != None:
             parts = scode_reference.content.split(HANDLE_SEPARATOR)
             (field_name, fqn_container) = \
@@ -916,12 +916,12 @@ class JavaFieldLinker(gl.DefaultLinker):
             if fqn != field_name:
                 fqn = je.get_package_name(fqn)
                 fqn_container = je.clean_potential_annotation(fqn)
-            
+
         return (su.safe_strip(field_name), su.safe_strip(fqn_container))
 
     def _get_field_name_from_snippet(self, parts):
         field_name = fqn_container = None
-        
+
         try:
             if parts[0].startswith('M'):
                 # This is an annotation field
@@ -931,7 +931,7 @@ class JavaFieldLinker(gl.DefaultLinker):
             fqn_container = parts[1]
         except Exception:
             logger.exception('Error while parsing field name from snippet')
-        
+
         return (field_name, fqn_container)
 
     def _get_field_elements(self, field_name, prefix, kind):
@@ -983,7 +983,157 @@ class JavaFieldLinker(gl.DefaultLinker):
         log.log_field(field_name, fqn_container, scode_reference,
                 return_code_element, potentials, size, filter_results)
         return (return_code_element, potentials)
-            
+
 
 class JavaGenericLinker(gl.DefaultLinker):
     name = 'javageneric'
+
+    def __init__(self, project, prelease, codebase, source, srelease=None):
+        super(JavaGenericLinker, self).__init__(project, prelease, codebase,
+                source, srelease)
+        self.unknown_kind = CodeElementKind.objects.get(kind='unknown')
+        self.ann_kind = CodeElementKind.objects.get(kind='annotation')
+        self.class_kind = CodeElementKind.objects.get(kind='class')
+        self.enum_kind = CodeElementKind.objects.get(kind='enumeration')
+        self.method_kind = CodeElementKind.objects.get(kind='method')
+        self.field_kind = CodeElementKind.objects.get(kind='field')
+        self.ann_field_kind =\
+            CodeElementKind.objects.get(kind='annotation field')
+        self.enum_value_kind =\
+            CodeElementKind.objects.get(kind='enumeration value')
+
+        self.class_kinds = set([self.class_kind, self.enum_kind,
+            self.ann_kind])
+        self.field_kinds = set([self.field_kind, self.ann_field_kind,
+            self.enum_value])
+
+        self.class_linker = JavaClassLinker(project, prelease, codebase,
+                source, srelease)
+        self.method_linker = JavaMethodLinker(project, prelease, codebase,
+                source, srelease)
+        self.field_linker = JavaFieldLinker(project, prelease, codebase,
+                source, srelease)
+
+    def link_references(self, progress_monitor=NullProgressMonitor(),
+            local_object_id=None):
+        unknown_refs = self._get_query(self.unknown_kind, local_object_id)
+        ucount = unknown_refs.count()
+        progress_monitor.info('Unknown reference count: {0}'.format(ucount))
+        try:
+            self._link_all_references(queryset_iterator(unknown_refs), ucount,
+                    progress_monitor)
+        except Exception:
+            logger.exception('Error while processing unknown references.')
+        call_gc()
+
+    def _link_all_references(self, unknown_refs, ucount, progress_monitor):
+        skipped = 0
+        class_tuples = []
+
+        progress_monitor.start('Parsing all unknown refs', ucount)
+        for reference in unknown_refs:
+            content = su.safe_strip(reference.content)
+            if content is None or content == '':
+                progress_monitor.info('Empty {0}'.format(reference.pk))
+                progress_monitor.work('Empty {0}'.format(reference.pk), 1)
+                skipped += 1
+
+            (simple, fqn) = je.clean_java_name(je.get_clean_name(content))
+            prefix = '{0}{1}'.format(PREFIX_GENERIC_LINKER,
+                cu.get_codebase_key(self.codebase))
+            code_elements = cu.get_value(
+                    prefix,
+                    simple,
+                    gl.get_any_code_element,
+                    [simple, self.codebase])
+
+            classified_elements = self._classify_elements(code_elements)
+            class_tuples.append((reference, simple, fqn) + classified_elements)
+
+        count = self._process_tuples(class_tuples, progress_monitor)
+
+        progress_monitor.info('Associated {0} elements, Skipped {1} elements'
+                .format(count, skipped))
+        progress_monitor.done()
+
+    def _classify_code_elements(self, code_elements):
+        class_code_elements = []
+        method_code_elements = []
+        field_code_elements = []
+        for element in code_elements:
+            kind = element.kind
+            if kind in self.class_kinds:
+                class_code_elements.append(element)
+            elif kind == self.method_kind:
+                method_code_elements.append(element)
+            elif kind in self.field_kinds:
+                field_code_elements.append(element)
+
+        # Debug
+        print(len(class_code_elements), len(method_code_elements),
+                len(field_code_elements))
+
+        return (class_code_elements, method_code_elements, field_code_elements)
+
+    def _process_tuples(self, class_tuples, progress_monitor):
+        method_tuples = []
+        field_tuples = []
+        count = 0
+
+        for (reference, simple, fqn, class_elements, method_elements,
+                field_elements) in class_tuples:
+            if len(class_elements) > 0:
+                log = gl.LinkerLog(self, 'generic-' + self.class_kind.kind)
+                (code_element, potentials) = \
+                        self.class_linker.get_code_element(reference,
+                                class_elements, simple, fqn, log, True)
+                if code_element is not None:
+                    count += gl.save_link(reference, code_element,
+                            potentials, self)
+                else:
+                    method_tuples.append((reference, simple, fqn,
+                        method_elements, field_elements))
+                log.close()
+            else:
+                method_tuples.append((reference, simple, fqn,
+                    method_elements, field_elements))
+
+        for (reference, simple, fqn, method_elements,
+                field_elements) in method_tuples:
+            if len(method_elements) > 0:
+                fqn_container = je.get_package_name(fqn)
+                if fqn_container == simple:
+                    fqn_container = None
+                log = gl.LinkerLog(self, 'generic-' + self.method_kind.kind)
+                method_info = MethodInfo(simple, fqn_container, None, None)
+                (code_element, potentials) =\
+                        self.method_linker.get_code_element(reference,
+                                method_elements, method_info, log)
+                if code_element is not None:
+                    count += gl.save_link(reference, code_element,
+                            potentials, self)
+                else:
+                    field_tuples.append((reference, simple, fqn,
+                        field_elements))
+                log.close()
+            else:
+                field_tuples.append((reference, simple, fqn, field_elements))
+
+        for (reference, simple, fqn, field_elements) in field_tuples:
+            if len(field_elements) > 0:
+                fqn_container = je.get_package_name(fqn)
+                if fqn_container == simple:
+                    fqn_container = None
+                log = gl.LinkerLog(self, 'generic-' + self.field_kind.kind)
+                (code_element, potentials) =\
+                        self.field_linker.get_code_element(reference,
+                                field_elements, simple, fqn_container, log)
+                if code_element is not None:
+                    count += gl.save_link(reference, code_element,
+                            potentials, self)
+                else:
+                    field_tuples.append((reference, simple, fqn,
+                        field_elements))
+                log.close()
+
+        return count

@@ -413,7 +413,7 @@ class ParameterTypeFilter(object):
 
 
 class ContextFilter(object):
-    
+
     def __init__(self, context_level, hierarchy=False, returnt=False):
         self.context_level = context_level
         self.hierarchy = hierarchy
@@ -650,7 +650,7 @@ class ContextNameSimilarityFilter(object):
 
 
 class AbstractTypeFilter(object):
-    
+
     def _get_potentials(self, potentials):
         new_potentials = []
 
@@ -673,9 +673,9 @@ class AbstractTypeFilter(object):
         potentials = filter_input.potentials
 
         result = FilterResult(self, False, potentials)
-        
+
         new_potentials = self._get_potentials(potentials)
-        
+
         # Here we check for more than one potential, otherwise,
         # There was no sorting!
         if len(new_potentials) > 1:
@@ -687,7 +687,7 @@ class AbstractTypeFilter(object):
 class StrictFilter(object):
     PARAM_THRESHOLD = 3
     TOKEN_THRESHOLD = 3
-    
+
     def _get_tokens(self, method_name):
         getter_setter = method_name.startswith('get') or \
             method_name.startswith('set')
@@ -713,10 +713,12 @@ class StrictFilter(object):
         if context_filtered:
             options = 'context'
             strict_filtered = False
-        elif size == 1 and params is not None and len(params) >= self.PARAM_THRESHOLD:
+        elif size == 1 and params is not None and \
+                len(params) >= self.PARAM_THRESHOLD:
             options = 'params'
             strict_filtered = False
-        elif size == 1 and self._get_tokens(element_name) >= self.TOKEN_THRESHOLD:
+        elif size == 1 and \
+                self._get_tokens(element_name) >= self.TOKEN_THRESHOLD:
             options = 'token'
             strict_filtered = False
 
