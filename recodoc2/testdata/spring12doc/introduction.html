@@ -1,0 +1,133 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;1.&nbsp;Introduction</title><link rel="stylesheet" href="../styles/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><link rel="home" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="up" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="previous" href="preface.html" title="Preface"><link rel="next" href="background.html" title="Chapter&nbsp;2.&nbsp;Background information"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;1.&nbsp;Introduction</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="preface.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="background.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="introduction"></a>Chapter&nbsp;1.&nbsp;Introduction</h2></div></div><div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="introduction-overview"></a>1.1.&nbsp;Overview</h2></div></div><div></div></div><p>
+			Spring contains a lot of functionality and features, which are
+			well-organized in seven modules shown in the diagram below.
+			This section discusses each the of modules in turn.
+		</p><p>
+			</p><div class="mediaobject" align="center"><img src="images/spring-overview.gif" align="middle"><div class="caption"><p>Overview of the the Spring Framework
+					</p></div></div><p>
+		</p><p>
+			The <span class="emphasis"><em>Core</em></span> package is the most fundamental part of the framework and
+			provides the Dependency Injection features allowing you to manage
+			bean container functionality. The basic concept here is the 
+			BeanFactory, which provides a factory pattern removing the need for
+			programmatic singletons and allowing you to decouple the configuration
+			and specification of dependencies from your actual program logic.  
+		</p><p>
+			On top of the <span class="emphasis"><em>Core</em></span> package sits the 
+			<span class="emphasis"><em>Context</em></span> package,
+			providing a way to access beans in a framework-style manner,
+			somewhat resembling a JNDI-registry. The context package inherits
+			its features from the beans package and adds support for text
+			messaging using e.g. resource bundles, 
+			event-propagation, resource-loading and transparent
+			creation of contexts by, for example, a servlet container.
+		</p><p>
+			The <span class="emphasis"><em>DAO</em></span> package provides a JDBC-abstraction
+			layer that removes the need to do tedious JDBC coding and parsing
+			of database-vendor specific error codes.
+			Also, the JDBC package provides a way to do 
+			programmatic as well as declarative transaction
+			management, not only for classes implementing special interfaces,
+			but for <span class="emphasis"><em>all your POJOs (plain old java objects)</em></span>.
+		</p><p>
+			The <span class="emphasis"><em>ORM</em></span> package provides integration layers
+			for popular object-relational mapping APIs, including JDO, Hibernate
+			and iBatis. Using the ORM package you can use all those O/R-mappers
+			in combination with all the other features Spring offers, like
+			simple declarative transaction management mentioned before.
+		</p><p>
+			Spring's <span class="emphasis"><em>AOP</em></span> package provides an 
+			<span class="emphasis"><em>AOP Alliance</em></span> compliant aspect-oriented
+			programming implementation allowing you to define, for example,
+			method-interceptors and pointcuts to cleanly decouple code
+			implementing functionality that should logically speaking be separated.
+			Using source-level metadata functionality you can 
+			incorporate all kinds of behavioral information into your code,
+			a little like .NET attributes.
+		</p><p>
+			Spring's <span class="emphasis"><em>Web</em></span> package provides basic 
+			web-oriented integration features, such as multipart functionality,
+			initialization of contexts using servlet listeners and 
+			a web-oriented application context. When using
+			Spring together with WebWork or Struts, this is the package to 
+			integrate with.
+		</p><p>
+			Spring's <span class="emphasis"><em>Web MVC</em></span> package provides a 
+			Model-View-Controller implementation for web-applications. 
+			Spring's MVC implementation is not just any implementation,
+			it provides a clean separation between domain model code and
+			web forms and allows you to use all the other features of the Spring
+			Framework like validation.
+		</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="overview-usagescenarios"></a>1.2.&nbsp;Usage scenarios</h2></div></div><div></div></div><p>
+			With the building blocks described above you can use Spring in all sorts
+			of scenarios, from applets up to fully-fledged enterprise applications
+			using Spring's transaction management functionality and Web framework.
+		</p><p>			
+			</p><div class="mediaobject" align="center"><img src="images/full.gif" align="middle"><div class="caption"><p>Typical full-fledged Spring web application
+					</p></div></div><p>
+		</p><p>
+			A typical web application using most of Spring's features. Using
+			<tt class="literal">TransactionProxyFactoryBeans</tt> the web application is fully transactional,
+			just as it would be when using container managed transaction as provided by Enterprise
+			JavaBeans. All your custom business logic can be implemented using simple POJOs, managed
+			by Spring's Dependency Injection container. Additional services such as sending email and
+			validation, independent of the web layer enable you to choose where to execute
+			validation rules. Spring's ORM support is integrated with Hibernate, JDO and iBatis.  Using
+			for example <tt class="literal">HibernateDaoSupport</tt>, you can re-use your existing Hibernate
+			mappings. Form controllers seamlessly integrate the web-layer with the domain model, removing
+			the need for <tt class="literal">ActionForms</tt> or other classes that transform
+			HTTP parameters to values for your domain model.
+		</p><p>
+			</p><div class="mediaobject" align="center"><img src="images/thirdparty-web.gif" align="middle"><div class="caption"><p>Spring middle-tier using a third-party web framework
+					</p></div></div><p>
+		</p><p>
+			Sometimes the current circumstances do not allow you to
+			completely switch to a different framework. Spring does 
+			<span class="emphasis"><em>not</em></span> force
+			you to use everything within it; it's not an <span class="emphasis"><em>all-or-nothing</em></span>
+			solution. Existing frontends using WebWork, Struts, Tapestry,
+			or other UI frameworks can be integrated perfectly well with
+			a Spring-based middle-tier,
+			allowing you to use the transaction features that Spring
+			offers. The only thing you need to do is wire up your business
+			logic using an <tt class="literal">ApplicationContext</tt> and
+			integrate your Web UI layer using a
+			<tt class="literal">WebApplicationContext</tt>.
+		
+		</p><p>
+			</p><div class="mediaobject" align="center"><img src="images/remoting.gif" align="middle"><div class="caption"><p>Remoting usage scenario
+					</p></div></div><p>
+		</p><p>			
+			When you need to access existing code via webservices, you can use
+			Spring's <tt class="literal">Hessian-</tt>,
+			<tt class="literal">Burlap-</tt>, <tt class="literal">Rmi-</tt> or <tt class="literal">JaxRpcProxyFactory</tt> classes. Enabling remote access to existing application is all of a sudden not that hard anymore.
+		</p><p>
+			</p><div class="mediaobject" align="center"><img src="images/ejb.gif" align="middle"><div class="caption"><p>EJBs - Wrapping existing POJOs
+					</p></div></div><p>
+		</p><p>
+			Spring also provides an access layer and abstraction layer for Enterprise JavaBeans,
+			enabling you to reuse your existing POJOs and wrap them in Stateless Session Beans,
+			for use in scalable failsafe web applications, that might need declarative security.
+		</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="preface.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="background.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Preface&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;2.&nbsp;Background information</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

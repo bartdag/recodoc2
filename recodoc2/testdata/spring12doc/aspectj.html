@@ -1,0 +1,92 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;7.&nbsp;AspectJ Integration</title><link rel="stylesheet" href="../styles/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><link rel="home" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="up" href="index.html" title="Spring - Java/J2EE Application Framework"><link rel="previous" href="aop.html" title="Chapter&nbsp;6.&nbsp;Spring AOP: Aspect Oriented Programming with Spring"><link rel="next" href="transaction.html" title="Chapter&nbsp;8.&nbsp;Transaction management"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;7.&nbsp;AspectJ Integration</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="aop.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="transaction.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="aspectj"></a>Chapter&nbsp;7.&nbsp;AspectJ Integration</h2></div></div><div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e5169"></a>7.1.&nbsp;Overview</h2></div></div><div></div></div><p>Spring's proxy-based AOP framework is well suited for handling
+    many generic middleware and application-specific problems. However, there
+    are times when a more powerful AOP solution is required: for example, if
+    we need to add additional fields to a class, or advise fine-grained
+    objects that aren't created by the Spring IoC container.</p><p>We recommend the use of AspectJ in such cases. Accordingly, as of
+    version 1.1, Spring provides a powerful integration with AspectJ.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e5176"></a>7.2.&nbsp;Configuring AspectJ aspects using Spring IoC</h2></div></div><div></div></div><p>The most important part of the Spring/AspectJ integration allows
+    Spring to configure AspectJ aspects using Dependency Injection. This
+    brings similar benefits to aspects as to objects. For example:</p><div class="itemizedlist"><ul type="disc"><li><p>There is no need for aspects to use ad hoc configuration
+        mechanisms; they can be configured in the same, consistent, approach
+        used for the entire application.</p></li><li><p>Aspects can depend on application objects. For example, a
+        security aspect can depend on a security manager, as we'll see in
+        an example shortly. </p></li><li><p>It's possible to obtain a reference to an aspect through the
+        relevant Spring context. This can allow for dynamic reconfiguration of
+        the aspect.</p></li></ul></div><p>AspectJ aspects can expose JavaBean properties for Setter Injection,
+    and even implement Spring lifecycle interfaces such as <tt class="literal">BeanFactoryAware</tt>.</p><i><span class="remark">Note that AspectJ aspects cannot use Constructor Injection or
+    Method Injection. This limitation is due to the fact that aspects do not
+    have constructors that can be invoked like constructors of objects.</span></i><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5198"></a>7.2.1.&nbsp;"Singleton" aspects</h3></div></div><div></div></div><p>In most cases, AspectJ aspects are singletons, with one instance
+      per class loader. This single instance is responsible for advising
+      multiple object instances.</p><p>A Spring IoC container cannot instantiate an aspect, as aspects
+      don't have callable constructors. But it can obtain a reference to
+      an aspect using the static <tt class="literal">aspectOf()</tt> method that
+      AspectJ defines for all aspects, and it can inject dependencies into
+      that aspect.</p><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e5208"></a>7.2.1.1.&nbsp;Example</h4></div></div><div></div></div><p>Consider a security aspect, which depends on a security manager.
+        This aspects applies to all changes in the value of the
+        <tt class="literal">balance</tt> instance variable in the
+        <tt class="literal">Account</tt> class. (We couldn't do this in the same
+        way using Spring AOP.)</p><p>The AspectJ code for the aspect (one of the Spring/AspectJ
+        samples), is shown below. Note that the dependency on the
+        <tt class="literal">SecurityManager</tt> interface is expressed in a
+        JavaBean property:</p><pre class="programlisting">public aspect BalanceChangeSecurityAspect {
+
+   private SecurityManager securityManager;
+
+   public void setSecurityManager(SecurityManager securityManager) {
+      this.securityManager = securityManager;
+   }
+
+   private pointcut balanceChanged() : 
+      set(int Account.balance);
+
+   before() : balanceChanged() {
+      this.securityManager.checkAuthorizedToModify();
+   }
+}</pre><p>We configure this aspect in the same way as an ordinary class.
+        Note that the way in which we set the property reference is identical.
+        Note that we must use the <tt class="literal">factory-method</tt> attribute
+        to specify that we want the aspect "created" using the
+        <tt class="literal">aspectOf()</tt> static method. In fact, this is
+        <span class="emphasis"><em>locating</em></span>, rather than, <tt class="literal">creating</tt>,
+        the aspect, but the Spring container doesn't care:</p><pre class="programlisting">&lt;bean id="securityAspect" 
+   class="org.springframework.samples.aspectj.bank.BalanceChangeSecurityAspect" 
+   factory-method="aspectOf"
+&gt;
+   &lt;property name="securityManager" ref="securityManager"/&gt;
+&lt;/bean&gt;</pre><p>We don't need to do anything in Spring configuration to
+        target this aspect. It contains the pointcut information in AspectJ
+        code that controls where it applies. Thus it can apply even to objects
+        not managed by the Spring IoC container.</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e5246"></a>7.2.1.2.&nbsp;Ordering issues</h4></div></div><div></div></div><p>to be completed</p></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5251"></a>7.2.2.&nbsp;Non-singleton aspects</h3></div></div><div></div></div><p>** Complete material on pertarget etc.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e5256"></a>7.2.3.&nbsp;Gotchas</h3></div></div><div></div></div><p>to be completed</p><p>- Singleton issue</p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e5263"></a>7.3.&nbsp;Using AspectJ pointcuts to target Spring advice</h2></div></div><div></div></div><p>In a future release of Spring, we plan to provide the ability for
+    AspectJ pointcut expressions to be used in Spring XML or other bean
+    definition files, to target Spring advice. This will allow some of the
+    power of the AspectJ pointcut model to be applied to Spring's
+    proxy-based AOP framework. This will work in pure Java, and will not
+    require the AspectJ compiler. Only the subset of AspectJ pointcuts
+    relating to method invocation will be usable.</p><p>This feature replaces our previous plan to create a pointcut
+    expression language for Spring.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e5270"></a>7.4.&nbsp;Spring aspects for AspectJ</h2></div></div><div></div></div><p>In a future release of Spring, we will package some Spring services,
+    such as the declarative transaction management service, as AspectJ aspects.
+    This will enable them to be used by AspectJ users without dependence on the
+    Spring AOP framework--potentially, even without dependence on the Spring
+    IoC container.</p><p>This feature is probably of more interest to AspectJ users than
+    Spring users.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="aop.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="transaction.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;6.&nbsp;Spring AOP: Aspect Oriented Programming with Spring&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;8.&nbsp;Transaction management</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>

@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 15. HQL: The Hibernate Query Language</title><link rel="stylesheet" href="css/hibernate.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="up" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="prev" href="batch.html" title="Chapter 14. Batch processing"/><link rel="next" href="querycriteria.html" title="Chapter 16. Criteria Queries"/><link rel="copyright" href="Legal_Notice.html" title="Legal Notice"/></head><body><p id="title"><a href="http://www.hibernate.org" class="site_href"><strong>Hibernate.org</strong></a><a href="http://hibernate.org/Documentation/DocumentationOverview" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="batch.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="querycriteria.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql"/>Chapter 15. HQL: The Hibernate Query Language</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="queryhql.html#queryhql-casesensitivity">15.1. Case Sensitivity</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-from">15.2. The from clause</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-joins">15.3. Associations and joins</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-joins-forms">15.4. Forms of join syntax</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-identifier-property">15.5. Referring to identifier property</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-select">15.6. The select clause</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-aggregation">15.7. Aggregate functions</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-polymorphism">15.8. Polymorphic queries</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-where">15.9. The where clause</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-expressions">15.10. Expressions</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-ordering">15.11. The order by clause</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-grouping">15.12. The group by clause</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-subqueries">15.13. Subqueries</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-examples">15.14. HQL examples</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-bulk">15.15. Bulk update and delete</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-tipstricks">15.16. Tips &amp; Tricks</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-components">15.17. Components</a></span></dt><dt><span class="section"><a href="queryhql.html#queryhql-tuple">15.18. Row value constructor syntax</a></span></dt></dl></div><p>
+        Hibernate uses a powerful query language (HQL) that is similar in appearance to
+        SQL. Compared with SQL, however, HQL is fully object-oriented
+        and understands notions like inheritance, polymorphism and association.
+    </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-casesensitivity"/>15.1. Case Sensitivity</h2></div></div></div><p>
+            With the exception of names of Java classes and properties, queries are case-insensitive.
+            So <code class="literal">SeLeCT</code> is the same as
+            <code class="literal">sELEct</code> is the same as
+            <code class="literal">SELECT</code>, but
+            <code class="literal">org.hibernate.eg.FOO</code> is not
+            <code class="literal">org.hibernate.eg.Foo</code>, and
+            <code class="literal">foo.barSet</code> is not
+            <code class="literal">foo.BARSET</code>.
+        </p><p>
+            This manual uses lowercase HQL keywords. Some users find queries with uppercase keywords
+            more readable, but this convention is unsuitable for queries embedded in Java code.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-from"/>15.2. The from clause</h2></div></div></div><p>
+            The simplest possible Hibernate query is of the form:
+        </p><pre class="programlisting">from eg.Cat</pre><p>
+            This returns all instances of the class <code class="literal">eg.Cat</code>.
+            You do not usually need to qualify the class name, since <code class="literal">auto-import</code>
+            is the default. For example:
+        </p><pre class="programlisting">from Cat</pre><p>
+            
+            In order to refer to the <code class="literal">Cat</code> in other parts of the
+            query, you will need to assign an <span class="emphasis"><em>alias</em></span>. For example:
+        </p><pre class="programlisting">from Cat as cat</pre><p>
+            This query assigns the alias <code class="literal">cat</code> to <code class="literal">Cat</code>
+            instances, so you can use that alias later in the query. The <code class="literal">as</code>
+            keyword is optional. You could also write:
+        </p><pre class="programlisting">from Cat cat</pre><p>
+            Multiple classes can appear, resulting in a cartesian product or "cross" join.
+        </p><pre class="programlisting">from Formula, Parameter</pre><pre class="programlisting">from Formula as form, Parameter as param</pre><p>
+            It is good practice to name query aliases using an initial lowercase as this is
+            consistent with Java naming standards for local variables
+            (e.g. <code class="literal">domesticCat</code>).
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-joins"/>15.3. Associations and joins</h2></div></div></div><p>
+            You can also assign aliases to associated entities or to elements of a
+            collection of values using a <code class="literal">join</code>. For example:
+        </p><pre class="programlisting">from Cat as cat
+    inner join cat.mate as mate
+    left outer join cat.kittens as kitten</pre><pre class="programlisting">from Cat as cat left join cat.mate.kittens as kittens</pre><pre class="programlisting">from Formula form full join form.parameter param</pre><p>
+            The supported join types are borrowed from ANSI SQL:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    <code class="literal">inner join</code>
+                </p></li><li><p>
+                    <code class="literal">left outer join</code>
+                </p></li><li><p>
+                    <code class="literal">right outer join</code>
+                </p></li><li><p>
+                    <code class="literal">full join</code> (not usually useful)
+                </p></li></ul></div><p>
+            The <code class="literal">inner join</code>, <code class="literal">left outer join</code> and
+            <code class="literal">right outer join</code> constructs may be abbreviated.
+        </p><pre class="programlisting">from Cat as cat
+    join cat.mate as mate
+    left join cat.kittens as kitten</pre><p>
+            You may supply extra join conditions using the HQL <code class="literal">with</code>
+            keyword.
+        </p><pre class="programlisting">from Cat as cat
+    left join cat.kittens as kitten
+        with kitten.bodyWeight &gt; 10.0</pre><p>
+            A "fetch" join allows associations or collections of values to be
+            initialized along with their parent objects using a single select. This is particularly
+            useful in the case of a collection. It effectively overrides the outer join and
+            lazy declarations of the mapping file for associations and collections. See
+            <a class="xref" href="performance.html#performance-fetching" title="20.1. Fetching strategies">Section 20.1, “Fetching strategies”</a> for more information.
+        </p><pre class="programlisting">from Cat as cat
+    inner join fetch cat.mate
+    left join fetch cat.kittens</pre><p>
+            A fetch join does not usually need to assign an alias, because the associated objects
+            should not be used in the <code class="literal">where</code> clause (or any other clause). 
+            The associated objects are also not returned directly in the query results. Instead, they may
+            be accessed via the parent object. The only reason you might need an alias is if you are
+            recursively join fetching a further collection:
+        </p><pre class="programlisting">from Cat as cat
+    inner join fetch cat.mate
+    left join fetch cat.kittens child
+    left join fetch child.kittens</pre><p>
+            The <code class="literal">fetch</code> construct cannot be used in queries called using
+            <code class="literal">iterate()</code> (though <code class="literal">scroll()</code> can be used). 
+            <code class="literal">Fetch</code> should be used together with <code class="literal">setMaxResults()</code> or
+            <code class="literal">setFirstResult()</code>, as these operations are based on the result rows which
+            usually contain duplicates for eager collection fetching, hence, the number of rows is not what
+            you would expect.
+            <code class="literal">Fetch</code> should also not be used together with impromptu <code class="literal">with</code> condition.
+            It is possible to create a cartesian product by join fetching more than one collection in a
+            query, so take care in this case. Join fetching multiple collection roles can produce
+            unexpected results for bag mappings, so user discretion is advised when formulating queries in this
+            case. Finally, note that <code class="literal">full join fetch</code> and <code class="literal">right join fetch</code>
+            are not meaningful.
+        </p><p>
+            If you are using property-level lazy fetching (with bytecode instrumentation), it is
+            possible to force Hibernate to fetch the lazy properties in the first query immediately
+            using <code class="literal">fetch all properties</code>.
+        </p><pre class="programlisting">from Document fetch all properties order by name</pre><pre class="programlisting">from Document doc fetch all properties where lower(doc.name) like '%cats%'</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-joins-forms"/>15.4. Forms of join syntax</h2></div></div></div><p>
+		    HQL supports two forms of association joining: <code class="literal">implicit</code> and <code class="literal">explicit</code>.
+		</p><p>
+		    The queries shown in the previous section all use the <code class="literal">explicit</code> form, that is, where
+		    the join keyword is explicitly used in the from clause.  This is the recommended form.
+	    </p><p>
+		    The <code class="literal">implicit</code> form does not use the join keyword.  Instead, the
+		    associations are "dereferenced" using dot-notation.  <code class="literal">implicit</code> joins
+		    can appear in any of the HQL clauses.  <code class="literal">implicit</code> join result
+		    in inner joins in the resulting SQL statement.
+	    </p><pre class="programlisting">from Cat as cat where cat.mate.name like '%s%'</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-identifier-property"/>15.5. Referring to identifier property</h2></div></div></div><p>
+            There are 2 ways to refer to an entity's identifier property:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    The special property (lowercase) <code class="literal">id</code> may be used to reference the identifier
+                    property of an entity <span class="emphasis"><em>provided that the entity does not define a non-identifier property
+                    named id</em></span>.
+                </p></li><li><p>
+                    If the entity defines a named identifier property, you can use that property name.
+                </p></li></ul></div><p>
+            References to composite identifier properties follow the same naming rules. If the
+            entity has a non-identifier property named id, the composite identifier property can only
+            be referenced by its defined named. Otherwise, the special <code class="literal">id</code> property
+            can be used to reference the identifier property.
+        </p><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="important"><h2>Important</h2><p>
+            Please note that, starting in version 3.2.2, this has changed significantly. In previous versions,
+            <code class="literal">id</code>  <span class="emphasis"><em>always</em></span> referred to the identifier property
+            regardless of its actual name.  A ramification of that decision was that non-identifier
+            properties named <code class="literal">id</code> could never be referenced in Hibernate queries.
+        </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-select"/>15.6. The select clause</h2></div></div></div><p>
+            The <code class="literal">select</code> clause picks which objects and properties to return in
+            the query result set. Consider the following:
+        </p><pre class="programlisting">select mate
+from Cat as cat
+    inner join cat.mate as mate</pre><p>
+            The query will select <code class="literal">mate</code>s of other <code class="literal">Cat</code>s.
+            You can express this query more compactly as:
+        </p><pre class="programlisting">select cat.mate from Cat cat</pre><p>
+            Queries can return properties of any value type including properties of component type:
+        </p><pre class="programlisting">select cat.name from DomesticCat cat
+where cat.name like 'fri%'</pre><pre class="programlisting">select cust.name.firstName from Customer as cust</pre><p>
+            Queries can return multiple objects and/or properties as an array of type
+            <code class="literal">Object[]</code>:
+        </p><pre class="programlisting">select mother, offspr, mate.name
+from DomesticCat as mother
+    inner join mother.mate as mate
+    left outer join mother.kittens as offspr</pre><p>
+            Or as a <code class="literal">List</code>:
+        </p><pre class="programlisting">select new list(mother, offspr, mate.name)
+from DomesticCat as mother
+    inner join mother.mate as mate
+    left outer join mother.kittens as offspr</pre><p>
+            Or - assuming that the class <code class="literal">Family</code> has an appropriate constructor - as an actual typesafe Java object:
+        </p><pre class="programlisting">select new Family(mother, mate, offspr)
+from DomesticCat as mother
+    join mother.mate as mate
+    left join mother.kittens as offspr</pre><p>
+            You can assign aliases to selected expressions using <code class="literal">as</code>:
+        </p><pre class="programlisting">select max(bodyWeight) as max, min(bodyWeight) as min, count(*) as n
+from Cat cat</pre><p>
+            This is most useful when used together with <code class="literal">select new map</code>:
+        </p><pre class="programlisting">select new map( max(bodyWeight) as max, min(bodyWeight) as min, count(*) as n )
+from Cat cat</pre><p>
+            This query returns a <code class="literal">Map</code> from aliases to selected values.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-aggregation"/>15.7. Aggregate functions</h2></div></div></div><p>
+            HQL queries can even return the results of aggregate functions on properties:
+        </p><pre class="programlisting">select avg(cat.weight), sum(cat.weight), max(cat.weight), count(cat)
+from Cat cat</pre><p>
+            The supported aggregate functions are:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    <code class="literal">avg(...), sum(...), min(...), max(...)</code>
+                </p></li><li><p>
+                    <code class="literal">count(*)</code>
+                </p></li><li><p>
+                    <code class="literal">count(...), count(distinct ...), count(all...)</code>
+                </p></li></ul></div><p>
+            You can use arithmetic operators, concatenation, and recognized SQL functions
+            in the select clause:
+        </p><pre class="programlisting">select cat.weight + sum(kitten.weight)
+from Cat cat
+    join cat.kittens kitten
+group by cat.id, cat.weight</pre><pre class="programlisting">select firstName||' '||initial||' '||upper(lastName) from Person</pre><p>
+            The <code class="literal">distinct</code> and <code class="literal">all</code> keywords can be used and
+            have the same semantics as in SQL.
+        </p><pre class="programlisting">select distinct cat.name from Cat cat
+
+select count(distinct cat.name), count(cat) from Cat cat</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-polymorphism"/>15.8. Polymorphic queries</h2></div></div></div><p>
+            A query like:
+        </p><pre class="programlisting">from Cat as cat</pre><p>
+            returns instances not only of <code class="literal">Cat</code>, but also of subclasses like
+            <code class="literal">DomesticCat</code>. Hibernate queries can name <span class="emphasis"><em>any</em></span> Java
+            class or interface in the <code class="literal">from</code> clause. The query will return instances
+            of all persistent classes that extend that class or implement the interface. The following
+            query would return all persistent objects:
+        </p><pre class="programlisting">from java.lang.Object o</pre><p>
+            The interface <code class="literal">Named</code> might be implemented by various persistent
+            classes:
+        </p><pre class="programlisting">from Named n, Named m where n.name = m.name</pre><p>
+            These last two queries will require more than one SQL <code class="literal">SELECT</code>. This
+            means that the <code class="literal">order by</code> clause does not correctly order the whole result set.
+            It also means you cannot call these queries using <code class="literal">Query.scroll()</code>.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-where"/>15.9. The where clause</h2></div></div></div><p>
+            The <code class="literal">where</code> clause allows you to refine the list of instances returned.
+            If no alias exists, you can refer to properties by name:
+        </p><pre class="programlisting">from Cat where name='Fritz'</pre><p>
+        	If there is an alias, use a qualified property name:
+        </p><pre class="programlisting">from Cat as cat where cat.name='Fritz'</pre><p>
+            This returns instances of <code class="literal">Cat</code> named 'Fritz'.
+        </p><p>
+			The following query:
+        </p><pre class="programlisting">select foo
+from Foo foo, Bar bar
+where foo.startDate = bar.date</pre><p>
+            returns all instances of <code class="literal">Foo</code> with an
+            instance of <code class="literal">bar</code> with a
+            <code class="literal">date</code> property equal to the
+            <code class="literal">startDate</code> property of the
+            <code class="literal">Foo</code>. Compound path expressions make the
+            <code class="literal">where</code> clause extremely powerful. Consider the following:
+        </p><pre class="programlisting">from Cat cat where cat.mate.name is not null</pre><p>
+            This query translates to an SQL query with a table (inner) join. For example:
+            
+        </p><pre class="programlisting">from Foo foo
+where foo.bar.baz.customer.address.city is not null</pre><p>
+            would result in a query that would require four table joins in SQL.
+        </p><p>
+            The <code class="literal">=</code> operator can be used to compare not only properties, but also
+            instances:
+        </p><pre class="programlisting">from Cat cat, Cat rival where cat.mate = rival.mate</pre><pre class="programlisting">select cat, mate
+from Cat cat, Cat mate
+where cat.mate = mate</pre><p>
+            The special property (lowercase) <code class="literal">id</code> can be used to reference the
+            unique identifier of an object. See <a class="xref" href="queryhql.html#queryhql-identifier-property" title="15.5. Referring to identifier property">Section 15.5, “Referring to identifier property”</a>
+            for more information.
+        </p><pre class="programlisting">from Cat as cat where cat.id = 123
+
+from Cat as cat where cat.mate.id = 69</pre><p>
+            The second query is efficient and does not require a table join.
+        </p><p>
+            Properties of composite identifiers can also be used. Consider the following example where <code class="literal">Person</code>
+            has composite identifiers consisting of <code class="literal">country</code> and
+            <code class="literal">medicareNumber</code>:
+        </p><pre class="programlisting">from bank.Person person
+where person.id.country = 'AU'
+    and person.id.medicareNumber = 123456</pre><pre class="programlisting">from bank.Account account
+where account.owner.id.country = 'AU'
+    and account.owner.id.medicareNumber = 123456</pre><p>
+            Once again, the second query does not require a table join.
+        </p><p>
+	See <a class="xref" href="queryhql.html#queryhql-identifier-property" title="15.5. Referring to identifier property">Section 15.5, “Referring to identifier property”</a>
+            for more information regarding referencing identifier properties)
+	</p><p>
+            The special property <code class="literal">class</code> accesses the discriminator value
+            of an instance in the case of polymorphic persistence. A Java class name embedded in the
+            where clause will be translated to its discriminator value.
+        </p><pre class="programlisting">from Cat cat where cat.class = DomesticCat</pre><p>
+            You can also use components or composite user types, or properties of said
+            component types. See <a class="xref" href="queryhql.html#queryhql-components" title="15.17. Components">Section 15.17, “Components”</a> for more information.
+        </p><p>
+            An "any" type has the special properties <code class="literal">id</code> and <code class="literal">class</code> that allows you
+            to express a join in the following way (where <code class="literal">AuditLog.item</code>
+            is a property mapped with <code class="literal">&lt;any&gt;</code>):
+        </p><pre class="programlisting">from AuditLog log, Payment payment
+where log.item.class = 'Payment' and log.item.id = payment.id</pre><p>
+            The <code class="literal">log.item.class</code> and <code class="literal">payment.class</code>
+            would refer to the values of completely different database columns in the above query.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-expressions"/>15.10. Expressions</h2></div></div></div><p>
+            Expressions used in the <code class="literal">where</code> clause include the following:
+            
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    mathematical operators: <code class="literal">+, -, *, /</code>
+                </p></li><li><p>
+                    binary comparison operators: <code class="literal">=, &gt;=, &lt;=, &lt;&gt;, !=, like</code>
+                </p></li><li><p>
+                    logical operations <code class="literal">and, or, not</code>
+                </p></li><li><p>
+                    Parentheses <code class="literal">( )</code> that indicates grouping
+                </p></li><li><p>
+                    <code class="literal">in</code>,
+                    <code class="literal">not in</code>,
+                    <code class="literal">between</code>,
+                    <code class="literal">is null</code>,
+                    <code class="literal">is not null</code>,
+                    <code class="literal">is empty</code>,
+                    <code class="literal">is not empty</code>,
+                    <code class="literal">member of</code> and
+                    <code class="literal">not member of</code>
+                </p></li><li><p>
+                	"Simple" case, <code class="literal">case ... when ... then ... else ... end</code>, and
+                    "searched" case, <code class="literal">case when ... then ... else ... end</code>
+                </p></li><li><p>
+                    string concatenation <code class="literal">...||...</code> or <code class="literal">concat(...,...)</code>
+                </p></li><li><p>
+                    <code class="literal">current_date()</code>, <code class="literal">current_time()</code>, and
+                    <code class="literal">current_timestamp()</code>
+                </p></li><li><p>
+					<code class="literal">second(...)</code>, <code class="literal">minute(...)</code>,
+					<code class="literal">hour(...)</code>, <code class="literal">day(...)</code>,
+					<code class="literal">month(...)</code>, and <code class="literal">year(...)</code>
+                </p></li><li><p>
+                    Any function or operator defined by EJB-QL 3.0: <code class="literal">substring(), trim(),
+                    lower(), upper(), length(), locate(), abs(), sqrt(), bit_length(), mod()</code>
+                </p></li><li><p>
+                    <code class="literal">coalesce()</code> and <code class="literal">nullif()</code>
+                </p></li><li><p>
+                    <code class="literal">str()</code> for converting numeric or temporal values to a
+                    readable string
+                </p></li><li><p>
+                    <code class="literal">cast(... as ...)</code>, where the second argument is the name of
+                    a Hibernate type, and <code class="literal">extract(... from ...)</code> if ANSI
+                    <code class="literal">cast()</code> and <code class="literal">extract()</code> is supported by
+                    the underlying database
+                </p></li><li><p>
+                    the HQL <code class="literal">index()</code> function, that applies to aliases of
+                    a joined indexed collection
+                </p></li><li><p>
+                    HQL functions that take collection-valued path expressions: <code class="literal">size(),
+                    minelement(), maxelement(), minindex(), maxindex()</code>, along with the
+                    special <code class="literal">elements()</code> and <code class="literal">indices</code> functions
+                    that can be quantified using <code class="literal">some, all, exists, any, in</code>.
+                </p></li><li><p>
+                    Any database-supported SQL scalar function like <code class="literal">sign()</code>,
+                    <code class="literal">trunc()</code>, <code class="literal">rtrim()</code>, and <code class="literal">sin()</code>
+                </p></li><li><p>
+                    JDBC-style positional parameters <code class="literal">?</code>
+                </p></li><li><p>
+                    named parameters <code class="literal">:name</code>, <code class="literal">:start_date</code>, and <code class="literal">:x1</code>
+                </p></li><li><p>
+                    SQL literals <code class="literal">'foo'</code>, <code class="literal">69</code>, <code class="literal">6.66E+2</code>,
+                    <code class="literal">'1970-01-01 10:00:01.0'</code>
+                </p></li><li><p>
+                    Java <code class="literal">public static final</code> constants <code class="literal">eg.Color.TABBY</code>
+                </p></li></ul></div><p>
+            <code class="literal">in</code> and <code class="literal">between</code> can be used as follows:
+        </p><pre class="programlisting">from DomesticCat cat where cat.name between 'A' and 'B'</pre><pre class="programlisting">from DomesticCat cat where cat.name in ( 'Foo', 'Bar', 'Baz' )</pre><p>
+            The negated forms can be written as follows:
+        </p><pre class="programlisting">from DomesticCat cat where cat.name not between 'A' and 'B'</pre><pre class="programlisting">from DomesticCat cat where cat.name not in ( 'Foo', 'Bar', 'Baz' )</pre><p>
+            Similarly, <code class="literal">is null</code> and <code class="literal">is not null</code> can be used to test
+            for null values.
+        </p><p>
+            Booleans can be easily used in expressions by declaring HQL query substitutions in Hibernate
+            configuration:
+        </p><pre class="programlisting">&lt;property name="hibernate.query.substitutions"&gt;true 1, false 0&lt;/property&gt;</pre><p>
+            This will replace the keywords <code class="literal">true</code> and <code class="literal">false</code> with the
+            literals <code class="literal">1</code> and <code class="literal">0</code> in the translated SQL from this HQL:
+        </p><pre class="programlisting">from Cat cat where cat.alive = true</pre><p>
+            You can test the size of a collection with the special property <code class="literal">size</code> or
+            the special <code class="literal">size()</code> function.
+        </p><pre class="programlisting">from Cat cat where cat.kittens.size &gt; 0</pre><pre class="programlisting">from Cat cat where size(cat.kittens) &gt; 0</pre><p>
+            For indexed collections, you can refer to the minimum and maximum indices using
+            <code class="literal">minindex</code> and <code class="literal">maxindex</code> functions. Similarly,
+            you can refer to the minimum and maximum elements of a collection of basic type
+            using the <code class="literal">minelement</code> and <code class="literal">maxelement</code>
+            functions. For example:
+        </p><pre class="programlisting">from Calendar cal where maxelement(cal.holidays) &gt; current_date</pre><pre class="programlisting">from Order order where maxindex(order.items) &gt; 100</pre><pre class="programlisting">from Order order where minelement(order.items) &gt; 10000</pre><p>
+            The SQL functions <code class="literal">any, some, all, exists, in</code> are supported when passed the element
+            or index set of a collection (<code class="literal">elements</code> and <code class="literal">indices</code> functions)
+            or the result of a subquery (see below):
+        </p><pre class="programlisting">select mother from Cat as mother, Cat as kit
+where kit in elements(foo.kittens)</pre><pre class="programlisting">select p from NameList list, Person p
+where p.name = some elements(list.names)</pre><pre class="programlisting">from Cat cat where exists elements(cat.kittens)</pre><pre class="programlisting">from Player p where 3 &gt; all elements(p.scores)</pre><pre class="programlisting">from Show show where 'fizard' in indices(show.acts)</pre><p>
+            Note that these constructs - <code class="literal">size</code>, <code class="literal">elements</code>,
+            <code class="literal">indices</code>, <code class="literal">minindex</code>, <code class="literal">maxindex</code>,
+            <code class="literal">minelement</code>, <code class="literal">maxelement</code> - can only be used in
+            the where clause in Hibernate3.
+        </p><p>
+            Elements of indexed collections (arrays, lists, and maps) can be referred to by
+            index in a where clause only:
+        </p><pre class="programlisting">from Order order where order.items[0].id = 1234</pre><pre class="programlisting">select person from Person person, Calendar calendar
+where calendar.holidays['national day'] = person.birthDay
+    and person.nationality.calendar = calendar</pre><pre class="programlisting">select item from Item item, Order order
+where order.items[ order.deliveredItemIndices[0] ] = item and order.id = 11</pre><pre class="programlisting">select item from Item item, Order order
+where order.items[ maxindex(order.items) ] = item and order.id = 11</pre><p>
+            The expression inside <code class="literal">[]</code> can even be an arithmetic expression:
+        </p><pre class="programlisting">select item from Item item, Order order
+where order.items[ size(order.items) - 1 ] = item</pre><p>
+            HQL also provides the built-in <code class="literal">index()</code> function for elements
+            of a one-to-many association or collection of values.
+        </p><pre class="programlisting">select item, index(item) from Order order
+    join order.items item
+where index(item) &lt; 5</pre><p>
+            Scalar SQL functions supported by the underlying database can be used:
+        </p><pre class="programlisting">from DomesticCat cat where upper(cat.name) like 'FRI%'</pre><p>
+            Consider how much longer and less readable the
+            following query would be in SQL:
+        </p><pre class="programlisting">select cust
+from Product prod,
+    Store store
+    inner join store.customers cust
+where prod.name = 'widget'
+    and store.location.name in ( 'Melbourne', 'Sydney' )
+    and prod = all elements(cust.currentOrder.lineItems)</pre><p>
+            <span class="emphasis"><em>Hint:</em></span> something like
+        </p><pre class="programlisting">SELECT cust.name, cust.address, cust.phone, cust.id, cust.current_order
+FROM customers cust,
+    stores store,
+    locations loc,
+    store_customers sc,
+    product prod
+WHERE prod.name = 'widget'
+    AND store.loc_id = loc.id
+    AND loc.name IN ( 'Melbourne', 'Sydney' )
+    AND sc.store_id = store.id
+    AND sc.cust_id = cust.id
+    AND prod.id = ALL(
+        SELECT item.prod_id
+        FROM line_items item, orders o
+        WHERE item.order_id = o.id
+            AND cust.current_order = o.id
+    )</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-ordering"/>15.11. The order by clause</h2></div></div></div><p>
+            The list returned by a query can be ordered by any property of a returned class or components:
+        </p><pre class="programlisting">from DomesticCat cat
+order by cat.name asc, cat.weight desc, cat.birthdate</pre><p>
+            The optional <code class="literal">asc</code> or <code class="literal">desc</code> indicate ascending or descending order
+            respectively.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-grouping"/>15.12. The group by clause</h2></div></div></div><p>
+            A query that returns aggregate values can be grouped by any property of a returned class or components:
+        </p><pre class="programlisting">select cat.color, sum(cat.weight), count(cat)
+from Cat cat
+group by cat.color</pre><pre class="programlisting">select foo.id, avg(name), max(name)
+from Foo foo join foo.names name
+group by foo.id</pre><p>
+            A <code class="literal">having</code> clause is also allowed.
+        </p><pre class="programlisting">select cat.color, sum(cat.weight), count(cat)
+from Cat cat
+group by cat.color
+having cat.color in (eg.Color.TABBY, eg.Color.BLACK)</pre><p>
+            SQL functions and aggregate functions are allowed in the <code class="literal">having</code>
+            and <code class="literal">order by</code> clauses if they are supported by the underlying database
+            (i.e., not in MySQL).
+        </p><pre class="programlisting">select cat
+from Cat cat
+    join cat.kittens kitten
+group by cat.id, cat.name, cat.other, cat.properties
+having avg(kitten.weight) &gt; 100
+order by count(kitten) asc, sum(kitten.weight) desc</pre><p>
+            Neither the <code class="literal">group by</code> clause nor the
+            <code class="literal">order by</code> clause can contain arithmetic expressions.
+            Hibernate also does not currently expand a grouped entity,
+            so you cannot write <code class="literal">group by cat</code> if all properties
+            of <code class="literal">cat</code> are non-aggregated. You have to list all
+            non-aggregated properties explicitly.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-subqueries"/>15.13. Subqueries</h2></div></div></div><p>
+            For databases that support subselects, Hibernate supports subqueries within queries. A subquery must
+            be surrounded by parentheses (often by an SQL aggregate function call). Even correlated subqueries
+            (subqueries that refer to an alias in the outer query) are allowed.
+        </p><pre class="programlisting">from Cat as fatcat
+where fatcat.weight &gt; (
+    select avg(cat.weight) from DomesticCat cat
+)</pre><pre class="programlisting">from DomesticCat as cat
+where cat.name = some (
+    select name.nickName from Name as name
+)</pre><pre class="programlisting">from Cat as cat
+where not exists (
+    from Cat as mate where mate.mate = cat
+)</pre><pre class="programlisting">from DomesticCat as cat
+where cat.name not in (
+    select name.nickName from Name as name
+)</pre><pre class="programlisting">select cat.id, (select max(kit.weight) from cat.kitten kit)
+from Cat as cat</pre><p>
+            Note that HQL subqueries can occur only in the select or where clauses.
+        </p><p>
+            Note that subqueries can also utilize <code class="literal">row value constructor</code> syntax.  See
+            <a class="xref" href="queryhql.html#queryhql-tuple" title="15.18. Row value constructor syntax">Section 15.18, “Row value constructor syntax”</a> for more information.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-examples"/>15.14. HQL examples</h2></div></div></div><p>
+            Hibernate queries can be quite powerful and complex. In fact, the power of the query language
+            is one of Hibernate's main strengths. The following example queries are similar to queries
+            that have been used on recent projects. Please note that most queries you will write will be much simpler than the following examples.
+        </p><p>
+            The following query returns the order id, number of items, the given minimum total value and the total value of the order for all
+            unpaid orders for a particular customer. The results are ordered by
+            total value. In determining the prices, it uses the current catalog. The resulting SQL query,
+            against the <code class="literal">ORDER</code>, <code class="literal">ORDER_LINE</code>, <code class="literal">PRODUCT</code>,
+            <code class="literal">CATALOG</code> and <code class="literal">PRICE</code> tables has four inner joins and an
+            (uncorrelated) subselect.
+        </p><pre class="programlisting">select order.id, sum(price.amount), count(item)
+from Order as order
+    join order.lineItems as item
+    join item.product as product,
+    Catalog as catalog
+    join catalog.prices as price
+where order.paid = false
+    and order.customer = :customer
+    and price.product = product
+    and catalog.effectiveDate &lt; sysdate
+    and catalog.effectiveDate &gt;= all (
+        select cat.effectiveDate
+        from Catalog as cat
+        where cat.effectiveDate &lt; sysdate
+    )
+group by order
+having sum(price.amount) &gt; :minAmount
+order by sum(price.amount) desc</pre><p>
+            What a monster! Actually, in real life, I'm not very keen on subqueries, so my query was
+            really more like this:
+        </p><pre class="programlisting">select order.id, sum(price.amount), count(item)
+from Order as order
+    join order.lineItems as item
+    join item.product as product,
+    Catalog as catalog
+    join catalog.prices as price
+where order.paid = false
+    and order.customer = :customer
+    and price.product = product
+    and catalog = :currentCatalog
+group by order
+having sum(price.amount) &gt; :minAmount
+order by sum(price.amount) desc</pre><p>
+            The next query counts the number of payments in each status, excluding all payments in the
+            <code class="literal">AWAITING_APPROVAL</code> status where the most recent status change was made by the
+            current user. It translates to an SQL query with two inner joins and a correlated subselect
+            against the <code class="literal">PAYMENT</code>, <code class="literal">PAYMENT_STATUS</code> and
+            <code class="literal">PAYMENT_STATUS_CHANGE</code> tables.
+        </p><pre class="programlisting">select count(payment), status.name
+from Payment as payment
+    join payment.currentStatus as status
+    join payment.statusChanges as statusChange
+where payment.status.name &lt;&gt; PaymentStatus.AWAITING_APPROVAL
+    or (
+        statusChange.timeStamp = (
+            select max(change.timeStamp)
+            from PaymentStatusChange change
+            where change.payment = payment
+        )
+        and statusChange.user &lt;&gt; :currentUser
+    )
+group by status.name, status.sortOrder
+order by status.sortOrder</pre><p>
+            If the <code class="literal">statusChanges</code> collection was mapped as a list, instead of a set,
+            the query would have been much simpler to write.
+        </p><pre class="programlisting">select count(payment), status.name
+from Payment as payment
+    join payment.currentStatus as status
+where payment.status.name &lt;&gt; PaymentStatus.AWAITING_APPROVAL
+    or payment.statusChanges[ maxIndex(payment.statusChanges) ].user &lt;&gt; :currentUser
+group by status.name, status.sortOrder
+order by status.sortOrder</pre><p>
+            The next query uses the MS SQL Server <code class="literal">isNull()</code> function to return all
+            the accounts and unpaid payments for the organization to which the current user belongs.
+            It translates to an SQL query with three inner joins, an outer join and a subselect against
+            the <code class="literal">ACCOUNT</code>, <code class="literal">PAYMENT</code>, <code class="literal">PAYMENT_STATUS</code>,
+            <code class="literal">ACCOUNT_TYPE</code>, <code class="literal">ORGANIZATION</code> and
+            <code class="literal">ORG_USER</code> tables.
+        </p><pre class="programlisting">select account, payment
+from Account as account
+    left outer join account.payments as payment
+where :currentUser in elements(account.holder.users)
+    and PaymentStatus.UNPAID = isNull(payment.currentStatus.name, PaymentStatus.UNPAID)
+order by account.type.sortOrder, account.accountNumber, payment.dueDate</pre><p>
+            For some databases, we would need to do away with the (correlated) subselect.
+        </p><pre class="programlisting">select account, payment
+from Account as account
+    join account.holder.users as user
+    left outer join account.payments as payment
+where :currentUser = user
+    and PaymentStatus.UNPAID = isNull(payment.currentStatus.name, PaymentStatus.UNPAID)
+order by account.type.sortOrder, account.accountNumber, payment.dueDate</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-bulk"/>15.15. Bulk update and delete</h2></div></div></div><p>
+            HQL now supports <code class="literal">update</code>, <code class="literal">delete</code> and
+            <code class="literal">insert ... select ...</code> statements.
+            See <a class="xref" href="batch.html#batch-direct" title="14.4. DML-style operations">Section 14.4, “DML-style operations”</a> for more information.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-tipstricks"/>15.16. Tips &amp; Tricks</h2></div></div></div><p>
+            You can count the number of query results without returning them:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Integer</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createQuery</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">&quot;select&nbsp;count(*)&nbsp;from&nbsp;....&quot;</span><!-- <br/> --><span class="java_separator">).</span><!-- <br/> --><span class="java_plain">iterate</span><!-- <br/> --><span class="java_separator">().</span><!-- <br/> --><span class="java_plain">next</span><!-- <br/> --><span class="java_separator">()</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">).</span><!-- <br/> --><span class="java_plain">intValue</span><!-- <br/> --><span class="java_separator">()</span></pre><p>
+            To order a result by the size of a collection, use the following query:
+        </p><pre class="programlisting">select usr.id, usr.name
+from User as usr
+    left join usr.messages as msg
+group by usr.id, usr.name
+order by count(msg)</pre><p>
+            If your database supports subselects, you can place a condition upon selection
+            size in the where clause of your query:
+        </p><pre class="programlisting">from User usr where size(usr.messages) &gt;= 1</pre><p>
+            If your database does not support subselects, use the following query:
+        </p><pre class="programlisting">select usr.id, usr.name
+from User usr
+    join usr.messages msg
+group by usr.id, usr.name
+having count(msg) &gt;= 1</pre><p>
+            As this solution cannot return a <code class="literal">User</code> with zero messages
+            because of the inner join, the following form is also useful:
+        </p><pre class="programlisting">select usr.id, usr.name
+from User as usr
+    left join usr.messages as msg
+group by usr.id, usr.name
+having count(msg) = 0</pre><p>
+            Properties of a JavaBean can be bound to named query parameters:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Query</span><!-- <br/> --><span class="java_plain">&nbsp;q&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;s</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createQuery</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">&quot;from&nbsp;foo&nbsp;Foo&nbsp;as&nbsp;foo&nbsp;where&nbsp;foo.name=:name&nbsp;and&nbsp;foo.size=:size&quot;</span><!-- <br/> --><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">q</span><span class="java_separator">.</span><span class="java_plain">setProperties</span><span class="java_separator">(</span><span class="java_plain">fooBean</span><span class="java_separator">);</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;fooBean&nbsp;has&nbsp;getName</span><span class="java_separator">()</span><span class="java_plain">&nbsp;and&nbsp;getSize</span><span class="java_separator">()</span>
+<!--  --><br/><span class="java_type">List</span><span class="java_plain">&nbsp;foos&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;q</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span></pre><p>
+            Collections are pageable by using the <code class="literal">Query</code> interface with a filter:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Query</span><!-- <br/> --><span class="java_plain">&nbsp;q&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;s</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createFilter</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">&nbsp;collection</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_literal">&quot;&quot;</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">);</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">&nbsp;the&nbsp;trivial&nbsp;filter</span>
+<!--  --><br/><span class="java_plain">q</span><span class="java_separator">.</span><span class="java_plain">setMaxResults</span><span class="java_separator">(</span><span class="java_plain">PAGE_SIZE</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">q</span><span class="java_separator">.</span><span class="java_plain">setFirstResult</span><span class="java_separator">(</span><span class="java_plain">PAGE_SIZE&nbsp;</span><span class="java_operator">*</span><span class="java_plain">&nbsp;pageNumber</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">List</span><span class="java_plain">&nbsp;page&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;q</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span></pre><p>
+            Collection elements can be ordered or grouped using a query filter:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Collection</span><!-- <br/> --><span class="java_plain">&nbsp;orderedCollection&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;s</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">filter</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">&nbsp;collection</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_literal">&quot;order&nbsp;by&nbsp;this.amount&quot;</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">Collection</span><span class="java_plain">&nbsp;counts&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;s</span><span class="java_separator">.</span><span class="java_plain">filter</span><span class="java_separator">(</span><span class="java_plain">&nbsp;collection</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;select&nbsp;this.type,&nbsp;count(this)&nbsp;group&nbsp;by&nbsp;this.type&quot;</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span></pre><p>
+            You can find the size of a collection without initializing it:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Integer</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createQuery</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">&quot;select&nbsp;count(*)&nbsp;from&nbsp;....&quot;</span><!-- <br/> --><span class="java_separator">).</span><!-- <br/> --><span class="java_plain">iterate</span><!-- <br/> --><span class="java_separator">().</span><!-- <br/> --><span class="java_plain">next</span><!-- <br/> --><span class="java_separator">()</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">).</span><!-- <br/> --><span class="java_plain">intValue</span><!-- <br/> --><span class="java_separator">();</span></pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-components"/>15.17. Components</h2></div></div></div><p>
+            Components can be used similarly to the simple value types that are used in HQL
+            queries.  They can appear in the <code class="literal">select</code> clause as follows:
+        </p><pre class="programlisting">select p.name from Person p</pre><pre class="programlisting">select p.name.first from Person p</pre><p>
+            where the Person's name property is a component.  Components can also be used
+            in the <code class="literal">where</code> clause:
+        </p><pre class="programlisting">from Person p where p.name = :name</pre><pre class="programlisting">from Person p where p.name.first = :firstName</pre><p>
+            Components can also be used in the <code class="literal">order by</code> clause:
+        </p><pre class="programlisting">from Person p order by p.name</pre><pre class="programlisting">from Person p order by p.name.first</pre><p>
+            Another common use of components is in <a class="link" href="queryhql.html#queryhql-tuple" title="15.18. Row value constructor syntax">row value constructors</a>.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="queryhql-tuple"/>15.18. Row value constructor syntax</h2></div></div></div><p>
+            HQL supports the use of ANSI SQL <code class="literal">row value constructor</code> syntax, sometimes
+            referred to AS <code class="literal">tuple</code> syntax, even though the underlying database may not support
+            that notion.  Here, we are generally referring to multi-valued comparisons, typically associated
+            with components.  Consider an entity Person which defines a name component:
+        </p><pre class="programlisting">from Person p where p.name.first='John' and p.name.last='Jingleheimer-Schmidt'</pre><p>
+            That is valid syntax although it is a little verbose.  You can make this more concise by using
+            <code class="literal">row value constructor</code> syntax:
+        </p><pre class="programlisting">from Person p where p.name=('John', 'Jingleheimer-Schmidt')</pre><p>
+            It can also be useful to specify this in the <code class="literal">select</code> clause:
+        </p><pre class="programlisting">select p.name from Person p</pre><p>
+            Using <code class="literal">row value constructor</code> syntax can also be beneficial
+            when using subqueries that need to compare against multiple values:
+        </p><pre class="programlisting">from Cat as cat
+where not ( cat.name, cat.color ) in (
+    select cat.name, cat.color from DomesticCat cat
+)</pre><p>
+            One thing to consider when deciding if you want to use this syntax, is that the query will
+            be dependent upon the ordering of the component sub-properties in the metadata.
+        </p></div></div><HR xmlns=""/><a xmlns="" href="legalnotice.html"><p xmlns="http://www.w3.org/1999/xhtml" class="copyright">Copyright © 2004 Red Hat, Inc.</p></a><ul class="docnav"><li class="previous"><a accesskey="p" href="batch.html"><strong>Prev</strong>Chapter 14. Batch processing</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="querycriteria.html"><strong>Next</strong>Chapter 16. Criteria Queries</a></li></ul></body></html>

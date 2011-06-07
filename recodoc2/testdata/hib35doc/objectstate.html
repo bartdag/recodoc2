@@ -1,0 +1,755 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 10. Working with objects</title><link rel="stylesheet" href="css/hibernate.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="up" href="index.html" title="HIBERNATE - Relational Persistence for Idiomatic Java"/><link rel="prev" href="inheritance.html" title="Chapter 9. Inheritance mapping"/><link rel="next" href="readonly.html" title="Chapter 11. Read-only entities"/><link rel="copyright" href="Legal_Notice.html" title="Legal Notice"/></head><body><p id="title"><a href="http://www.hibernate.org" class="site_href"><strong>Hibernate.org</strong></a><a href="http://hibernate.org/Documentation/DocumentationOverview" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="inheritance.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="readonly.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate"/>Chapter 10. Working with objects</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="objectstate.html#objectstate-overview">10.1. Hibernate object states</a></span></dt><dt><span class="section"><a href="objectstate.html#objectstate-makingpersistent">10.2. Making objects persistent</a></span></dt><dt><span class="section"><a href="objectstate.html#objectstate-loading">10.3. Loading an object</a></span></dt><dt><span class="section"><a href="objectstate.html#objectstate-querying">10.4. Querying</a></span></dt><dd><dl><dt><span class="section"><a href="objectstate.html#objectstate-querying-executing">10.4.1. Executing queries</a></span></dt><dt><span class="section"><a href="objectstate.html#objectstate-filtering">10.4.2. Filtering collections</a></span></dt><dt><span class="section"><a href="objectstate.html#objecstate-querying-criteria">10.4.3. Criteria queries</a></span></dt><dt><span class="section"><a href="objectstate.html#objectstate-querying-nativesql">10.4.4. Queries in native SQL</a></span></dt></dl></dd><dt><span class="section"><a href="objectstate.html#objectstate-modifying">10.5. Modifying persistent objects</a></span></dt><dt><span class="section"><a href="objectstate.html#objectstate-detached">10.6. Modifying detached objects</a></span></dt><dt><span class="section"><a href="objectstate.html#objectstate-saveorupdate">10.7. Automatic state detection</a></span></dt><dt><span class="section"><a href="objectstate.html#objectstate-deleting">10.8. Deleting persistent objects</a></span></dt><dt><span class="section"><a href="objectstate.html#objectstate-replicating">10.9. Replicating object between two different datastores</a></span></dt><dt><span class="section"><a href="objectstate.html#objectstate-flushing">10.10. Flushing the Session</a></span></dt><dt><span class="section"><a href="objectstate.html#objectstate-transitive">10.11. Transitive persistence</a></span></dt><dt><span class="section"><a href="objectstate.html#objectstate-metadata">10.12. Using metadata</a></span></dt></dl></div><p>
+        Hibernate is a full object/relational mapping solution that not only shields
+        the developer from the details of the underlying database management
+        system, but also offers <span class="emphasis"><em>state management</em></span> of objects. This is,
+        contrary to the management of SQL <code class="literal">statements</code> in common JDBC/SQL
+        persistence layers, a natural object-oriented view of persistence in Java
+        applications.
+    </p><p>
+        In other words, Hibernate application developers should always think about the
+        <span class="emphasis"><em>state</em></span> of their objects, and not necessarily about the
+        execution of SQL statements. This part is taken care of by Hibernate and is only
+        relevant for the application developer when tuning the performance of the system.
+    </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate-overview"/>10.1. Hibernate object states</h2></div></div></div><p>
+            Hibernate defines and supports the following object states:
+        </p><div class="itemizedlist"><ul><li><p>
+                    <span class="emphasis"><em>Transient</em></span> - an object is transient if it has just
+                    been instantiated using the <code class="literal">new</code> operator, and it
+                    is not associated with a Hibernate <code class="literal">Session</code>. It has no
+                    persistent representation in the database and no identifier value has been
+                    assigned. Transient instances will be destroyed by the garbage collector if
+                    the application does not hold a reference anymore. Use the Hibernate
+                    <code class="literal">Session</code> to make an object persistent (and let Hibernate
+                    take care of the SQL statements that need to be executed for this transition).
+                </p></li><li><p>
+                    <span class="emphasis"><em>Persistent</em></span> - a persistent instance has a representation
+                    in the database and an identifier value. It might just have been saved or loaded,
+                    however, it is by definition in the scope of a <code class="literal">Session</code>.
+                    Hibernate will detect any changes made to an object in persistent state and
+                    synchronize the state with the database when the unit of work completes.
+                    Developers do not execute manual <code class="literal">UPDATE</code> statements, or
+                    <code class="literal">DELETE</code> statements when an object should be made transient.
+                </p></li><li><p>
+                    <span class="emphasis"><em>Detached</em></span> - a detached instance is an object that has been
+                    persistent, but its <code class="literal">Session</code> has been closed. The reference
+                    to the object is still valid, of course, and the detached instance might even
+                    be modified in this state. A detached instance can be reattached to a new
+                    <code class="literal">Session</code> at a later point in time, making it (and all the
+                    modifications) persistent again. This feature enables a programming model for
+                    long running units of work that require user think-time. We call them
+                    <span class="emphasis"><em>application transactions</em></span>, i.e., a unit of work from the
+                    point of view of the user.
+                </p></li></ul></div><p>
+            We will now discuss the states and state transitions (and the Hibernate methods that
+            trigger a transition) in more detail.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate-makingpersistent"/>10.2. Making objects persistent</h2></div></div></div><p>
+            Newly instantiated instances of a persistent class are considered 
+            <span class="emphasis"><em>transient</em></span> by Hibernate. We can make a transient 
+            instance <span class="emphasis"><em>persistent</em></span> by associating it with a 
+            session:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">DomesticCat</span><!-- <br/> --><span class="java_plain">&nbsp;fritz&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_keyword">new</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_type">DomesticCat</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">fritz</span><span class="java_separator">.</span><span class="java_plain">setColor</span><span class="java_separator">(</span><span class="java_type">Color</span><span class="java_separator">.</span><span class="java_plain">GINGER</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">fritz</span><span class="java_separator">.</span><span class="java_plain">setSex</span><span class="java_separator">(</span><span class="java_literal">'M'</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">fritz</span><span class="java_separator">.</span><span class="java_plain">setName</span><span class="java_separator">(</span><span class="java_literal">&quot;Fritz&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">Long</span><span class="java_plain">&nbsp;generatedId&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Long</span><span class="java_separator">)</span><span class="java_plain">&nbsp;sess</span><span class="java_separator">.</span><span class="java_plain">save</span><span class="java_separator">(</span><span class="java_plain">fritz</span><span class="java_separator">);</span></pre><p>
+            If <code class="literal">Cat</code> has a generated identifier, the identifier is
+            generated and assigned to the <code class="literal">cat</code> when <code class="literal">save()</code> 
+            is called. If <code class="literal">Cat</code> has an <code class="literal">assigned</code>
+            identifier, or a composite key, the identifier should be assigned to 
+            the <code class="literal">cat</code> instance before calling <code class="literal">save()</code>.
+            You can also use <code class="literal">persist()</code> instead of <code class="literal">save()</code>,
+            with the semantics defined in the EJB3 early draft.
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    <code class="literal">persist()</code> makes a transient instance persistent. 
+                    However, it does not guarantee that the identifier value will be assigned to 
+                    the persistent instance immediately, the assignment might happen at flush time. 
+                    <code class="literal">persist()</code> also guarantees that it will not execute an 
+                    <code class="literal">INSERT</code> statement if it is called outside of transaction 
+                    boundaries. This is useful in long-running conversations with an extended 
+                    Session/persistence context.
+                </p></li><li><p>
+                    <code class="literal">save()</code> does guarantee to return an identifier. If an INSERT 
+                    has to be executed to get the identifier ( e.g. "identity" generator, not 
+                    "sequence"), this INSERT happens immediately, no matter if you are inside or 
+                    outside of a transaction. This is problematic in a long-running conversation  
+                    with an extended Session/persistence context.
+                </p></li></ul></div><p>
+            Alternatively, you can assign the identifier using an overloaded version
+            of <code class="literal">save()</code>.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">DomesticCat</span><!-- <br/> --><span class="java_plain">&nbsp;pk&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_keyword">new</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_type">DomesticCat</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">pk</span><span class="java_separator">.</span><span class="java_plain">setColor</span><span class="java_separator">(</span><span class="java_type">Color</span><span class="java_separator">.</span><span class="java_plain">TABBY</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">pk</span><span class="java_separator">.</span><span class="java_plain">setSex</span><span class="java_separator">(</span><span class="java_literal">'F'</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">pk</span><span class="java_separator">.</span><span class="java_plain">setName</span><span class="java_separator">(</span><span class="java_literal">&quot;PK&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">pk</span><span class="java_separator">.</span><span class="java_plain">setKittens</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">HashSet</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">pk</span><span class="java_separator">.</span><span class="java_plain">addKitten</span><span class="java_separator">(</span><span class="java_plain">fritz</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">sess</span><span class="java_separator">.</span><span class="java_plain">save</span><span class="java_separator">(</span><span class="java_plain">&nbsp;pk</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">Long</span><span class="java_separator">(</span><span class="java_literal">1234</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span></pre><p>
+            If the object you make persistent has associated objects (e.g. the
+            <code class="literal">kittens</code> collection in the previous example),
+            these objects can be made persistent in any order you like unless you
+            have a <code class="literal">NOT NULL</code> constraint upon a foreign key column.
+            There is never a risk of violating foreign key constraints. However, you 
+            might violate a <code class="literal">NOT NULL</code> constraint if you
+            <code class="literal">save()</code> the objects in the wrong order.
+        </p><p>
+            Usually you do not bother with this detail, as you will normally use Hibernate's
+            <span class="emphasis"><em>transitive persistence</em></span> feature to save the associated
+            objects automatically. Then, even <code class="literal">NOT NULL</code>
+            constraint violations do not occur - Hibernate will take care of everything.
+            Transitive persistence is discussed later in this chapter.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate-loading"/>10.3. Loading an object</h2></div></div></div><p>
+            The <code class="literal">load()</code> methods of <code class="literal">Session</code> provide
+            a way of retrieving a persistent instance if you know its identifier. 
+            <code class="literal">load()</code> takes a class object and loads the state into 
+            a newly instantiated instance of that class in a persistent state.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_plain">&nbsp;fritz&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">load</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;generatedId</span><!-- <br/> --><span class="java_separator">);</span></pre><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">&nbsp;you&nbsp;need&nbsp;to&nbsp;wrap&nbsp;primitive&nbsp;identifiers</span>
+<!--  --><br/><span class="java_type">long</span><span class="java_plain">&nbsp;id&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_literal">1234</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_type">DomesticCat</span><span class="java_plain">&nbsp;pk&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">DomesticCat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;sess</span><span class="java_separator">.</span><span class="java_plain">load</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_type">DomesticCat</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">Long</span><span class="java_separator">(</span><span class="java_plain">id</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span></pre><p>
+            Alternatively, you can load state into a given instance:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_plain">&nbsp;cat&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_keyword">new</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_type">DomesticCat</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;load&nbsp;pk's&nbsp;state&nbsp;into&nbsp;cat</span>
+<!--  --><br/><span class="java_plain">sess</span><span class="java_separator">.</span><span class="java_plain">load</span><span class="java_separator">(</span><span class="java_plain">&nbsp;cat</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">Long</span><span class="java_separator">(</span><span class="java_plain">pkId</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">Set</span><span class="java_plain">&nbsp;kittens&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;cat</span><span class="java_separator">.</span><span class="java_plain">getKittens</span><span class="java_separator">();</span></pre><p>
+            Be aware that <code class="literal">load()</code> will throw an unrecoverable exception if 
+            there is no matching database row. If the class is mapped with a proxy, 
+            <code class="literal">load()</code> just returns an uninitialized proxy and does not 
+            actually hit the database until you invoke a method of the proxy. This 
+            is useful if you wish to create an association to an object
+            without actually loading it from the database. It also allows multiple
+            instances to be loaded as a batch if <code class="literal">batch-size</code> is
+            defined for the class mapping.
+        </p><p>
+            If you are not certain that a matching row exists, you should use the 
+            <code class="literal">get()</code> method which hits the database immediately and 
+            returns null if there is no matching row.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_plain">&nbsp;cat&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">get</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;id</span><!-- <br/> --><span class="java_separator">);</span>
+<!--  --><br/><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">cat</span><span class="java_operator">==</span><span class="java_literal">null</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;cat&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">Cat</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;sess</span><span class="java_separator">.</span><span class="java_plain">save</span><span class="java_separator">(</span><span class="java_plain">cat</span><span class="java_separator">,</span><span class="java_plain">&nbsp;id</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_separator">}</span>
+<!--  --><br/><span class="java_keyword">return</span><span class="java_plain">&nbsp;cat</span><span class="java_separator">;</span></pre><p>
+            You can even load an object using an SQL <code class="literal">SELECT ... FOR UPDATE</code>,
+            using a <code class="literal">LockMode</code>. See the API documentation for more information.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_plain">&nbsp;cat&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">get</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;id</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_type">LockMode</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">UPGRADE</span><!-- <br/> --><span class="java_separator">);</span></pre><p>
+            Any associated instances or contained collections will 
+            <span class="emphasis"><em>not</em></span> be selected <code class="literal">FOR UPDATE</code>, unless you decide
+            to specify <code class="literal">lock</code> or <code class="literal">all</code> as a
+            cascade style for the association.
+        </p><p>
+            It is possible to re-load an object and all its collections at any time, using the 
+            <code class="literal">refresh()</code> method. This is useful when database triggers are used to
+            initialize some of the properties of the object.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_plain">sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">save</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">cat</span><!-- <br/> --><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">sess</span><span class="java_separator">.</span><span class="java_plain">flush</span><span class="java_separator">();</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">force&nbsp;the&nbsp;SQL&nbsp;INSERT</span>
+<!--  --><br/><span class="java_plain">sess</span><span class="java_separator">.</span><span class="java_plain">refresh</span><span class="java_separator">(</span><span class="java_plain">cat</span><span class="java_separator">);</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">re</span><span class="java_operator">-</span><span class="java_plain">read&nbsp;the&nbsp;state&nbsp;</span><span class="java_separator">(</span><span class="java_plain">after&nbsp;the&nbsp;trigger&nbsp;executes</span><span class="java_separator">)</span></pre><p>
+            How much does Hibernate load
+            from the database and how many SQL <code class="literal">SELECT</code>s will it use? This
+            depends on the <span class="emphasis"><em>fetching strategy</em></span>. This is explained in
+            <a class="xref" href="performance.html#performance-fetching" title="20.1. Fetching strategies">Section 20.1, “Fetching strategies”</a>.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate-querying"/>10.4. Querying</h2></div></div></div><p>
+            If you do not know the identifiers of the objects you are looking for, 
+            you need a query. Hibernate supports an easy-to-use but powerful object 
+            oriented query language (HQL). For programmatic query creation, Hibernate
+            supports a sophisticated Criteria and Example query feature (QBC and QBE).
+            You can also express your query in the native SQL of your database, with
+            optional support from Hibernate for result set conversion into objects.
+        </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="objectstate-querying-executing"/>10.4.1. Executing queries</h3></div></div></div><p>
+                HQL and native SQL queries are represented with an instance of <code class="literal">org.hibernate.Query</code>.
+                This interface offers methods for parameter binding, result set handling, and for the execution
+                of the actual query. You always obtain a <code class="literal">Query</code> using the current
+                <code class="literal">Session</code>:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">List</span><!-- <br/> --><span class="java_plain">&nbsp;cats&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createQuery</span><!-- <br/> --><span class="java_separator">(</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;from&nbsp;Cat&nbsp;as&nbsp;cat&nbsp;where&nbsp;cat.birthdate&nbsp;&lt;&nbsp;?&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setDate</span><span class="java_separator">(</span><span class="java_literal">0</span><span class="java_separator">,</span><span class="java_plain">&nbsp;date</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_type">List</span><span class="java_plain">&nbsp;mothers&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;select&nbsp;mother&nbsp;from&nbsp;Cat&nbsp;as&nbsp;cat&nbsp;join&nbsp;cat.mother&nbsp;as&nbsp;mother&nbsp;where&nbsp;cat.name&nbsp;=&nbsp;?&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setString</span><span class="java_separator">(</span><span class="java_literal">0</span><span class="java_separator">,</span><span class="java_plain">&nbsp;name</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_type">List</span><span class="java_plain">&nbsp;kittens&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;from&nbsp;Cat&nbsp;as&nbsp;cat&nbsp;where&nbsp;cat.mother&nbsp;=&nbsp;?&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setEntity</span><span class="java_separator">(</span><span class="java_literal">0</span><span class="java_separator">,</span><span class="java_plain">&nbsp;pk</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_type">Cat</span><span class="java_plain">&nbsp;mother&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;select&nbsp;cat.mother&nbsp;from&nbsp;Cat&nbsp;as&nbsp;cat&nbsp;where&nbsp;cat&nbsp;=&nbsp;?&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setEntity</span><span class="java_separator">(</span><span class="java_literal">0</span><span class="java_separator">,</span><span class="java_plain">&nbsp;izi</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">uniqueResult</span><span class="java_separator">();]]</span>
+</span>
+<!--  --><br/><span class="java_type">Query</span><span class="java_plain">&nbsp;mothersWithKittens&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;session</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;select&nbsp;mother&nbsp;from&nbsp;Cat&nbsp;as&nbsp;mother&nbsp;left&nbsp;join&nbsp;fetch&nbsp;mother.kittens&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">Set</span><span class="java_plain">&nbsp;uniqueMothers&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">HashSet</span><span class="java_separator">(</span><span class="java_plain">mothersWithKittens</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">());</span></pre><p>
+                A query is usually executed by invoking <code class="literal">list()</code>. The
+                result of the query will be loaded completely into a collection in memory.
+                Entity instances retrieved by a query are in a persistent state. The
+                <code class="literal">uniqueResult()</code> method offers a shortcut if you
+                know your query will only return a single object. Queries that
+                make use of eager fetching of collections usually return duplicates of
+                the root objects, but with their collections initialized. You can filter
+                these duplicates through a <code class="literal">Set</code>.
+            </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="objectstate-querying-executing-iterate"/>10.4.1.1. Iterating results</h4></div></div></div><p>
+                    Occasionally, you might be able to achieve better performance by
+                    executing the query using the <code class="literal">iterate()</code> method.
+                    This will usually be the case if you expect that the actual
+                    entity instances returned by the query will already be in the session
+                    or second-level cache. If they are not already cached,
+                    <code class="literal">iterate()</code> will be slower than <code class="literal">list()</code>
+                    and might require many database hits for a simple query, usually
+                    <span class="emphasis"><em>1</em></span> for the initial select which only returns identifiers,
+                    and <span class="emphasis"><em>n</em></span> additional selects to initialize the actual instances.
+                </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">&nbsp;fetch&nbsp;ids</span>
+<!--  --><br/><span class="java_type">Iterator</span><span class="java_plain">&nbsp;iter&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;sess</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span><span class="java_literal">&quot;from&nbsp;eg.Qux&nbsp;q&nbsp;order&nbsp;by&nbsp;q.likeliness&quot;</span><span class="java_separator">).</span><span class="java_plain">iterate</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_keyword">while</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;iter</span><span class="java_separator">.</span><span class="java_plain">hasNext</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Qux</span><span class="java_plain">&nbsp;qux&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Qux</span><span class="java_separator">)</span><span class="java_plain">&nbsp;iter</span><span class="java_separator">.</span><span class="java_plain">next</span><span class="java_separator">();</span><span class="java_plain">&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;fetch&nbsp;the&nbsp;object</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;something&nbsp;we&nbsp;couldnt&nbsp;express&nbsp;in&nbsp;the&nbsp;query</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;qux</span><span class="java_separator">.</span><span class="java_plain">calculateComplicatedAlgorithm</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;delete&nbsp;the&nbsp;current&nbsp;instance</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iter</span><span class="java_separator">.</span><span class="java_plain">remove</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;dont&nbsp;need&nbsp;to&nbsp;process&nbsp;the&nbsp;rest</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">break</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_separator">}</span></pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="objectstate-querying-executing-tuples"/>10.4.1.2. Queries that return tuples</h4></div></div></div><p>
+                    Hibernate queries sometimes return tuples of objects. Each tuple
+                    is returned as an array:
+                </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Iterator</span><!-- <br/> --><span class="java_plain">&nbsp;kittensAndMothers&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createQuery</span><!-- <br/> --><span class="java_separator">(</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;select&nbsp;kitten,&nbsp;mother&nbsp;from&nbsp;Cat&nbsp;kitten&nbsp;join&nbsp;kitten.mother&nbsp;mother&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">()</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">iterator</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_keyword">while</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;kittensAndMothers</span><span class="java_separator">.</span><span class="java_plain">hasNext</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Object</span><span class="java_separator">[]</span><span class="java_plain">&nbsp;tuple&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Object</span><span class="java_separator">[])</span><span class="java_plain">&nbsp;kittensAndMothers</span><span class="java_separator">.</span><span class="java_plain">next</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Cat</span><span class="java_plain">&nbsp;kitten&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;tuple</span><span class="java_separator">[</span><span class="java_literal">0</span><span class="java_separator">];</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Cat</span><span class="java_plain">&nbsp;mother&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;tuple</span><span class="java_separator">[</span><span class="java_literal">1</span><span class="java_separator">];</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">....</span>
+<!--  --><br/><span class="java_separator">}</span></pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="objectstate-querying-executing-scalar"/>10.4.1.3. Scalar results</h4></div></div></div><p>
+                    Queries can specify a property of a class in the <code class="literal">select</code> clause.
+                    They can even call SQL aggregate functions. Properties or aggregates are considered
+                    "scalar" results and not entities in persistent state.
+                </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Iterator</span><!-- <br/> --><span class="java_plain">&nbsp;results&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createQuery</span><!-- <br/> --><span class="java_separator">(</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;select&nbsp;cat.color,&nbsp;min(cat.birthdate),&nbsp;count(cat)&nbsp;from&nbsp;Cat&nbsp;cat&nbsp;&quot;</span><span class="java_plain">&nbsp;</span><span class="java_operator">+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;group&nbsp;by&nbsp;cat.color&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">()</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">iterator</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_keyword">while</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;results</span><span class="java_separator">.</span><span class="java_plain">hasNext</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Object</span><span class="java_separator">[]</span><span class="java_plain">&nbsp;row&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Object</span><span class="java_separator">[])</span><span class="java_plain">&nbsp;results</span><span class="java_separator">.</span><span class="java_plain">next</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Color</span><span class="java_plain">&nbsp;type&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Color</span><span class="java_separator">)</span><span class="java_plain">&nbsp;row</span><span class="java_separator">[</span><span class="java_literal">0</span><span class="java_separator">];</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Date</span><span class="java_plain">&nbsp;oldest&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Date</span><span class="java_separator">)</span><span class="java_plain">&nbsp;row</span><span class="java_separator">[</span><span class="java_literal">1</span><span class="java_separator">];</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">Integer</span><span class="java_plain">&nbsp;count&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Integer</span><span class="java_separator">)</span><span class="java_plain">&nbsp;row</span><span class="java_separator">[</span><span class="java_literal">2</span><span class="java_separator">];</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.....</span>
+<!--  --><br/><span class="java_separator">}</span></pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="objectstate-querying-executing-parameters"/>10.4.1.4. Bind parameters</h4></div></div></div><p>
+                    Methods on <code class="literal">Query</code> are provided for binding values to
+                    named parameters or JDBC-style <code class="literal">?</code> parameters. 
+                    <span class="emphasis"><em>Contrary to JDBC, Hibernate numbers parameters from zero.</em></span>
+                    Named parameters are identifiers of the form <code class="literal">:name</code> in 
+                    the query string. The advantages of named parameters are as follows:
+                </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                            named parameters are insensitive to the order they occur in the
+                            query string
+                        </p></li><li><p>
+                            they can occur multiple times in the same query
+                        </p></li><li><p>
+                            they are self-documenting
+                        </p></li></ul></div><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">named&nbsp;parameter&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">preferred</span><!-- <br/> --><span class="java_separator">)</span>
+<!--  --><br/><span class="java_type">Query</span><span class="java_plain">&nbsp;q&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;sess</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span><span class="java_literal">&quot;from&nbsp;DomesticCat&nbsp;cat&nbsp;where&nbsp;cat.name&nbsp;=&nbsp;:name&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">q</span><span class="java_separator">.</span><span class="java_plain">setString</span><span class="java_separator">(</span><span class="java_literal">&quot;name&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;Fritz&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">Iterator</span><span class="java_plain">&nbsp;cats&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;q</span><span class="java_separator">.</span><span class="java_plain">iterate</span><span class="java_separator">();</span></pre><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">positional&nbsp;parameter</span>
+<!--  --><br/><span class="java_type">Query</span><span class="java_plain">&nbsp;q&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;sess</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span><span class="java_literal">&quot;from&nbsp;DomesticCat&nbsp;cat&nbsp;where&nbsp;cat.name&nbsp;=&nbsp;?&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">q</span><span class="java_separator">.</span><span class="java_plain">setString</span><span class="java_separator">(</span><span class="java_literal">0</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;Izi&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">Iterator</span><span class="java_plain">&nbsp;cats&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;q</span><span class="java_separator">.</span><span class="java_plain">iterate</span><span class="java_separator">();</span></pre><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">named&nbsp;parameter&nbsp;list</span>
+<!--  --><br/><span class="java_type">List</span><span class="java_plain">&nbsp;names&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">ArrayList</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">names</span><span class="java_separator">.</span><span class="java_plain">add</span><span class="java_separator">(</span><span class="java_literal">&quot;Izi&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">names</span><span class="java_separator">.</span><span class="java_plain">add</span><span class="java_separator">(</span><span class="java_literal">&quot;Fritz&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">Query</span><span class="java_plain">&nbsp;q&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;sess</span><span class="java_separator">.</span><span class="java_plain">createQuery</span><span class="java_separator">(</span><span class="java_literal">&quot;from&nbsp;DomesticCat&nbsp;cat&nbsp;where&nbsp;cat.name&nbsp;in&nbsp;(:namesList)&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">q</span><span class="java_separator">.</span><span class="java_plain">setParameterList</span><span class="java_separator">(</span><span class="java_literal">&quot;namesList&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;names</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">List</span><span class="java_plain">&nbsp;cats&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;q</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span></pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="objectstate-querying-executing-pagination"/>10.4.1.5. Pagination</h4></div></div></div><p>
+                    If you need to specify bounds upon your result set, that is, the maximum number of rows
+                    you want to retrieve and/or the first row you want to retrieve, you can
+                    use methods of the <code class="literal">Query</code> interface:
+                </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Query</span><!-- <br/> --><span class="java_plain">&nbsp;q&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createQuery</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">&quot;from&nbsp;DomesticCat&nbsp;cat&quot;</span><!-- <br/> --><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">q</span><span class="java_separator">.</span><span class="java_plain">setFirstResult</span><span class="java_separator">(</span><span class="java_literal">20</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">q</span><span class="java_separator">.</span><span class="java_plain">setMaxResults</span><span class="java_separator">(</span><span class="java_literal">10</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">List</span><span class="java_plain">&nbsp;cats&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;q</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span></pre><p>
+                    Hibernate knows how to translate this limit query into the native
+                    SQL of your DBMS.
+                </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="objectstate-querying-executing-scrolling"/>10.4.1.6. Scrollable iteration</h4></div></div></div><p>
+                    If your JDBC driver supports scrollable <code class="literal">ResultSet</code>s, the
+                    <code class="literal">Query</code> interface can be used to obtain a
+                    <code class="literal">ScrollableResults</code> object that allows flexible
+                    navigation of the query results.
+                </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Query</span><!-- <br/> --><span class="java_plain">&nbsp;q&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createQuery</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">&quot;select&nbsp;cat.name,&nbsp;cat&nbsp;from&nbsp;DomesticCat&nbsp;cat&nbsp;&quot;</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_operator">+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;order&nbsp;by&nbsp;cat.name&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">ScrollableResults</span><span class="java_plain">&nbsp;cats&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;q</span><span class="java_separator">.</span><span class="java_plain">scroll</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;cats</span><span class="java_separator">.</span><span class="java_plain">first</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;find&nbsp;the&nbsp;first&nbsp;name&nbsp;on&nbsp;each&nbsp;page&nbsp;of&nbsp;an&nbsp;alphabetical&nbsp;list&nbsp;of&nbsp;cats&nbsp;by&nbsp;name</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;firstNamesOfPages&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">ArrayList</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">do</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">String</span><span class="java_plain">&nbsp;name&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;cats</span><span class="java_separator">.</span><span class="java_plain">getString</span><span class="java_separator">(</span><span class="java_literal">0</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;firstNamesOfPages</span><span class="java_separator">.</span><span class="java_plain">add</span><span class="java_separator">(</span><span class="java_plain">name</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">while</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;cats</span><span class="java_separator">.</span><span class="java_plain">scroll</span><span class="java_separator">(</span><span class="java_plain">PAGE_SIZE</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;</span><span class="java_type">Now</span><span class="java_plain">&nbsp;get&nbsp;the&nbsp;first&nbsp;page&nbsp;of&nbsp;cats</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;pageOfCats&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">ArrayList</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;cats</span><span class="java_separator">.</span><span class="java_plain">beforeFirst</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_type">int</span><span class="java_plain">&nbsp;i</span><span class="java_operator">=</span><span class="java_literal">0</span><span class="java_separator">;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">while</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;PAGE_SIZE&nbsp;</span><span class="java_operator">&gt;</span><span class="java_plain">&nbsp;i</span><span class="java_operator">++</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_operator">&amp;&amp;</span><span class="java_plain">&nbsp;cats</span><span class="java_separator">.</span><span class="java_plain">next</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;pageOfCats</span><span class="java_separator">.</span><span class="java_plain">add</span><span class="java_separator">(</span><span class="java_plain">&nbsp;cats</span><span class="java_separator">.</span><span class="java_plain">get</span><span class="java_separator">(</span><span class="java_literal">1</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_separator">}</span>
+<!--  --><br/><span class="java_plain">cats</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">()</span></pre><p>
+                    Note that an open database connection and cursor is required for this
+                    functionality. Use <code class="literal">setMaxResult()</code>/<code class="literal">setFirstResult()</code>
+                    if you need offline pagination functionality.
+                </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="objectstate-querying-executing-named"/>10.4.1.7. Externalizing named queries</h4></div></div></div><p>
+                    You can also define named queries in the mapping document. Remember to use a
+                    <code class="literal">CDATA</code> section if your query contains characters that could
+                    be interpreted as markup.
+                </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">query</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;ByNameAndMaximumWeight&quot;</span><span class="xml_tag_symbols">&gt;</span><span class="xml_char_data">&lt;![CDATA[</span><span class="xml_plain"></span><br />
+<span class="xml_char_data">&nbsp;&nbsp;&nbsp;&nbsp;from&nbsp;eg.DomesticCat&nbsp;as&nbsp;cat</span><span class="xml_plain"></span><br />
+<span class="xml_char_data">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;cat.name&nbsp;=&nbsp;?</span><span class="xml_plain"></span><br />
+<span class="xml_char_data">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;cat.weight&nbsp;&gt;&nbsp;?</span><span class="xml_plain"></span><br />
+<span class="xml_char_data">]&nbsp;]&gt;&lt;/query&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+                    Parameter binding and executing is done programatically:
+                </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Query</span><!-- <br/> --><span class="java_plain">&nbsp;q&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">getNamedQuery</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">&quot;ByNameAndMaximumWeight&quot;</span><!-- <br/> --><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">q</span><span class="java_separator">.</span><span class="java_plain">setString</span><span class="java_separator">(</span><span class="java_literal">0</span><span class="java_separator">,</span><span class="java_plain">&nbsp;name</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">q</span><span class="java_separator">.</span><span class="java_plain">setInt</span><span class="java_separator">(</span><span class="java_literal">1</span><span class="java_separator">,</span><span class="java_plain">&nbsp;minWeight</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">List</span><span class="java_plain">&nbsp;cats&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;q</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span></pre><p>
+                    The actual program code is independent of the query language that
+                    is used. You can also define native SQL queries in metadata, or migrate
+                    existing queries to Hibernate by placing them in mapping files.
+                </p><p>
+                    Also note that a query declaration inside a <code class="literal">&lt;hibernate-mapping&gt;</code>
+                    element requires a global unique name for the query, while a query declaration inside a
+                    <code class="literal">&lt;class&gt;</code> element is made unique automatically by prepending the
+                    fully qualified name of the class. For example
+                    <code class="literal">eg.Cat.ByNameAndMaximumWeight</code>.
+                </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="objectstate-filtering"/>10.4.2. Filtering collections</h3></div></div></div><p>
+                A collection <span class="emphasis"><em>filter</em></span> is a special type of query that can be applied to
+                a persistent collection or array. The query string can refer to <code class="literal">this</code>,
+                meaning the current collection element.
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Collection</span><!-- <br/> --><span class="java_plain">&nbsp;blackKittens&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createFilter</span><!-- <br/> --><span class="java_separator">(</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;pk</span><span class="java_separator">.</span><span class="java_plain">getKittens</span><span class="java_separator">(),</span><span class="java_plain">&nbsp;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;where&nbsp;this.color&nbsp;=&nbsp;?&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setParameter</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_type">Color</span><span class="java_separator">.</span><span class="java_plain">BLACK</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">Hibernate</span><span class="java_separator">.</span><span class="java_plain">custom</span><span class="java_separator">(</span><span class="java_type">ColorUserType</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">()</span>
+<!--  --><br/><span class="java_separator">);</span></pre><p>
+                The returned collection is considered a bag that is a copy of the given
+                collection. The original collection is not modified. This is contrary to
+                the implication of the name "filter", but consistent with expected behavior.
+            </p><p>
+                Observe that filters do not require a <code class="literal">from</code> clause, although they can have
+                one if required. Filters are not limited to returning the collection elements themselves.
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Collection</span><!-- <br/> --><span class="java_plain">&nbsp;blackKittenMates&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createFilter</span><!-- <br/> --><span class="java_separator">(</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;pk</span><span class="java_separator">.</span><span class="java_plain">getKittens</span><span class="java_separator">(),</span><span class="java_plain">&nbsp;</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;select&nbsp;this.mate&nbsp;where&nbsp;this.color&nbsp;=&nbsp;eg.Color.BLACK.intValue&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span></pre><p>
+                Even an empty filter query is useful, e.g. to load a subset of elements in a
+                large collection:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Collection</span><!-- <br/> --><span class="java_plain">&nbsp;tenKittens&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createFilter</span><!-- <br/> --><span class="java_separator">(</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;mother</span><span class="java_separator">.</span><span class="java_plain">getKittens</span><span class="java_separator">(),</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">setFirstResult</span><span class="java_separator">(</span><span class="java_literal">0</span><span class="java_separator">).</span><span class="java_plain">setMaxResults</span><span class="java_separator">(</span><span class="java_literal">10</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span></pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="objecstate-querying-criteria"/>10.4.3. Criteria queries</h3></div></div></div><p>
+                HQL is extremely powerful, but some developers prefer to build queries dynamically
+                using an object-oriented API, rather than building query strings. Hibernate provides
+                an intuitive <code class="literal">Criteria</code> query API for these cases:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Criteria</span><!-- <br/> --><span class="java_plain">&nbsp;crit&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createCriteria</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">crit</span><span class="java_separator">.</span><span class="java_plain">add</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_type">Restrictions</span><span class="java_separator">.</span><span class="java_plain">eq</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_literal">&quot;color&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;eg</span><span class="java_separator">.</span><span class="java_type">Color</span><span class="java_separator">.</span><span class="java_plain">BLACK&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">crit</span><span class="java_separator">.</span><span class="java_plain">setMaxResults</span><span class="java_separator">(</span><span class="java_literal">10</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">List</span><span class="java_plain">&nbsp;cats&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;crit</span><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span></pre><p>
+                The <code class="literal">Criteria</code> and the associated <code class="literal">Example</code>
+                API are discussed in more detail in <a class="xref" href="querycriteria.html" title="Chapter 16. Criteria Queries">Chapter 16, <i>Criteria Queries</i></a>.
+            </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="objectstate-querying-nativesql"/>10.4.4. Queries in native SQL</h3></div></div></div><p>
+                You can express a query in SQL, using <code class="literal">createSQLQuery()</code> and
+                let Hibernate manage the mapping from result sets to objects.
+                You can at any time call <code class="literal">session.connection()</code> and
+                use the JDBC <code class="literal">Connection</code> directly. If you choose to use the
+                Hibernate API, you must enclose SQL aliases in braces:
+            </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">List</span><!-- <br/> --><span class="java_plain">&nbsp;cats&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createSQLQuery</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">&quot;SELECT&nbsp;{cat.*}&nbsp;FROM&nbsp;CAT&nbsp;{cat}&nbsp;WHERE&nbsp;ROWNUM&lt;10&quot;</span><!-- <br/> --><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">addEntity</span><span class="java_separator">(</span><span class="java_literal">&quot;cat&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">Cat</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">();</span></pre><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">List</span><!-- <br/> --><span class="java_plain">&nbsp;cats&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;session</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">createSQLQuery</span><!-- <br/> --><span class="java_separator">(</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;SELECT&nbsp;{cat}.ID&nbsp;AS&nbsp;{cat.id},&nbsp;{cat}.SEX&nbsp;AS&nbsp;{cat.sex},&nbsp;&quot;</span><span class="java_plain">&nbsp;</span><span class="java_operator">+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;{cat}.MATE&nbsp;AS&nbsp;{cat.mate},&nbsp;{cat}.SUBCLASS&nbsp;AS&nbsp;{cat.class},&nbsp;...&nbsp;&quot;</span><span class="java_plain">&nbsp;</span><span class="java_operator">+</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_literal">&quot;FROM&nbsp;CAT&nbsp;{cat}&nbsp;WHERE&nbsp;ROWNUM&lt;10&quot;</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">.</span><span class="java_plain">addEntity</span><span class="java_separator">(</span><span class="java_literal">&quot;cat&quot;</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">Cat</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_separator">.</span><span class="java_plain">list</span><span class="java_separator">()</span></pre><p>
+                SQL queries can contain named and positional parameters, just like Hibernate queries.
+                More information about native SQL queries in Hibernate can be found in
+                <a class="xref" href="querysql.html" title="Chapter 17. Native SQL">Chapter 17, <i>Native SQL</i></a>.
+            </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate-modifying"/>10.5. Modifying persistent objects</h2></div></div></div><p>
+            <span class="emphasis"><em>Transactional persistent instances</em></span> (i.e. objects loaded, saved, created or
+            queried by the <code class="literal">Session</code>) can be manipulated by the application,
+            and any changes to persistent state will be persisted when the <code class="literal">Session</code>
+            is <span class="emphasis"><em>flushed</em></span>.  This is discussed later in this chapter. There is no need
+            to call a particular method (like <code class="literal">update()</code>, which has a different
+            purpose) to make your modifications persistent. The most straightforward way to update
+            the state of an object is to <code class="literal">load()</code> it
+            and then manipulate it directly while the <code class="literal">Session</code> is open:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">DomesticCat</span><!-- <br/> --><span class="java_plain">&nbsp;cat&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_type">DomesticCat</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">load</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_keyword">class</span><!-- <br/> --><span class="java_separator">,</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_keyword">new</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_type">Long</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_literal">69</span><!-- <br/> --><span class="java_separator">)</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">cat</span><span class="java_separator">.</span><span class="java_plain">setName</span><span class="java_separator">(</span><span class="java_literal">&quot;PK&quot;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">sess</span><span class="java_separator">.</span><span class="java_plain">flush</span><span class="java_separator">();</span><span class="java_plain">&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;changes&nbsp;to&nbsp;cat&nbsp;are&nbsp;automatically&nbsp;detected&nbsp;and&nbsp;persisted</span></pre><p>
+            Sometimes this programming model is inefficient, as it requires in the same session both an SQL
+            <code class="literal">SELECT</code> to load an object and an SQL <code class="literal">UPDATE</code>
+            to persist its updated state. Hibernate offers an
+            alternate approach by using detached instances.
+        </p><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="important"><h2>Important</h2><p>
+            Hibernate does not offer its own API for direct execution of
+            <code class="literal">UPDATE</code> or <code class="literal">DELETE</code> statements. Hibernate is a
+            <span class="emphasis"><em>state management</em></span> service, you do not have to think in
+            <span class="emphasis"><em>statements</em></span> to use it. JDBC is a perfect API for executing
+            SQL statements, you can get a JDBC <code class="literal">Connection</code> at any time
+            by calling <code class="literal">session.connection()</code>. Furthermore, the notion
+            of mass operations conflicts with object/relational mapping for online
+            transaction processing-oriented applications. Future versions of Hibernate
+            can, however, provide special mass operation functions. See <a class="xref" href="batch.html" title="Chapter 14. Batch processing">Chapter 14, <i>Batch processing</i></a>
+            for some possible batch operation tricks.
+        </p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate-detached"/>10.6. Modifying detached objects</h2></div></div></div><p>
+            Many applications need to retrieve an object in one transaction, send it to the
+            UI layer for manipulation, then save the changes in a new transaction.
+            Applications that use this kind of approach in a high-concurrency environment
+            usually use versioned data to ensure isolation for the "long" unit of work.
+        </p><p>
+            Hibernate supports this model by providing for reattachment of detached instances
+            using the <code class="literal">Session.update()</code> or <code class="literal">Session.merge()</code>
+            methods:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">&nbsp;in&nbsp;the&nbsp;first&nbsp;session</span>
+<!--  --><br/><span class="java_type">Cat</span><span class="java_plain">&nbsp;cat&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;firstSession</span><span class="java_separator">.</span><span class="java_plain">load</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">,</span><span class="java_plain">&nbsp;catId</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">Cat</span><span class="java_plain">&nbsp;potentialMate&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">Cat</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">firstSession</span><span class="java_separator">.</span><span class="java_plain">save</span><span class="java_separator">(</span><span class="java_plain">potentialMate</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;in&nbsp;a&nbsp;higher&nbsp;layer&nbsp;of&nbsp;the&nbsp;application</span>
+<!--  --><br/><span class="java_plain">cat</span><span class="java_separator">.</span><span class="java_plain">setMate</span><span class="java_separator">(</span><span class="java_plain">potentialMate</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;later</span><span class="java_separator">,</span><span class="java_plain">&nbsp;in&nbsp;a&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;session</span>
+<!--  --><br/><span class="java_plain">secondSession</span><span class="java_separator">.</span><span class="java_plain">update</span><span class="java_separator">(</span><span class="java_plain">cat</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;update&nbsp;cat</span>
+<!--  --><br/><span class="java_plain">secondSession</span><span class="java_separator">.</span><span class="java_plain">update</span><span class="java_separator">(</span><span class="java_plain">mate</span><span class="java_separator">);</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;update&nbsp;mate</span></pre><p>
+            If the <code class="literal">Cat</code> with identifier <code class="literal">catId</code> had already
+            been loaded by <code class="literal">secondSession</code> when the application tried to
+            reattach it, an exception would have been thrown.
+        </p><p>
+            Use <code class="literal">update()</code> if you are certain that the session does
+            not contain an already persistent instance with the same identifier. Use
+            <code class="literal">merge()</code> if you want to merge your modifications at any time
+            without consideration of the state of the session. In other words, <code class="literal">update()</code>
+            is usually the first method you would call in a fresh session, ensuring that
+            the reattachment of your detached instances is the first operation that is executed.
+        </p><p>
+            The application should individually <code class="literal">update()</code> detached instances
+            that are reachable from the given detached instance <span class="emphasis"><em>only</em></span> if it wants
+            their state to be updated. This can be automated using <span class="emphasis"><em>transitive
+            persistence</em></span>. See <a class="xref" href="objectstate.html#objectstate-transitive" title="10.11. Transitive persistence">Section 10.11, “Transitive persistence”</a> for more information.
+        </p><p>
+            The <code class="literal">lock()</code> method also allows an application to reassociate
+            an object with a new session. However, the detached instance has to be unmodified.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">just&nbsp;reassociate</span><!-- <br/> --><span class="java_operator">:</span>
+<!--  --><br/><span class="java_plain">sess</span><span class="java_separator">.</span><span class="java_plain">lock</span><span class="java_separator">(</span><span class="java_plain">fritz</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">LockMode</span><span class="java_separator">.</span><span class="java_plain">NONE</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_keyword">do</span><span class="java_plain">&nbsp;a&nbsp;version&nbsp;check</span><span class="java_separator">,</span><span class="java_plain">&nbsp;then&nbsp;reassociate</span><span class="java_operator">:</span>
+<!--  --><br/><span class="java_plain">sess</span><span class="java_separator">.</span><span class="java_plain">lock</span><span class="java_separator">(</span><span class="java_plain">izi</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">LockMode</span><span class="java_separator">.</span><span class="java_plain">READ</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_keyword">do</span><span class="java_plain">&nbsp;a&nbsp;version&nbsp;check</span><span class="java_separator">,</span><span class="java_plain">&nbsp;using&nbsp;SELECT&nbsp;</span><span class="java_separator">...</span><span class="java_plain">&nbsp;FOR&nbsp;UPDATE</span><span class="java_separator">,</span><span class="java_plain">&nbsp;then&nbsp;reassociate</span><span class="java_operator">:</span>
+<!--  --><br/><span class="java_plain">sess</span><span class="java_separator">.</span><span class="java_plain">lock</span><span class="java_separator">(</span><span class="java_plain">pk</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">LockMode</span><span class="java_separator">.</span><span class="java_plain">UPGRADE</span><span class="java_separator">);</span></pre><p>
+            Note that <code class="literal">lock()</code> can be used with various
+            <code class="literal">LockMode</code>s. See the API documentation and the
+            chapter on transaction handling for more information. Reattachment is not
+            the only usecase for <code class="literal">lock()</code>.
+        </p><p>
+            Other models for long units of work are discussed in <a class="xref" href="transactions.html#transactions-optimistic" title="12.3. Optimistic concurrency control">Section 12.3, “Optimistic concurrency control”</a>.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate-saveorupdate"/>10.7. Automatic state detection</h2></div></div></div><p>
+            Hibernate users have requested a general purpose method that either saves a
+            transient instance by generating a new identifier or updates/reattaches
+            the detached instances associated with its current identifier.
+            The <code class="literal">saveOrUpdate()</code> method implements this functionality.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">&nbsp;in&nbsp;the&nbsp;first&nbsp;session</span>
+<!--  --><br/><span class="java_type">Cat</span><span class="java_plain">&nbsp;cat&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;firstSession</span><span class="java_separator">.</span><span class="java_plain">load</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">,</span><span class="java_plain">&nbsp;catID</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;in&nbsp;a&nbsp;higher&nbsp;tier&nbsp;of&nbsp;the&nbsp;application</span>
+<!--  --><br/><span class="java_type">Cat</span><span class="java_plain">&nbsp;mate&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">Cat</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">cat</span><span class="java_separator">.</span><span class="java_plain">setMate</span><span class="java_separator">(</span><span class="java_plain">mate</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;later</span><span class="java_separator">,</span><span class="java_plain">&nbsp;in&nbsp;a&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;session</span>
+<!--  --><br/><span class="java_plain">secondSession</span><span class="java_separator">.</span><span class="java_plain">saveOrUpdate</span><span class="java_separator">(</span><span class="java_plain">cat</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;update&nbsp;existing&nbsp;state&nbsp;</span><span class="java_separator">(</span><span class="java_plain">cat&nbsp;has&nbsp;a&nbsp;non</span><span class="java_operator">-</span><span class="java_literal">null</span><span class="java_plain">&nbsp;id</span><span class="java_separator">)</span>
+<!--  --><br/><span class="java_plain">secondSession</span><span class="java_separator">.</span><span class="java_plain">saveOrUpdate</span><span class="java_separator">(</span><span class="java_plain">mate</span><span class="java_separator">);</span><span class="java_plain">&nbsp;&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;save&nbsp;the&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;instance&nbsp;</span><span class="java_separator">(</span><span class="java_plain">mate&nbsp;has&nbsp;a&nbsp;</span><span class="java_literal">null</span><span class="java_plain">&nbsp;id</span><span class="java_separator">)</span></pre><p>
+            The usage and semantics of <code class="literal">saveOrUpdate()</code> seems to be confusing
+            for new users. Firstly, so long as you are not trying to use instances from one session
+            in another new session, you should not need to use <code class="literal">update()</code>,
+            <code class="literal">saveOrUpdate()</code>, or <code class="literal">merge()</code>. Some whole
+            applications will never use either of these methods.
+        </p><p>
+            Usually <code class="literal">update()</code> or <code class="literal">saveOrUpdate()</code> are used in
+            the following scenario:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    the application loads an object in the first session
+                </p></li><li><p>
+                    the object is passed up to the UI tier
+                </p></li><li><p>
+                    some modifications are made to the object
+                </p></li><li><p>
+                    the object is passed back down to the business logic tier
+                </p></li><li><p>
+                    the application persists these modifications by calling
+                    <code class="literal">update()</code> in a second session
+                </p></li></ul></div><p>
+            <code class="literal">saveOrUpdate()</code> does the following:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    if the object is already persistent in this session, do nothing
+                </p></li><li><p>
+                    if another object associated with the session has the same identifier, 
+                    throw an exception
+                </p></li><li><p>
+                    if the object has no identifier property, <code class="literal">save()</code> it
+                </p></li><li><p>
+                    if the object's identifier has the value assigned to a newly instantiated
+                    object, <code class="literal">save()</code> it
+                </p></li><li><p>
+                    if the object is versioned by a <code class="literal">&lt;version&gt;</code> or
+                    <code class="literal">&lt;timestamp&gt;</code>, and the version property value
+                    is the same value assigned to a newly instantiated object, 
+                    <code class="literal">save()</code> it
+                </p></li><li><p>
+                    otherwise <code class="literal">update()</code> the object
+                </p></li></ul></div><p>
+            and <code class="literal">merge()</code> is very different:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    if there is a persistent instance with the same identifier currently 
+                    associated with the session, copy the state of the given object onto 
+                    the persistent instance
+                </p></li><li><p>
+                    if there is no persistent instance currently associated with the session, 
+                    try to load it from the database, or create a new persistent instance
+                </p></li><li><p>
+                    the persistent instance is returned
+                </p></li><li><p>
+                    the given instance does not become associated with the session, it
+                    remains detached
+                </p></li></ul></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate-deleting"/>10.8. Deleting persistent objects</h2></div></div></div><p>
+            <code class="literal">Session.delete()</code> will remove an object's state from the database.
+            Your application, however, can still hold a reference to a deleted object.
+            It is best to think of <code class="literal">delete()</code> as making a persistent instance,
+            transient.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_plain">sess</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">delete</span><!-- <br/> --><span class="java_separator">(</span><!-- <br/> --><span class="java_plain">cat</span><!-- <br/> --><span class="java_separator">);</span></pre><p>
+            You can delete objects in any order, without risk of foreign key
+            constraint violations. It is still possible to violate a <code class="literal">NOT
+            NULL</code> constraint on a foreign key column by deleting objects in
+            the wrong order, e.g. if you delete the parent, but forget to delete the
+            children.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate-replicating"/>10.9. Replicating object between two different datastores</h2></div></div></div><p>
+    	    It is sometimes useful to be able to take a graph of persistent instances
+    	    and make them persistent in a different datastore, without regenerating identifier
+    	    values.
+    	</p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_operator">//</span><!-- <br/> --><span class="java_plain">retrieve&nbsp;a&nbsp;cat&nbsp;from&nbsp;one&nbsp;database</span>
+<!--  --><br/><span class="java_type">Session</span><span class="java_plain">&nbsp;session1&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;factory1</span><span class="java_separator">.</span><span class="java_plain">openSession</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx1&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session1</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Cat</span><span class="java_plain">&nbsp;cat&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session1</span><span class="java_separator">.</span><span class="java_plain">get</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">,</span><span class="java_plain">&nbsp;catId</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">tx1</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">session1</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">reconcile&nbsp;with&nbsp;a&nbsp;second&nbsp;database</span>
+<!--  --><br/><span class="java_type">Session</span><span class="java_plain">&nbsp;session2&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;factory2</span><span class="java_separator">.</span><span class="java_plain">openSession</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx2&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;session2</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">session2</span><span class="java_separator">.</span><span class="java_plain">replicate</span><span class="java_separator">(</span><span class="java_plain">cat</span><span class="java_separator">,</span><span class="java_plain">&nbsp;</span><span class="java_type">ReplicationMode</span><span class="java_separator">.</span><span class="java_plain">LATEST_VERSION</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">tx2</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">session2</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span></pre><p>
+            The <code class="literal">ReplicationMode</code> determines how <code class="literal">replicate()</code>
+            will deal with conflicts with existing rows in the database:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    <code class="literal">ReplicationMode.IGNORE</code>: ignores the object when there is
+                    an existing database row with the same identifier
+                </p></li><li><p>
+                    <code class="literal">ReplicationMode.OVERWRITE</code>: overwrites any existing database 
+                    row with the same identifier
+                </p></li><li><p>
+                    <code class="literal">ReplicationMode.EXCEPTION</code>: throws an exception if there is
+                    an existing database row with the same identifier
+                </p></li><li><p>
+                    <code class="literal">ReplicationMode.LATEST_VERSION</code>: overwrites the row if its
+                    version number is earlier than the version number of the object, or ignore
+                    the object otherwise
+                </p></li></ul></div><p>
+            Usecases for this feature include reconciling data entered into different database
+            instances, upgrading system configuration information during product upgrades,
+            rolling back changes made during non-ACID transactions and more.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate-flushing"/>10.10. Flushing the Session</h2></div></div></div><p>
+            Sometimes the <code class="literal">Session</code> will execute the SQL statements 
+            needed to synchronize the JDBC connection's state with the state of objects held in 
+            memory. This process, called <span class="emphasis"><em>flush</em></span>, occurs by default at the following 
+            points:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    before some query executions
+                </p></li><li><p>
+                    from <code class="literal">org.hibernate.Transaction.commit()</code>
+                </p></li><li><p>
+                    from <code class="literal">Session.flush()</code>
+                </p></li></ul></div><p>
+            The SQL statements are issued in the following order:
+        </p><div xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="orderedlist"><ol><li><p>
+                    all entity insertions in the same order the corresponding objects
+                    were saved using <code class="literal">Session.save()</code>
+                </p></li><li><p>
+                    all entity updates
+                </p></li><li><p>
+                    all collection deletions
+                </p></li><li><p>
+                    all collection element deletions, updates and insertions
+                </p></li><li><p>
+                    all collection insertions
+                </p></li><li><p>
+                    all entity deletions in the same order the corresponding objects
+                    were deleted using <code class="literal">Session.delete()</code>
+                </p></li></ol></div><p>
+            An exception is that objects using <code class="literal">native</code> ID generation are 
+            inserted when they are saved.
+        </p><p>
+            Except when you explicitly <code class="literal">flush()</code>, there are absolutely no 
+            guarantees about <span class="emphasis"><em>when</em></span> the <code class="literal">Session</code> executes 
+            the JDBC calls, only the <span class="emphasis"><em>order</em></span> in which they are executed.
+            However, Hibernate does guarantee that the <code class="literal">Query.list(..)</code> 
+            will never return stale or incorrect data.
+        </p><p>
+            It is possible to change the default behavior so that flush occurs less frequently.
+            The <code class="literal">FlushMode</code> class defines three different modes: only flush
+            at commit time when the Hibernate <code class="literal">Transaction</code> API
+            is used, flush automatically using the explained routine, or never flush unless
+            <code class="literal">flush()</code> is called explicitly. The last mode is useful for long running
+            units of work, where a <code class="literal">Session</code> is kept open and disconnected for
+            a long time (see <a class="xref" href="transactions.html#transactions-optimistic-longsession" title="12.3.2. Extended session and automatic versioning">Section 12.3.2, “Extended session and automatic versioning”</a>).
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_plain">sess&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;sf</span><!-- <br/> --><span class="java_separator">.</span><!-- <br/> --><span class="java_plain">openSession</span><!-- <br/> --><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Transaction</span><span class="java_plain">&nbsp;tx&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;sess</span><span class="java_separator">.</span><span class="java_plain">beginTransaction</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_plain">sess</span><span class="java_separator">.</span><span class="java_plain">setFlushMode</span><span class="java_separator">(</span><span class="java_type">FlushMode</span><span class="java_separator">.</span><span class="java_plain">COMMIT</span><span class="java_separator">);</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;allow&nbsp;queries&nbsp;to&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;stale&nbsp;state</span>
+</span>
+<!--  --><br/><span class="java_type">Cat</span><span class="java_plain">&nbsp;izi&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">)</span><span class="java_plain">&nbsp;sess</span><span class="java_separator">.</span><span class="java_plain">load</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">,</span><span class="java_plain">&nbsp;id</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">izi</span><span class="java_separator">.</span><span class="java_plain">setName</span><span class="java_separator">(</span><span class="java_plain">iznizi</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;might&nbsp;</span><span class="java_keyword">return</span><span class="java_plain">&nbsp;stale&nbsp;data</span>
+<!--  --><br/><span class="java_plain">sess</span><span class="java_separator">.</span><span class="java_plain">find</span><span class="java_separator">(</span><span class="java_literal">&quot;from&nbsp;Cat&nbsp;as&nbsp;cat&nbsp;left&nbsp;outer&nbsp;join&nbsp;cat.kittens&nbsp;kitten&quot;</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;change&nbsp;to&nbsp;izi&nbsp;is&nbsp;not&nbsp;flushed</span><span class="java_operator">!</span>
+<!--  --><br/><span class="java_separator">...</span>
+<!--  --><br/><span class="java_plain">tx</span><span class="java_separator">.</span><span class="java_plain">commit</span><span class="java_separator">();</span><span class="java_plain">&nbsp;</span><span class="java_operator">//</span><span class="java_plain">&nbsp;flush&nbsp;occurs</span>
+<!--  --><br/><span class="java_plain">sess</span><span class="java_separator">.</span><span class="java_plain">close</span><span class="java_separator">();</span></pre><p>
+            During flush, an exception might occur (e.g. if a DML operation violates a constraint).
+            Since handling exceptions involves some understanding of Hibernate's transactional 
+            behavior, we discuss it in <a class="xref" href="transactions.html" title="Chapter 12. Transactions and Concurrency">Chapter 12, <i>Transactions and Concurrency</i></a>.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate-transitive"/>10.11. Transitive persistence</h2></div></div></div><p>
+            It is quite cumbersome to save, delete, or reattach individual objects,
+            especially if you deal with a graph of associated objects. A common case is
+            a parent/child relationship. Consider the following example:
+        </p><p>
+            If the children in a parent/child relationship would be value typed (e.g. a collection
+            of addresses or strings), their life cycle would depend on the parent and no
+            further action would be required for convenient "cascading" of state changes.
+            When the parent is saved, the value-typed child objects are saved and
+            when the parent is deleted, the children will be deleted, etc. This
+            works for operations such as the removal of a child from the collection.
+            Since value-typed objects cannot have shared
+            references, Hibernate will detect this and delete the child from the database.
+        </p><p>
+            Now consider the same scenario with parent and child objects being entities,
+            not value-types (e.g. categories and items, or parent and child cats). Entities
+            have their own life cycle and support shared references.  Removing an entity from
+            the collection does not mean it can be deleted), and there is by default no
+            cascading of state from one entity to any other associated entities. Hibernate
+            does not implement <span class="emphasis"><em>persistence by reachability</em></span> by default.
+        </p><p>
+            For each basic operation of the Hibernate session - including <code class="literal">persist(), merge(),
+            saveOrUpdate(), delete(), lock(), refresh(), evict(), replicate()</code> - there is a 
+            corresponding cascade style. Respectively, the cascade styles are named <code class="literal">create, 
+            merge, save-update, delete, lock, refresh, evict, replicate</code>. If you want an 
+            operation to be cascaded along an association, you must indicate that in the mapping
+            document. For example:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-one</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;person&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">cascade</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;persist&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            Cascade styles my be combined:
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="XML"><!-- XML : generated by JHighlight v1.0 (http://jhighlight.dev.java.net) -->
+<span class="xml_tag_symbols">&lt;</span><span class="xml_tag_name">one-to-one</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">name</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;person&quot;</span><span class="xml_plain">&nbsp;</span><span class="xml_attribute_name">cascade</span><span class="xml_tag_symbols">=</span><span class="xml_attribute_value">&quot;persist,delete,lock&quot;</span><span class="xml_tag_symbols">/&gt;</span><span class="xml_plain"></span><br />
+</pre><p>
+            You can even use <code class="literal">cascade="all"</code> to specify that <span class="emphasis"><em>all</em></span>
+            operations should be cascaded along the association. The default <code class="literal">cascade="none"</code>
+            specifies that no operations are to be cascaded.
+        </p><p>
+            A special cascade style, <code class="literal">delete-orphan</code>, applies only to one-to-many
+            associations, and indicates that the <code class="literal">delete()</code> operation should
+            be applied to any child object that is removed from the association.
+        </p><p>
+            Recommendations:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    It does not usually make sense to enable cascade on a <code class="literal">&lt;many-to-one&gt;</code>
+                    or <code class="literal">&lt;many-to-many&gt;</code> association. Cascade is often useful for 
+                    <code class="literal">&lt;one-to-one&gt;</code> and <code class="literal">&lt;one-to-many&gt;</code>
+                    associations.
+                </p></li><li><p>
+                    If the child object's lifespan is bounded by the lifespan of the parent
+                    object, make it a <span class="emphasis"><em>life cycle object</em></span> by specifying
+                    <code class="literal">cascade="all,delete-orphan"</code>.
+                </p></li><li><p>
+                    Otherwise, you might not need cascade at all. But if you think that you will often be
+                    working with the parent and children together in the same transaction, and you want to save 
+                    yourself some typing, consider using <code class="literal">cascade="persist,merge,save-update"</code>.
+                </p></li></ul></div><p>
+            Mapping an association (either a single valued association, or a collection) with 
+            <code class="literal">cascade="all"</code> marks the association as a 
+            <span class="emphasis"><em>parent/child</em></span> style relationship where save/update/delete of the 
+            parent results in save/update/delete of the child or children.
+        </p><p>
+            Furthermore, a mere reference to a child from a persistent parent will result in 
+            save/update of the child. This metaphor is incomplete, however. A child which becomes 
+            unreferenced by its parent is <span class="emphasis"><em>not</em></span> automatically deleted, except 
+            in the case of a <code class="literal">&lt;one-to-many&gt;</code> association mapped with
+            <code class="literal">cascade="delete-orphan"</code>. The precise semantics of cascading 
+            operations for a parent/child relationship are as follows:
+        </p><div class="itemizedlist"><ul compact="compact"><li><p>
+                    If a parent is passed to <code class="literal">persist()</code>, all children are passed to 
+                    <code class="literal">persist()</code>
+                </p></li><li><p>
+                    If a parent is passed to <code class="literal">merge()</code>, all children are passed to 
+                    <code class="literal">merge()</code>
+                </p></li><li><p>
+                    If a parent is passed to <code class="literal">save()</code>, <code class="literal">update()</code> or 
+                    <code class="literal">saveOrUpdate()</code>, all children are passed to <code class="literal">saveOrUpdate()</code>
+                </p></li><li><p>
+                    If a transient or detached child becomes referenced by a persistent parent, 
+                    it is passed to <code class="literal">saveOrUpdate()</code>
+                </p></li><li><p>
+                    If a parent is deleted, all children are passed to <code class="literal">delete()</code>
+                </p></li><li><p>
+                    If a child is dereferenced by a persistent parent, <span class="emphasis"><em>nothing
+                    special happens</em></span> - the application should explicitly delete 
+                    the child if necessary - unless <code class="literal">cascade="delete-orphan"</code>, 
+                    in which case the "orphaned" child is deleted.
+                </p></li></ul></div><p>
+            Finally, note that cascading of operations can be applied to an object graph at
+            <span class="emphasis"><em>call time</em></span> or at <span class="emphasis"><em>flush time</em></span>. All operations,
+            if enabled, are cascaded to associated entities reachable when the operation is
+            executed. However, <code class="literal">save-update</code> and <code class="literal">delete-orphan</code>
+            are transitive for all associated entities reachable during flush of the
+            <code class="literal">Session</code>.
+        </p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="objectstate-metadata"/>10.12. Using metadata</h2></div></div></div><p>
+            Hibernate requires a rich meta-level model of all entity and value types. 
+            This model can be useful to the application itself. For example, the application
+            might use Hibernate's metadata to implement a "smart" deep-copy algorithm that understands
+            which objects should be copied (eg. mutable value types) and which objects that should not (e.g. 
+            immutable value types and, possibly, associated entities).
+        </p><p>
+            Hibernate exposes metadata via the <code class="literal">ClassMetadata</code> and
+            <code class="literal">CollectionMetadata</code> interfaces and the <code class="literal">Type</code>
+            hierarchy. Instances of the metadata interfaces can be obtained from the 
+            <code class="literal">SessionFactory</code>.
+        </p><pre xmlns="" xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" class="JAVA"><!-- <br/> --><span class="java_type">Cat</span><!-- <br/> --><span class="java_plain">&nbsp;fritz&nbsp;</span><!-- <br/> --><span class="java_operator">=</span><!-- <br/> --><span class="java_plain">&nbsp;</span><!-- <br/> --><span class="java_separator">......;</span>
+<!--  --><br/><span class="java_type">ClassMetadata</span><span class="java_plain">&nbsp;catMeta&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;sessionfactory</span><span class="java_separator">.</span><span class="java_plain">getClassMetadata</span><span class="java_separator">(</span><span class="java_type">Cat</span><span class="java_separator">.</span><span class="java_keyword">class</span><span class="java_separator">);</span>
+</span>
+<!--  --><br/><span class="java_type">Object</span><span class="java_separator">[]</span><span class="java_plain">&nbsp;propertyValues&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;catMeta</span><span class="java_separator">.</span><span class="java_plain">getPropertyValues</span><span class="java_separator">(</span><span class="java_plain">fritz</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_type">String</span><span class="java_separator">[]</span><span class="java_plain">&nbsp;propertyNames&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;catMeta</span><span class="java_separator">.</span><span class="java_plain">getPropertyNames</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_type">Type</span><span class="java_separator">[]</span><span class="java_plain">&nbsp;propertyTypes&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;catMeta</span><span class="java_separator">.</span><span class="java_plain">getPropertyTypes</span><span class="java_separator">();</span>
+</span>
+<!--  --><br/><span class="java_operator">//</span><span class="java_plain">&nbsp;get&nbsp;a&nbsp;</span><span class="java_type">Map</span><span class="java_plain">&nbsp;of&nbsp;all&nbsp;properties&nbsp;which&nbsp;are&nbsp;not&nbsp;collections&nbsp;or&nbsp;associations</span>
+<!--  --><br/><span class="java_type">Map</span><span class="java_plain">&nbsp;namedValues&nbsp;</span><span class="java_operator">=</span><span class="java_plain">&nbsp;</span><span class="java_keyword">new</span><span class="java_plain">&nbsp;</span><span class="java_type">HashMap</span><span class="java_separator">();</span>
+<!--  --><br/><span class="java_keyword">for</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_type">int</span><span class="java_plain">&nbsp;i</span><span class="java_operator">=</span><span class="java_literal">0</span><span class="java_separator">;</span><span class="java_plain">&nbsp;i</span><span class="java_operator">&lt;</span><span class="java_plain">propertyNames</span><span class="java_separator">.</span><span class="java_plain">length</span><span class="java_separator">;</span><span class="java_plain">&nbsp;i</span><span class="java_operator">++</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_keyword">if</span><span class="java_plain">&nbsp;</span><span class="java_separator">(</span><span class="java_plain">&nbsp;</span><span class="java_operator">!</span><span class="java_plain">propertyTypes</span><span class="java_separator">[</span><span class="java_plain">i</span><span class="java_separator">].</span><span class="java_plain">isEntityType</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_operator">&amp;&amp;</span><span class="java_plain">&nbsp;</span><span class="java_operator">!</span><span class="java_plain">propertyTypes</span><span class="java_separator">[</span><span class="java_plain">i</span><span class="java_separator">].</span><span class="java_plain">isCollectionType</span><span class="java_separator">()</span><span class="java_plain">&nbsp;</span><span class="java_separator">)</span><span class="java_plain">&nbsp;</span><span class="java_separator">{</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;namedValues</span><span class="java_separator">.</span><span class="java_plain">put</span><span class="java_separator">(</span><span class="java_plain">&nbsp;propertyNames</span><span class="java_separator">[</span><span class="java_plain">i</span><span class="java_separator">],</span><span class="java_plain">&nbsp;propertyValues</span><span class="java_separator">[</span><span class="java_plain">i</span><span class="java_separator">]</span><span class="java_plain">&nbsp;</span><span class="java_separator">);</span>
+<!--  --><br/><span class="java_plain">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="java_separator">}</span>
+<!--  --><br/><span class="java_separator">}</span></pre></div></div><HR xmlns=""/><a xmlns="" href="legalnotice.html"><p xmlns="http://www.w3.org/1999/xhtml" class="copyright">Copyright © 2004 Red Hat, Inc.</p></a><ul class="docnav"><li class="previous"><a accesskey="p" href="inheritance.html"><strong>Prev</strong>Chapter 9. Inheritance mapping</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="readonly.html"><strong>Next</strong>Chapter 11. Read-only entities</a></li></ul></body></html>

@@ -1,0 +1,2050 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;13.&nbsp;Web MVC framework</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><!--Begin Google Analytics code--><script xmlns="http://www.w3.org/TR/xhtml1/transitional" type="text/javascript"> 
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        </script><script xmlns="http://www.w3.org/TR/xhtml1/transitional" type="text/javascript"> 
+            var pageTracker = _gat._getTracker("UA-2728886-3");
+            pageTracker._setDomainName("none");
+            pageTracker._setAllowLinker(true);
+            pageTracker._trackPageview();
+        </script><!--End Google Analytics code--><link rel="home" href="index.html" title="The Spring Framework - Reference Documentation"><link rel="up" href="spring-web.html" title="Part&nbsp;III.&nbsp;The Web"><link rel="previous" href="spring-web.html" title="Part&nbsp;III.&nbsp;The Web"><link rel="next" href="view.html" title="Chapter&nbsp;14.&nbsp;View technologies"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://www.springframework.org/" title="The Spring Framework"><img style="border:none;" src="images/xdev-spring_logo.jpg"></a><a style="border:none;" href="http://www.springsource.com/" title="SpringSource"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/springsource-banner-rhs.png"></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="mvc"></a>Chapter&nbsp;13.&nbsp;Web MVC framework</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mvc-introduction"></a>13.1.&nbsp;Introduction</h2></div></div><div></div></div><p>Spring's Web MVC framework is designed around a
+    <tt class="classname">DispatcherServlet</tt> that dispatches requests to
+    handlers, with configurable handler mappings, view resolution, locale and
+    theme resolution as well as support for upload files. The default handler
+    is a very simple <tt class="interfacename">Controller</tt> interface, just
+    offering a <tt class="literal">ModelAndView handleRequest(request,response)</tt>
+    method. This can already be used for application controllers, but you will
+    prefer the included implementation hierarchy, consisting of, for example
+    <tt class="classname">AbstractController</tt>,
+    <tt class="classname">AbstractCommandController</tt> and
+    <tt class="classname">SimpleFormController</tt>. Application controllers will
+    typically be subclasses of those. Note that you can choose an appropriate
+    base class: if you don't have a form, you don't need a form controller.
+    This is a major difference to Struts.</p><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../images/admons/tip.png"></td><th align="left">Tip</th></tr><tr><td colspan="2" align="left" valign="top"><p>Since Spring 2.5, an annotated controller style is available
+      for Java 5+ users. This is a compelling alternative to implementing
+      traditional <tt class="interfacename">Controller</tt> (sub-)classes,
+      allowing for flexible multi-action handling. See the
+      <a href="mvc.html#mvc-annotation" title="13.11.&nbsp;Annotation-based controller configuration">Section&nbsp;13.11, &#8220;Annotation-based controller configuration&#8221;</a> section for details.</p></td></tr></table></div><div class="sidebar"><a name="mvc-open-for-extension"></a><p class="title"><b>&#8220;<span class="quote">Open for extension...</span>&#8221;</b></p><p>One of the overarching design principles in Spring Web MVC (and in
+      Spring in general) is the &#8220;<span class="quote"><span class="emphasis"><em>Open for extension, closed
+      for modification</em></span></span>&#8221; principle.</p><p>The reason that this principle is being mentioned here is because
+      a number of methods in the core classes in Spring Web MVC are marked
+      <tt class="literal">final</tt>. This means of course that you as a developer
+      cannot override these methods to supply your own behavior... this is
+      <span class="emphasis"><em>by design</em></span> and has not been done arbitrarily to
+      annoy.</p><p>The book 'Expert Spring Web MVC and Web Flow' by Seth Ladd and
+      others explains this principle and the reasons for adhering to it in
+      some depth on page 117 (first edition) in the section entitled 'A Look
+      At Design'.</p><p>If you don't have access to the aforementioned book, then the
+      following article may be of interest the next time you find yourself
+      going &#8220;<span class="quote">Gah! Why can't I override this method?</span>&#8221; (if indeed
+      you ever do).</p><div class="orderedlist"><ol type="1"><li><p><a href="http://www.objectmentor.com/resources/articles/ocp.pdf" target="_top">Bob
+          Martin, The Open-Closed Principle (PDF)</a></p></li></ol></div><p>Note that you cannot add advice to final methods using Spring MVC.
+      This means it won't be possible to add advice to for example the
+      <tt class="literal">AbstractController.handleRequest()</tt> method. Refer to
+      <a href="aop.html#aop-understanding-aop-proxies" title="6.6.1.&nbsp;Understanding AOP proxies">Section&nbsp;6.6.1, &#8220;Understanding AOP proxies&#8221;</a> for more information on
+      AOP proxies and why you cannot add advice to final methods.</p></div><p>Spring Web MVC allows you to use any object as a command or form
+    object - there is no need to implement a framework-specific interface or
+    base class. Spring's data binding is highly flexible: for example, it
+    treats type mismatches as validation errors that can be evaluated by the
+    application, not as system errors. All this means that you don't need to
+    duplicate your business objects' properties as simple, untyped strings in
+    your form objects just to be able to handle invalid submissions, or to
+    convert the Strings properly. Instead, it is often preferable to bind
+    directly to your business objects. This is another major difference to
+    Struts which is built around required base classes such as
+    <tt class="classname">Action</tt> and
+    <tt class="classname">ActionForm</tt>.</p><p>Compared to WebWork, Spring has more differentiated object roles. It
+    supports the notion of a <tt class="interfacename">Controller</tt>, an
+    optional command or form object, and a model that gets passed to the view.
+    The model will normally include the command or form object but also
+    arbitrary reference data; instead, a WebWork
+    <tt class="interfacename">Action</tt> combines all those roles into one
+    single object. WebWork does allow you to use existing business objects as
+    part of your form, but only by making them bean properties of the
+    respective <tt class="interfacename">Action</tt> class. Finally, the same
+    <tt class="interfacename">Action</tt> instance that handles the request is
+    used for evaluation and form population in the view. Thus, reference data
+    needs to be modeled as bean properties of the
+    <tt class="interfacename">Action</tt> too. These are (arguably) too many
+    roles for one object.</p><p>Spring's view resolution is extremely flexible. A
+    <tt class="interfacename">Controller</tt> implementation can even write a
+    view directly to the response (by returning <tt class="literal">null</tt> for
+    the <tt class="classname">ModelAndView</tt>). In the normal case, a
+    <tt class="classname">ModelAndView</tt> instance consists of a view name and a
+    model <tt class="interfacename">Map</tt>, which contains bean names and
+    corresponding objects (like a command or form, containing reference data).
+    View name resolution is highly configurable, either via bean names, via a
+    properties file, or via your own
+    <tt class="interfacename">ViewResolver</tt> implementation. The fact that
+    the model (the M in MVC) is based on the
+    <tt class="interfacename">Map</tt> interface allows for the complete
+    abstraction of the view technology. Any renderer can be integrated
+    directly, whether JSP, Velocity, or any other rendering technology. The
+    model <tt class="interfacename">Map</tt> is simply transformed into an
+    appropriate format, such as JSP request attributes or a Velocity template
+    model.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-introduction-pluggability"></a>13.1.1.&nbsp;Pluggability of other MVC implementations</h3></div></div><div></div></div><p>There are several reasons why some projects will prefer to use
+      other MVC implementations. Many teams expect to leverage their existing
+      investment in skills and tools. In addition, there is a large body of
+      knowledge and experience available for the Struts framework. Thus, if
+      you can live with Struts' architectural flaws, it can still be a viable
+      choice for the web layer; the same applies to WebWork and other web MVC
+      frameworks.</p><p>If you don't want to use Spring's web MVC, but intend to leverage
+      other solutions that Spring offers, you can integrate the web MVC
+      framework of your choice with Spring easily. Simply start up a Spring
+      root application context via its
+      <tt class="classname">ContextLoaderListener</tt>, and access it via its
+      <tt class="interfacename">ServletContext</tt> attribute (or Spring's
+      respective helper method) from within a Struts or WebWork action. Note
+      that there aren't any "plug-ins" involved, so no dedicated integration
+      is necessary. From the web layer's point of view, you'll simply use
+      Spring as a library, with the root application context instance as the
+      entry point.</p><p>All your registered beans and all of Spring's services can be at
+      your fingertips even without Spring's Web MVC. Spring doesn't compete
+      with Struts or WebWork in this scenario, it just addresses the many
+      areas that the pure web MVC frameworks don't, from bean configuration to
+      data access and transaction handling. So you are able to enrich your
+      application with a Spring middle tier and/or data access tier, even if
+      you just want to use, for example, the transaction abstraction with JDBC
+      or Hibernate.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-features"></a>13.1.2.&nbsp;Features of Spring Web MVC</h3></div></div><div></div></div><div class="sidebar"><p class="title"><b>Spring Web Flow</b></p><p>Spring Web Flow (SWF) aims to be the best solution for the management
+  of web application page flow.</p><p>SWF integrates with existing frameworks like Spring MVC, Struts, and
+  JSF, in both servlet and portlet environments. If you have a business
+  process (or processes) that would benefit from a conversational model as
+  opposed to a purely request model, then SWF may be the solution.</p><p>SWF allows you to capture logical page flows as self-contained modules
+  that are reusable in different situations, and as such is ideal for building
+  web application modules that guide the user through controlled navigations
+  that drive business processes.</p><p>For more information about SWF, consult the
+  <a href="http://www.springframework.org/webflow" target="_top">Spring Web Flow website</a>.
+  </p></div><p>Spring's web module provides a wealth of unique web support
+      features, including:</p><div class="itemizedlist"><ul type="disc"><li><p>Clear separation of roles - controller, validator, command
+          object, form object, model object,
+          <tt class="classname">DispatcherServlet</tt>, handler mapping, view
+          resolver, etc. Each role can be fulfilled by a specialized
+          object.</p></li><li><p>Powerful and straightforward configuration of both framework
+          and application classes as JavaBeans, including easy referencing
+          across contexts, such as from web controllers to business objects
+          and validators.</p></li><li><p>Adaptability, non-intrusiveness. Use whatever controller
+          subclass you need (plain, command, form, wizard, multi-action, or a
+          custom one) for a given scenario instead of deriving from a single
+          controller for everything.</p></li><li><p>Reusable business code - no need for duplication. You can use
+          existing business objects as command or form objects instead of
+          mirroring them in order to extend a particular framework base
+          class.</p></li><li><p>Customizable binding and validation - type mismatches as
+          application-level validation errors that keep the offending value,
+          localized date and number binding, etc instead of String-only form
+          objects with manual parsing and conversion to business
+          objects.</p></li><li><p>Customizable handler mapping and view resolution - handler
+          mapping and view resolution strategies range from simple URL-based
+          configuration, to sophisticated, purpose-built resolution
+          strategies. This is more flexible than some web MVC frameworks which
+          mandate a particular technique.</p></li><li><p>Flexible model transfer - model transfer via a name/value
+          <tt class="interfacename">Map</tt> supports easy integration with
+          any view technology.</p></li><li><p>Customizable locale and theme resolution, support for JSPs
+          with or without Spring tag library, support for JSTL, support for
+          Velocity without the need for extra bridges, etc.</p></li><li><p>A simple yet powerful JSP tag library known as the Spring tag
+          library that provides support for features such as data binding and
+          themes. The custom tags allow for maximum flexibility in terms of
+          markup code. For information on the tag library descriptor, see the
+          appendix entitled <a href="spring.tld.html" title="Appendix&nbsp;D.&nbsp;spring.tld">Appendix&nbsp;D, <i>spring.tld</i></a></p></li><li><p>A JSP form tag library, introduced in Spring 2.0, that makes
+          writing forms in JSP pages much easier. For information on the tag
+          library descriptor, see the appendix entitled <a href="spring-form.tld.html" title="Appendix&nbsp;E.&nbsp;spring-form.tld">Appendix&nbsp;E, <i>spring-form.tld</i></a></p></li><li><p>Beans whose lifecycle is scoped to the current HTTP request or
+          HTTP <tt class="interfacename">Session</tt>. This is not a specific
+          feature of Spring MVC itself, but rather of the
+          <tt class="interfacename">WebApplicationContext</tt> container(s)
+          that Spring MVC uses. These bean scopes are described in detail in
+          the section entitled <a href="beans.html#beans-factory-scopes-other" title="3.4.4.&nbsp;The other scopes">Section&nbsp;3.4.4, &#8220;The other scopes&#8221;</a></p></li></ul></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mvc-servlet"></a>13.2.&nbsp;The <tt class="classname">DispatcherServlet</tt></h2></div></div><div></div></div><p>Spring's web MVC framework is, like many other web MVC frameworks,
+    request-driven, designed around a central servlet that dispatches requests
+    to controllers and offers other functionality facilitating the development
+    of web applications. Spring's <tt class="classname">DispatcherServlet</tt>
+    however, does more than just that. It is completely integrated with the
+    Spring IoC container and as such allows you to use every other feature
+    that Spring has.</p><p>The request processing workflow of the Spring Web MVC
+    <tt class="classname">DispatcherServlet</tt> is illustrated in the following
+    diagram. The pattern-savvy reader will recognize that the
+    <tt class="classname">DispatcherServlet</tt> is an expression of the
+    &#8220;<span class="quote">Front Controller</span>&#8221; design pattern (this is a pattern that
+    Spring Web MVC shares with many other leading web frameworks).</p><div class="mediaobject" align="center"><img src="images/mvc.png" align="middle"><div class="caption"><p>The requesting processing workflow in Spring Web MVC
+        (high level)</p></div></div><p>The <tt class="classname">DispatcherServlet</tt> <span class="emphasis"><em>is</em></span>
+    an actual <tt class="interfacename">Servlet</tt> (it inherits from the
+    <tt class="classname">HttpServlet</tt> base class), and as such is declared in
+    the <tt class="literal">web.xml</tt> of your web application. Requests that you
+    want the <tt class="classname">DispatcherServlet</tt> to handle will have to
+    be mapped using a URL mapping in the same <tt class="literal">web.xml</tt> file.
+    This is standard J2EE servlet configuration; an example of such a
+    <tt class="classname">DispatcherServlet</tt> declaration and mapping can be
+    found below.</p><pre class="programlisting">&lt;web-app&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;example&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;example&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;*.form&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+&lt;/web-app&gt;</pre><p>In the example above, all requests ending with
+    <tt class="literal">.form</tt> will be handled by the
+    <tt class="literal">'example'</tt> <tt class="classname">DispatcherServlet</tt>.
+    This is only the first step in setting up Spring Web MVC... the various
+    beans used by the Spring Web MVC framework (over and above the
+    <tt class="classname">DispatcherServlet</tt> itself) now need to be
+    configured.</p><p>As detailed in the section entitled <a href="beans.html#context-introduction" title="3.8.&nbsp;The ApplicationContext">Section&nbsp;3.8, &#8220;The ApplicationContext&#8221;</a>,
+    <tt class="interfacename">ApplicationContext</tt> instances in Spring can
+    be scoped. In the web MVC framework, each
+    <tt class="classname">DispatcherServlet</tt> has its own
+    <tt class="interfacename">WebApplicationContext</tt>, which inherits all
+    the beans already defined in the root
+    <tt class="interfacename">WebApplicationContext</tt>. These inherited
+    beans defined can be overridden in the servlet-specific scope, and new
+    scope-specific beans can be defined local to a given servlet
+    instance.</p><div class="mediaobject" align="center"><img src="images/mvc-contexts.gif" align="middle"><div class="caption"><p>Context hierarchy in Spring Web MVC</p></div></div><p>The framework will, on initialization of a
+    <tt class="classname">DispatcherServlet</tt>, <span class="emphasis"><em>look for a file named
+    <tt class="literal">[servlet-name]-servlet.xml</tt></em></span> in the
+    <tt class="literal">WEB-INF</tt> directory of your web application and create
+    the beans defined there (overriding the definitions of any beans defined
+    with the same name in the global scope).</p><p>Consider the following <tt class="classname">DispatcherServlet</tt>
+    servlet configuration (in the <tt class="literal">'web.xml'</tt> file.)</p><pre class="programlisting">&lt;web-app&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;<span class="bold"><b>golfing</b></span>&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;<span class="bold"><b>golfing</b></span>&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+&lt;/web-app&gt;</pre><p>With the above servlet configuration in place, you will need to have
+    a file called <tt class="literal">'/WEB-INF/<span class="bold"><b>golfing</b></span>-servlet.xml'</tt> in your application;
+    this file will contain all of your <span class="emphasis"><em>Spring Web
+    MVC-specific</em></span> components (beans). The exact location of this
+    configuration file can be changed via a servlet initialization parameter
+    (see below for details).</p><p>The <tt class="interfacename">WebApplicationContext</tt> is an
+    extension of the plain <tt class="interfacename">ApplicationContext</tt>
+    that has some extra features necessary for web applications. It differs
+    from a normal <tt class="interfacename">ApplicationContext</tt> in that it
+    is capable of resolving themes (see <a href="mvc.html#mvc-themeresolver" title="13.7.&nbsp;Using themes">Section&nbsp;13.7, &#8220;Using themes&#8221;</a>),
+    and that it knows which servlet it is associated with (by having a link to
+    the <tt class="interfacename">ServletContext</tt>). The
+    <tt class="interfacename">WebApplicationContext</tt> is bound in the
+    <tt class="interfacename">ServletContext</tt>, and by using static methods
+    on the <tt class="classname">RequestContextUtils</tt> class you can always
+    lookup the <tt class="interfacename">WebApplicationContext</tt> in case
+    you need access to it.</p><p>The Spring <tt class="classname">DispatcherServlet</tt> has a couple of
+    special beans it uses in order to be able to process requests and render
+    the appropriate views. These beans are included in the Spring framework
+    and can be configured in the
+    <tt class="interfacename">WebApplicationContext</tt>, just as any other
+    bean would be configured. Each of those beans is described in more detail
+    below. Right now, we'll just mention them, just to let you know they exist
+    and to enable us to go on talking about the
+    <tt class="classname">DispatcherServlet</tt>. For most of the beans, sensible
+    defaults are provided so you don't (initially) have to worry about
+    configuring them.</p><div class="table"><a name="mvc-webappctx-special-beans-tbl"></a><p class="title"><b>Table&nbsp;13.1.&nbsp;Special beans in the
+      <tt class="interfacename">WebApplicationContext</tt></b></p><table summary="Special beans in the&#xA;      WebApplicationContext" border="1"><colgroup><col><col></colgroup><thead><tr><th>Bean type</th><th>Explanation</th></tr></thead><tbody><tr><td>Controllers</td><td><a href="mvc.html#mvc-controller" title="13.3.&nbsp;Controllers">Controllers</a> are the
+            components that form the <tt class="literal">'C'</tt> part of the
+            MVC.</td></tr><tr><td>Handler mappings</td><td><a href="mvc.html#mvc-handlermapping" title="13.4.&nbsp;Handler mappings">Handler mappings</a>
+            handle the execution of a list of pre- and post-processors and
+            controllers that will be executed if they match certain criteria
+            (for instance a matching URL specified with the
+            controller)</td></tr><tr><td>View resolvers</td><td><a href="mvc.html#mvc-viewresolver" title="13.5.&nbsp;Views and resolving them">View resolvers</a> are
+            components capable of resolving view names to views</td></tr><tr><td>Locale resolver</td><td>A <a href="mvc.html#mvc-localeresolver" title="13.6.&nbsp;Using locales">locale resolver</a>
+            is a component capable of resolving the locale a client is using,
+            in order to be able to offer internationalized views</td></tr><tr><td>Theme resolver</td><td>A <a href="mvc.html#mvc-themeresolver" title="13.7.&nbsp;Using themes">theme resolver</a>
+            is capable of resolving themes your web application can use, for
+            example, to offer personalized layouts</td></tr><tr><td>multipart file resolver</td><td>A <a href="mvc.html#mvc-multipart" title="13.8.&nbsp;Spring's multipart (fileupload) support">multipart file
+            resolver</a> offers the functionality to process file uploads
+            from HTML forms</td></tr><tr><td>Handler exception resolver(s)</td><td><a href="mvc.html#mvc-exceptionhandlers" title="13.9.&nbsp;Handling exceptions">Handler exception
+            resolvers</a> offer functionality to map exceptions to views or
+            implement other more complex exception handling code</td></tr></tbody></table></div><p>When a <tt class="classname">DispatcherServlet</tt> is set up for use
+    and a request comes in for that specific
+    <tt class="classname">DispatcherServlet</tt>, said
+    <tt class="classname">DispatcherServlet</tt> starts processing the request.
+    The list below describes the complete process a request goes through when
+    handled by a <tt class="classname">DispatcherServlet</tt>:</p><div class="orderedlist"><ol type="1"><li><p>The <tt class="interfacename">WebApplicationContext</tt> is
+        searched for and bound in the request as an attribute in order for the
+        controller and other elements in the process to use. It is bound by
+        default under the key
+        <tt class="literal">DispatcherServlet.WEB_APPLICATION_CONTEXT_ATTRIBUTE</tt>.</p></li><li><p>The locale resolver is bound to the request to let elements in
+        the process resolve the locale to use when processing the request
+        (rendering the view, preparing data, etc.) If you don't use the
+        resolver, it won't affect anything, so if you don't need locale
+        resolving, you don't have to use it.</p></li><li><p>The theme resolver is bound to the request to let elements such
+        as views determine which theme to use. The theme resolver does not
+        affect anything if you don't use it, so if you don't need themes you
+        can just ignore it.</p></li><li><p>If a multipart resolver is specified, the request is inspected
+        for multiparts; if multiparts are found, the request is wrapped in a
+        <tt class="classname">MultipartHttpServletRequest</tt> for further
+        processing by other elements in the process. (See the section entitled
+        <a href="mvc.html#mvc-multipart-resolver" title="13.8.2.&nbsp;Using the&#xA;      MultipartResolver">Section&nbsp;13.8.2, &#8220;Using the
+      MultipartResolver&#8221;</a> for further information
+        about multipart handling).</p></li><li><p>An appropriate handler is searched for. If a handler is found,
+        the execution chain associated with the handler (preprocessors,
+        postprocessors, and controllers) will be executed in order to prepare
+        a model (for rendering).</p></li><li><p>If a model is returned, the view is rendered. If no model is
+        returned (which could be due to a pre- or postprocessor intercepting
+        the request, for example, for security reasons), no view is rendered,
+        since the request could already have been fulfilled.</p></li></ol></div><p>Exceptions that are thrown during processing of the request get
+    picked up by any of the handler exception resolvers that are declared in
+    the <tt class="interfacename">WebApplicationContext</tt>. Using these
+    exception resolvers allows you to define custom behaviors in case such
+    exceptions get thrown.</p><p>The Spring <tt class="classname">DispatcherServlet</tt> also has support
+    for returning the <span class="emphasis"><em>last-modification-date</em></span>, as
+    specified by the Servlet API. The process of determining the last
+    modification date for a specific request is straightforward: the
+    <tt class="classname">DispatcherServlet</tt> will first lookup an appropriate
+    handler mapping and test if the handler that is found <span class="emphasis"><em>implements
+    the interface <tt class="interfacename">LastModified</tt></em></span>
+    interface. If so, the value of the <tt class="literal">long
+    getLastModified(request)</tt> method of the
+    <tt class="interfacename">LastModified</tt> interface is returned to the
+    client.</p><p>You can customize Spring's <tt class="classname">DispatcherServlet</tt>
+    by adding context parameters in the <tt class="literal">web.xml</tt> file or
+    servlet initialization parameters. The possibilities are listed
+    below.</p><div class="table"><a name="mvc-disp-servlet-init-params-tbl"></a><p class="title"><b>Table&nbsp;13.2.&nbsp;<tt class="classname">DispatcherServlet</tt> initialization
+      parameters</b></p><table summary="DispatcherServlet initialization&#xA;      parameters" border="1"><colgroup><col><col></colgroup><thead><tr><th>Parameter</th><th>Explanation</th></tr></thead><tbody><tr><td><tt class="literal">contextClass</tt></td><td>Class that implements
+            <tt class="interfacename">WebApplicationContext</tt>, which will
+            be used to instantiate the context used by this servlet. If this
+            parameter isn't specified, the
+            <tt class="classname">XmlWebApplicationContext</tt> will be
+            used.</td></tr><tr><td><tt class="literal">contextConfigLocation</tt></td><td>String which is passed to the context instance (specified
+            by <tt class="literal">contextClass</tt>) to indicate where context(s)
+            can be found. The string is potentially split up into multiple
+            strings (using a comma as a delimiter) to support multiple
+            contexts (in case of multiple context locations, of beans that are
+            defined twice, the latest takes precedence).</td></tr><tr><td><tt class="literal">namespace</tt></td><td>the namespace of the
+            <tt class="interfacename">WebApplicationContext</tt>. Defaults to
+            <tt class="literal">[servlet-name]-servlet</tt>.</td></tr></tbody></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mvc-controller"></a>13.3.&nbsp;Controllers</h2></div></div><div></div></div><p>The notion of a controller is part of the MVC design pattern (more
+    specifically, it is the <span class="emphasis"><em>'C'</em></span> in MVC). Controllers
+    provide access to the application behavior which is typically defined by a
+    service interface. Controllers interpret user input and transform such
+    input into a sensible model which will be represented to the user by the
+    view. Spring has implemented the notion of a controller in a very abstract
+    way enabling a wide variety of different kinds of controllers to be
+    created. Spring contains form-specific controllers, command-based
+    controllers, and controllers that execute wizard-style logic, to name but
+    a few.</p><p>Spring's basis for the controller architecture is the
+    <tt class="interfacename">org.springframework.web.servlet.mvc.Controller</tt>
+    interface, the source code for which is listed below.</p><pre class="programlisting">public interface Controller {
+
+    /**
+     * Process the request and return a ModelAndView object which the DispatcherServlet
+     * will render.
+     */
+    ModelAndView handleRequest(
+        HttpServletRequest request,
+        HttpServletResponse response) throws Exception;
+
+}</pre><p>As you can see, the <tt class="interfacename">Controller</tt>
+    interface defines a single method that is responsible for handling a
+    request and returning an appropriate model and view. These three concepts
+    are the basis for the Spring MVC implementation -
+    <tt class="classname">ModelAndView</tt> and
+    <tt class="interfacename">Controller</tt>. While the
+    <tt class="interfacename">Controller</tt> interface is quite abstract,
+    Spring offers a lot of <tt class="interfacename">Controller</tt>
+    implementations out of the box that already contain a lot of the
+    functionality you might need. The
+    <tt class="interfacename">Controller</tt> interface just defines the most
+    basic responsibility required of every controller; namely handling a
+    request and returning a model and a view.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-controller-abstractcontroller"></a>13.3.1.&nbsp;<tt class="classname">AbstractController</tt> and
+      <tt class="classname">WebContentGenerator</tt></h3></div></div><div></div></div><p>To provide a basic infrastructure, all of Spring's various
+      <tt class="interfacename">Controller</tt> inherit from
+      <tt class="classname">AbstractController</tt>, a class offering caching
+      support and, for example, the setting of the mimetype.</p><div class="table"><a name="mvc-controller-abstract-features"></a><p class="title"><b>Table&nbsp;13.3.&nbsp;Features offered by the
+        <tt class="classname">AbstractController</tt></b></p><table summary="Features offered by the&#xA;        AbstractController" border="1"><colgroup><col><col></colgroup><thead><tr><th>Feature</th><th>Explanation</th></tr></thead><tbody><tr><td><tt class="literal">supportedMethods</tt></td><td>indicates what methods this controller should accept.
+              Usually this is set to both <tt class="literal">GET</tt> and
+              <tt class="literal">POST</tt>, but you can modify this to reflect the
+              method you want to support. If a request is received with a
+              method that is not supported by the controller, the client will
+              be informed of this (expedited by the throwing of a
+              <tt class="classname">ServletException</tt>).</td></tr><tr><td><tt class="literal">requireSession</tt></td><td>indicates whether or not this controller requires a HTTP
+              session to do its work. If a session is not present when such a
+              controller receives a request, the user is informed of this by a
+              <tt class="classname">ServletException</tt> being thrown.</td></tr><tr><td><tt class="literal">synchronizeOnSession</tt></td><td>use this if you want handling by this controller to be
+              synchronized on the user's HTTP session.</td></tr><tr><td><tt class="literal">cacheSeconds</tt></td><td>when you want a controller to generate a caching
+              directive in the HTTP response, specify a positive integer here.
+              By default the value of this property is set to
+              <span class="emphasis"><em>-1</em></span> so no caching directives will be
+              included in the generated response.</td></tr><tr><td><tt class="literal">useExpiresHeader</tt></td><td>tweaks your controllers to specify the HTTP 1.0
+              compatible <span class="emphasis"><em>"Expires"</em></span> header in the
+              generated response. By default the value of this property is
+              <tt class="literal">true</tt>.</td></tr><tr><td><tt class="literal">useCacheHeader</tt></td><td>tweaks your controllers to specify the HTTP 1.1
+              compatible <span class="emphasis"><em>"Cache-Control"</em></span> header in the
+              generated response. By default the value of this property is
+              <tt class="literal">true</tt>.</td></tr></tbody></table></div><p>When using the <tt class="classname">AbstractController</tt> as the
+      baseclass for your controllers you only have to override the
+      <tt class="literal">handleRequestInternal(HttpServletRequest,
+      HttpServletResponse)</tt> method, implement your logic, and return
+      a <tt class="classname">ModelAndView</tt> object. Here is short example
+      consisting of a class and a declaration in the web application
+      context.</p><pre class="programlisting">package samples;
+
+public class SampleController extends AbstractController {
+
+    public ModelAndView handleRequestInternal(
+        HttpServletRequest request,
+        HttpServletResponse response) throws Exception {
+
+        ModelAndView mav = new ModelAndView("hello");
+        mav.addObject("message", "Hello World!");
+        return mav;        
+    }
+}</pre><pre class="programlisting">&lt;bean id="sampleController" class="samples.SampleController"&gt;
+    &lt;property name="cacheSeconds" value="120"/&gt;
+&lt;/bean&gt;</pre><p>The above class and the declaration in the web application context
+      is all you need besides setting up a handler mapping (see the section
+      entitled <a href="mvc.html#mvc-handlermapping" title="13.4.&nbsp;Handler mappings">Section&nbsp;13.4, &#8220;Handler mappings&#8221;</a>) to get this very simple
+      controller working. This controller will generate caching directives
+      telling the client to cache things for 2 minutes before rechecking. This
+      controller also returns a hard-coded view (which is typically considered
+      bad practice).</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-controller-othersimplecontrollers"></a>13.3.2.&nbsp;Other simple controllers</h3></div></div><div></div></div><p>Although you can extend <tt class="classname">AbstractController</tt>,
+      Spring provides a number of concrete implementations which offer
+      functionality that is commonly used in simple MVC applications. The
+      <tt class="classname">ParameterizableViewController</tt> is basically the
+      same as the example above, except for the fact that you can specify the
+      view name that it will return in the web application context (and thus
+      remove the need to hard-code the viewname in the Java class).</p><p>The <tt class="classname">UrlFilenameViewController</tt> inspects the
+      URL and retrieves the filename of the file request and uses that as a
+      viewname. For example, the filename of
+      <tt class="literal">http://www.springframework.org/index.html</tt> request is
+      <tt class="literal">index</tt>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-controller-multiaction"></a>13.3.3.&nbsp;The <tt class="classname">MultiActionController</tt></h3></div></div><div></div></div><p>Spring offers a <tt class="classname">MultiActionController</tt> class
+      that supports the aggregation of multiple request-handling methods into
+      one controller, which then allows you to group related functionality
+      together. (If you are a Struts veteran you might recognize the
+      similarity between the Struts <tt class="classname">DispatchAction</tt> and
+      the Spring MVC <tt class="classname">MultiActionController</tt>.) The
+      <tt class="classname">MultiActionController</tt> class is defined in a
+      distinct package -
+      <tt class="literal">org.springframework.web.servlet.mvc.multiaction</tt> - and
+      it is capable of mapping requests to method names and then invoking the
+      correct method to handle a particular request. Using the
+      <tt class="classname">MultiActionController</tt> is especially handy when
+      you have a lot of related functionality that would perhaps be nice to
+      define all in a single class without having to implement one
+      <tt class="interfacename">Controller</tt> for each bit of functionality.
+      The <tt class="classname">MultiActionController</tt> typically is not
+      appropriate for capturing very complex request-handling logic or use
+      cases that address totally-different areas of functionality, and you are
+      encouraged to stick with the standard <span class="emphasis"><em>'one
+      piece-of-functionality maps to one
+      <tt class="interfacename">Controller</tt>'</em></span> for such
+      cases.</p><p>There are two usage-styles for the
+      <tt class="classname">MultiActionController</tt>. Either you subclass the
+      <tt class="classname">MultiActionController</tt> and specify the methods
+      that will be resolved by the
+      <tt class="interfacename">MethodNameResolver</tt> on your subclass, or
+      you define a delegate object, on which methods resolved by the
+      <tt class="interfacename">MethodNameResolver</tt> will be invoked. If
+      you choose the former style, you do not need to set a delegate, but for
+      the latter style, you will need to inject your delegate object into the
+      <tt class="classname">MultiActionController</tt> as a collaborator (either
+      as a single constructor argument or via the
+      '<tt class="methodname">setDelegate</tt>' method).</p><p>The <tt class="classname">MultiActionController</tt> needs some
+      strategy to determine which method to invoke when handling an incoming
+      request: this strategy is defined by the
+      <tt class="interfacename">MethodNameResolver</tt> interface. The
+      <tt class="classname">MultiActionController</tt> class exposes the
+      '<tt class="literal">methodNameResolver</tt>' property so that you can inject
+      a <tt class="interfacename">MethodNameResolver</tt> that is capable of
+      doing that. The methods that you define on a
+      <tt class="classname">MultiActionController</tt> (or on the class of the
+      injected delegate object) must conform to the following
+      signature:</p><pre class="programlisting"><i class="lineannotation"><span class="lineannotation">// '<tt class="literal">anyMeaningfulName</tt>' can be replaced by any method name</span></i>
+public [ModelAndView | Map | void] anyMeaningfulName(HttpServletRequest, HttpServletResponse [,HttpSession] [,AnyObject])</pre><p>The full details of this method signature are covered in the
+      <a href="http://static.springframework.org/spring/docs/2.5.x/api/org/springframework/web/servlet/mvc/multiaction/MultiActionController.html" target="_top">class-level
+      Javadoc</a> of the <tt class="classname">MultiActionController</tt>
+      source itself. If you are planning to use the
+      <tt class="classname">MultiActionController</tt>, you are highly encouraged
+      to consult that Javadoc. However, below you will find some basic
+      examples of valid <tt class="classname">MultiActionController</tt> method
+      signatures.</p><p>The standard signature (mirrors the
+      <tt class="interfacename">Controller</tt> interface method).</p><pre class="programlisting">public ModelAndView displayCatalog(HttpServletRequest, HttpServletResponse)</pre><p>This signature accepts a <tt class="classname">Login</tt> argument
+      that will be populated (bound) with parameters retrieved from the
+      request.</p><pre class="programlisting">public ModelAndView login(HttpServletRequest, HttpServletResponse, Login)</pre><p>This signature requires that the request already have a valid
+      session.</p><pre class="programlisting">public ModelAndView viewCart(HttpServletRequest, HttpServletResponse, HttpSession)</pre><p>This signature accepts a <tt class="classname">Product</tt> argument
+      that will be populated (bound) with parameters retrieved from the
+      request <span class="emphasis"><em>and</em></span> requires that the request already have
+      a valid session. Note that the order of arguments is important: the
+      session must be the third argument, and an object to be bound must
+      always be the final argument (fourth when a session is specified, or
+      third otherwise).</p><pre class="programlisting">public ModelAndView updateCart(HttpServletRequest, HttpServletResponse, HttpSession, Product)</pre><p>This signature has a <tt class="literal">void</tt> return type
+      indicating that the handler method assumes the responsibility of writing
+      the response.</p><pre class="programlisting">public void home(HttpServletRequest, HttpServletResponse)</pre><p>This signature has a <tt class="interfacename">Map</tt> return
+      type indicating that a view name translator will be responsible for
+      providing the view name based upon the request, and the model will
+      consist of the <tt class="interfacename">Map's</tt> entries (see the
+      section entitled <a href="mvc.html#mvc-coc" title="13.10.&nbsp;Convention over configuration">Section&nbsp;13.10, &#8220;Convention over configuration&#8221;</a> below).</p><pre class="programlisting">public Map list(HttpServletRequest, HttpServletResponse)</pre><p>The <tt class="interfacename">MethodNameResolver</tt> is
+      responsible for resolving method names based on the specifics of the
+      incoming <tt class="interfacename">HttpServletRequest</tt>. A number of
+      <tt class="interfacename">MethodNameResolver</tt> implementations are
+      provided for you, and of course you can always write your own. Please
+      also note that the <tt class="classname">InternalPathMethodNameResolver</tt>
+      is the default <tt class="interfacename">MethodNameResolver</tt> that
+      will be used if you don't inject one explicitly.</p><div class="itemizedlist"><ul type="disc"><li><p><tt class="classname">InternalPathMethodNameResolver</tt> -
+          interprets the final filename from the request path and uses that as
+          the method name/</p><p>For example,
+          '<tt class="literal">http://www.sf.net/testing.view</tt>' will result in
+          the method <tt class="methodname">testing(HttpServletRequest,
+          HttpServletResponse)</tt> being invoked.</p></li><li><p><tt class="classname">ParameterMethodNameResolver</tt> -
+          interprets a request parameter as the name of the method that is to
+          be invoked.</p><p>For example,
+          '<tt class="literal">http://www.sf.net/index.view?method=testIt</tt>' will
+          result in the method <tt class="methodname">testIt(HttpServletRequest,
+          HttpServletResponse)</tt> being invoked. The
+          '<tt class="literal">paramName</tt>' property specifies the name of the
+          request parameter that is to be used.</p></li><li><p><tt class="classname">PropertiesMethodNameResolver</tt> - uses a
+          user-defined <tt class="classname">Properties</tt> object with request
+          URLs mapped to method names. For example, when the
+          <tt class="classname">Properties</tt> contain
+          '<tt class="literal">/index/welcome.html=doIt</tt>' and a request to
+          <tt class="literal">/index/welcome.html</tt> comes in, the
+          <tt class="methodname">doIt(HttpServletRequest,
+          HttpServletResponse)</tt> method will be invoked. This
+          particular <tt class="interfacename">MethodNameResolver</tt> uses
+          the Spring <tt class="classname">PathMatcher</tt> class internally, so
+          if the <tt class="classname">Properties</tt> contained
+          '<tt class="literal">/**/welcom?.html</tt>', the example would also have
+          worked.</p></li></ul></div><p>You may also declare custom methods for handling
+      <tt class="classname">Exceptions</tt> that occur during request handling.
+      The valid signature for such a method is similar to the request handling
+      methods in that the <tt class="interfacename">HttpServletRequest</tt>
+      and <tt class="interfacename">HttpServletResponse</tt> must be provided
+      as the first and second parameters respectively. Unlike request handling
+      methods however, the method's name is irrelevant. Instead, when
+      determining which <tt class="classname">Exception</tt> handling method to
+      invoke, the decision is based upon the most specific possible match
+      among the methods whose third argument is some type of
+      <tt class="classname">Exception</tt>. Here is an example signature for one
+      such <tt class="classname">Exception</tt> handling method.</p><pre class="programlisting">public ModelAndView processException(HttpServletRequest, HttpServletResponse, IllegalArgumentException)</pre><p>Let's look at an example showing the delegate-style of
+      <tt class="classname">MultiActionController</tt> usage in conjunction with
+      the <tt class="classname">ParameterMethodNameResolver</tt>.</p><pre class="programlisting">&lt;bean id="paramMultiController"
+      class="org.springframework.web.servlet.mvc.multiaction.MultiActionController"&gt;
+
+    &lt;property name="methodNameResolver"&gt;
+        &lt;bean class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver"&gt;
+            &lt;property name="paramName" value="method"/&gt;
+        &lt;/bean&gt;
+    &lt;/property&gt;
+
+    &lt;property name="delegate"&gt;
+        &lt;bean class="samples.SampleDelegate"/&gt;
+    &lt;/property&gt;
+
+&lt;/bean&gt;
+}</pre><pre class="programlisting">public class SampleDelegate {
+
+    public ModelAndView retrieveIndex(HttpServletRequest req, HttpServletResponse resp) {
+        return new ModelAndView("index", "date", new Long(System.currentTimeMillis()));
+    }
+}</pre><p>When using the delegate shown above, we could also configure the
+      <tt class="classname">PropertiesMethodNameResolver</tt> to match any number
+      couple of URLs to the method we defined:</p><pre class="programlisting">&lt;bean id="propsResolver"
+      class="org....mvc.multiaction.PropertiesMethodNameResolver"&gt;
+    &lt;property name="mappings"&gt;
+        &lt;value&gt;
+/index/welcome.html=retrieveIndex
+/**/notwelcome.html=retrieveIndex
+/*/user?.html=retrieveIndex
+        &lt;/value&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="paramMultiController" class="org....mvc.multiaction.MultiActionController"&gt;
+
+    &lt;property name="methodNameResolver" ref="propsResolver"/&gt;
+    &lt;property name="delegate"&gt;
+        &lt;bean class="samples.SampleDelegate"/&gt;
+    &lt;/property&gt;
+
+&lt;/bean&gt;</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-controller-command"></a>13.3.4.&nbsp;Command controllers</h3></div></div><div></div></div><p>Spring's <span class="emphasis"><em>command controllers</em></span> are a
+      fundamental part of the Spring Web MVC package. Command controllers
+      provide a way to interact with data objects and dynamically bind
+      parameters from the <tt class="interfacename">HttpServletRequest</tt> to
+      the data object specified. They perform a somewhat similar role to the
+      Struts <tt class="classname">ActionForm</tt>, but in Spring, your data
+      objects don't have to implement a framework-specific interface. First,
+      lets examine what command controllers are available straight out of the
+      box.</p><div class="itemizedlist"><ul type="disc" compact><li><p><tt class="classname">AbstractCommandController</tt> - a command
+          controller you can use to create your own command controller,
+          capable of binding request parameters to a data object you specify.
+          This class does not offer form functionality; it does however offer
+          validation features and lets you specify in the controller itself
+          what to do with the command object that has been populated with
+          request parameter values.</p></li><li><p><tt class="classname">AbstractFormController</tt> - an abstract
+          controller offering form submission support. Using this controller
+          you can model forms and populate them using a command object you
+          retrieve in the controller. After a user has filled the form, the
+          <tt class="classname">AbstractFormController</tt> binds the fields,
+          validates the command object, and hands the object back to the
+          controller to take the appropriate action. Supported features are:
+          invalid form submission (resubmission), validation, and normal form
+          workflow. You implement methods to determine which views are used
+          for form presentation and success. Use this controller if you need
+          forms, but don't want to specify what views you're going to show the
+          user in the application context.</p></li><li><p><tt class="classname">SimpleFormController</tt> - a form
+          controller that provides even more support when creating a form with
+          a corresponding command object. The
+          <tt class="classname">SimpleFormController</tt> let's you specify a
+          command object, a viewname for the form, a viewname for page you
+          want to show the user when form submission has succeeded, and
+          more.</p></li><li><p><tt class="classname">AbstractWizardFormController</tt> - as the
+          class name suggests, this is an abstract class - your wizard
+          controller should extend it. This means you have to implement the
+          <tt class="literal">validatePage()</tt>,
+          <tt class="literal">processFinish()</tt> and
+          <tt class="literal">processCancel()</tt> methods.</p><p>You probably also want to write a contractor, which should at
+          the very least call <tt class="literal">setPages()</tt> and
+          <tt class="literal">setCommandName()</tt>. The former takes as its
+          argument an array of type String. This array is the list of views
+          which comprise your wizard. The latter takes as its argument a
+          String, which will be used to refer to your command object from
+          within your views.</p><p>As with any instance of
+          <tt class="classname">AbstractFormController</tt>, you are required to
+          use a command object - a JavaBean which will be populated with the
+          data from your forms. You can do this in one of two ways: either
+          call <tt class="literal">setCommandClass()</tt> from the constructor with
+          the class of your command object, or implement the
+          <tt class="literal">formBackingObject()</tt> method.</p><p><tt class="classname">AbstractWizardFormController</tt> has a
+          number of concrete methods that you may wish to override. Of these,
+          the ones you are likely to find most useful are:
+          <tt class="literal">referenceData(..)</tt> which you can use to pass model
+          data to your view in the form of a
+          <tt class="interfacename">Map</tt>;
+          <tt class="literal">getTargetPage()</tt> if your wizard needs to change
+          page order or omit pages dynamically; and
+          <tt class="literal">onBindAndValidate()</tt> if you want to override the
+          built-in binding and validation workflow.</p><p>Finally, it is worth pointing out the
+          <tt class="literal">setAllowDirtyBack()</tt> and
+          <tt class="literal">setAllowDirtyForward()</tt>, which you can call from
+          <tt class="literal">getTargetPage()</tt> to allow users to move backwards
+          and forwards in the wizard even if validation fails for the current
+          page.</p><p>For a full list of methods, see the Javadoc for
+          <tt class="classname">AbstractWizardFormController</tt>. There is an
+          implemented example of this wizard in the jPetStore included in the
+          Spring distribution:
+          <tt class="classname">org.springframework.samples.jpetstore.web.spring.OrderFormController</tt>.</p></li></ul></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mvc-handlermapping"></a>13.4.&nbsp;Handler mappings</h2></div></div><div></div></div><p>Using a handler mapping you can map incoming web requests to
+    appropriate handlers. There are some handler mappings you can use out of
+    the box, for example, the <tt class="classname">SimpleUrlHandlerMapping</tt>
+    or the <tt class="classname">BeanNameUrlHandlerMapping</tt>, but let's first
+    examine the general concept of a
+    <tt class="interfacename">HandlerMapping</tt>.</p><p>The functionality a basic
+    <tt class="interfacename">HandlerMapping</tt> provides is the delivering
+    of a <tt class="literal">HandlerExecutionChain</tt>, which must contain the
+    handler that matches the incoming request, and may also contain a list of
+    handler interceptors that are applied to the request. When a request comes
+    in, the <tt class="classname">DispatcherServlet</tt> will hand it over to the
+    handler mapping to let it inspect the request and come up with an
+    appropriate HandlerExecutionChain. Then the
+    <tt class="classname">DispatcherServlet</tt> will execute the handler and
+    interceptors in the chain (if any).</p><p>The concept of configurable handler mappings that can optionally
+    contain interceptors (executed before or after the actual handler was
+    executed, or both) is extremely powerful. A lot of supporting
+    functionality can be built into custom
+    <tt class="interfacename">HandlerMapping</tt>s. Think of a custom handler
+    mapping that chooses a handler not only based on the URL of the request
+    coming in, but also on a specific state of the session associated with the
+    request.</p><p>This section describes two of Spring's most commonly used handler
+    mappings. They both extend the <tt class="literal">AbstractHandlerMapping</tt>
+    and share the following properties:</p><div class="itemizedlist"><ul type="disc" compact><li><p><tt class="literal">interceptors</tt>: the list of interceptors to
+        use. <tt class="interfacename">HandlerInterceptor</tt>s are discussed
+        in <a href="mvc.html#mvc-handlermapping-interceptor" title="13.4.3.&nbsp;Intercepting requests - the&#xA;      HandlerInterceptor interface">Section&nbsp;13.4.3, &#8220;Intercepting requests - the
+      HandlerInterceptor interface&#8221;</a>.</p></li><li><p><tt class="literal">defaultHandler</tt>: the default handler to use,
+        when this handler mapping does not result in a matching
+        handler.</p></li><li><p><tt class="literal">order</tt>: based on the value of the order
+        property (see the <tt class="literal">org.springframework.core.Ordered</tt>
+        interface), Spring will sort all handler mappings available in the
+        context and apply the first matching handler.</p></li><li><p><tt class="literal">alwaysUseFullPath</tt>: if this property is set to
+        <tt class="literal">true</tt>, Spring will use the full path within the
+        current servlet context to find an appropriate handler. If this
+        property is set to <tt class="literal">false</tt> (the default), the path
+        within the current servlet mapping will be used. For example, if a
+        servlet is mapped using <tt class="literal">/testing/*</tt> and the
+        <tt class="literal">alwaysUseFullPath</tt> property is set to true,
+        <tt class="literal">/testing/viewPage.html</tt> would be used, whereas if
+        the property is set to false, <tt class="literal">/viewPage.html</tt> would
+        be used.</p></li><li><p><tt class="literal">urlDecode</tt>: the default value for this
+        property is <tt class="literal">true</tt>, as of Spring 2.5. If you prefer
+        to compare encoded paths, switch this flag to
+        <tt class="literal">false</tt>. However, note that the
+        <tt class="interfacename">HttpServletRequest</tt> always exposes the
+        servlet path in decoded form. Be aware that the servlet path will not
+        match when compared with encoded paths.</p></li><li><p><tt class="literal">lazyInitHandlers</tt>: allows for lazy
+        initialization of <span class="emphasis"><em>singleton</em></span> handlers (prototype
+        handlers are always lazily initialized). Default value is
+        <tt class="literal">false</tt>.</p></li></ul></div><p>(<span class="emphasis"><em>Note: the last three properties are only available to
+    subclasses of
+    <tt class="classname">org.springframework.web.servlet.handler.AbstractUrlHandlerMapping</tt></em></span>).</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-handlermapping-beanname"></a>13.4.1.&nbsp;<tt class="classname">BeanNameUrlHandlerMapping</tt></h3></div></div><div></div></div><p>A very simple, but very powerful handler mapping is the
+      <tt class="classname">BeanNameUrlHandlerMapping</tt>, which maps incoming
+      HTTP requests to names of beans, defined in the web application context.
+      Let's say we want to enable a user to insert an account and we've
+      already provided an appropriate form controller (see <a href="mvc.html#mvc-controller-command" title="13.3.4.&nbsp;Command controllers">Section&nbsp;13.3.4, &#8220;Command controllers&#8221;</a> for more information on command- and
+      form controllers) and a JSP view (or Velocity template) that renders the
+      form. When using the <tt class="classname">BeanNameUrlHandlerMapping</tt>,
+      we could map the HTTP request with the URL
+      <tt class="literal">http://samples.com/editaccount.form</tt> to the
+      appropriate form <tt class="interfacename">Controller</tt> as
+      follows:</p><pre class="programlisting">&lt;beans&gt;
+  &lt;bean id="handlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/&gt;
+
+  &lt;bean name="/editaccount.form" class="org.springframework.web.servlet.mvc.SimpleFormController"&gt;
+    &lt;property name="formView" value="account"/&gt;
+    &lt;property name="successView" value="account-created"/&gt;
+    &lt;property name="commandName" value="account"/&gt;
+    &lt;property name="commandClass" value="samples.Account"/&gt;
+  &lt;/bean&gt;
+&lt;beans&gt;</pre><p>All incoming requests for the URL
+      <tt class="literal">/editaccount.form</tt> will now be handled by the form
+      <tt class="interfacename">Controller</tt> in the source listing above.
+      Of course we have to define a servlet-mapping in
+      <tt class="literal">web.xml</tt> as well, to let through all the requests
+      ending with <tt class="literal">.form</tt>.</p><pre class="programlisting">&lt;web-app&gt;
+    ...
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;sample&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+
+   <i class="lineannotation"><span class="lineannotation">&lt;!-- maps the sample dispatcher to <tt class="literal">*.form</tt> --&gt;</span></i>
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;sample&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;*.form&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+    ...
+&lt;/web-app&gt;</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../images/admons/note.png"></td><th align="left">Note</th></tr><tr><td colspan="2" align="left" valign="top"><p>If you want to use the
+        <tt class="classname">BeanNameUrlHandlerMapping</tt>, you don't
+        necessarily have to define it in the web application context (as
+        indicated above). By default, if no handler mapping can be found in
+        the context, the <tt class="classname">DispatcherServlet</tt> creates a
+        <tt class="classname">BeanNameUrlHandlerMapping</tt> for you!</p></td></tr></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-handlermapping-urlhandlermapping"></a>13.4.2.&nbsp;<tt class="classname">SimpleUrlHandlerMapping</tt></h3></div></div><div></div></div><p>A further - and much more powerful handler mapping - is the
+      <tt class="classname">SimpleUrlHandlerMapping</tt>. This mapping is
+      configurable in the application context and has Ant-style path matching
+      capabilities (see the Javadoc for the
+      <tt class="classname">org.springframework.util.PathMatcher</tt> class). Here
+      is an example:</p><pre class="programlisting">&lt;web-app&gt;
+    ...
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;sample&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+
+    <i class="lineannotation"><span class="lineannotation">&lt;!-- maps the sample dispatcher to *.form --&gt;</span></i>
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;sample&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;*.form&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    <i class="lineannotation"><span class="lineannotation">&lt;!-- maps the sample dispatcher to *.html --&gt;</span></i>
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;sample&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+    ...
+&lt;/web-app&gt;</pre><p>The above <tt class="literal">web.xml</tt> configuration snippet enables
+      all requests ending with .html and <tt class="literal">.form</tt> to be
+      handled by the sample dispatcher servlet.</p><pre class="programlisting">&lt;beans&gt;
+        
+    <i class="lineannotation"><span class="lineannotation">&lt;!-- no <tt class="literal">'id'</tt> required, <tt class="interfacename">HandlerMapping</tt> beans are automatically detected by the <tt class="classname">DispatcherServlet</tt> --&gt;</span></i>
+    &lt;bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"&gt;
+        &lt;property name="mappings"&gt;
+            &lt;value&gt;
+                /*/account.form=editAccountFormController
+                /*/editaccount.form=editAccountFormController
+                /ex/view*.html=helpController
+                /**/help.html=helpController
+            &lt;/value&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+
+    &lt;bean id="helpController"
+          class="org.springframework.web.servlet.mvc.UrlFilenameViewController"/&gt;
+
+    &lt;bean id="editAccountFormController"
+          class="org.springframework.web.servlet.mvc.SimpleFormController"&gt;
+        &lt;property name="formView" value="account"/&gt;
+        &lt;property name="successView" value="account-created"/&gt;
+        &lt;property name="commandName" value="Account"/&gt;
+        &lt;property name="commandClass" value="samples.Account"/&gt;
+    &lt;/bean&gt;
+&lt;beans&gt;</pre><p>This handler mapping routes requests for
+      <tt class="literal">'help.html'</tt> in any directory to the
+      <tt class="literal">'helpController'</tt>, which is a
+      <tt class="classname">UrlFilenameViewController</tt> (more about controllers
+      can be found in the section entitled <a href="mvc.html#mvc-controller" title="13.3.&nbsp;Controllers">Section&nbsp;13.3, &#8220;Controllers&#8221;</a>).
+      Requests for a resource beginning with <tt class="literal">'view'</tt>, and
+      ending with <tt class="literal">'.html'</tt> in the directory
+      <tt class="literal">'ex'</tt> will be routed to the
+      <tt class="literal">'helpController'</tt>. Two further mappings are also
+      defined for <tt class="literal">'editAccountFormController'</tt>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-handlermapping-interceptor"></a>13.4.3.&nbsp;Intercepting requests - the
+      <tt class="interfacename">HandlerInterceptor</tt> interface</h3></div></div><div></div></div><p>Spring's handler mapping mechanism has the notion of handler
+      interceptors, that can be extremely useful when you want to apply
+      specific functionality to certain requests, for example, checking for a
+      principal.</p><p>Interceptors located in the handler mapping must implement
+      <tt class="interfacename">HandlerInterceptor</tt> from the
+      <tt class="literal">org.springframework.web.servlet</tt> package. This
+      interface defines three methods, one that will be called
+      <span class="emphasis"><em>before</em></span> the actual handler will be executed, one
+      that will be called <span class="emphasis"><em>after</em></span> the handler is executed,
+      and one that is called <span class="emphasis"><em>after the complete request has
+      finished</em></span>. These three methods should provide enough
+      flexibility to do all kinds of pre- and post-processing.</p><p>The <tt class="literal">preHandle(..)</tt> method returns a boolean
+      value. You can use this method to break or continue the processing of
+      the execution chain. When this method returns <tt class="literal">true</tt>,
+      the handler execution chain will continue, when it returns false, the
+      <tt class="classname">DispatcherServlet</tt> assumes the interceptor itself
+      has taken care of requests (and, for example, rendered an appropriate
+      view) and does not continue executing the other interceptors and the
+      actual handler in the execution chain.</p><p>The following example provides an interceptor that intercepts all
+      requests and reroutes the user to a specific page if the time is not
+      between 9 a.m. and 6 p.m.</p><pre class="programlisting">&lt;beans&gt;
+    &lt;bean id="handlerMapping"
+          class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"&gt;
+        &lt;property name="interceptors"&gt;
+            &lt;list&gt;
+                &lt;ref bean="officeHoursInterceptor"/&gt;
+            &lt;/list&gt;
+        &lt;/property&gt;
+        &lt;property name="mappings"&gt;
+            &lt;value&gt;
+                /*.form=editAccountFormController
+                /*.view=editAccountFormController
+            &lt;/value&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+
+    &lt;bean id="officeHoursInterceptor"
+          class="samples.TimeBasedAccessInterceptor"&gt;
+        &lt;property name="openingTime" value="9"/&gt;
+        &lt;property name="closingTime" value="18"/&gt;
+    &lt;/bean&gt;
+&lt;beans&gt;</pre><pre class="programlisting">package samples;
+
+public class TimeBasedAccessInterceptor extends HandlerInterceptorAdapter {
+
+    private int openingTime;
+    private int closingTime;
+
+    public void setOpeningTime(int openingTime) {
+        this.openingTime = openingTime;
+    }
+
+    public void setClosingTime(int closingTime) {
+        this.closingTime = closingTime;
+    }
+
+    public boolean preHandle(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Object handler) throws Exception {
+
+        Calendar cal = Calendar.getInstance();
+        int hour = cal.get(HOUR_OF_DAY);
+        if (openingTime &lt;= hour &lt; closingTime) {
+            return true;
+        } else {
+            response.sendRedirect("http://host.com/outsideOfficeHours.html");
+            return false;
+        }
+    }
+}</pre><p>Any request coming in, will be intercepted by the
+      <tt class="classname">TimeBasedAccessInterceptor</tt>, and if the current
+      time is outside office hours, the user will be redirected to a static
+      html file, saying, for example, he can only access the website during
+      office hours.</p><p>As you can see, Spring has an adapter class (the cunningly named
+      <tt class="classname">HandlerInterceptorAdapter</tt>) to make it easier to
+      extend the <tt class="interfacename">HandlerInterceptor</tt>
+      interface.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mvc-viewresolver"></a>13.5.&nbsp;Views and resolving them</h2></div></div><div></div></div><p>All MVC frameworks for web applications provide a way to address
+    views. Spring provides view resolvers, which enable you to render models
+    in a browser without tying you to a specific view technology. Out of the
+    box, Spring enables you to use JSPs, Velocity templates and XSLT views,
+    for example. The section entitled <a href="view.html" title="Chapter&nbsp;14.&nbsp;View technologies">Chapter&nbsp;14, <i>View technologies</i></a> has details of
+    how to integrate and use a number of disparate view technologies.</p><p>The two interfaces which are important to the way Spring handles
+    views are <tt class="interfacename">ViewResolver</tt> and
+    <tt class="interfacename">View</tt>. The
+    <tt class="interfacename">ViewResolver</tt> provides a mapping between
+    view names and actual views. The <tt class="interfacename">View</tt>
+    interface addresses the preparation of the request and hands the request
+    over to one of the view technologies.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-viewresolver-resolver"></a>13.5.1.&nbsp;Resolving views - the <tt class="interfacename">ViewResolver</tt>
+      interface</h3></div></div><div></div></div><p>As discussed in the section entitled <a href="mvc.html#mvc-controller" title="13.3.&nbsp;Controllers">Section&nbsp;13.3, &#8220;Controllers&#8221;</a>, all controllers in the Spring Web MVC
+      framework return a <tt class="classname">ModelAndView</tt> instance. Views
+      in Spring are addressed by a view name and are resolved by a view
+      resolver. Spring comes with quite a few view resolvers. We'll list most
+      of them and then provide a couple of examples.</p><div class="table"><a name="mvc-view-resolvers-tbl"></a><p class="title"><b>Table&nbsp;13.4.&nbsp;View resolvers</b></p><table summary="View resolvers" border="1"><colgroup><col><col></colgroup><thead><tr><th><tt class="interfacename">ViewResolver</tt></th><th>Description</th></tr></thead><tbody><tr><td><tt class="classname">AbstractCachingViewResolver</tt></td><td>An abstract view resolver which takes care of caching
+              views. Often views need preparation before they can be used,
+              extending this view resolver provides caching of views.</td></tr><tr><td><tt class="classname">XmlViewResolver</tt></td><td>An implementation of
+              <tt class="interfacename">ViewResolver</tt> that accepts a
+              configuration file written in XML with the same DTD as Spring's
+              XML bean factories. The default configuration file is
+              <tt class="literal">/WEB-INF/views.xml</tt>.</td></tr><tr><td><tt class="classname">ResourceBundleViewResolver</tt></td><td>An implementation of
+              <tt class="interfacename">ViewResolver</tt> that uses bean
+              definitions in a <tt class="classname">ResourceBundle</tt>,
+              specified by the bundle basename. The bundle is typically
+              defined in a properties file, located in the classpath. The
+              default file name is
+              <tt class="literal">views.properties</tt>.</td></tr><tr><td><tt class="classname">UrlBasedViewResolver</tt></td><td>A simple implementation of the
+              <tt class="interfacename">ViewResolver</tt> interface that
+              effects the direct resolution of symbolic view names to URLs,
+              without an explicit mapping definition. This is appropriate if
+              your symbolic names match the names of your view resources in a
+              straightforward manner, without the need for arbitrary
+              mappings.</td></tr><tr><td><tt class="classname">InternalResourceViewResolver</tt></td><td>A convenience subclass of
+              <tt class="classname">UrlBasedViewResolver</tt> that supports
+              <tt class="classname">InternalResourceView</tt> (i.e. Servlets and
+              JSPs), and subclasses such as <tt class="classname">JstlView</tt>
+              and <tt class="classname">TilesView</tt>. The view class for all
+              views generated by this resolver can be specified via
+              <tt class="literal">setViewClass(..)</tt>. See the Javadocs for the
+              <tt class="classname">UrlBasedViewResolver</tt> class for
+              details.</td></tr><tr><td><tt class="classname">VelocityViewResolver</tt> /
+              <tt class="classname">FreeMarkerViewResolver</tt></td><td>A convenience subclass of
+              <tt class="classname">UrlBasedViewResolver</tt> that supports
+              <tt class="classname">VelocityView</tt> (i.e. Velocity templates) or
+              <tt class="classname">FreeMarkerView</tt> respectively and custom
+              subclasses of them.</td></tr></tbody></table></div><p>As an example, when using JSP for a view technology you can use
+      the <tt class="classname">UrlBasedViewResolver</tt>. This view resolver
+      translates a view name to a URL and hands the request over to the
+      RequestDispatcher to render the view.</p><pre class="programlisting">&lt;bean id="viewResolver"
+      class="org.springframework.web.servlet.view.UrlBasedViewResolver"&gt;
+    &lt;property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/&gt;
+    &lt;property name="prefix" value="/WEB-INF/jsp/"/&gt;
+    &lt;property name="suffix" value=".jsp"/&gt;
+&lt;/bean&gt;</pre><p>When returning <tt class="literal">test</tt> as a viewname, this view
+      resolver will hand the request over to the
+      <tt class="classname">RequestDispatcher</tt> that will send the request to
+      <tt class="literal">/WEB-INF/jsp/test.jsp</tt>.</p><p>When mixing different view technologies in a web application, you
+      can use the <tt class="classname">ResourceBundleViewResolver</tt>:</p><pre class="programlisting">&lt;bean id="viewResolver"
+      class="org.springframework.web.servlet.view.ResourceBundleViewResolver"&gt;
+    &lt;property name="basename" value="views"/&gt;
+    &lt;property name="defaultParentView" value="parentView"/&gt;
+&lt;/bean&gt;</pre><p>The <tt class="classname">ResourceBundleViewResolver</tt> inspects the
+      <tt class="classname">ResourceBundle</tt> identified by the basename, and
+      for each view it is supposed to resolve, it uses the value of the
+      property <tt class="literal">[viewname].class</tt> as the view class and the
+      value of the property <tt class="literal">[viewname].url</tt> as the view url.
+      As you can see, you can identify a parent view, from which all views in
+      the properties file sort of extend. This way you can specify a default
+      view class, for example.</p><p><span class="emphasis"><em>A note on caching</em></span> - subclasses of
+      <tt class="classname">AbstractCachingViewResolver</tt> cache view instances
+      they have resolved. This greatly improves performance when using certain
+      view technologies. It's possible to turn off the cache, by setting the
+      <tt class="literal">cache</tt> property to <tt class="literal">false</tt>.
+      Furthermore, if you have the requirement to be able to refresh a certain
+      view at runtime (for example when a Velocity template has been
+      modified), you can use the <tt class="literal">removeFromCache(String viewName,
+      Locale loc)</tt> method.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-viewresolver-chaining"></a>13.5.2.&nbsp;Chaining ViewResolvers</h3></div></div><div></div></div><p>Spring supports more than just one view resolver. This allows you
+      to chain resolvers and, for example, override specific views in certain
+      circumstances. Chaining view resolvers is pretty straightforward - just
+      add more than one resolver to your application context and, if
+      necessary, set the <tt class="literal">order</tt> property to specify an
+      order. Remember, the higher the order property, the later the view
+      resolver will be positioned in the chain.</p><p>In the following example, the chain of view resolvers consists of
+      two resolvers, a <tt class="classname">InternalResourceViewResolver</tt>
+      (which is always automatically positioned as the last resolver in the
+      chain) and an <tt class="classname">XmlViewResolver</tt> for specifying
+      Excel views (which are not supported by the
+      <tt class="classname">InternalResourceViewResolver</tt>):</p><pre class="programlisting">&lt;bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
+  &lt;property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/&gt;
+  &lt;property name="prefix" value="/WEB-INF/jsp/"/&gt;
+  &lt;property name="suffix" value=".jsp"/&gt;
+&lt;/bean&gt;
+
+&lt;bean id="excelViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver"&gt;
+  &lt;property name="order" value="1"/&gt;
+  &lt;property name="location" value="/WEB-INF/views.xml"/&gt;
+&lt;/bean&gt;
+
+<i class="lineannotation"><span class="lineannotation">&lt;!-- in <tt class="literal">views.xml</tt> --&gt;</span></i>
+
+&lt;beans&gt;
+  &lt;bean name="report" class="org.springframework.example.ReportExcelView"/&gt;
+&lt;/beans&gt;</pre><p>If a specific view resolver does not result in a view, Spring will
+      inspect the context to see if other view resolvers are configured. If
+      there are additional view resolvers, it will continue to inspect them.
+      If not, it will throw an <tt class="classname">Exception</tt>.</p><p>You have to keep something else in mind - the contract of a view
+      resolver mentions that a view resolver <span class="emphasis"><em>can</em></span> return
+      null to indicate the view could not be found. Not all view resolvers do
+      this however! This is because in some cases, the resolver simply cannot
+      detect whether or not the view exists. For example, the
+      <tt class="classname">InternalResourceViewResolver</tt> uses the
+      <tt class="classname">RequestDispatcher</tt> internally, and dispatching is
+      the only way to figure out if a JSP exists - this can only be done once.
+      The same holds for the <tt class="classname">VelocityViewResolver</tt> and
+      some others. Check the Javadoc for the view resolver to see if you're
+      dealing with a view resolver that does not report non-existing views. As
+      a result of this, putting an
+      <tt class="classname">InternalResourceViewResolver</tt> in the chain in a
+      place other than the last, will result in the chain not being fully
+      inspected, since the <tt class="classname">InternalResourceViewResolver</tt>
+      will <span class="emphasis"><em>always</em></span> return a view!</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-redirecting"></a>13.5.3.&nbsp;Redirecting to views</h3></div></div><div></div></div><p>As has been mentioned, a controller normally returns a logical
+      view name, which a view resolver resolves to a particular view
+      technology. For view technologies such as JSPs that are actually
+      processed via the Servlet/JSP engine, this is normally handled via
+      <tt class="classname">InternalResourceViewResolver</tt> /
+      <tt class="classname">InternalResourceView</tt> which will ultimately end up
+      issuing an internal forward or include, via the Servlet API's
+      <tt class="literal">RequestDispatcher.forward(..)</tt> or
+      <tt class="literal">RequestDispatcher.include()</tt>. For other view
+      technologies, such as Velocity, XSLT, etc., the view itself produces the
+      content on the response stream.</p><p>It is sometimes desirable to issue an HTTP redirect back to the
+      client, before the view is rendered. This is desirable for example when
+      one controller has been called with <tt class="literal">POST</tt>ed data, and
+      the response is actually a delegation to another controller (for example
+      on a successful form submission). In this case, a normal internal
+      forward will mean the other controller will also see the same
+      <tt class="literal">POST</tt> data, which is potentially problematic if it can
+      confuse it with other expected data. Another reason to do a redirect
+      before displaying the result is that this will eliminate the possibility
+      of the user doing a double submission of form data. The browser will
+      have sent the initial <tt class="literal">POST</tt>, will have seen a redirect
+      back and done a subsequent <tt class="literal">GET</tt> because of that, and
+      thus as far as it is concerned, the current page does not reflect the
+      result of a <tt class="literal">POST</tt>, but rather of a
+      <tt class="literal">GET</tt>, so there is no way the user can accidentally
+      re-<tt class="literal">POST</tt> the same data by doing a refresh. The refresh
+      would just force a <tt class="literal">GET</tt> of the result page, not a
+      resend of the initial <tt class="literal">POST</tt> data.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="mvc-redirecting-redirect-view"></a>13.5.3.1.&nbsp;<tt class="classname">RedirectView</tt></h4></div></div><div></div></div><p>One way to force a redirect as the result of a controller
+        response is for the controller to create and return an instance of
+        Spring's <tt class="classname">RedirectView</tt>. In this case,
+        <tt class="classname">DispatcherServlet</tt> will not use the normal view
+        resolution mechanism, but rather as it has been given the (redirect)
+        view already, will just ask it to do its work.</p><p>The <tt class="classname">RedirectView</tt> simply ends up issuing
+        an <tt class="literal">HttpServletResponse.sendRedirect()</tt> call, which
+        will come back to the client browser as an HTTP redirect. All model
+        attributes are simply exposed as HTTP query parameters. This does mean
+        that the model must contain only objects (generally Strings or
+        convertible to Strings) which can be readily converted to a
+        string-form HTTP query parameter.</p><p>If using <tt class="classname">RedirectView</tt> and the view is
+        created by the controller itself, it is preferable for the redirect
+        URL to be injected into the controller so that it is not baked into
+        the controller but configured in the context along with the view
+        names.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="mvc-redirecting-redirect-prefix"></a>13.5.3.2.&nbsp;The <tt class="literal">redirect:</tt> prefix</h4></div></div><div></div></div><p>While the use of <tt class="classname">RedirectView</tt> works fine,
+        if the controller itself is creating the
+        <tt class="classname">RedirectView</tt>, there is no getting around the
+        fact that the controller is aware that a redirection is happening.
+        This is really suboptimal and couples things too tightly. The
+        controller should not really care about how the response gets
+        handled... it should generally think only in terms of view names that
+        have been injected into it.</p><p>The special <tt class="literal">redirect:</tt> prefix allows this to
+        be achieved. If a view name is returned which has the prefix
+        redirect:, then <tt class="classname">UrlBasedViewResolver</tt> (and all
+        subclasses) will recognize this as a special indication that a
+        redirect is needed. The rest of the view name will be treated as the
+        redirect URL.</p><p>The net effect is the same as if the controller had returned a
+        <tt class="classname">RedirectView</tt>, but now the controller itself can
+        deal just in terms of logical view names. A logical view name such as
+        <tt class="literal">redirect:/my/response/controller.html</tt> will redirect
+        relative to the current servlet context, while a name such as
+        <tt class="literal">redirect:http://myhost.com/some/arbitrary/path.html</tt>
+        will redirect to an absolute URL. The important thing is that as long
+        as this redirect view name is injected into the controller like any
+        other logical view name, the controller is not even aware that
+        redirection is happening.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="mvc-redirecting-forward-prefix"></a>13.5.3.3.&nbsp;The <tt class="literal">forward:</tt> prefix</h4></div></div><div></div></div><p>It is also possible to use a special <tt class="literal">forward:</tt>
+        prefix for view names that will ultimately be resolved by
+        <tt class="classname">UrlBasedViewResolver</tt> and subclasses. All this
+        does is create an <tt class="classname">InternalResourceView</tt> (which
+        ultimately does a <tt class="literal">RequestDispatcher.forward()</tt>)
+        around the rest of the view name, which is considered a URL.
+        Therefore, there is never any use in using this prefix when using
+        <tt class="classname">InternalResourceViewResolver</tt> /
+        <tt class="classname">InternalResourceView</tt> anyway (for JSPs for
+        example), but it's of potential use when you are primarily using
+        another view technology, but still want to force a forward to happen
+        to a resource to be handled by the Servlet/JSP engine. (Note that you
+        may also chain multiple view resolvers, instead.)</p><p>As with the <tt class="literal">redirect:</tt> prefix, if the view
+        name with the prefix is just injected into the controller, the
+        controller does not have to be aware that anything special is
+        happening in terms of handling the response.</p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mvc-localeresolver"></a>13.6.&nbsp;Using locales</h2></div></div><div></div></div><p>Most parts of Spring's architecture support internationalization,
+    just as the Spring web MVC framework does.
+    <tt class="classname">DispatcherServlet</tt> enables you to automatically
+    resolve messages using the client's locale. This is done with
+    <tt class="interfacename">LocaleResolver</tt> objects.</p><p>When a request comes in, the
+    <tt class="classname">DispatcherServlet</tt> looks for a locale resolver and
+    if it finds one it tries to use it to set the locale. Using the
+    <tt class="literal">RequestContext.getLocale()</tt> method, you can always
+    retrieve the locale that was resolved by the locale resolver.</p><p>Besides the automatic locale resolution, you can also attach an
+    interceptor to the handler mapping (see <a href="mvc.html#mvc-handlermapping-interceptor" title="13.4.3.&nbsp;Intercepting requests - the&#xA;      HandlerInterceptor interface">Section&nbsp;13.4.3, &#8220;Intercepting requests - the
+      HandlerInterceptor interface&#8221;</a> for more information on
+    handler mapping interceptors), to change the locale under specific
+    circumstances, based on a parameter in the request, for example.</p><p>Locale resolvers and interceptors are all defined in the
+    <tt class="literal">org.springframework.web.servlet.i18n</tt> package, and are
+    configured in your application context in the normal way. Here is a
+    selection of the locale resolvers included in Spring.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-localeresolver-acceptheader"></a>13.6.1.&nbsp;<tt class="classname">AcceptHeaderLocaleResolver</tt></h3></div></div><div></div></div><p>This locale resolver inspects the
+      <tt class="literal">accept-language</tt> header in the request that was sent
+      by the browser of the client. Usually this header field contains the
+      locale of the client's operating system.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-localeresolver-cookie"></a>13.6.2.&nbsp;<tt class="classname">CookieLocaleResolver</tt></h3></div></div><div></div></div><p>This locale resolver inspects a <tt class="classname">Cookie</tt> that
+      might exist on the client, to see if a locale is specified. If so, it
+      uses that specific locale. Using the properties of this locale resolver,
+      you can specify the name of the cookie, as well as the maximum age. Find
+      below an example of defining a
+      <tt class="classname">CookieLocaleResolver</tt>.</p><pre class="programlisting">&lt;bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"&gt;
+
+    &lt;property name="cookieName" value="clientlanguage"/&gt;
+    
+    <i class="lineannotation"><span class="lineannotation">&lt;!-- in seconds. If set to <tt class="literal">-1</tt>, the cookie is not persisted (deleted when browser shuts down) --&gt;</span></i>
+    &lt;property name="cookieMaxAge" value="100000"&gt;
+
+&lt;/bean&gt;</pre><div class="table"><a name="mvc-cookie-locale-resolver-props-tbl"></a><p class="title"><b>Table&nbsp;13.5.&nbsp;<tt class="classname">CookieLocaleResolver</tt> properties</b></p><table summary="CookieLocaleResolver properties" border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead><tbody><tr><td>cookieName</td><td>classname + LOCALE</td><td>The name of the cookie</td></tr><tr><td>cookieMaxAge</td><td>Integer.MAX_INT</td><td>The maximum time a cookie will stay persistent on the
+              client. If -1 is specified, the cookie will not be persisted. It
+              will only be available until the client shuts down his or her
+              browser.</td></tr><tr><td>cookiePath</td><td>/</td><td>Using this parameter, you can limit the visibility of the
+              cookie to a certain part of your site. When cookiePath is
+              specified, the cookie will only be visible to that path, and the
+              paths below it.</td></tr></tbody></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-localeresolver-session"></a>13.6.3.&nbsp;<tt class="classname">SessionLocaleResolver</tt></h3></div></div><div></div></div><p>The <tt class="classname">SessionLocaleResolver</tt> allows you to
+      retrieve locales from the session that might be associated with the
+      user's request.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-localeresolver-interceptor"></a>13.6.4.&nbsp;<tt class="classname">LocaleChangeInterceptor</tt></h3></div></div><div></div></div><p>You can build in changing of locales using the
+      <tt class="classname">LocaleChangeInterceptor</tt>. This interceptor needs
+      to be added to one of the handler mappings (see <a href="mvc.html#mvc-handlermapping" title="13.4.&nbsp;Handler mappings">Section&nbsp;13.4, &#8220;Handler mappings&#8221;</a>). It will detect a parameter in the
+      request and change the locale (it calls <tt class="literal">setLocale()</tt>
+      on the <tt class="interfacename">LocaleResolver</tt> that also exists in
+      the context).</p><pre class="programlisting">&lt;bean id="localeChangeInterceptor"
+      class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"&gt;
+    &lt;property name="paramName" value="siteLanguage"/&gt;
+&lt;/bean&gt;
+
+&lt;bean id="localeResolver"
+      class="org.springframework.web.servlet.i18n.CookieLocaleResolver"/&gt;
+
+&lt;bean id="urlMapping"
+      class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"&gt;
+    &lt;property name="interceptors"&gt;
+        &lt;list&gt;
+            &lt;ref bean="localeChangeInterceptor"/&gt;
+        &lt;/list&gt;
+    &lt;/property&gt;
+    &lt;property name="mappings"&gt;
+        &lt;value&gt;/**/*.view=someController&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;</pre><p>All calls to all <tt class="literal">*.view</tt> resources containing a
+      parameter named <tt class="literal">siteLanguage</tt> will now change the
+      locale. So a request for the following URL,
+      <tt class="literal">http://www.sf.net/home.view?siteLanguage=nl</tt> will
+      change the site language to Dutch.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mvc-themeresolver"></a>13.7.&nbsp;Using themes</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-themeresolver-introduction"></a>13.7.1.&nbsp;Introduction</h3></div></div><div></div></div><p>The <span class="emphasis"><em>theme</em></span> support provided by the Spring web
+      MVC framework enables you to further enhance the user experience by
+      allowing the look and feel of your application to be
+      <span class="emphasis"><em>themed</em></span>. A theme is basically a collection of static
+      resources affecting the visual style of the application, typically style
+      sheets and images.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-themeresolver-defining"></a>13.7.2.&nbsp;Defining themes</h3></div></div><div></div></div><p>When you want to use themes in your web application you'll have to
+      set up a
+      <tt class="interfacename">org.springframework.ui.context.ThemeSource</tt>.
+      The <tt class="interfacename">WebApplicationContext</tt> interface
+      extends <tt class="interfacename">ThemeSource</tt> but delegates its
+      responsibilities to a dedicated implementation. By default the delegate
+      will be a
+      <tt class="classname">org.springframework.ui.context.support.ResourceBundleThemeSource</tt>
+      that loads properties files from the root of the classpath. If you want
+      to use a custom <tt class="interfacename">ThemeSource</tt>
+      implementation or if you need to configure the basename prefix of the
+      <tt class="classname">ResourceBundleThemeSource</tt>, you can register a
+      bean in the application context with the reserved name "themeSource".
+      The web application context will automatically detect that bean and
+      start using it.</p><p>When using the <tt class="classname">ResourceBundleThemeSource</tt>, a
+      theme is defined in a simple properties file. The properties file lists
+      the resources that make up the theme. Here is an example:</p><pre class="programlisting">styleSheet=/themes/cool/style.css
+background=/themes/cool/img/coolBg.jpg</pre><p>The keys of the properties are the names used to refer to the
+      themed elements from view code. For a JSP this would typically be done
+      using the <tt class="literal">spring:theme</tt> custom tag, which is very
+      similar to the <tt class="literal">spring:message</tt> tag. The following JSP
+      fragment uses the theme defined above to customize the look and
+      feel:</p><pre class="programlisting">&lt;%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%&gt;
+&lt;html&gt;
+   &lt;head&gt;
+      &lt;link rel="stylesheet" href="&lt;spring:theme code="styleSheet"/&gt;" type="text/css"/&gt;
+   &lt;/head&gt;
+   &lt;body background="&lt;spring:theme code="background"/&gt;"&gt;
+      ...
+   &lt;/body&gt;
+&lt;/html&gt;</pre><p>By default, the <tt class="classname">ResourceBundleThemeSource</tt>
+      uses an empty basename prefix. As a result the properties files will be
+      loaded from the root of the classpath, so we'll have to put our
+      <tt class="literal">cool.properties</tt> theme definition in a directory at
+      the root of the classpath, e.g. in <tt class="literal">/WEB-INF/classes</tt>.
+      Note that the <tt class="classname">ResourceBundleThemeSource</tt> uses the
+      standard Java resource bundle loading mechanism, allowing for full
+      internationalization of themes. For instance, we could have a
+      <tt class="literal">/WEB-INF/classes/cool_nl.properties</tt> that references a
+      special background image, e.g. with Dutch text on it.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-themeresolver-resolving"></a>13.7.3.&nbsp;Theme resolvers</h3></div></div><div></div></div><p>Now that we have our themes defined, the only thing left to do is
+      decide which theme to use. The <tt class="classname">DispatcherServlet</tt>
+      will look for a bean named "themeResolver" to find out which
+      <tt class="interfacename">ThemeResolver</tt> implementation to use. A
+      theme resolver works in much the same way as a
+      <tt class="interfacename">LocaleResolver</tt>. It can detect the theme
+      that should be used for a particular request and can also alter the
+      request's theme. The following theme resolvers are provided by
+      Spring:</p><div class="table"><a name="mvc-theme-resolver-impls-tbl"></a><p class="title"><b>Table&nbsp;13.6.&nbsp;<tt class="interfacename">ThemeResolver</tt>
+        implementations</b></p><table summary="ThemeResolver&#xA;        implementations" border="1"><colgroup><col><col></colgroup><thead><tr><th>Class</th><th>Description</th></tr></thead><tbody><tr><td><tt class="classname">FixedThemeResolver</tt></td><td>Selects a fixed theme, set using the "defaultThemeName"
+              property.</td></tr><tr><td><tt class="classname">SessionThemeResolver</tt></td><td>The theme is maintained in the users HTTP session. It
+              only needs to be set once for each session, but is not persisted
+              between sessions.</td></tr><tr><td><tt class="classname">CookieThemeResolver</tt></td><td>The selected theme is stored in a cookie on the
+              user-agent's machine.</td></tr></tbody></table></div><p>Spring also provides a
+      <tt class="classname">ThemeChangeInterceptor</tt>, which allows changing the
+      theme on every request by including a simple request parameter.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mvc-multipart"></a>13.8.&nbsp;Spring's multipart (fileupload) support</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-multipart-introduction"></a>13.8.1.&nbsp;Introduction</h3></div></div><div></div></div><p>Spring has built-in multipart support to handle fileuploads in web
+      applications. The design for the multipart support is done with
+      pluggable <tt class="interfacename">MultipartResolver</tt> objects,
+      defined in the <tt class="literal">org.springframework.web.multipart</tt>
+      package. Out of the box, Spring provides a
+      <tt class="interfacename">MultipartResolver</tt> for use with
+      <span class="emphasis"><em>Commons FileUpload</em></span> (<a href="http://jakarta.apache.org/commons/fileupload" target="_top">http://jakarta.apache.org/commons/fileupload</a>).
+      How uploading files is supported will be described in the rest of
+      this chapter.</p><p>By default, no multipart handling will be done by Spring, as some
+      developers will want to handle multiparts themselves. You will have to
+      enable it yourself by adding a multipart resolver to the web
+      application's context. After you have done that, each request will be
+      inspected to see if it contains a multipart. If no multipart is found,
+      the request will continue as expected. However, if a multipart is found
+      in the request, the <tt class="classname">MultipartResolver</tt> that has
+      been declared in your context will be used. After that, the multipart
+      attribute in your request will be treated like any other
+      attribute.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-multipart-resolver"></a>13.8.2.&nbsp;Using the
+      <tt class="interfacename">MultipartResolver</tt></h3></div></div><div></div></div><p>The following example shows how to use the
+      <tt class="classname">CommonsMultipartResolver</tt>:</p><pre class="programlisting">&lt;bean id="multipartResolver"
+    class="org.springframework.web.multipart.commons.CommonsMultipartResolver"&gt;
+
+    <i class="lineannotation"><span class="lineannotation">&lt;!-- one of the properties available; the maximum file size in bytes --&gt;</span></i>
+    &lt;property name="maxUploadSize" value="100000"/&gt;
+&lt;/bean&gt;</pre><p>This is an example using the
+      <tt class="classname">CosMultipartResolver</tt>:</p><pre class="programlisting">&lt;bean id="multipartResolver" class="org.springframework.web.multipart.cos.CosMultipartResolver"&gt;
+
+    <i class="lineannotation"><span class="lineannotation">&lt;!-- one of the properties available; the maximum file size in bytes --&gt;</span></i>
+    &lt;property name="maxUploadSize" value="100000"/&gt;
+&lt;/bean&gt;</pre><p>Of course you also need to put the appropriate jars in your
+      classpath for the multipart resolver to work. In the case of the
+      <tt class="classname">CommonsMultipartResolver</tt>, you need to use
+      <tt class="literal">commons-fileupload.jar</tt>; in the case of the
+      <tt class="classname">CosMultipartResolver</tt>, use
+      <tt class="literal">cos.jar</tt>.</p><p>Now that you have seen how to set Spring up to handle multipart
+      requests, let's talk about how to actually use it. When the Spring
+      <tt class="classname">DispatcherServlet</tt> detects a multi-part request,
+      it activates the resolver that has been declared in your context and
+      hands over the request. What the resolver then does is wrap the current
+      <tt class="classname">HttpServletRequest</tt> into a
+      <tt class="classname">MultipartHttpServletRequest</tt> that has support for
+      multipart file uploads. Using the
+      <tt class="classname">MultipartHttpServletRequest</tt> you can get
+      information about the multiparts contained by this request and actually
+      get access to the multipart files themselves in your controllers.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-multipart-forms"></a>13.8.3.&nbsp;Handling a file upload in a form</h3></div></div><div></div></div><p>After the <tt class="classname">MultipartResolver</tt> has finished
+      doing its job, the request will be processed like any other. To use it,
+      you create a form with an upload field (see immediately below), then let
+      Spring bind the file onto your form (backing object). To actually let
+      the user upload a file, we have to create a (HTML) form:</p><pre class="programlisting">&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;Upload a file please&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Please upload a file&lt;/h1&gt;
+        &lt;form method="post" action="upload.form" enctype="multipart/form-data"&gt;
+            &lt;input type="file" name="file"/&gt;
+            &lt;input type="submit"/&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre><p>As you can see, we've created a field named after the property of
+      the bean that holds the <tt class="literal">byte[]</tt>. Furthermore we've
+      added the encoding attribute
+      (<tt class="literal">enctype="multipart/form-data"</tt>) which is necessary to
+      let the browser know how to encode the multipart fields (do not forget
+      this!).</p><p>Just as with any other property that's not automagically
+      convertible to a string or primitive type, to be able to put binary data
+      in your objects you have to register a custom editor with the
+      <tt class="classname">ServletRequestDatabinder</tt>. There are a couple of
+      editors available for handling files and setting the results on an
+      object. There's a <tt class="classname">StringMultipartEditor</tt> capable
+      of converting files to Strings (using a user-defined character set) and
+      there is a <tt class="classname">ByteArrayMultipartEditor</tt> which
+      converts files to byte arrays. They function just as the
+      <tt class="classname">CustomDateEditor</tt> does.</p><p>So, to be able to upload files using a (HTML) form, declare the
+      resolver, a url mapping to a controller that will process the bean, and
+      the controller itself.</p><pre class="programlisting">&lt;beans&gt;
+  <i class="lineannotation"><span class="lineannotation">&lt;!-- lets use the Commons-based implementation of the MultipartResolver interface --&gt;</span></i>
+    &lt;bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/&gt;
+
+    &lt;bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"&gt;
+        &lt;property name="mappings"&gt;
+            &lt;value&gt;
+                /upload.form=fileUploadController
+            &lt;/value&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+
+    &lt;bean id="fileUploadController" class="examples.FileUploadController"&gt;
+        &lt;property name="commandClass" value="examples.FileUploadBean"/&gt;
+        &lt;property name="formView" value="fileuploadform"/&gt;
+        &lt;property name="successView" value="confirmation"/&gt;
+    &lt;/bean&gt;
+
+&lt;/beans&gt;</pre><p>After that, create the controller and the actual class to hold the
+      file property.</p><pre class="programlisting">public class FileUploadController extends SimpleFormController {
+
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
+            Object command, BindException errors) throws ServletException, IOException {
+
+        <i class="lineannotation"><span class="lineannotation"> // cast the bean</span></i>
+        FileUploadBean bean = (FileUploadBean) command;
+
+        <i class="lineannotation"><span class="lineannotation"> let's see if there's content there</span></i>
+        byte[] file = bean.getFile();
+        if (file == null) {
+            <i class="lineannotation"><span class="lineannotation"> // hmm, that's strange, the user did not upload anything</span></i>
+        }
+
+        <i class="lineannotation"><span class="lineannotation"> // well, let's do nothing with the bean for now and return</span></i>
+        return super.onSubmit(request, response, command, errors);
+    }
+
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
+        throws ServletException {
+        // to actually be able to convert Multipart instance to byte[]
+        // we have to register a custom editor
+        binder.registerCustomEditor(byte[].class, new ByteArrayMultipartFileEditor());
+        // now Spring knows how to handle multipart object and convert them
+    }
+}
+
+public class FileUploadBean {
+
+    private byte[] file;
+
+    public void setFile(byte[] file) {
+        this.file = file;
+    }
+
+    public byte[] getFile() {
+        return file;
+    }
+}</pre><p>As you can see, the <tt class="classname">FileUploadBean</tt> has a
+      property typed <tt class="literal">byte[]</tt> that holds the file. The
+      controller registers a custom editor to let Spring know how to actually
+      convert the multipart objects the resolver has found to properties
+      specified by the bean. In this example, nothing is done with the
+      <tt class="literal">byte[]</tt> property of the bean itself, but in practice
+      you can do whatever you want (save it in a database, mail it to
+      somebody, etc).</p><p>An equivalent example in which a file is bound straight to a
+      String-typed property on a (form backing) object might look like:</p><pre class="programlisting">public class FileUploadController extends SimpleFormController {
+
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
+            Object command, BindException errors) throws ServletException, IOException {
+
+        <i class="lineannotation"><span class="lineannotation"> // cast the bean</span></i>
+        FileUploadBean bean = (FileUploadBean) command;
+
+        <i class="lineannotation"><span class="lineannotation"> let's see if there's content there</span></i>
+        String file = bean.getFile();
+        if (file == null) {
+            <i class="lineannotation"><span class="lineannotation"> // hmm, that's strange, the user did not upload anything</span></i>
+        }
+
+        <i class="lineannotation"><span class="lineannotation"> // well, let's do nothing with the bean for now and return</span></i>
+        return super.onSubmit(request, response, command, errors);
+    }
+
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
+        throws ServletException {
+        // to actually be able to convert Multipart instance to a String
+        // we have to register a custom editor
+        binder.registerCustomEditor(String.class, new StringMultipartFileEditor());
+        // now Spring knows how to handle multipart object and convert them
+    }
+
+}
+
+public class FileUploadBean {
+
+    private String file;
+
+    public void setFile(String file) {
+        this.file = file;
+    }
+
+    public String getFile() {
+        return file;
+    }
+}</pre><p>Of course, this last example only makes (logical) sense in the
+      context of uploading a plain text file (it wouldn't work so well in the
+      case of uploading an image file).</p><p>The third (and final) option is where one binds directly to a
+      <tt class="interfacename">MultipartFile</tt> property declared on the
+      (form backing) object's class. In this case one does not need to
+      register any custom <tt class="interfacename">PropertyEditor</tt>
+      because there is no type conversion to be performed.</p><pre class="programlisting">public class FileUploadController extends SimpleFormController {
+
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
+            Object command, BindException errors) throws ServletException, IOException {
+
+        <i class="lineannotation"><span class="lineannotation"> // cast the bean</span></i>
+        FileUploadBean bean = (FileUploadBean) command;
+
+        <i class="lineannotation"><span class="lineannotation"> let's see if there's content there</span></i>
+        MultipartFile file = bean.getFile();
+        if (file == null) {
+            <i class="lineannotation"><span class="lineannotation"> // hmm, that's strange, the user did not upload anything</span></i>
+        }
+
+        <i class="lineannotation"><span class="lineannotation"> // well, let's do nothing with the bean for now and return</span></i>
+        return super.onSubmit(request, response, command, errors);
+    }
+}
+
+public class FileUploadBean {
+
+    private MultipartFile file;
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+}</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mvc-exceptionhandlers"></a>13.9.&nbsp;Handling exceptions</h2></div></div><div></div></div><p>Spring provides <tt class="literal">HandlerExceptionResolvers</tt> to ease
+    the pain of unexpected exceptions occurring while your request is being
+    handled by a controller which matched the request.
+    <tt class="literal">HandlerExceptionResolvers</tt> somewhat resemble the
+    exception mappings you can define in the web application descriptor
+    <tt class="literal">web.xml</tt>. However, they provide a more flexible way to
+    handle exceptions. They provide information about what handler was
+    executing when the exception was thrown. Furthermore, a programmatic way
+    of handling exception gives you many more options for how to respond
+    appropriately before the request is forwarded to another URL (the same end
+    result as when using the servlet specific exception mappings).</p><p>Besides implementing the
+    <tt class="interfacename">HandlerExceptionResolver</tt> interface, which
+    is only a matter of implementing the <tt class="literal">resolveException(Exception,
+    Handler)</tt> method and returning a
+    <tt class="classname">ModelAndView</tt>, you may also use the
+    <tt class="classname">SimpleMappingExceptionResolver</tt>. This resolver
+    enables you to take the class name of any exception that might be thrown
+    and map it to a view name. This is functionally equivalent to the
+    exception mapping feature from the Servlet API, but it's also possible to
+    implement more finely grained mappings of exceptions from different
+    handlers.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mvc-coc"></a>13.10.&nbsp;Convention over configuration</h2></div></div><div></div></div><p>For a lot of projects, sticking to established conventions and
+    having reasonable defaults is just what they (the projects) need... this
+    theme of convention-over-configuration now has explicit support in Spring
+    Web MVC. What this means is that if you establish a set of naming
+    conventions and suchlike, you can <span class="emphasis"><em>substantially</em></span> cut
+    down on the amount of configuration that is required to set up handler
+    mappings, view resolvers, <tt class="classname">ModelAndView</tt> instances,
+    etc. This is a great boon with regards to rapid prototyping, and can also
+    lend a degree of (always good-to-have) consistency across a codebase
+    should you choose to move forward with it into production.</p><p>This convention over configuration support address the three core
+    areas of MVC - namely, the models, views, and controllers.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-coc-ccnhm"></a>13.10.1.&nbsp;The Controller -
+      <tt class="classname">ControllerClassNameHandlerMapping</tt></h3></div></div><div></div></div><p>The <tt class="classname">ControllerClassNameHandlerMapping</tt> class
+      is a <tt class="interfacename">HandlerMapping</tt> implementation that
+      uses a convention to determine the mapping between request URLs and the
+      <tt class="interfacename">Controller</tt> instances that are to handle
+      those requests.</p><p>An example; consider the following (simplistic)
+      <tt class="interfacename">Controller</tt> implementation. Take especial
+      notice of the <span class="emphasis"><em>name</em></span> of the class.</p><pre class="programlisting">public class <span class="bold"><b>ViewShoppingCartController</b></span> implements Controller {
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
+        <i class="lineannotation"><span class="lineannotation">// the implementation is not hugely important for this example...</span></i>
+    }
+}</pre><p>Here is a snippet from the attendent Spring Web MVC configuration
+      file...</p><pre class="programlisting">&lt;bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/&gt;
+                
+&lt;bean id="<span class="bold"><b>viewShoppingCart</b></span>" class="x.y.z.ViewShoppingCartController"&gt;
+    <i class="lineannotation"><span class="lineannotation">&lt;!-- inject dependencies as required... --&gt;</span></i>
+&lt;/bean&gt;</pre><p>The <tt class="classname">ControllerClassNameHandlerMapping</tt> finds
+      all of the various handler (or
+      <tt class="interfacename">Controller</tt>) beans defined in its
+      application context and strips <tt class="literal">'Controller'</tt> off the
+      name to define its handler mappings.</p><p>Let's look at some more examples so that the central idea becomes
+      immediately familiar.</p><div class="itemizedlist"><ul type="disc"><li><p><tt class="classname">WelcomeController</tt> maps to the
+          <tt class="literal">'/welcome*'</tt> request URL</p></li><li><p><tt class="classname">HomeController</tt> maps to the
+          <tt class="literal">'/home*'</tt> request URL</p></li><li><p><tt class="classname">IndexController</tt> maps to the
+          <tt class="literal">'/index*'</tt> request URL</p></li><li><p><tt class="classname">RegisterController</tt> maps to the
+          <tt class="literal">'/register*'</tt> request URL</p></li><li><p><tt class="classname">DisplayShoppingCartController</tt> maps to
+          the <tt class="literal">'/displayshoppingcart*'</tt> request URL</p><p><span class="emphasis"><em>(Notice the casing - all lowercase - in the case of
+          camel-cased <tt class="interfacename">Controller</tt> class
+          names.)</em></span></p></li></ul></div><p>In the case of <tt class="classname">MultiActionController</tt>
+      handler classes, the mappings generated are (ever so slightly) more
+      complex, but hopefully no less understandable. Some examples (all of the
+      <tt class="interfacename">Controller</tt> names in this next bit are
+      assumed to be <tt class="classname">MultiActionController</tt>
+      implementations).</p><div class="itemizedlist"><ul type="disc"><li><p><tt class="classname">AdminController</tt> maps to the
+          <tt class="literal">'/admin<span class="bold"><b>/*</b></span>'</tt>
+          request URL</p></li><li><p><tt class="classname">CatalogController</tt> maps to the
+          <tt class="literal">'/catalog<span class="bold"><b>/*</b></span>'</tt>
+          request URL</p></li></ul></div><p>If you follow the pretty standard convention of naming your
+      <tt class="interfacename">Controller</tt> implementations as
+      <tt class="literal">xxx<span class="bold"><b>Controller</b></span></tt>, then
+      the <tt class="classname">ControllerClassNameHandlerMapping</tt> will save
+      you the tedium of having to firstly define and then having to maintain a
+      potentially <span class="emphasis"><em>looooong</em></span>
+      <tt class="classname">SimpleUrlHandlerMapping</tt> (or suchlike).</p><p>The <tt class="classname">ControllerClassNameHandlerMapping</tt> class
+      extends the <tt class="classname">AbstractHandlerMapping</tt> base class so
+      you can define <tt class="interfacename">HandlerInterceptor</tt>
+      instances and everything else just like you would with many other
+      <tt class="interfacename">HandlerMapping</tt> implementations.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-coc-modelmap"></a>13.10.2.&nbsp;The Model - <tt class="classname">ModelMap</tt>
+      (<tt class="classname">ModelAndView</tt>)</h3></div></div><div></div></div><p>The <tt class="classname">ModelMap</tt> class is essentially a
+      glorified <tt class="interfacename">Map</tt> that can make adding
+      objects that are to be displayed in (or on) a
+      <tt class="interfacename">View</tt> adhere to a common naming
+      convention. Consider the following
+      <tt class="interfacename">Controller</tt> implementation; notice that
+      objects are added to the <tt class="classname">ModelAndView</tt> without any
+      associated name being specified.</p><pre class="programlisting">public class DisplayShoppingCartController implements Controller {
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
+        
+        List cartItems = <i class="lineannotation"><span class="lineannotation">// get a <tt class="interfacename">List</tt> of <tt class="classname">CartItem</tt> objects</span></i>
+        User user = <i class="lineannotation"><span class="lineannotation">// get the <tt class="classname">User</tt> doing the shopping</span></i>
+        
+        ModelAndView mav = new ModelAndView("displayShoppingCart"); <i class="lineannotation"><span class="lineannotation">&lt;-- the logical view name</span></i>
+
+        mav.addObject(cartItems); <i class="lineannotation"><span class="lineannotation">&lt;-- look ma, no name, just the object</span></i>
+        mav.addObject(user); <i class="lineannotation"><span class="lineannotation">&lt;-- and again ma!</span></i>
+
+        return mav;
+    }
+}</pre><p>The <tt class="classname">ModelAndView</tt> class uses a
+      <tt class="classname">ModelMap</tt> class that is a custom
+      <tt class="interfacename">Map</tt> implementation that automatically
+      generates a key for an object when an object is added to it. The
+      strategy for determining the name for an added object is, in the case of
+      a scalar object such as <tt class="classname">User</tt>, to use the short
+      class name of the object's class. Find below some examples of the names
+      that are generated for scalar objects put into a
+      <tt class="classname">ModelMap</tt> instance.</p><div class="itemizedlist"><ul type="disc"><li><p>An <tt class="classname">x.y.User</tt> instance added will have
+          the name <tt class="literal">'user'</tt> generated</p></li><li><p>An <tt class="classname">x.y.Registration</tt> instance added will
+          have the name <tt class="literal">'registration'</tt> generated</p></li><li><p>An <tt class="classname">x.y.Foo</tt> instance added will have the
+          name <tt class="literal">'foo'</tt> generated</p></li><li><p>A <tt class="classname">java.util.HashMap</tt> instance added will
+          have the name <tt class="literal">'hashMap'</tt> generated (you'll
+          probably want to be explicit about the name in this case because
+          <tt class="literal">'hashMap'</tt> is less than intuitive).</p></li><li><p>Adding <tt class="literal">null</tt> will result in an
+          <tt class="classname">IllegalArgumentException</tt> being thrown. If the
+          object (or objects) that you are adding could potentially be
+          <tt class="literal">null</tt>, then you will also want to be explicit
+          about the name).</p></li></ul></div><div class="sidebar"><p class="title"><b>What, no automatic pluralisation?</b></p><p>Spring Web MVC's convention over configuration support does not
+        support automatic pluralisation. That is to say, you cannot add a
+        <tt class="interfacename">List</tt> of <tt class="classname">Person</tt>
+        objects to a <tt class="classname">ModelAndView</tt> and have the
+        generated name be 'people'.</p><p>This decision was taken after some debate, with the
+        &#8220;<span class="quote">Principle of Least Surprise</span>&#8221; winning out in the
+        end.</p></div><p>The strategy for generating a name after adding a
+      <tt class="interfacename">Set</tt>, <tt class="interfacename">List</tt>
+      or array object is to peek into the collection, take the short class
+      name of the first object in the collection, and use that with
+      <tt class="literal">'List'</tt> appended to the name. Some examples will make
+      the semantics of name generation for collections clearer...</p><div class="itemizedlist"><ul type="disc"><li><p>An <tt class="classname">x.y.User[]</tt> array with one or more
+          <tt class="classname">x.y.User</tt> elements added will have the name
+          <tt class="literal">'userList'</tt> generated</p></li><li><p>An <tt class="classname">x.y.Foo[]</tt> array with one or more
+          <tt class="classname">x.y.User</tt> elements added will have the name
+          <tt class="literal">'fooList'</tt> generated</p></li><li><p>A <tt class="classname">java.util.ArrayList</tt> with one or more
+          <tt class="classname">x.y.User</tt> elements added will have the name
+          <tt class="literal">'userList'</tt> generated</p></li><li><p>A <tt class="classname">java.util.HashSet</tt> with one or more
+          <tt class="classname">x.y.Foo</tt> elements added will have the name
+          <tt class="literal">'fooList'</tt> generated</p></li><li><p>An <span class="bold"><b>empty</b></span>
+          <tt class="classname">java.util.ArrayList</tt> will not be added at all
+          (i.e. the <tt class="methodname">addObject(..)</tt> call will
+          essentially be a no-op).</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-coc-r2vnt"></a>13.10.3.&nbsp;The View -
+      <tt class="interfacename">RequestToViewNameTranslator</tt></h3></div></div><div></div></div><p>The <tt class="interfacename">RequestToViewNameTranslator</tt>
+      interface is responsible for determining a logical
+      <tt class="interfacename">View</tt> name when no such logical view name
+      is explicitly supplied. It has just one implementation, the rather
+      cunningly named
+      <tt class="classname">DefaultRequestToViewNameTranslator</tt> class.</p><p>The <tt class="classname">DefaultRequestToViewNameTranslator</tt> maps
+      request URLs to logical view names in a fashion that is probably best
+      explained by recourse to an example.</p><pre class="programlisting">public class RegistrationController implements Controller {
+                
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
+        <i class="lineannotation"><span class="lineannotation">// process the request...</span></i>
+        ModelAndView mav = new ModelAndView();
+        <i class="lineannotation"><span class="lineannotation">// add <span class="bold"><b>data</b></span> as necessary to the model...</span></i>
+        return mav;
+        <i class="lineannotation"><span class="lineannotation">// notice that no <tt class="interfacename">View</tt> or logical view name has been set</span></i>
+    }
+}</pre><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+        "http://www.springframework.org/dtd/spring-beans-2.0.dtd"&gt;
+&lt;beans&gt;
+
+    <i class="lineannotation"><span class="lineannotation">&lt;!-- this bean with the well known name generates view names for us --&gt;</span></i>
+    &lt;bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/&gt;
+
+    &lt;bean class="x.y.RegistrationController"&gt;
+        <i class="lineannotation"><span class="lineannotation">&lt;!-- inject dependencies as necessary --&gt;</span></i>
+    &lt;/bean&gt;
+    
+    <i class="lineannotation"><span class="lineannotation">&lt;!-- maps request URLs to Controller names --&gt;</span></i>
+    &lt;bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/&gt;
+
+    &lt;bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
+        &lt;property name="prefix" value="/WEB-INF/jsp/"/&gt;
+        &lt;property name="suffix" value=".jsp"/&gt;
+    &lt;/bean&gt;
+
+&lt;/beans&gt;
+</pre><p>Notice how in the implementation of the
+      <tt class="literal">handleRequest(..)</tt> method no
+      <tt class="interfacename">View</tt> or logical view name is ever set on
+      the <tt class="classname">ModelAndView</tt> that is returned. It is the
+      <tt class="classname">DefaultRequestToViewNameTranslator</tt> that will be
+      tasked with generating a <span class="emphasis"><em>logical view name</em></span> from the
+      URL of the request. In the case of the above
+      <tt class="classname">RegistrationController</tt>, which is being used in
+      conjunction with the
+      <tt class="classname">ControllerClassNameHandlerMapping</tt>, a request URL
+      of <tt class="literal">'http://localhost/registration.html'</tt> will result
+      in a logical view name of <tt class="literal">'registration'</tt> being
+      generated by the
+      <tt class="classname">DefaultRequestToViewNameTranslator</tt>. This logical
+      view name will then be resolved into the
+      <tt class="literal">'/WEB-INF/jsp/registration.jsp'</tt> view by the
+      <tt class="classname">InternalResourceViewResolver</tt> bean.</p><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../images/admons/tip.png"></td><th align="left">Tip</th></tr><tr><td colspan="2" align="left" valign="top"><p>You don't even need to define a
+        <tt class="classname">DefaultRequestToViewNameTranslator</tt> bean
+        explicitly. If you are okay with the default settings of the
+        <tt class="classname">DefaultRequestToViewNameTranslator</tt>, then you
+        can rely on the fact that the Spring Web MVC
+        <tt class="classname">DispatcherServlet</tt> will actually instantiate an
+        instance of this class if one is not explicitly configured.</p></td></tr></table></div><p>Of course, if you need to change the default settings, then you do
+      need to configure your own
+      <tt class="classname">DefaultRequestToViewNameTranslator</tt> bean
+      explicitly. Please do consult the quite comprehensive Javadoc for the
+      <tt class="classname">DefaultRequestToViewNameTranslator</tt> class for
+      details of the various properties that can be configured.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mvc-annotation"></a>13.11.&nbsp;Annotation-based controller configuration</h2></div></div><div></div></div><p>There is a current trend to favor annotations over XML files for
+    some types of configuration data. To facilitate this, Spring is now (since
+    2.5) providing support for configuring the MVC framework components using
+    annotations.</p><p>Spring 2.5 introduces an annotation-based programming model for MVC
+    controllers, using annotations such as
+    <tt class="interfacename">@RequestMapping</tt>,
+    <tt class="interfacename">@RequestParam</tt>,
+    <tt class="interfacename">@ModelAttribute</tt>, etc. This annotation
+    support is available for both Servlet MVC and Portlet MVC. Controllers
+    implemented in this style do not have to extend specific base classes or
+    implement specific interfaces. Furthermore, they do not usually have
+    direct dependencies on Servlet or Portlet API's, although they can easily
+    get access to Servlet or Portlet facilities if desired.</p><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../images/admons/tip.png"></td><th align="left">Tip</th></tr><tr><td colspan="2" align="left" valign="top"><p>The Spring distribution ships with the
+      <span class="emphasis"><em>PetClinic</em></span> sample, which is a web application that takes
+      advantage of the annotation support described in this section, in the context
+      of simple form processing. You can find the <span class="emphasis"><em>PetClinic</em></span>
+      application in the <tt class="literal">'samples/petclinic'</tt> directory.</p><p>For a further sample application that builds on annotation-based Web MVC,
+      check out <span class="emphasis"><em>imagedb</em></span>. The focus in that sample is on stateless
+      multi-action controllers, including the processing of multipart file uploads.
+      You can find the <span class="emphasis"><em>imagedb</em></span> application in the
+      <tt class="literal">'samples/imagedb'</tt> directory.</p></td></tr></table></div><p>The following sections document these annotations and how they are
+    most commonly used in a Servlet environment.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-ann-setup"></a>13.11.1.&nbsp;Setting up the dispatcher for annotation support</h3></div></div><div></div></div><p><span class="emphasis"><em><tt class="interfacename">@RequestMapping</tt> will only be processed
+      if a corresponding <tt class="interfacename">HandlerMapping</tt> (for type level annotations)
+      and/or <tt class="interfacename">HandlerAdapter</tt> (for method level annotations) is
+      present in the dispatcher.</em></span> This is the case by default in both
+      <tt class="classname">DispatcherServlet</tt> and <tt class="classname">DispatcherPortlet</tt>.</p><p>However, if you are defining custom <tt class="interfacename">HandlerMappings</tt> or
+      <tt class="interfacename">HandlerAdapters</tt>, then you need to make sure that a
+      corresponding custom <tt class="classname">DefaultAnnotationHandlerMapping</tt>
+      and/or <tt class="classname">AnnotationMethodHandlerAdapter</tt> is defined as well
+      - provided that you intend to use <tt class="interfacename">@RequestMapping</tt>.</p><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"&gt;
+
+    &lt;bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/&gt;
+
+    &lt;bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/&gt;
+
+    <i class="lineannotation"><span class="lineannotation">// ... (controller bean definitions) ...</span></i>
+
+&lt;/beans&gt;
+</pre><p>Defining a <tt class="classname">DefaultAnnotationHandlerMapping</tt>
+      and/or <tt class="classname">AnnotationMethodHandlerAdapter</tt> explicitly
+      also makes sense if you would like to customize the mapping strategy,
+      e.g. specifying a custom <tt class="interfacename">PathMatcher</tt> or
+      <tt class="interfacename">WebBindingInitializer</tt> (see below).</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-ann-controller"></a>13.11.2.&nbsp;Defining a controller with
+      <tt class="interfacename">@Controller</tt></h3></div></div><div></div></div><p>The <tt class="interfacename">@Controller</tt> annotation indicates
+      that a particular class serves the role of a <span class="emphasis"><em>controller</em></span>.
+      There is no need to extend any controller base class or reference the
+      Servlet API. You are of course still able to reference Servlet-specific
+      features if you need to.</p><p>The basic purpose of the <tt class="interfacename">@Controller</tt>
+      annotation is to act as a stereotype for the annotated class, indicating
+      its role. The dispatcher will scan such annotated classes for mapped
+      methods, detecting <tt class="interfacename">@RequestMapping</tt>
+      annotations (see the next section).</p><p>Annotated controller beans may be defined explicitly,
+      using a standard Spring bean definition in the dispatcher's context.
+      However, the <tt class="interfacename">@Controller</tt> stereotype also
+      allows for autodetection, aligned with Spring 2.5's general support for
+      detecting component classes in the classpath and auto-registering bean
+      definitions for them.</p><p>To enable autodetection of such annotated controllers, you have to add
+      component scanning to your configuration. This is easily achieved by using
+      the <span class="emphasis"><em>spring-context</em></span> schema as shown in the following
+      XML snippet:</p><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-2.5.xsd"&gt;
+
+    &lt;context:component-scan base-package="org.springframework.samples.petclinic.web"/&gt;
+
+    <i class="lineannotation"><span class="lineannotation">// ...</span></i>
+
+&lt;/beans&gt;</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-ann-requestmapping"></a>13.11.3.&nbsp;Mapping requests with
+      <tt class="interfacename">@RequestMapping</tt></h3></div></div><div></div></div><p>The <tt class="interfacename">@RequestMapping</tt> annotation is used
+      to map URLs like '/editPet.do' onto an entire class or a particular handler method.
+      Typically the type-level annotation maps a specific request path (or path pattern)
+      onto a form controller, with additional method-level annotations 'narrowing' the
+      primary mapping for a specific HTTP method request method ("GET"/"POST") or
+      specific HTTP request parameters.</p><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../images/admons/tip.png"></td><th align="left">Tip</th></tr><tr><td colspan="2" align="left" valign="top"><p><tt class="interfacename">@RequestMapping</tt> at the type
+        level may be used for plain implementations of the
+        <tt class="interfacename">Controller</tt> interface as well.
+        In this case, the request processing code would follow the
+        traditional <tt class="literal">handleRequest</tt> signature,
+        while the controller's mapping would be expressed through an
+        <tt class="interfacename">@RequestMapping</tt> annotation.
+        This works for pre-built <tt class="interfacename">Controller</tt>
+        base classes, such as <tt class="classname">SimpleFormController</tt>,
+        too.</p><p>In the following discussion, we'll focus on controllers
+        that are based on annotated handler methods.</p></td></tr></table></div><p>The following is an example of a form controller from the
+      PetClinic sample application using this annotation:</p><pre class="programlisting">@Controller
+<span class="bold"><b>@RequestMapping("/editPet.do")</b></span>
+@SessionAttributes("pet")
+public class EditPetForm {
+
+    private final Clinic clinic;
+
+    @Autowired
+    public EditPetForm(Clinic clinic) {
+        this.clinic = clinic;
+    }
+
+    @ModelAttribute("types")
+    public Collection&lt;PetType&gt; populatePetTypes() {
+        return this.clinic.getPetTypes();
+    }
+
+    <span class="bold"><b>@RequestMapping(method = RequestMethod.GET)</b></span>
+    public String setupForm(@RequestParam("petId") int petId, ModelMap model) {
+        Pet pet = this.clinic.loadPet(petId);
+        model.addAttribute("pet", pet);
+        return "petForm";
+    }
+
+    <span class="bold"><b>@RequestMapping(method = RequestMethod.POST)</b></span>
+    public String processSubmit(
+            @ModelAttribute("pet") Pet pet, BindingResult result, SessionStatus status) {
+
+        new PetValidator().validate(pet, result);
+        if (result.hasErrors()) {
+            return "petForm";
+        }
+        else {
+            this.clinic.storePet(pet);
+            status.setComplete();
+            return "redirect:owner.do?ownerId=" + pet.getOwner().getId();
+        }
+    }
+}</pre><p>For a traditional multi-action controller the URLs are typically
+      mapped directly on the methods since the controller responds to multiple
+      URLs. The following is an example of a multi-action controller from the
+      PetClinic sample application using
+      <tt class="classname">@RequestMapping</tt>:</p><pre class="programlisting">@Controller
+public class ClinicController {
+
+    private final Clinic clinic;
+
+    @Autowired
+    public ClinicController(Clinic clinic) {
+        this.clinic = clinic;
+    }
+
+    /**
+     * Custom handler for the welcome view.
+     * Note that this handler relies on the RequestToViewNameTranslator to
+     * determine the logical view name based on the request URL: "/welcome.do"
+     * -&gt; "welcome".
+     */
+    <span class="bold"><b>@RequestMapping("/welcome.do")</b></span>
+    public void welcomeHandler() {
+    }
+
+    /**
+     * Custom handler for displaying vets.
+     * Note that this handler returns a plain {@link ModelMap} object instead of
+     * a ModelAndView, thus leveraging convention-based model attribute names.
+     * It relies on the RequestToViewNameTranslator to determine the logical
+     * view name based on the request URL: "/vets.do" -&gt; "vets".
+     * @return a ModelMap with the model attributes for the view
+     */
+    <span class="bold"><b>@RequestMapping("/vets.do")</b></span>
+    public ModelMap vetsHandler() {
+        return new ModelMap(this.clinic.getVets());
+    }
+
+    /**
+     * Custom handler for displaying an owner.
+     * Note that this handler returns a plain {@link ModelMap} object instead of
+     * a ModelAndView, thus leveraging convention-based model attribute names.
+     * It relies on the RequestToViewNameTranslator to determine the logical
+     * view name based on the request URL: "/owner.do" -&gt; "owner".
+     * @param ownerId the ID of the owner to display
+     * @return a ModelMap with the model attributes for the view
+     */
+    <span class="bold"><b>@RequestMapping("/owner.do")</b></span>
+    public ModelMap ownerHandler(@RequestParam("ownerId") int ownerId) {
+        return new ModelMap(this.clinic.loadOwner(ownerId));
+    }
+}</pre><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="mvc-ann-requestmapping-advanced"></a>13.11.3.1.&nbsp;Advanced <tt class="interfacename">@RequestMapping</tt> options</h4></div></div><div></div></div><p><span class="emphasis"><em>Ant-style path patterns are supported (e.g. "/myPath/*.do").</em></span>
+        At the method level, relative paths (e.g. "edit.do") are supported
+        within the primary mapping expressed at the type level.</p><p>The handler method names are taken into account for narrowing
+        if no path was specified explicitly, according to the specified
+        <tt class="interfacename">org.springframework.web.servlet.mvc.multiaction.MethodNameResolver</tt>
+        (by default an
+        <tt class="classname">org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver</tt>).
+        Note that this only applies in case of ambiguous annotation mappings
+        that do not specify a path mapping explicitly. In other words,
+        the method name is only used for narrowing among a set of matching
+        methods; it does not constitute a primary path mapping itself.</p><p>If you have a single default method (without explicit path mapping),
+        then all requests without a more specific mapped method found will
+        be dispatched to it. If you have multiple such default methods, then
+        the method name will be taken into account for choosing between them.</p><p><span class="emphasis"><em>Path mappings can be narrowed through parameter conditions:</em></span>
+        a sequence of "myParam=myValue" style expressions, with a request only
+        mapped if each such parameter is found to have the given value.
+        "myParam" style expressions are also supported, with such parameters
+        having to be present in the request (allowed to have any value).
+        Finally, "!myParam" style expressions indicate that the specified parameter
+        is <span class="emphasis"><em>not</em></span> supposed to be present in the request.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-ann-requestmapping-arguments"></a>13.11.4.&nbsp;Supported handler method arguments and return types</h3></div></div><div></div></div><p>Handler methods which are annotated with
+      <tt class="classname">@RequestMapping</tt> are allowed to have very flexible
+      signatures. They may have arguments of the following types, in arbitrary
+      order (except for validation results, which need to follow right after
+      the corresponding command object, if desired):
+
+      </p><div class="itemizedlist"><ul type="disc"><li><p>Request and/or response objects (Servlet API). You may choose any
+          specific request/response type, e.g. <tt class="interfacename">ServletRequest</tt> /
+          <tt class="interfacename">HttpServletRequest</tt>.</p></li><li><p>Session object (Servlet API): of type <tt class="interfacename">HttpSession</tt>.
+          An argument of this type will enforce the presence of a corresponding session.
+          As a consequence, such an argument will never be <tt class="literal">null</tt>.
+          <span class="emphasis"><em>Note that session access may not be thread-safe, in particular
+          in a Servlet environment: Consider switching the
+          <tt class="classname">AnnotationMethodHandlerAdapter</tt>'s
+          "synchronizeOnSession" flag to "true" if multiple requests are allowed
+          to access a session concurrently.</em></span></p></li><li><p><tt class="classname">org.springframework.web.context.request.WebRequest</tt>
+          or <tt class="classname">org.springframework.web.context.request.NativeWebRequest</tt>.
+          Allows for generic request parameter access as well as request/session
+          attribute access, without ties to the native Servlet/Portlet API.</p></li><li><p><tt class="classname">java.util.Locale</tt> for the current request
+          locale (determined by the most specific locale resolver available,
+          i.e. the configured <tt class="interfacename">LocaleResolver</tt>
+          in a Servlet environment).</p></li><li><p><tt class="classname">java.io.InputStream</tt> /
+          <tt class="classname">java.io.Reader</tt> for access to the request's content.
+          This will be the raw InputStream/Reader as exposed by the Servlet API.</p></li><li><p><tt class="classname">java.io.OutputStream</tt> /
+          <tt class="classname">java.io.Writer</tt> for generating the response's content.
+          This will be the raw OutputStream/Writer as exposed by the Servlet API.</p></li><li><p><tt class="classname">@RequestParam</tt> annotated parameters
+          for access to specific Servlet request parameters. Parameter values
+          will be converted to the declared method argument type.</p></li><li><p><tt class="interfacename">java.util.Map</tt> /
+          <tt class="interfacename">org.springframework.ui.Model</tt> /
+          <tt class="classname">org.springframework.ui.ModelMap</tt> for
+          enriching the implicit model that will be exposed to the web view.</p></li><li><p>Command/form objects to bind parameters to: as bean
+          properties or fields, with customizable type conversion, depending
+          on <tt class="classname">@InitBinder</tt> methods and/or the
+          HandlerAdapter configuration - see the
+          "<tt class="literal">webBindingInitializer</tt>" property on
+          <tt class="classname">AnnotationMethodHandlerAdapter</tt>. Such
+          command objects along with their validation results will be
+          exposed as model attributes, by default using the non-qualified
+          command class name in property notation (e.g. "orderAddress" for
+          type "mypackage.OrderAddress"). Specify a parameter-level
+          <tt class="classname">ModelAttribute</tt> annotation for declaring a
+          specific model attribute name.</p></li><li><p><tt class="classname">org.springframework.validation.Errors</tt> /
+          <tt class="classname">org.springframework.validation.BindingResult</tt>
+          validation results for a preceding command/form object (the
+          immediate preceding argument).</p></li><li><p><tt class="classname">org.springframework.web.bind.support.SessionStatus</tt>
+          status handle for marking form processing as complete (triggering
+          the cleanup of session attributes that have been indicated by the
+          <tt class="classname">@SessionAttributes</tt> annotation at the
+          handler type level).</p></li></ul></div><p>The following return types are supported for handler methods:
+
+      </p><div class="itemizedlist"><ul type="disc"><li><p>A <tt class="classname">ModelAndView</tt> object, with the model implicitly
+          enriched with command objects and the results of <tt class="literal">@ModelAttribute</tt>
+          annotated reference data accessor methods.</p></li><li><p>A <tt class="interfacename">Model</tt> object, with the view name implicitly
+          determined through a <tt class="interfacename">RequestToViewNameTranslator</tt>
+          and the model implicitly enriched with command objects and the results of
+          <tt class="literal">@ModelAttribute</tt> annotated reference data accessor methods.</p></li><li><p>A <tt class="interfacename">Map</tt> object for exposing a model, with the view name
+          implicitly determined through a <tt class="interfacename">RequestToViewNameTranslator</tt>
+          and the model implicitly enriched with command objects and the results of
+          <tt class="literal">@ModelAttribute</tt> annotated reference data accessor methods.</p></li><li><p>A <tt class="interfacename">View</tt> object, with the model implicitly
+          determined through command objects and <tt class="literal">@ModelAttribute</tt>
+          annotated reference data accessor methods. The handler method may also
+          programmatically enrich the model by declaring a <tt class="interfacename">Model</tt>
+          argument (see above).</p></li><li><p>A <tt class="classname">String</tt> value which is interpreted as view name,
+          with the model implicitly determined through command objects and
+          <tt class="literal">@ModelAttribute</tt> annotated reference data accessor methods.
+          The handler method may also programmatically enrich the model by declaring a
+          <tt class="interfacename">Model</tt> argument (see above).</p></li><li><p><tt class="literal">void</tt> if the method handles the response itself
+          (by writing the response content directly, declaring an argument of type
+          <tt class="interfacename">ServletResponse</tt> /
+          <tt class="interfacename">HttpServletResponse</tt> for that purpose)
+          or if the view name is supposed to be implicitly determined through a
+          <tt class="interfacename">RequestToViewNameTranslator</tt>
+          (not declaring a response argument in the handler method signature).</p></li><li><p>Any other return type will be considered as single model attribute
+          to be exposed to the view, using the attribute name specified through
+          <tt class="literal">@ModelAttribute</tt> at the method level (or the default
+          attribute name based on the return type's class name otherwise). The model
+          will be implicitly enriched with command objects and the results of
+          <tt class="literal">@ModelAttribute</tt> annotated reference data accessor methods.</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-ann-requestparam"></a>13.11.5.&nbsp;Binding request parameters to method parameters with
+      <tt class="classname">@RequestParam</tt></h3></div></div><div></div></div><p>The <tt class="classname">@RequestParam</tt> annotation is used to
+      bind request parameters to a method parameter in your controller.</p><p>The following code snippet from the PetClinic sample application
+      shows the usage:</p><pre class="programlisting">@Controller
+@RequestMapping("/editPet.do")
+@SessionAttributes("pet")
+public class EditPetForm {
+
+    <i class="lineannotation"><span class="lineannotation">// ...</span></i>
+
+    @RequestMapping(method = RequestMethod.GET)
+    public String setupForm(<span class="bold"><b>@RequestParam("petId") int petId</b></span>, ModelMap model) {
+        Pet pet = this.clinic.loadPet(petId);
+        model.addAttribute("pet", pet);
+        return "petForm";
+    }
+
+    <i class="lineannotation"><span class="lineannotation">// ...</span></i>
+</pre><p>Parameters using this annotation are required by default, but you
+      can specify that a parameter is optional by setting
+      <tt class="interfacename">@RequestParam</tt>'s
+      <tt class="literal">required</tt> attribute to <tt class="literal">false</tt> (e.g.,
+      <tt class="literal">@RequestParam(value="id", required="false")</tt>).</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-ann-modelattrib"></a>13.11.6.&nbsp;Providing a link to data from the model with
+      <tt class="classname">@ModelAttribute</tt></h3></div></div><div></div></div><p><tt class="classname">@ModelAttribute</tt> has two usage scenarios in
+      controllers. When placed on a method parameter,
+      <tt class="classname">@ModelAttribute</tt> is used to map a model attribute
+      to the specific, annotated method parameter (see the
+      <tt class="literal">processSubmit()</tt> method below). This is how the
+      controller gets a reference to the object holding the data entered in
+      the form. In addition, the parameter can be declared as the specific
+      type of the form backing object rather than as a generic
+      <tt class="classname">java.lang.Object</tt>, thus increasing type
+      safety.</p><p><tt class="classname">@ModelAttribute</tt> is also used at the method
+      level to provide <span class="emphasis"><em>reference data</em></span> for the model (see
+      the <tt class="literal">populatePetTypes()</tt> method below). For this usage
+      the method signature can contain the same types as documented above for
+      the <tt class="classname">@RequestMapping</tt> annotation.</p><p><span class="emphasis"><em>Note:</em></span> <tt class="classname">@ModelAttribute</tt>
+      annotated methods will be executed <span class="emphasis"><em>before</em></span> the
+      chosen <tt class="classname">@RequestMapping</tt> annotated handler method.
+      They effectively pre-populate the implicit model with specific attributes,
+      often loaded from a database. Such an attribute can then already be
+      accessed through <tt class="classname">@ModelAttribute</tt> annotated
+      handler method parameters in the chosen handler method, potentially
+      with binding and validation applied to it.</p><p>The following code snippet shows these two usages of this
+      annotation:</p><pre class="programlisting">@Controller
+@RequestMapping("/editPet.do")
+@SessionAttributes("pet")
+public class EditPetForm {
+
+    <i class="lineannotation"><span class="lineannotation">// ...</span></i>
+
+    <span class="bold"><b>@ModelAttribute("types")</b></span>
+    public Collection&lt;PetType&gt; populatePetTypes() {
+        return this.clinic.getPetTypes();
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    public String processSubmit(
+            <span class="bold"><b>@ModelAttribute("pet") Pet pet</b></span>, BindingResult result, SessionStatus status) {
+
+        new PetValidator().validate(pet, result);
+        if (result.hasErrors()) {
+            return "petForm";
+        }
+        else {
+            this.clinic.storePet(pet);
+            status.setComplete();
+            return "redirect:owner.do?ownerId=" + pet.getOwner().getId();
+        }
+    }
+}</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-ann-sessionattrib"></a>13.11.7.&nbsp;Specifying attributes to store in a Session with
+      <tt class="classname">@SessionAttributes</tt></h3></div></div><div></div></div><p>The type-level <tt class="classname">@SessionAttributes</tt>
+      annotation declares session attributes used by a specific handler. This
+      will typically list the names of model attributes which should be
+      transparently stored in the session or some conversational storage,
+      serving as form-backing beans between subsequent requests.</p><p>The following code snippet shows the usage of this
+      annotation:</p><pre class="programlisting">@Controller
+@RequestMapping("/editPet.do")
+<span class="bold"><b>@SessionAttributes("pet")</b></span>
+public class EditPetForm {
+    <i class="lineannotation"><span class="lineannotation">// ...</span></i>
+}
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="mvc-ann-webdatabinder"></a>13.11.8.&nbsp;Customizing <tt class="classname">WebDataBinder</tt>
+      initialization</h3></div></div><div></div></div><p>To customize request parameter binding with PropertyEditors, etc.
+      via Spring's <tt class="classname">WebDataBinder</tt>, you can either use
+      <tt class="interfacename">@InitBinder</tt>-annotated methods within your
+      controller or externalize your configuration by providing a custom
+      <tt class="interfacename">WebBindingInitializer</tt>.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="mvc-ann-initbinder"></a>13.11.8.1.&nbsp;Customizing data binding with
+        <tt class="interfacename">@InitBinder</tt></h4></div></div><div></div></div><p>Annotating controller methods with
+        <tt class="interfacename">@InitBinder</tt> allows you to configure web
+        data binding directly within your controller class.
+        <tt class="interfacename">@InitBinder</tt> identifies methods which
+        initialize the <tt class="classname">WebDataBinder</tt> which will be used
+        for populating command and form object arguments of annotated handler
+        methods.</p><p>Such init-binder methods support all arguments that
+        <tt class="interfacename">@RequestMapping</tt> supports, except for
+        command/form objects and corresponding validation result objects.
+        Init-binder methods must not have a return value. Thus, they are
+        usually declared as <tt class="literal">void</tt>. Typical arguments include
+        <tt class="classname">WebDataBinder</tt> in combination with
+        <tt class="interfacename">WebRequest</tt> or
+        <tt class="classname">java.util.Locale</tt>, allowing code to register
+        context-specific editors.</p><p>The following example demonstrates the use of
+        <tt class="interfacename">@InitBinder</tt> for configuring a
+        <tt class="classname">CustomDateEditor</tt> for all
+        <tt class="classname">java.util.Date</tt> form properties.</p><pre class="programlisting">@Controller
+public class MyFormController {
+
+    <span class="bold"><b>@InitBinder</b></span>
+    public void initBinder(WebDataBinder binder) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
+    }
+
+    <i class="lineannotation"><span class="lineannotation">// ...</span></i>
+}</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="mvc-ann-webbindinginitializer"></a>13.11.8.2.&nbsp;Configuring a custom
+        <tt class="interfacename">WebBindingInitializer</tt></h4></div></div><div></div></div><p>To externalize data binding initialization, you can provide a
+        custom implementation of the
+        <tt class="interfacename">WebBindingInitializer</tt> interface, which
+        you then enable by supplying a custom bean configuration for an
+        <tt class="classname">AnnotationMethodHandlerAdapter</tt>, thus overriding
+        the default configuration.</p><p>The following example from the PetClinic application shows a
+        configuration using a custom implementation of the
+        <tt class="interfacename">WebBindingInitializer</tt> interface,
+        <tt class="classname">org.springframework.samples.petclinic.web.ClinicBindingInitializer</tt>,
+        which configures PropertyEditors required by several of the PetClinic
+        controllers.</p><pre class="programlisting">&lt;bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"&gt;
+    &lt;property name="cacheSeconds" value="0" /&gt;
+    &lt;property name="webBindingInitializer"&gt;
+        &lt;bean class="org.springframework.samples.petclinic.web.ClinicBindingInitializer" /&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;
+</pre></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mvc-resources"></a>13.12.&nbsp;Further Resources</h2></div></div><div></div></div><p>Find below links and pointers to further resources about Spring Web
+    MVC.</p><div class="itemizedlist"><ul type="disc"><li><p>The Spring distribution ships with a Spring Web MVC tutorial
+        that guides the reader through building a complete Spring Web
+        MVC-based application using a step-by-step approach. This tutorial is
+        available in the <tt class="literal">'docs'</tt> directory of the Spring
+        distribution. An online version can also be found on the <a href="http://springframework.org/" target="_top">Spring Framework website</a>.</p></li><li><p>The book entitled &#8220;<span class="quote">Expert Spring Web MVC and
+        Web Flow</span>&#8221; by Seth Ladd and others (published by Apress) is an
+        excellent hardcopy source of Spring Web MVC goodness.</p></li></ul></div></div></div><!--Begin LoopFuse code--><script xmlns="http://www.w3.org/TR/xhtml1/transitional" src="http://loopfuse.net/webrecorder/js/listen.js" type="text/javascript"></script><script xmlns="http://www.w3.org/TR/xhtml1/transitional" type="text/javascript"> 
+            _lf_cid = "LF_48be82fa";
+            _lf_remora();
+        </script><!--End LoopFuse code--><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="spring-web.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="view.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Part&nbsp;III.&nbsp;The Web&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://www.springsource.com/" title="SpringSource">Sponsored by SpringSource</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;14.&nbsp;View technologies</td></tr></table></div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+<!-- Begin 2nd Google code - a mod -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var pageTracker = _gat._getTracker("UA-2728886-3");
+pageTracker._setDomainName("none");pageTracker._setAllowLinker(true);
+pageTracker._trackPageview();var OrgTracker = _gat._getTracker("UA-2728886-2");
+OrgTracker._trackPageview();</script>
+ <!-- End 2nd Google code -->
+
+
+
+</body>
+</html>
