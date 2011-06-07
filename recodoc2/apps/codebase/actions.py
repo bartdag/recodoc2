@@ -609,7 +609,7 @@ def process_children_matches(text, matches, children, index, single_refs,
 
 
 def process_matches(text, matches, single_refs, kinds, kinds_hierarchies,
-        save_index, find_context):
+        save_index, find_context, existing_refs):
     filtered = set()
     index = 0
     avoided = False
@@ -621,6 +621,16 @@ def process_matches(text, matches, single_refs, kinds, kinds_hierarchies,
             if parent[2] == IGNORE_KIND:
                 avoided = True
                 continue
+
+            # This is a list of refs to avoid
+            try:
+                index = existing_refs.index(content)
+                del(existing_refs[index])
+                continue
+            except ValueError:
+                # That's ok, we can proceed!
+                pass
+
             main_reference = SingleCodeReference(
                     content=content,
                     kind_hint=kinds[parent[2]])
@@ -647,13 +657,16 @@ def process_matches(text, matches, single_refs, kinds, kinds_hierarchies,
 
 def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
         kinds_hierarchies=ALL_KINDS_HIERARCHIES, save_index=False,
-        strict=False, find_context=False, code_words=None):
+        strict=False, find_context=False, code_words=None, existing_refs=None):
     single_refs = []
     matches = []
 
     kind_text = kind_hint.kind
     if kind_text not in kind_strategies:
         kind_text = 'unknown'
+
+    if existing_refs is None:
+        existing_refs = []
 
     for strategy in kind_strategies[kind_text]:
         matches.extend(strategy.match(text))
@@ -665,7 +678,7 @@ def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
     matches.sort(key=lambda match: match[0][0])
 
     avoided = process_matches(text, matches, single_refs, kinds,
-            kinds_hierarchies, save_index, find_context)
+            kinds_hierarchies, save_index, find_context, existing_refs)
 
     if len(single_refs) == 0 and not avoided and not strict:
         code = SingleCodeReference(content=text, kind_hint=kind_hint)

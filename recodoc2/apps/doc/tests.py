@@ -61,7 +61,7 @@ class DocSetup(TestCase):
                 'foo.parser')
         self.assertEqual(2, len(list_doc_db('project1')))
 
-    #@unittest.skip('Usually works.')
+    @unittest.skip('Usually works.')
     def test_sync_doc_remote(self):
         pname = 'project1'
         release = '3.0'
@@ -307,7 +307,7 @@ class DocParserTest(TransactionTestCase):
         CodeSnippet.objects.all().delete()
         clean_test_dir()
 
-    #@transaction.autocommit
+    @transaction.autocommit
     def test_docbook_parse_ht4_doc(self):
         pname = 'project1'
         release = '3.0'
@@ -320,7 +320,7 @@ class DocParserTest(TransactionTestCase):
                 'file://' + test_doc) 
         create_doc_db('project1', 'manual', '3.0', '',
                 'doc.syncer.generic_syncer.SingleURLSyncer',
-                'doc.parser.common_parsers.NewDocBookParser')
+                'doc.parser.special_parsers.HTClientParser')
         sync_doc(pname, dname, release)
         document = parse_doc(pname, dname, release, False)
         
@@ -381,7 +381,7 @@ class DocParserTest(TransactionTestCase):
         self.assertEqual('22.', section.parent.number)
         self.assertTrue(section.parent.parent is None)
 
-    #@unittest.skip('Usually works.')
+    @unittest.skip('Usually works.')
     def test_docbook_parse_hib3_doc(self):
         pname = 'project1'
         release = '3.0'
@@ -419,7 +419,7 @@ class DocParserTest(TransactionTestCase):
         self.assertEqual('12.', section.parent.number)
         self.assertTrue(section.parent.parent is None)
 
-    #@unittest.skip('Usually works.')
+    @unittest.skip('Usually works.')
     def test_maven_parse_joda162_doc(self):
         pname = 'project1'
         release = '3.0'
@@ -458,7 +458,7 @@ class DocParserTest(TransactionTestCase):
         self.assertEqual(2, section.word_count)
         self.assertTrue(section.parent is None)
 
-    #@unittest.skip('Usually works.')
+    @unittest.skip('Usually works.')
     def test_maven_parse_htclient_doc(self):
         pname = 'project1'
         release = '3.0'
@@ -568,3 +568,28 @@ class DocParserTest(TransactionTestCase):
         self.assertEqual(0, section.title_references.count())
         self.assertEqual(12, section.code_references.count())
         self.assertEqual(1, section.code_snippets.count())
+
+    @transaction.autocommit
+    def test_docbook_parse_ht4_doc_code(self):
+        pname = 'project1'
+        release = '3.0'
+        dname = 'manual'
+        test_doc = os.path.join(settings.TESTDATA, 'httpclient402doc',
+            'index.html')
+        test_doc = os.path.normpath(test_doc)
+        create_doc_local(pname, dname, release,
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'file://' + test_doc) 
+        create_doc_db('project1', 'manual', '3.0', '',
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'doc.parser.special_parsers.HTClientParser')
+        sync_doc(pname, dname, release)
+        parse_doc(pname, dname, release, True)
+
+        section = Section.objects.filter(number='6.1.').all()[0]
+        found = False
+        for code_reference in section.code_references.all():
+            if code_reference.content.find('LineParser') > 0:
+                if code_reference.index >= 1000:
+                    found = True
+        self.assertTrue(found)

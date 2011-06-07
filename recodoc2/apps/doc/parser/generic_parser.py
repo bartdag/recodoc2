@@ -115,6 +115,10 @@ class GenericParser(object):
     xsnippet = None
     '''XPath to find code snippets. Required'''
 
+    xparagraphs = None
+    '''XPath to find the text minus the snippets in a section. Required only
+       if mix_mode=True'''
+
     def __init__(self, document_pk):
         self.document = Document.objects.get(pk=document_pk)
         self.kinds = get_default_kind_dict()
@@ -183,6 +187,8 @@ class GenericParser(object):
         elif self.xsectiontitle is None:
             logger.error('xsectiontitle field needs to be defined.')
             return False
+        elif self.xparagraphs is None and load.mix_mode:
+            logger.error('xparagraphs needs to be defined if mix_mode is on')
 
         return check
 
@@ -281,7 +287,8 @@ class GenericParser(object):
         # If mix mode, analyze the text of each section.
         if load.mix_mode:
             for section in sections:
-                self._process_mix_mode(page, load, section)
+                if self._process_mix_mode_section(page, load, section):
+                    self._process_mix_mode(page, load, section)
 
     def _add_code_ref(self, index, code_ref_element, page, load,
             s_code_references):
@@ -375,9 +382,30 @@ class GenericParser(object):
             code.global_context = page
             code.save()
 
+    def _process_mix_mode_section(self, page, load, section):
+        return True
+
     def _process_mix_mode(self, page, load, section):
-        # NOTE: SEE //text() to get many text elements.
-        pass
+        section_element = load.tree.xpath(section.xpath)[0]
+        section_text = self.xparagraphs.get_text(section_element)
+        section_refs = section.code_references.all()
+        existing_refs = [code_ref.content for code_ref in section_refs]
+        kind_hint = self.kinds['unknown']
+        mid_context = self._get_mid_context(section)
+        for i, code in enumerate(
+                parse_single_code_references(
+                    section_text, kind_hint, self.kind_strategies,
+                    self.kinds, find_context=True, strict=True,
+                    existing_refs=existing_refs)):
+            code.xpath = section.xpath
+            code.file_path = page.file_path
+            code.index = 1000 + i
+            code.project = self.document.project_release.project
+            code.project_release = self.document.project_release
+            code.local_context = section
+            code.mid_context = mid_context
+            code.global_context = page
+            code.save()
 
     def _get_code_ref_kind(self, code_ref_tag, text):
         kind_hint = self.kinds['unknown']

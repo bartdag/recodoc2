@@ -86,7 +86,7 @@ class NewDocBookParser(NumberDotParentMixin, StandardNumberMixin,
 
     xsectiontitle = SingleXPath('.//div[@class="titlepage"]')
 
-    xcoderef = SingleXPath('//code | //tt | //em')
+    xcoderef = SingleXPath('//code | //tt | //em | //span[@class="property"]')
 
     xsnippet = SingleXPath('//pre')
 
