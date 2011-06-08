@@ -109,4 +109,3 @@ def diff_doc(pname, dname, release1, release2):
 
     differ = DocDiffer()
     return differ.diff_docs(document_from, document_to)
-
