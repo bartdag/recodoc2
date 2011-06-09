@@ -400,7 +400,7 @@ def link_code(pname, bname, release, linker_name, source, source_release=None):
     project = Project.objects.get(dir_name=pname)
     prelease = ProjectRelease.objects.filter(project=project).\
             filter(release=release)[0]
-    if source_release is not None:
+    if source_release is not None and source_release != '-1':
         srelease = ProjectRelease.objects.filter(project=project).\
             filter(release=source_release)[0]
     else:

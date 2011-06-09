@@ -6,7 +6,7 @@ HERE = os.path.dirname(__file__)
 sys.path.append(os.path.join(HERE, 'apps'))
 
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (

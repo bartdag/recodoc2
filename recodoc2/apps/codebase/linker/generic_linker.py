@@ -75,10 +75,8 @@ class LinkerLog(object):
 
         log_dir = os.path.join(settings.PROJECT_FS_ROOT,
                 linker.project.dir_name)
-        if linker.srelease is not None:
-            self.release = linker.srelease.release
-        else:
-            self.release = 'default'
+        if linker.prelease is not None:
+            self.release = linker.prelease.release
 
         self.name = 'linking-{0}-{1}-{2}-{3}-{4}.log'.format(kind_str,
                 linker.project.dir_name, self.release, linker.name,
