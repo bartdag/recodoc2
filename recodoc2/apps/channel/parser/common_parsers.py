@@ -172,3 +172,53 @@ class FUDEclipseForumParser(GenericThreadParser):
                 )
 
         return date
+
+class SourceForgeParser(GenericMailParser):
+
+    xtitle = SingleXPath('//div[@class="forum"]/div/b')
+
+    xauthor = SingleXPath('//div[@class="forum"]/small')
+
+    xdate = SingleXPath('//div[@class="forum"]/small')
+
+    xcontent = SingleXPath('//td[@class="email_body"]/pre')
+
+    date_regex = re.compile(r'''
+    (?P<year>\d{4})-
+    (?P<month>\d{2})-
+    (?P<day>\d{2})\s
+    (?P<hour>\d{2}):
+    (?P<minute>\d{2})
+    ''', re.VERBOSE)
+
+    start = len('From: ')
+
+    def __init__(self, channel_pk, parse_refs, lock):
+        super(SourceForgeParser, self).__init__(channel_pk, parse_refs, lock)
+
+    def _process_date_text(self, message, load, date_text):
+        match = self.date_regex.search(date_text)
+        if match is None:
+            logger.error('This date text does not match expected pattern: {0}'
+                    .format(date_text))
+            return None
+
+        date = datetime(
+                int(match.group('year')),
+                int(match.group('month')),
+                int(match.group('day')),
+                int(match.group('hour')),
+                int(match.group('minute')),
+                )
+        return date
+
+    def _process_title(self, message, load):
+        title = super(SourceForgeParser, self)._process_title(message, load)
+        title = title.replace('[Joda-interest]', '')
+        return title
+
+    def _process_author(self, message, load):
+        author_text = super(SourceForgeParser, self)._process_author(message,
+                load)
+        author_text = author_text[self.start:]
+        return author_text.strip()

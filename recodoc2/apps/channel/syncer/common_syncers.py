@@ -138,3 +138,38 @@ class FUDEclipseForumSyncer(ThreadSyncer):
     def _get_next_entry_url(self, url, next_page_id, tree):
         # It seems that all messages are presented on the same page.
         return None
+
+
+class SourceForgeSyncer(MessageSyncer):
+    reverse_entries = False
+    xsection_urls = etree.XPath('//table//table//a')
+    xentries = etree.XPath('//div[@class="forum"]/div/b/a[1]')
+    xnext_pages = etree.XPath('//tr[@bgcolor="#eeeeee"]/td[3]/a[1]')
+
+    def _get_section_urls(self, channel_url):
+        tree = download_html_tree(channel_url)
+        links = self.xsection_urls(tree)
+        section_urls = []
+        for link in reversed(links):
+            url = link.attrib['href']
+            url = url.replace('style=ultimate', 'style=flat')
+            url = url.replace('max_rows=25', 'max_rows=100')
+            url = urlparse.urljoin(channel_url, url)
+            section_urls.append(url)
+        return section_urls
+
+    def _parse_toc_entries(self, page_url, tree):
+        links = self.xentries(tree)
+        entry_urls = []
+        for link in links:
+            url = link.attrib['href']
+            url = urlparse.urljoin(page_url, url)
+            entry_urls.append(url)
+        return entry_urls
+
+    def _get_next_toc_page(self, page_url, tree):
+        next_page_url = None
+        for page_link in self.xnext_pages(tree):
+            next_page_url = page_link.attrib['href']
+            next_page_url = urlparse.urljoin(page_url, next_page_url)
+        return next_page_url
