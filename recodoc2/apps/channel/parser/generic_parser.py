@@ -302,6 +302,7 @@ class GenericParser(object):
             code.file_path = message.file_path
             code.source = CHANNEL_SOURCE
             code.index = -1
+            code.project = self.channel.project
             code.sentence = sentence
             code.paragraph = text_context
             code.title_context = message
@@ -321,6 +322,7 @@ class GenericParser(object):
                         code_words=load.code_words)):
                 code.file_path = message.file_path
                 code.url = message.url
+                code.source = CHANNEL_SOURCE
                 code.index = i + (para_index * 1000)
                 code.project = self.channel.project
                 code.local_context = message

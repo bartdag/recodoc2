@@ -61,6 +61,7 @@ logger = logging.getLogger("recodoc.codebase.linker")
 
 def reclassify_java(code_element, scode_reference):
     reclassified = False
+    print(scode_reference.snippet)
 
     if scode_reference.snippet is not None or code_element is not None:
         # We assume that references from snippet are always correctly
@@ -72,6 +73,7 @@ def reclassify_java(code_element, scode_reference):
         'enumeration value', 'annotation', 'enumeration'])
     unknown_kind = cu.get_value(PREFIX_UNKNOWN, UNKNOWN_KEY,
             gl.get_unknown_kind, None)
+    print('DEBUG UNKNOWN: {0}'.format(unknown_kind.pk))
 
     if scode_reference.kind_hint.kind in automatic_reclass:
         scode_reference.kind_hint = unknown_kind
@@ -83,6 +85,8 @@ def reclassify_java(code_element, scode_reference):
         # field. The simple name will be compared with all code elements
         scode_reference.kind_hint = unknown_kind
         reclassified = True
+
+    print('Reclassified: {0}'.format(scode_reference.pk))
 
     if reclassified:
         scode_reference.save()
