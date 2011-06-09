@@ -31,7 +31,7 @@ from docutil import cache_util
 from project.models import ProjectRelease, Project
 from project.actions import CODEBASE_PATH
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
-        SingleCodeReference, CodeSnippet, CodeElementFilter
+        SingleCodeReference, CodeSnippet, CodeElementFilter, ReleaseLinkSet
 from codebase.parser.java_diff import JavaDiffer
 
 
@@ -423,6 +423,15 @@ def link_code(pname, bname, release, linker_name, source, source_release=None):
     progress_monitor.info('Cache Count {0} miss of {1}'
             .format(cache_util.cache_miss, cache_util.cache_total))
     progress_monitor.info('Time: {0}'.format(stop - start))
+
+
+def clear_links(pname, release, source='-1'):
+    prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    query = ReleaseLinkSet.objects.filter(project_release=prelease)
+    if source != '-1':
+        query = query.filter(code_reference__source=source)
+    query.delete()
 
 
 ### ACTIONS USED BY OTHER ACTIONS ###

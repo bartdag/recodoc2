@@ -174,7 +174,10 @@ class GenericParser(object):
         message = Message(url=url, file_path=relative_path)
         message.index = index
 
-        message.title = self._process_title(message, load)
+        message.title = self._process_title(message, load)[0:500]
+        if len(message.title) > 500:
+            print('LONG TITLE: {0}'.format(message.title))
+            message.title = message.title[0:500]
 
         author_text = self._process_author(message, load)
         if author_text is not None:
