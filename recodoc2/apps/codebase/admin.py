@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
         SingleCodeReference, CodeSnippet, CodeElementFilter,\
-        ParameterElement, CodeBaseDiff
+        ParameterElement, CodeBaseDiff, CodeElementLink
 from django.contrib import admin
 
 
@@ -26,6 +26,13 @@ class CodeElementAdmin(admin.ModelAdmin):
     inlines = [AttributeCodeElementAdmin]
 
 
+class CodeElementLinkInline(admin.TabularInline):
+    model = CodeElementLink
+    fields = ('code_element', 'index', 'rationale', 'linker_name')
+    readonly_fields = ('code_element',)
+    extra = 0
+
+
 class SingleCodeReferenceAdmin(admin.ModelAdmin):
     fields = ('content', 'kind_hint', 'sentence', 'paragraph', 'snippet',
             'xpath', 'url', 'source', 'local_object_id', 'mid_object_id',
@@ -35,6 +42,7 @@ class SingleCodeReferenceAdmin(admin.ModelAdmin):
 #    readonly_fields = ('potential_elements', 'code_element')
     list_filter = ('source', 'kind_hint', )
     search_fields = ['id', 'content']
+    inlines = [CodeElementLinkInline]
     #raw_id_fields = ('code_element', 'potential_elements')
 #    filter_horizontal = ['potential_elements']
 
@@ -42,7 +50,8 @@ class SingleCodeReferenceAdmin(admin.ModelAdmin):
 class SingleCodeReferenceInline(admin.TabularInline):
     model = SingleCodeReference
     fk_name = 'snippet'
-    fields = ('content', 'source')
+    fields = ('content', 'source', 'first_link')
+    readonly_fields = ('first_link',)
     extra = 0
 
 
@@ -74,7 +83,15 @@ class CodeBaseDiffAdmin(admin.ModelAdmin):
         'removed_types', 'added_deprecated_types', 'removed_deprecated_types',
         'added_deprecated_methods', 'removed_deprecated_methods')
 
-    
+
+class CodeElementLinkAdmin(admin.ModelAdmin):
+    fields = ('code_reference', 'code_element', 'index', 'rationale',
+        'linker_name')
+    readonly_fields = ('code_reference', 'code_element')
+    search_fields = ('id', )
+    list_filter = ('release_link_set__project_release', 'index', )
+
+
 admin.site.register(CodeBase)
 admin.site.register(CodeElementFilter, CodeElementFilterAdmin)
 admin.site.register(CodeElementKind)
@@ -82,3 +99,4 @@ admin.site.register(CodeElement, CodeElementAdmin)
 admin.site.register(SingleCodeReference, SingleCodeReferenceAdmin)
 admin.site.register(CodeSnippet, CodeSnippetAdmin)
 admin.site.register(CodeBaseDiff, CodeBaseDiffAdmin)
+admin.site.register(CodeElementLink, CodeElementLinkAdmin)

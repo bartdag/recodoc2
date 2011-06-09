@@ -398,6 +398,15 @@ class SingleCodeReference(SourceElement):
             'global_object_id')
     '''Large context, i.e., thread or page that contains the reference.'''
 
+    # Computed field!
+    def first_link(self):
+        try:
+            link = CodeElementLink.objects.\
+                    filter(code_reference=self).get(index=0)
+            return link
+        except Exception:
+            return None
+
     def __unicode__(self):
         return '{0} - {1}'.format(self.content, str(self.pk))
 
@@ -485,6 +494,10 @@ class ReleaseLinkSet(models.Model):
             related_name='release_links')
     '''att.'''
 
+    def __unicode__(self):
+        return '{0} - {1}'.format(self.code_reference.content,
+                self.project_release)
+
 
 class Filter(models.Model):
     '''Linker filter used to filter and rank potential code elements.'''
@@ -548,6 +561,10 @@ class CodeElementLink(models.Model):
     '''This attribute is only set when index=0. This is a shortcut to avoid
        searching based on index and to enable complex queries based on the
        first link.'''
+
+    def __unicode__(self):
+        return '{0} --> {1}'.format(self.code_reference.content,
+                self.code_element.fqn)
 
     class Meta:
         ordering = ['index']

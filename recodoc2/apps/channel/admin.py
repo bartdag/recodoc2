@@ -7,7 +7,8 @@ from channel.models import SupportChannel, SupportThread, Message
 
 class SingleCodeReferenceInline(generic.GenericTabularInline):
     fields = ('content', 'kind_hint', 'declaration',
-            'snippet', 'project')
+            'snippet', 'first_link', 'project')
+    readonly_fields = ('first_link',)
     raw_id_fields = ('snippet',)
     model = SingleCodeReference
     ct_field = 'local_content_type'

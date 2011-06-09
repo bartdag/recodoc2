@@ -229,7 +229,8 @@ class ObjectMethodsFilter(object):
         if params is not None:
             size = len(params)
 
-        if scode_reference.snippet is not None or size > 0:
+        if (scode_reference.snippet is not None or size > 0) and\
+                size in OBJECT_METHODS:
             methods = OBJECT_METHODS[size]
         else:
             methods = OBJECT_METHODS[-1]

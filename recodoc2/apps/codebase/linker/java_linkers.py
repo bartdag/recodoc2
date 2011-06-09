@@ -316,9 +316,9 @@ class JavaClassLinker(gl.DefaultLinker):
             size = len(code_elements)
 
         # DEBUG
-        print('DEBUG for {0}'.format(scode_reference.content))
-        for code_element in code_elements:
-            print(code_element.fqn)
+        #print('DEBUG for {0}'.format(scode_reference.content))
+        #for code_element in code_elements:
+            #print(code_element.fqn)
 
         if size > 0:
             if size == 1:
@@ -1070,8 +1070,8 @@ class JavaGenericLinker(gl.DefaultLinker):
                 field_code_elements.append(element)
 
         # Debug
-        print(len(class_code_elements), len(method_code_elements),
-                len(field_code_elements))
+        #print(len(class_code_elements), len(method_code_elements),
+                #len(field_code_elements))
 
         return (class_code_elements, method_code_elements, field_code_elements)
 
@@ -1080,10 +1080,12 @@ class JavaGenericLinker(gl.DefaultLinker):
         field_tuples = []
         count = 0
 
+        progress_monitor.info('Processing {0} classes'
+                .format(len(class_tuples)))
+        log = gl.LinkerLog(self, 'generic-' + self.class_kind.kind)
         for (reference, simple, fqn, class_elements, method_elements,
                 field_elements) in class_tuples:
             if len(class_elements) > 0:
-                log = gl.LinkerLog(self, 'generic-' + self.class_kind.kind)
                 (code_element, potentials) = \
                         self.class_linker.get_code_element(reference,
                                 class_elements, simple, fqn, log, True)
@@ -1093,18 +1095,21 @@ class JavaGenericLinker(gl.DefaultLinker):
                 else:
                     method_tuples.append((reference, simple, fqn,
                         method_elements, field_elements))
-                log.close()
             else:
                 method_tuples.append((reference, simple, fqn,
                     method_elements, field_elements))
+        log.close()
+        progress_monitor.info('Processed classes')
 
+        progress_monitor.info('Processing {0} methods'
+                .format(len(method_tuples)))
+        log = gl.LinkerLog(self, 'generic-' + self.method_kind.kind)
         for (reference, simple, fqn, method_elements,
                 field_elements) in method_tuples:
             if len(method_elements) > 0:
                 fqn_container = je.get_package_name(fqn)
                 if fqn_container == simple:
                     fqn_container = None
-                log = gl.LinkerLog(self, 'generic-' + self.method_kind.kind)
                 method_info = MethodInfo(simple, fqn_container, None, None)
                 (code_element, potentials) =\
                         self.method_linker.get_code_element(reference,
@@ -1115,25 +1120,26 @@ class JavaGenericLinker(gl.DefaultLinker):
                 else:
                     field_tuples.append((reference, simple, fqn,
                         field_elements))
-                log.close()
             else:
                 field_tuples.append((reference, simple, fqn, field_elements))
+        log.close()
+        progress_monitor.info('Processed methods')
 
+        progress_monitor.info('Processing {0} fields'
+                .format(len(field_tuples)))
+        log = gl.LinkerLog(self, 'generic-' + self.field_kind.kind)
         for (reference, simple, fqn, field_elements) in field_tuples:
             if len(field_elements) > 0:
                 fqn_container = je.get_package_name(fqn)
                 if fqn_container == simple:
                     fqn_container = None
-                log = gl.LinkerLog(self, 'generic-' + self.field_kind.kind)
                 (code_element, potentials) =\
                         self.field_linker.get_code_element(reference,
                                 field_elements, simple, fqn_container, log)
                 if code_element is not None:
                     count += gl.save_link(reference, code_element,
                             potentials, self)
-                else:
-                    field_tuples.append((reference, simple, fqn,
-                        field_elements))
-                log.close()
+        log.close()
+        progress_monitor.info('Processed fields')
 
         return count
