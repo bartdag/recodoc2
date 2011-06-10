@@ -377,7 +377,7 @@ class GenericParser(object):
             code.xpath = xpath
             code.file_path = page.file_path
             code.source = DOCUMENT_SOURCE
-            code.index = -1
+            code.index = -100000
             code.sentence = sentence
             code.paragraph = text_context
             code.title_context = section

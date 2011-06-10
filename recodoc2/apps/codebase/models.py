@@ -180,10 +180,10 @@ class CodeElement(models.Model):
                 human_string += attribute.parameterelement.type_simple_name \
                         + ', '
             human_string += ')'
-        if self.kind.kind in \
-                {'field', 'enumeration value', 'annotation field'}:
-            human_string = self.fieldelement.type_simple_name
-            human_string += ' ' + self.fqn
+        #if self.kind.kind in \
+                #{'field', 'enumeration value', 'annotation field'}:
+            #human_string = self.fieldelement.type_simple_name
+            #human_string += ' ' + self.fqn
         #elif self.kind.kind == 'method parameter':
             #method = self.attcontainer
             #clazz = method.containers.all()[0]

@@ -109,3 +109,19 @@ def diff_doc(pname, dname, release1, release2):
 
     differ = DocDiffer()
     return differ.diff_docs(document_from, document_to)
+
+# Functions
+
+def show_section(section_pk):
+    section = Section.objects.get(pk=section_pk)
+    print(section.title)
+    print(section.url)
+    print(section.word_count)
+    print(section.pk)
+    for code_reference in section.code_references.all():
+        link = code_reference.first_link()
+        if link is not None:
+            link_str = link.code_element.human_string()
+        else:
+            link_str = ''
+        print('{0};{1}'.format(code_reference.content, link_str))

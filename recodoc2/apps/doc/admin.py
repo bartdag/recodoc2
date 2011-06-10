@@ -6,7 +6,7 @@ from doc.models import Document, Page, Section, DocDiff, SectionChanger
 
 
 class SingleCodeReferenceInline(generic.GenericTabularInline):
-    fields = ('content', 'kind_hint', 'declaration',
+    fields = ('content', 'kind_hint', 'index',
             'snippet', 'first_link', 'project')
     readonly_fields = ('first_link',)
     raw_id_fields = ('snippet',)

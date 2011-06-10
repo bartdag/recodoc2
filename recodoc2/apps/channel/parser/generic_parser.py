@@ -301,7 +301,7 @@ class GenericParser(object):
             code.xpath = xpath
             code.file_path = message.file_path
             code.source = CHANNEL_SOURCE
-            code.index = -1
+            code.index = -100000
             code.project = self.channel.project
             code.sentence = sentence
             code.paragraph = text_context
