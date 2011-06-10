@@ -28,6 +28,7 @@ def sub_process_parse(pinput):
     try:
         # Unecessary if already closed by parent process.
         # But it's ok to be sure.
+        print('In subprocess')
         connection.close()
         (parser_clazz, doc_pk, parse_refs, pages) = pinput
         parser = import_clazz(parser_clazz)(doc_pk)
@@ -35,12 +36,15 @@ def sub_process_parse(pinput):
             if page_input is not None:
                 (local_path, page_url) = page_input
                 parser.parse_page(local_path, page_url, parse_refs)
+        print('Returning True')
         return True
     except Exception:
         print_exc()
+        print('Returning False')
         return False
     finally:
         # Manually close this connection
+        print('Closing connection')
         connection.close()
 
 
