@@ -521,13 +521,13 @@ EXCEPTION_PATTERNS = [EXCEPTION_PATTERN1, EXCEPTION_PATTERN2,
 
 def is_cu_body(text):
     new_text = su.clean_for_re(text)
-    return CLASS_DECLARATION_RE.match(new_text) is not None
+    return CLASS_DECLARATION_RE.search(new_text) is not None
 
 
 def is_class_body(text):
     new_text = su.clean_for_re(text)
-    return ANONYMOUS_CLASS_DECLARATION_RE.match(new_text) is not None or\
-           METHOD_DECLARATION_RE.match(new_text)
+    return ANONYMOUS_CLASS_DECLARATION_RE.search(new_text) is not None or\
+           METHOD_DECLARATION_RE.search(new_text)
 
 
 ### Java Snippet Regognition ###
