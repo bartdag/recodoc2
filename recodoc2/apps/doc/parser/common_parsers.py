@@ -119,7 +119,7 @@ class MavenParser(XPathParentMixin, NoNumberMixin, GenericParser):
     def _add_code_ref(self, index, code_ref_element, page, load,
             s_code_references):
         if code_ref_element.tag == 'a':
-            if 'href' not in code_ref_element:
+            if 'href' not in code_ref_element.attrib:
                 return
             elif code_ref_element.attrib['href'].find('api') == -1:
                 return

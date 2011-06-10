@@ -216,7 +216,7 @@ class JavaClassLinker(gl.DefaultLinker):
                 progress_monitor.work('Skipped declaration', 1)
                 continue
 
-            (simple, fqn) = je.get_annotation_name(scode_reference.content,
+            (simple, fqn) = je.get_class_name(scode_reference.content,
                     scode_reference.snippet is not None)
 
             if simple is not None:
@@ -252,7 +252,7 @@ class JavaClassLinker(gl.DefaultLinker):
                 progress_monitor.work('Skipped declaration', 1)
                 continue
 
-            (simple, fqn) = je.get_annotation_name(scode_reference.content,
+            (simple, fqn) = je.get_class_name(scode_reference.content,
                     scode_reference.snippet is not None)
             case_insensitive = scode_reference.snippet == None and\
                     self.source != 'd'
