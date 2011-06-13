@@ -240,13 +240,27 @@ def json_snippet(pname, cname, output_path):
 
 ### INTERNAL FUNCTIONS ###
 
+def show_message(msg_pk):
+    message = Message.objects.get(pk=msg_pk)
+    print(message.title)
+    print(message.url)
+    print('{0} - {1}'.format(message.index, message.author))
+    print(message.word_count)
+    print(message.pk)
+    for code_reference in message.code_references.all():
+        link = code_reference.first_link()
+        if link is not None:
+            link_str = link.code_element.human_string()
+        else:
+            link_str = ''
+        print('{0};{1}'.format(code_reference.content, link_str))
+
+
 def post_process_message(channel, message):
     original_title = get_original_title(message.title)
 
     potential_threads = channel.threads.\
-            filter(title__iexact=original_title).\
-            filter(first_date__lte=message.msg_date).\
-            order_by('first_date')
+            filter(title__iexact=original_title)
     count = potential_threads.count()
     if count == 1:
         potential_threads.all()[0].messages.add(message)
@@ -255,7 +269,7 @@ def post_process_message(channel, message):
                 .format(original_title))
         potential_threads.all()[0].messages.add(message)
     else:
-        start_thread(message.title, message, channel)
+        start_thread(original_title, message, channel)
 
 
 def post_process_thread(channel, thread):
@@ -266,6 +280,7 @@ def post_process_thread(channel, thread):
         message.save()
         last_index = i
     if last_index > -1:
+        thread.first_date=messages[0].msg_date,
         thread.last_date = messages[last_index].msg_date
     elif thread.last_date is None:
         logger.error('This thread {0} has no message!'.format(thread.pk))
@@ -279,7 +294,6 @@ def start_thread(title, support_message, channel):
 
     support_thread = SupportThread(
             title=title,
-            first_date=support_message.msg_date,
             url=support_message.url,
             file_path=support_message.file_path,
             channel=channel,

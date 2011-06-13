@@ -302,10 +302,12 @@ class GenericParser(object):
 
     def _is_valid_code_ref(self, code_ref_element, load):
         if code_ref_element.tag == 'a':
+            if code_ref_element.getparent().tag == 'pre':
+                return False
             if 'href' not in code_ref_element.attrib:
                 return False
             elif len(code_ref_element) > 0 and code_ref_element[0].tag in \
-                    {'tt', 'code', 'pre', 'span', 'em'}:
+                    {'tt', 'code', 'pre', 'span', 'em', 'b', 'strong', 'i'}:
                 return False
             elif self.xcoderef_url is not None and \
                     code_ref_element.attrib['href'].\
