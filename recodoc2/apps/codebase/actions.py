@@ -396,7 +396,8 @@ def add_a_filter(pname, bname, release, filter_fqn, include_snippet=True,
     code_filter.save()
 
 
-def link_code(pname, bname, release, linker_name, source, source_release=None):
+def link_code(pname, bname, release, linker_name, source, source_release=None,
+        local_object_id=None):
     project = Project.objects.get(dir_name=pname)
     prelease = ProjectRelease.objects.filter(project=project).\
             filter(release=release)[0]
@@ -417,7 +418,7 @@ def link_code(pname, bname, release, linker_name, source, source_release=None):
 
     start = time.clock()
 
-    linker.link_references(progress_monitor)
+    linker.link_references(progress_monitor, local_object_id)
 
     stop = time.clock()
     progress_monitor.info('Cache Count {0} miss of {1}'

@@ -16,9 +16,13 @@ HANDLE_SEPARATOR = ":"
 
 SNIPPET_PACKAGE = 'zzzsnippet'
 
+UNKNOWN_PACKAGE = 'UNKNOWNP'
+
 UNKNOWN_CONTAINER = 'UNKNOWNP.UNKNOWN'
 
 SNIPPET_PACKAGE_LEN = len(SNIPPET_PACKAGE)
+
+UNKNOWN_PACKAGE_LEN = len(UNKNOWN_PACKAGE)
 
 ### FUNCTIONS ###
 
@@ -29,7 +33,7 @@ def is_field_ref(name):
     return len(matches) > 1
 
 
-def clean_java_name(name, remove_snippet=False):
+def clean_java_name(name, remove_snippet=False, remove_unknown=False):
     """Given a name, returns a tuple containing the simple name and the fully
     qualified name. Removes all array or generic artifacts.
     """
@@ -51,6 +55,12 @@ def clean_java_name(name, remove_snippet=False):
         index = clean_name_fqn.find(SNIPPET_PACKAGE)
         if index > -1:
             clean_name_fqn = clean_name_fqn[SNIPPET_PACKAGE_LEN + 1:]
+
+    # Clean snippet
+    if remove_unknown:
+        index = clean_name_fqn.find(UNKNOWN_PACKAGE)
+        if index > -1:
+            clean_name_fqn = clean_name_fqn[UNKNOWN_PACKAGE_LEN + 1:]
 
     dot_index = clean_name_fqn.rfind('.')
     clean_name_simple = clean_name_fqn

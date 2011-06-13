@@ -32,7 +32,9 @@ def sub_process_parse(pinput):
         connection.close()
         (parser_clazz, doc_pk, parse_refs, pages) = pinput
         parser = import_clazz(parser_clazz)(doc_pk)
+        print('Got input')
         for page_input in pages:
+            print('Considering page {0}'.format(page_input))
             if page_input is not None:
                 (local_path, page_url) = page_input
                 parser.parse_page(local_path, page_url, parse_refs)
@@ -115,6 +117,10 @@ class GenericParser(object):
 
     xcoderef = None
     '''XPath to find single code references. Required'''
+
+    xcoderef_url = None
+    '''Text that must be found in a url to be considered a coderef.
+       Optional'''
 
     xsnippet = None
     '''XPath to find code snippets. Required'''
@@ -294,8 +300,27 @@ class GenericParser(object):
                 if self._process_mix_mode_section(page, load, section):
                     self._process_mix_mode(page, load, section)
 
+    def _is_valid_code_ref(self, code_ref_element, load):
+        if code_ref_element.tag == 'a':
+            if 'href' not in code_ref_element.attrib:
+                return False
+            elif len(code_ref_element) > 0 and code_ref_element[0].tag in \
+                    {'tt', 'code', 'pre', 'span', 'em'}:
+                return False
+            elif self.xcoderef_url is not None and \
+                    code_ref_element.attrib['href'].\
+                    find(self.xcoderef_url) == -1:
+                return False
+        return True
+
     def _add_code_ref(self, index, code_ref_element, page, load,
             s_code_references):
+
+        # If the code ref is a link, filter the link to ensure that
+        # it is a real code ref.
+        if not self._is_valid_code_ref(code_ref_element, load):
+            return
+
         text = self.xcoderef.get_text(code_ref_element)
         text = clean_breaks(text).strip()
 
@@ -361,7 +386,7 @@ class GenericParser(object):
                 content = reference.content
             except Exception:
                 content = 'SNIPPET'
-            logger.warning('orphan ref {0}, path {1}, page {2}'
+            logger.debug('orphan ref {0}, path {1}, page {2}'
                     .format(content, reference.xpath, page.title))
             # Delete, otherwise, it won't be deleted when clearning document.
             reference.delete()
@@ -380,6 +405,8 @@ class GenericParser(object):
             code.index = -100000
             code.sentence = sentence
             code.paragraph = text_context
+            code.project = self.document.project_release.project
+            code.project_release = self.document.project_release
             code.title_context = section
             code.local_context = section
             code.mid_context = self._get_mid_context(section)

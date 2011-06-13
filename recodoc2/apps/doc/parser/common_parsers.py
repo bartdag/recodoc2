@@ -106,6 +106,8 @@ class MavenParser(XPathParentMixin, NoNumberMixin, GenericParser):
 
     xcoderef = SingleXPath('//code | //tt | //em | //a')
 
+    xcoderef_url = 'api'
+
     xsnippet = SingleXPath('//pre')
 
     def _process_page_title(self, page, load):
@@ -115,14 +117,3 @@ class MavenParser(XPathParentMixin, NoNumberMixin, GenericParser):
             title = title[index + 2:]
 
         return title.strip()
-
-    def _add_code_ref(self, index, code_ref_element, page, load,
-            s_code_references):
-        if code_ref_element.tag == 'a':
-            if 'href' not in code_ref_element.attrib:
-                return
-            elif code_ref_element.attrib['href'].find('api') == -1:
-                return
-
-        super(MavenParser, self)._add_code_ref(index, code_ref_element, page,
-                load, s_code_references)

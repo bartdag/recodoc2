@@ -1041,11 +1041,17 @@ class JavaGenericLinker(gl.DefaultLinker):
             (simple, fqn) = je.clean_java_name(je.get_clean_name(content))
             prefix = '{0}{1}'.format(PREFIX_GENERIC_LINKER,
                 cu.get_codebase_key(self.codebase))
+            if reference.source == 'd' or reference.snippet is not None:
+                exact = True
+                prefix += EXACT
+            else:
+                exact = False
+                prefix += IEXACT
             code_elements = cu.get_value(
                     prefix,
                     simple,
                     gl.get_any_code_element,
-                    [simple, self.codebase])
+                    [simple, self.codebase, exact])
 
             classified_elements = self._classify_code_elements(code_elements)
             class_tuples.append((reference, simple, fqn) + classified_elements)

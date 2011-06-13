@@ -308,7 +308,7 @@ class ParameterTypeFilter(object):
         if size != formal_params.count():
             matches = 0
         else:
-            actuals = [je.clean_java_name(actual_param)[0]
+            actuals = [je.clean_java_name(actual_param, True, True)[0]
                     for actual_param in actual_params]
             formals = [formal_param.type_simple_name
                     for formal_param in formal_params]
@@ -494,12 +494,15 @@ class ImmediateContextFilter(object):
 
     def _get_potentials(self, potentials, fqn_container):
         new_potentials = []
-        (imm_simple, imm_fqn) = je.clean_java_name(fqn_container)
+        (imm_simple, imm_fqn) = je.clean_java_name(fqn_container, True, True)
         imm_simple = imm_simple.lower()
         imm_fqn = imm_fqn.lower()
 
+        #print('DEBUG IMM: {0}, {1}'.format(imm_simple, imm_fqn))
+
         for potential in potentials:
             (simple, fqn) = je.clean_java_name(get_container(potential).fqn)
+            #print('DEBUG POT: {0}, {1}'.format(simple, fqn))
             simple = simple.lower()
             fqn = fqn.lower()
             if imm_simple != imm_fqn:
@@ -520,6 +523,8 @@ class ImmediateContextFilter(object):
 
         if fqn_container is not None and \
                 fqn_container != je.UNKNOWN_CONTAINER:
+
+            #print('DEBUG FQN: {0}'.format(fqn_container))
             new_potentials = self._get_potentials(potentials, fqn_container)
 
             if len(new_potentials) > 0:
@@ -532,7 +537,7 @@ class ImmediateContextHierarchyFilter(object):
 
     def _get_potentials(self, potentials, fqn_container):
         new_potentials = []
-        (imm_simple, imm_fqn) = je.clean_java_name(fqn_container)
+        (imm_simple, imm_fqn) = je.clean_java_name(fqn_container, True, True)
         imm_simple = imm_simple.lower()
         imm_fqn = imm_fqn.lower()
 
@@ -594,7 +599,7 @@ class ContextNameSimilarityFilter(object):
         new_potentials = []
         max_similarity = 0.0
 
-        (container_simple, _) = je.clean_java_name(fqn_container)
+        (container_simple, _) = je.clean_java_name(fqn_container, True, True)
         container_tokens = [token.lower()
                 for token in su.tokenize(container_simple)]
         container_simple_lower = container_simple.lower()
