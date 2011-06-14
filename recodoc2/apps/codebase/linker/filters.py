@@ -582,7 +582,7 @@ class ContextNameSimilarityFilter(object):
 
     DIFFERENCE_THRESHOLD = 0.2
 
-    PAIRWISE_THRESHOLD = 0.4
+    PAIRWISE_THRESHOLD = 0.66
 
     HIGH_SIMILARITY = 0.95
 

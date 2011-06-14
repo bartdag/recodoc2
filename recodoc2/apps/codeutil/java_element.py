@@ -30,7 +30,7 @@ UNKNOWN_PACKAGE_LEN = len(UNKNOWN_PACKAGE)
 def is_field_ref(name):
     strategy = FieldStrategy()
     matches = strategy.match(name)
-    return len(matches) > 1
+    return len(matches) > 0 and len(matches.pop()) > 1
 
 
 def clean_java_name(name, remove_snippet=False, remove_unknown=False):
