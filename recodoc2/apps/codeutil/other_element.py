@@ -141,7 +141,7 @@ DEFINITION_ELEMENT_RE = re.compile(r'''
 
 LOG_LEVEL_RE = re.compile(r'''
     (?:\[)?
-    (DEBUG|INFO|WARNING|WARN|ERROR|CRITICAL)
+    (DEBUG|INFO|WARNING|WARN|ERROR|CRITICAL|CRIT|ERR)
     (?:\])?
     ''', re.VERBOSE)
 
@@ -162,7 +162,7 @@ LOG_DATE_RE = re.compile(r'''
     ''', re.VERBOSE)
 
 LOG_SOURCE_LOCATION_RE = re.compile(r'''
-    \w+
+    [a-zA-Z_\-.]+
     :
     \d+
     ''', re.VERBOSE)
@@ -196,6 +196,8 @@ def is_log_lines(lines):
         is_log_kind = confidence >= LOG_CONFIDENT_THRESHOLD
     else:
         is_log_kind = confidence >= LOG_STD_THRESHOLD
+
+    #print(is_log_kind, confidence)
 
     return (is_log_kind, confidence)
 

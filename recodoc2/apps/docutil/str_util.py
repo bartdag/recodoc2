@@ -234,7 +234,7 @@ def filter_paragraphs(paragraphs, p_classifiers):
                 current_snippet.extend(paragraph)
             else:
                 if len(current_snippet) > 0:
-                    if not is_snippet(current_snippet) or \
+                    if is_snippet(current_snippet) or \
                         current_language == REPLY_LANGUAGE:
                         # we want to keep replies as snippet to better
                         # filter them later... if needed :-)
@@ -255,6 +255,11 @@ def filter_paragraphs(paragraphs, p_classifiers):
 
     if (len(current_snippet) > 0):
         snippets.append((current_snippet, current_language))
+
+    #print('Paragraphs:')
+    #print(new_paragraphs)
+    #print('Snippets:')
+    #print(snippets)
 
     return (new_paragraphs, snippets)
 

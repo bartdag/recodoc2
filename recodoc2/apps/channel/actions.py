@@ -282,7 +282,7 @@ def post_process_thread(channel, thread):
         message.index = i
         if i > 0:
             try:
-                message.title_code_references.all().delete()
+                message.title_references.all().delete()
             except Exception:
                 pass
         message.save()

@@ -93,9 +93,16 @@ class Message(SourceElement):
             related_name='messages')
     '''at'''
 
+    title_references = generic.GenericRelation(SingleCodeReference,
+            content_type_field="title_content_type",
+            object_id_field="title_object_id",
+            related_name="channel_titles")
+    '''at'''
+
     code_references = generic.GenericRelation(SingleCodeReference,
             content_type_field="local_content_type",
-            object_id_field="local_object_id")
+            object_id_field="local_object_id",
+            related_name="channel_refs")
     '''at'''
 
     code_snippets = generic.GenericRelation(CodeSnippet,
