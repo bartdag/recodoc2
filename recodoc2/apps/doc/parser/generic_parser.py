@@ -165,6 +165,7 @@ class GenericParser(object):
         clean_tree(load.tree)
 
         page.title = self._process_page_title(page, load)
+        page.title = clean_breaks(page.title, True)
 
         body = self.xbody.get_element(load.tree)
         body_elements = self.xbody.get_element_as_list(body)

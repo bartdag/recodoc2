@@ -3,6 +3,7 @@ import os
 import logging
 import codecs
 import json
+from traceback import print_exc
 from django.conf import settings
 from django.db import transaction
 
@@ -194,6 +195,7 @@ def debug_channel(pname, cname, parse_refs=True, entry_url=None):
     return channel
 
 
+@transaction.autocommit
 def post_process_channel(pname, cname):
     channel = SupportChannel.objects.filter(project__dir_name=pname).\
             get(dir_name=cname)
@@ -259,9 +261,10 @@ def show_message(msg_pk):
 def post_process_message(channel, message):
     original_title = get_original_title(message.title)
 
-    potential_threads = channel.threads.\
+    potential_threads = SupportThread.objects.filter(channel=channel).\
             filter(title__iexact=original_title)
     count = potential_threads.count()
+
     if count == 1:
         potential_threads.all()[0].messages.add(message)
     elif count > 1:
@@ -277,16 +280,27 @@ def post_process_thread(channel, thread):
     last_index = -1
     for i, message in enumerate(messages):
         message.index = i
+        if i > 0:
+            try:
+                message.title_code_references.all().delete()
+            except Exception:
+                pass
         message.save()
         last_index = i
     if last_index > -1:
-        thread.first_date=messages[0].msg_date,
+        thread.first_date = messages[0].msg_date
         thread.last_date = messages[last_index].msg_date
     elif thread.last_date is None:
         logger.error('This thread {0} has no message!'.format(thread.pk))
+        thread.first_date = None
         thread.last_date = None
 
-    thread.save()
+    try:
+        thread.save()
+    except Exception:
+        print('Error with these messages {0} and {1}, thread {2}'.\
+                format(messages[0].pk, messages[last_index].pk, thread.pk))
+        print_exc()
 
 
 def start_thread(title, support_message, channel):

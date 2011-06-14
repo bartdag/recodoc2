@@ -174,7 +174,8 @@ class GenericParser(object):
         message = Message(url=url, file_path=relative_path)
         message.index = index
 
-        message.title = self._process_title(message, load)[0:500]
+        message.title = self._process_title(message, load).strip()
+        message.title = clean_breaks(message.title, True)
         if len(message.title) > 500:
             print('LONG TITLE: {0}'.format(message.title))
             message.title = message.title[0:500]
@@ -264,9 +265,10 @@ class GenericParser(object):
     def _get_lines(self, message, load, ucontent):
         lines = []
 
-        if not message.title.lower().strip().startswith('re:'):
-            lines.append(clean_breaks(message.title))
-            lines.append('')
+        # No, because of _process_title_references!!!
+        #if not message.title.lower().strip().startswith('re:'):
+            #lines.append(clean_breaks(message.title))
+            #lines.append('')
 
         new_content = ucontent.replace('\r', '').replace('\t', ' ')
         content_lines = new_content.split('\n')

@@ -115,8 +115,21 @@ def clean_for_re(original):
     return original.replace('\n', ' ')
 
 
-def clean_breaks(original):
-    return original.replace('\n', ' ').replace('\t', ' ').replace('\r', '')
+def clean_breaks(original, clean_spaces=False):
+    new_str = original.replace('\n', ' ').replace('\t', ' ').\
+            replace('\r', '')
+
+    if clean_spaces:
+        size = len(new_str)
+        while(True):
+            new_str = new_str.replace('  ', ' ')
+            new_size = len(new_str)
+            if new_size == size:
+                break
+            else:
+                size = new_size
+
+    return new_str
 
 
 def lower_stopper_index(paragraph, start, end, stoppers=STOPPERS):

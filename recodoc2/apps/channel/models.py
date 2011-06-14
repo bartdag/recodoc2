@@ -47,10 +47,10 @@ class SupportThread(models.Model):
     pages = models.IntegerField(default=1)
     '''Number of pages in support thread.'''
 
-    first_date = models.DateTimeField(null=True, blank=True)
+    first_date = models.DateTimeField(null=True, blank=True, default=None)
     '''at'''
 
-    last_date = models.DateTimeField(null=True, blank=True)
+    last_date = models.DateTimeField(null=True, blank=True, default=None)
     '''at'''
 
     channel = models.ForeignKey(SupportChannel, null=True, blank=True,
@@ -83,7 +83,7 @@ class Message(SourceElement):
     index = models.IntegerField(default=-1)
     '''Index of the message in the thread. 0-based.'''
 
-    msg_date = models.DateTimeField(null=True, blank=True)
+    msg_date = models.DateTimeField(null=True, blank=True, default=None)
     '''at'''
 
     author = models.ForeignKey(Person, null=True, blank=True)

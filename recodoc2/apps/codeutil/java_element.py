@@ -461,7 +461,7 @@ CAMEL_CASE_4_RE = re.compile(r'''
 # sign
 TYPE_IN_MIDDLE_RE = re.compile(r'''
     (?P<dot>[.!?])?
-    [\s"']+
+    [\s"'\\/]+
     (?P<class>
     [A-Z]
     [\w_\-]+
