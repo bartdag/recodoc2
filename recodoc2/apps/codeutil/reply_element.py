@@ -24,10 +24,13 @@ WROTE_RE = re.compile(r'''
 
 ORIGIN_RE = re.compile(r'''
     ^
+    \s*
     -{3,}
     \s*
     original\s*message
+    \s*
     -{3,}
+    \s*
     $
     ''', re.VERBOSE | re.IGNORECASE)
 
@@ -35,6 +38,7 @@ ORIGIN_RE = re.compile(r'''
 DASH_RE = re.compile(r'''
     ^
     -{5,}
+    \s*
     $
     ''', re.VERBOSE)
 
@@ -42,6 +46,7 @@ DASH_RE = re.compile(r'''
 UNDERSCORE_RE = re.compile(r'''
     ^
     _{5,}
+    \s*
     $
     ''', re.VERBOSE)
 
