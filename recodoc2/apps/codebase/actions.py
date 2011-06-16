@@ -31,8 +31,10 @@ from docutil import cache_util
 from project.models import ProjectRelease, Project
 from project.actions import CODEBASE_PATH
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
-        SingleCodeReference, CodeSnippet, CodeElementFilter, ReleaseLinkSet
+        SingleCodeReference, CodeSnippet, CodeElementFilter, ReleaseLinkSet,\
+        CodeElementFamily
 from codebase.parser.java_diff import JavaDiffer
+import codebase.parser.family_coverage as fcoverage
 
 
 PROJECT_FILE = '.project'
@@ -434,6 +436,31 @@ def clear_links(pname, release, source='-1'):
         query = query.filter(code_reference__source=source)
     query.delete()
 
+
+def compute_families(pname, bname, release):
+    prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    codebase = CodeBase.objects.filter(project_release=prelease).\
+            filter(name=bname)[0]
+    code_elements = codebase.code_elements.all()
+
+    progress_monitor = CLIProgressMonitor(min_step=1.0)
+
+    dfamilies = fcoverage.compute_declaration_family(code_elements, True,
+            progress_monitor)
+    hfamilies = fcoverage.compute_hierarchy_family(code_elements, True,
+            progress_monitor)
+    fcoverage.compute_token_family_second(dfamilies, progress_monitor)
+    fcoverage.compute_token_family_second(hfamilies, progress_monitor)
+
+
+def clear_families(pname, bname, release):
+    prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    codebase = CodeBase.objects.filter(project_release=prelease).\
+            filter(name=bname)[0]
+    CodeElementFamily.objects.filter(head__codebase=codebase).delete()
+    
 
 ### ACTIONS USED BY OTHER ACTIONS ###
 

@@ -240,6 +240,10 @@ def json_snippet(pname, cname, output_path):
         json.dump(stack_traces, json_file)
 
 
+def compute_family_coverage(pname, bname, release, cname):
+    pass
+
+
 ### INTERNAL FUNCTIONS ###
 
 def show_message(msg_pk):

@@ -9,6 +9,18 @@ DOCUMENT_SOURCE = 'd'
 
 CHANNEL_SOURCE = 's'
 
+PREFIX = 'p'
+
+SUFFIX = 's'
+
+MIDDLE = 'm'
+
+DECLARATION = 'd'
+
+HIERARCHY = 'h'
+
+TOKEN = 't'
+
 LANGUAGES = [
     ('j', 'Java'),
     ('p', 'Python'),
@@ -24,6 +36,20 @@ LANGUAGES = [
 SOURCE_TYPE = (
     (DOCUMENT_SOURCE, 'Document'),
     (CHANNEL_SOURCE, 'Support Channel'),
+)
+
+TOKEN_POS = (
+    (PREFIX, 'p'),
+    (SUFFIX, 's'),
+    (MIDDLE, 'm'),
+)
+
+FAMILY_CRITERIA = (
+    # First criteria
+    (DECLARATION, 'd'),
+    (HIERARCHY, 'h'),
+    # Second criteria
+    (TOKEN, 't'),
 )
 
 
@@ -398,6 +424,14 @@ class SingleCodeReference(SourceElement):
             'global_object_id')
     '''Large context, i.e., thread or page that contains the reference.'''
 
+    # E.g., a document or a channel
+    resource_content_type = models.ForeignKey(ContentType, null=True,
+            blank=True, related_name='resource_code_references')
+    resource_object_id = models.PositiveIntegerField(null=True, blank=True)
+    resource = generic.GenericForeignKey('resource_content_type',
+            'resource_object_id')
+    '''A resource represents a specific document or channel.'''
+
     # Computed field!
     def first_link(self):
         try:
@@ -568,6 +602,57 @@ class CodeElementLink(models.Model):
 
     class Meta:
         ordering = ['index']
+
+
+class CodeElementFamily(models.Model):
+    '''A code element family contains all related code element based on a
+       criteria (declaration, hierarchy, token).'''
+
+    head = models.ForeignKey(CodeElement, blank=True, null=True,
+            related_name='families')
+    '''att.'''
+
+    criterion1 = models.CharField(max_length=2, choices=FAMILY_CRITERIA,
+            blank=True, null=True)
+    '''att.'''
+
+    criterion2 = models.CharField(max_length=2, choices=FAMILY_CRITERIA,
+            blank=True, null=True)
+    '''att.'''
+
+    token = models.CharField(max_length=250, blank=True, null=True)
+    '''att.'''
+
+    token_pos = models.CharField(max_length=1, choices=TOKEN_POS,
+            default=MIDDLE)
+    '''att.'''
+
+    members = models.ManyToManyField(CodeElement, blank=True, null=True,
+            related_name='families_members')
+    '''att.'''
+
+
+class FamilyCoverage(models.Model):
+    '''Coverage information for a code element family'''
+
+    family = models.ForeignKey(CodeElementFamily, blank=True, null=True,
+            related_name='coverage_infos')
+    '''att.'''
+
+    # E.g., a document or a channel
+    resource_content_type = models.ForeignKey(ContentType, null=True,
+            blank=True, related_name='resource_family_coverage')
+    resource_object_id = models.PositiveIntegerField(null=True, blank=True)
+    resource = generic.GenericForeignKey('resource_content_type',
+            'resource_object_id')
+    '''A resource represents a specific document or channel.'''
+
+    source = models.CharField(max_length=1, null=True, blank=True,
+            choices=SOURCE_TYPE, default='d')
+    '''Type of resource (doc or channel)'''
+
+    coverage = models.FloatField(default=0.0)
+    '''att.'''
 
 
 ### Transient Classes ###

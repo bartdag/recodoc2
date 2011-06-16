@@ -110,6 +110,11 @@ def diff_doc(pname, dname, release1, release2):
     differ = DocDiffer()
     return differ.diff_docs(document_from, document_to)
 
+
+def compute_family_coverage(pname, bname, release, dname, srelease):
+    pass
+
+
 # Functions
 
 def show_section(section_pk):

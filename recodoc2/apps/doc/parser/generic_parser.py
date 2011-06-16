@@ -33,11 +33,14 @@ def sub_process_parse(pinput):
         (parser_clazz, doc_pk, parse_refs, pages) = pinput
         parser = import_clazz(parser_clazz)(doc_pk)
         print('Got input')
+        print('Input: {0}'.format(pinput))
         for page_input in pages:
             print('Considering page {0}'.format(page_input))
             if page_input is not None:
                 (local_path, page_url) = page_input
+                print('Parsing {0}'.format(page_url))
                 parser.parse_page(local_path, page_url, parse_refs)
+                print('Parsed {0}'.format(page_url))
         print('Returning True')
         return True
     except Exception:
@@ -147,6 +150,7 @@ class GenericParser(object):
             self._build_code_words(load)
             self._process_page(page, load)
         except Exception:
+            print('An exception occurred in the parser {0}'.format(page_url))
             print_exc()
 
     def _build_code_words(self, load):
@@ -347,6 +351,7 @@ class GenericParser(object):
             code.paragraph = text_context
             code.project = self.document.project_release.project
             code.project_release = self.document.project_release
+            code.resource = self.document
             code.save()
             s_code_references.append(code)
 
@@ -364,6 +369,7 @@ class GenericParser(object):
         snippet.index = index
         snippet.project = self.document.project_release.project
         snippet.project_release = self.document.project_release
+        snippet.resource = self.document
         snippet.save()
         snippets.append(snippet)
 
@@ -382,6 +388,7 @@ class GenericParser(object):
                 reference.local_context = parent_section
                 reference.mid_context = self._get_mid_context(parent_section)
                 reference.global_context = parent_section.page
+                reference.resource = self.document
                 reference.save()
         else:
             content = None
@@ -414,6 +421,7 @@ class GenericParser(object):
             code.local_context = section
             code.mid_context = self._get_mid_context(section)
             code.global_context = page
+            code.resource = self.document
             code.save()
 
     def _process_mix_mode_section(self, page, load, section):
@@ -439,6 +447,7 @@ class GenericParser(object):
             code.local_context = section
             code.mid_context = mid_context
             code.global_context = page
+            code.resource = self.document
             code.save()
 
     def _get_code_ref_kind(self, code_ref_tag, text):

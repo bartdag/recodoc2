@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
         SingleCodeReference, CodeSnippet, CodeElementFilter,\
-        ParameterElement, CodeBaseDiff, CodeElementLink
+        ParameterElement, CodeBaseDiff, CodeElementLink, CodeElementFamily
 from django.contrib import admin
 
 
@@ -92,6 +92,22 @@ class CodeElementLinkAdmin(admin.ModelAdmin):
     list_filter = ('release_link_set__project_release', 'index', )
 
 
+class CodeElementFamilyInline(admin.TabularInline):
+    model = CodeElementFamily.members.through
+    #fields = ('fqn', )
+    extra = 0
+
+
+class CodeElementFamilyAdmin(admin.ModelAdmin):
+    fields = ('head', 'criterion1', 'criterion2', 'token', 'token_pos',
+    'members')
+    readonly_fields = ('head', 'members')
+    search_fields = ('head', 'token')
+    list_filter = ('head__codebase', 'criterion1', 'criterion2', 'token_pos')
+    list_display = ('pk', 'head', 'criterion1', 'criterion2')
+    #inlines = [CodeElementFamilyInline]
+
+
 admin.site.register(CodeBase)
 admin.site.register(CodeElementFilter, CodeElementFilterAdmin)
 admin.site.register(CodeElementKind)
@@ -100,3 +116,4 @@ admin.site.register(SingleCodeReference, SingleCodeReferenceAdmin)
 admin.site.register(CodeSnippet, CodeSnippetAdmin)
 admin.site.register(CodeBaseDiff, CodeBaseDiffAdmin)
 admin.site.register(CodeElementLink, CodeElementLinkAdmin)
+admin.site.register(CodeElementFamily, CodeElementFamilyAdmin)

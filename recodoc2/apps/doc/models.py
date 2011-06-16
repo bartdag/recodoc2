@@ -26,6 +26,12 @@ class Document(models.Model):
     word_count = models.IntegerField(default=0)
     '''att.'''
 
+    references = generic.GenericRelation(SingleCodeReference,
+            content_type_field="resource_content_type",
+            object_id_field="resource_object_id",
+            related_name="doc_refs")
+    '''att.'''
+
     def __unicode__(self):
         return self.title + ' ' + str(self.project_release)
 
@@ -56,7 +62,8 @@ class Page(models.Model):
 
     code_references = generic.GenericRelation(SingleCodeReference,
             content_type_field='global_content_type',
-            object_id_field='global_object_id')
+            object_id_field='global_object_id',
+            related_name="page_refs")
     '''att.'''
 
     def __unicode__(self):
@@ -92,18 +99,19 @@ class Section(SourceElement):
     title_references = generic.GenericRelation(SingleCodeReference,
             content_type_field="title_content_type",
             object_id_field="title_object_id",
-            related_name="doc_titles")
+            related_name="section_titles")
     '''att.'''
 
     code_references = generic.GenericRelation(SingleCodeReference,
             content_type_field="local_content_type",
             object_id_field="local_object_id",
-            related_name="doc_refs")
+            related_name="section_refs")
     '''att.'''
 
     code_snippets = generic.GenericRelation(CodeSnippet,
             content_type_field="local_content_type",
-            object_id_field="local_object_id")
+            object_id_field="local_object_id",
+            related_name="section_snippets")
     '''att.'''
 
     def __unicode__(self):

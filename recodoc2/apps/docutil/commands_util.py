@@ -336,3 +336,12 @@ def download_file(file_from_path, file_to_path, force=False, binary=False,
 
 def chunk_it(l, chunks):
     return list(zip(*izip_longest(*[iter(l)] * chunks)))
+
+
+def size(seq):
+    size = -1
+    try:
+        size = seq.count()
+    except Exception:
+        size = len(seq)
+    return size

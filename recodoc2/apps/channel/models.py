@@ -27,6 +27,12 @@ class SupportChannel(models.Model):
     syncer = models.CharField(max_length=500, null=True, blank=True)
     '''Python FQN of the Syncer class for this channel'''
 
+    references = generic.GenericRelation(SingleCodeReference,
+            content_type_field="resource_content_type",
+            object_id_field="resource_object_id",
+            related_name="channel_refs")
+    '''att.'''
+
     def __unicode__(self):
         return self.name + ' - ' + self.project.name
 
@@ -59,12 +65,14 @@ class SupportThread(models.Model):
 
     code_references = generic.GenericRelation(SingleCodeReference,
             content_type_field='global_content_type',
-            object_id_field='global_object_id')
+            object_id_field='global_object_id',
+            related_name='thread_refs')
     '''att.'''
 
     code_snippets = generic.GenericRelation(CodeSnippet,
             content_type_field='global_content_type',
-            object_id_field='global_object_id')
+            object_id_field='global_object_id',
+            related_name='thread_snippets')
     '''att.'''
 
     def __unicode__(self):
@@ -96,18 +104,19 @@ class Message(SourceElement):
     title_references = generic.GenericRelation(SingleCodeReference,
             content_type_field="title_content_type",
             object_id_field="title_object_id",
-            related_name="channel_titles")
+            related_name="msg_titles")
     '''at'''
 
     code_references = generic.GenericRelation(SingleCodeReference,
             content_type_field="local_content_type",
             object_id_field="local_object_id",
-            related_name="channel_refs")
+            related_name="msg_refs")
     '''at'''
 
     code_snippets = generic.GenericRelation(CodeSnippet,
             content_type_field="local_content_type",
-            object_id_field="local_object_id")
+            object_id_field="local_object_id",
+            related_name="msg_snippets")
     '''at'''
 
     word_count = models.PositiveIntegerField(default=0)

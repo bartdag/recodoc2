@@ -311,6 +311,7 @@ class GenericParser(object):
             code.local_context = message
             if load.entry is not None:
                 code.global_context = load.entry
+            code.resource = self.channel
             code.save()
 
     def _parse_paragraphs(self, message, load, text_paragraphs):
@@ -330,6 +331,7 @@ class GenericParser(object):
                 code.local_context = message
                 if load.entry is not None:
                     code.global_context = load.entry
+                code.resource = self.channel
                 code.save()
 
     def _save_snippets(self, message, load, snippets):
@@ -350,6 +352,7 @@ class GenericParser(object):
                 code.global_context = load.entry
 
             code.project = self.channel.project
+            code.resource = self.channel
             code.save()
 
 
