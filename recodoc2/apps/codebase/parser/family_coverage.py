@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import codebase.models as cmodel
+import codebase.linker.context as ctx
 from docutil.progress_monitor import NullProgressMonitor
 from docutil.commands_util import size
 
@@ -8,7 +9,6 @@ from docutil.commands_util import size
 # So key of dict is container.pk dash kind of element.pk
 # 2- Hierarchy is only direct.
 # What happen if we compute indirect hierarchy, like level-2?
-# 3- please add __unicode__ and plural (not sure how to do this!)
 
 def create_family(head, criterion, first_criterion):
     family = cmodel.CodeElementFamily(head=head)
@@ -28,12 +28,14 @@ def compute_declaration_family(code_elements, first_criterion=True,
     progress_monitor.start('Comp. Declaration Families', size(code_elements))
 
     for code_element in code_elements:
+        kind_pk = code_element.kind.pk
         for container in code_element.containers.all():
             pk = container.pk
-            if pk not in families:
-                families[pk] = create_family(container, cmodel.DECLARATION,
+            key = '{0}-{1}'.format(pk, kind_pk)
+            if key not in families:
+                families[key] = create_family(container, cmodel.DECLARATION,
                         first_criterion)
-            families[pk].members.add(code_element)
+            families[key].members.add(code_element)
         
         progress_monitor.work('Code Element processed', 1)
     
@@ -42,25 +44,47 @@ def compute_declaration_family(code_elements, first_criterion=True,
     return families
 
 
+def compute_ancestors(code_element, ancestors):
+    for parent in code_element.parents.all():
+        if parent.pk not in ancestors:
+            ancestors[parent.pk] = parent
+            compute_ancestors(parent, ancestors)
+
+
 def compute_hierarchy_family(code_elements, first_criterion=True,
         progress_monitor=NullProgressMonitor()):
-    families = {}
+    families1 = {}
+    familiesd = {}
 
     progress_monitor.start('Comp. Hierarchy Families', size(code_elements))
     
     for code_element in code_elements:
-        for container in code_element.parents.all():
-            pk = container.pk
-            if pk not in families:
-                families[pk] = create_family(container, cmodel.HIERARCHY,
+        # Hierarchy 1
+        for parent in code_element.parents.all():
+            pk = parent.pk
+            if pk not in families1:
+                families1[pk] = create_family(parent, cmodel.HIERARCHY,
                         first_criterion)
-            families[pk].members.add(code_element)
+            families1[pk].members.add(code_element)
+
+        # Hierarchy D
+        ancestors_list = ctx.get_ancestors_value(code_element)
+        ancestors = {ancestor.pk : ancestor for ancestor in ancestors_list}
+
+
+        for ancestor_pk in ancestors:
+            if ancestor_pk not in familiesd:
+                familiesd[ancestor_pk] = create_family(
+                        ancestors[ancestor_pk],
+                        cmodel.HIERARCHY_D,
+                        first_criterion)
+            familiesd[ancestor_pk].members.add(code_element)
 
         progress_monitor.work('Code Element processed', 1)
     
     progress_monitor.done()
 
-    return families
+    return (families1, familiesd)
 
 
 def compute_token_family_second(families,

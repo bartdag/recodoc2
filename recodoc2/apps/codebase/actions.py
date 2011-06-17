@@ -448,10 +448,9 @@ def compute_families(pname, bname, release):
 
     dfamilies = fcoverage.compute_declaration_family(code_elements, True,
             progress_monitor)
-    hfamilies = fcoverage.compute_hierarchy_family(code_elements, True,
-            progress_monitor)
+    (hfamilies1, hfamiliesd) = fcoverage.\
+            compute_hierarchy_family(code_elements, True, progress_monitor)
     fcoverage.compute_token_family_second(dfamilies, progress_monitor)
-    fcoverage.compute_token_family_second(hfamilies, progress_monitor)
 
 
 def clear_families(pname, bname, release):
@@ -460,7 +459,7 @@ def clear_families(pname, bname, release):
     codebase = CodeBase.objects.filter(project_release=prelease).\
             filter(name=bname)[0]
     CodeElementFamily.objects.filter(head__codebase=codebase).delete()
-    
+
 
 ### ACTIONS USED BY OTHER ACTIONS ###
 
@@ -471,7 +470,7 @@ def compute_filters(codebase):
     for cfilter in filters:
         simple_name = clean_java_name(cfilter.fqn)[0].lower()
         simple_filters[simple_name].append(cfilter)
-    
+
     fqn_filters = {cfilter.fqn.lower(): cfilter for cfilter in filters}
 
     return (simple_filters, fqn_filters)

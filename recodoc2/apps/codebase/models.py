@@ -19,6 +19,10 @@ DECLARATION = 'd'
 
 HIERARCHY = 'h'
 
+HIERARCHY_D = 'hd'
+
+UNUSED = 'u'
+
 TOKEN = 't'
 
 LANGUAGES = [
@@ -39,17 +43,19 @@ SOURCE_TYPE = (
 )
 
 TOKEN_POS = (
-    (PREFIX, 'p'),
-    (SUFFIX, 's'),
-    (MIDDLE, 'm'),
+    (PREFIX, 'Prefix'),
+    (SUFFIX, 'Suffix'),
+    (MIDDLE, 'Middle'),
 )
 
 FAMILY_CRITERIA = (
     # First criteria
-    (DECLARATION, 'd'),
-    (HIERARCHY, 'h'),
+    (DECLARATION, 'Declaration'),
+    (HIERARCHY, 'Hierarchy'),
+    (HIERARCHY_D, 'Hierarchy Descendants'),
     # Second criteria
-    (TOKEN, 't'),
+    (TOKEN, 'Token'),
+    (UNUSED, 'Unused')
 )
 
 
@@ -617,7 +623,7 @@ class CodeElementFamily(models.Model):
     '''att.'''
 
     criterion2 = models.CharField(max_length=2, choices=FAMILY_CRITERIA,
-            blank=True, null=True)
+            blank=True, null=True, default=UNUSED)
     '''att.'''
 
     token = models.CharField(max_length=250, blank=True, null=True)
@@ -630,6 +636,15 @@ class CodeElementFamily(models.Model):
     members = models.ManyToManyField(CodeElement, blank=True, null=True,
             related_name='families_members')
     '''att.'''
+
+    def __unicode__(self):
+        return '{0} - {1} {2} - ({3})'.format(self.head, self.criterion1,
+                self.criterion2, self.members.count())
+
+    class Meta:
+        verbose_name = 'family'
+
+        verbose_name_plural = 'families'
 
 
 class FamilyCoverage(models.Model):
@@ -653,6 +668,14 @@ class FamilyCoverage(models.Model):
 
     coverage = models.FloatField(default=0.0)
     '''att.'''
+
+    def __unicode__(self):
+        return '{0} - {1}'.format(self.family, self.coverage)
+
+    class Meta:
+        verbose_name = 'family coverage'
+
+        verbose_name_plural = 'family coverages'
 
 
 ### Transient Classes ###
