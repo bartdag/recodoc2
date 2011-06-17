@@ -450,7 +450,10 @@ def compute_families(pname, bname, release):
             progress_monitor)
     (hfamilies1, hfamiliesd) = fcoverage.\
             compute_hierarchy_family(code_elements, True, progress_monitor)
+
     fcoverage.compute_token_family_second(dfamilies, progress_monitor)
+
+    fcoverage.compute_token_family(code_elements, True, progress_monitor)
 
 
 def clear_families(pname, bname, release):

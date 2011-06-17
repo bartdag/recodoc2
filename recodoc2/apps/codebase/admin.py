@@ -104,7 +104,7 @@ class CodeElementFamilyAdmin(admin.ModelAdmin):
     readonly_fields = ('head', 'members')
     search_fields = ('head', 'token')
     list_filter = ('head__codebase', 'criterion1', 'criterion2', 'token_pos')
-    list_display = ('pk', 'head', 'criterion1', 'criterion2')
+    list_display = ('pk', 'head', 'token', 'criterion1', 'criterion2')
     #inlines = [CodeElementFamilyInline]
 
 

@@ -633,6 +633,8 @@ class CodeElementFamily(models.Model):
             default=MIDDLE)
     '''att.'''
 
+    kind = models.ForeignKey(CodeElementKind, blank=True, null=True)
+
     members = models.ManyToManyField(CodeElement, blank=True, null=True,
             related_name='families_members')
     '''att.'''
