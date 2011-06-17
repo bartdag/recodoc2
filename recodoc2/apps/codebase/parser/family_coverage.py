@@ -11,12 +11,13 @@ from docutil.commands_util import size
 # 2- Work on coverage
 
 
-def create_family(head, criterion, first_criterion):
+def create_family(head, codebase, criterion, first_criterion):
     family = cmodel.CodeElementFamily(head=head)
     if first_criterion:
         family.criterion1 = criterion
     else:
         family.criterion2 = criterion
+    family.codebase = codebase
     family.save()
 
     return family
@@ -34,8 +35,8 @@ def compute_declaration_family(code_elements, first_criterion=True,
             pk = container.pk
             key = '{0}-{1}'.format(pk, kind_pk)
             if key not in families:
-                families[key] = create_family(container, cmodel.DECLARATION,
-                        first_criterion)
+                families[key] = create_family(container, container.codebase,
+                        cmodel.DECLARATION, first_criterion)
                 families[key].kind = code_element.kind
                 families[key].save()
             families[key].members.add(code_element)
@@ -66,8 +67,8 @@ def compute_hierarchy_family(code_elements, first_criterion=True,
         for parent in code_element.parents.all():
             pk = parent.pk
             if pk not in families1:
-                families1[pk] = create_family(parent, cmodel.HIERARCHY,
-                        first_criterion)
+                families1[pk] = create_family(parent, parent.codebase,
+                        cmodel.HIERARCHY, first_criterion)
             families1[pk].members.add(code_element)
 
         # Hierarchy D
@@ -78,6 +79,7 @@ def compute_hierarchy_family(code_elements, first_criterion=True,
             if ancestor_pk not in familiesd:
                 familiesd[ancestor_pk] = create_family(
                         ancestors[ancestor_pk],
+                        code_element.codebase,
                         cmodel.HIERARCHY_D,
                         first_criterion)
             familiesd[ancestor_pk].members.add(code_element)
@@ -125,8 +127,12 @@ def compute_tokens(code_elements):
 
 def compute_token_family(code_elements, first_criterion=True,
         progress_monitor=NullProgressMonitor()):
-    tokens = compute_tokens(code_elements)
     families = {}
+    if size(code_elements) == 0:
+        return families
+
+    codebase = code_elements.all()[0].codebase
+    tokens = compute_tokens(code_elements)
     progress_monitor.start('Computing token for code elements', len(tokens))
     for token in tokens:
         start = defaultdict(list)
@@ -151,7 +157,8 @@ def compute_token_family(code_elements, first_criterion=True,
 
         for start_members in start.values():
             if len(start_members) > 1:
-                family = create_family(None, cmodel.TOKEN, first_criterion)
+                family = create_family(None, codebase, cmodel.TOKEN,
+                        first_criterion)
                 family.token = token
                 family.token_pos = cmodel.PREFIX
                 family.save()
@@ -163,7 +170,8 @@ def compute_token_family(code_elements, first_criterion=True,
 
         for end_members in end.values():
             if len(end_members) > 1:
-                family = create_family(None, cmodel.TOKEN, first_criterion)
+                family = create_family(None, codebase, cmodel.TOKEN,
+                        first_criterion)
                 family.token = token
                 family.token_pos = cmodel.SUFFIX
                 family.save()
@@ -175,7 +183,8 @@ def compute_token_family(code_elements, first_criterion=True,
 
         for mid_members in middle.values():
             if len(mid_members) > 1:
-                family = create_family(None, cmodel.TOKEN, first_criterion)
+                family = create_family(None, codebase, cmodel.TOKEN,
+                        first_criterion)
                 family.token = token
                 family.token_pos = cmodel.MIDDLE
                 family.save()
@@ -190,8 +199,12 @@ def compute_token_family(code_elements, first_criterion=True,
     return families
 
 
-def compute_coverage(families, source, resource):
-    for family in families:
+def compute_coverage(families, source, resource,
+        progress_monitor=NullProgressMonitor):
+
+    progress_monitor.start('Computing Coverage', size(families))
+
+    for family in families.all():
         total = family.members.count()
         count = 0
         pk = resource.pk
@@ -210,3 +223,6 @@ def compute_coverage(families, source, resource):
         fam_coverage = cmodel.FamilyCoverage(family=family, resource=resource,
                 source=source, coverage=coverage)
         fam_coverage.save()
+        progress_monitor.work('Processed a family', 1)
+
+    progress_monitor.done()

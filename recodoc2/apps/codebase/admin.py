@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
         SingleCodeReference, CodeSnippet, CodeElementFilter,\
-        ParameterElement, CodeBaseDiff, CodeElementLink, CodeElementFamily
+        ParameterElement, CodeBaseDiff, CodeElementLink, CodeElementFamily,\
+        FamilyCoverage
 from django.contrib import admin
 
 
@@ -92,9 +93,10 @@ class CodeElementLinkAdmin(admin.ModelAdmin):
     list_filter = ('release_link_set__project_release', 'index', )
 
 
-class CodeElementFamilyInline(admin.TabularInline):
-    model = CodeElementFamily.members.through
-    #fields = ('fqn', )
+class FamilyCoverageInline(admin.TabularInline):
+    model = FamilyCoverage
+    fk_name = 'family'
+    fields = ('coverage', )
     extra = 0
 
 
@@ -105,7 +107,14 @@ class CodeElementFamilyAdmin(admin.ModelAdmin):
     search_fields = ('head', 'token')
     list_filter = ('head__codebase', 'criterion1', 'criterion2', 'token_pos')
     list_display = ('pk', 'head', 'token', 'criterion1', 'criterion2')
-    #inlines = [CodeElementFamilyInline]
+    inlines = [FamilyCoverageInline]
+
+
+class FamilyCoverageAdmin(admin.ModelAdmin):
+    fields = ('family', 'coverage', 'source')
+    readonly_fields = ('family',)
+    list_display = ('family', 'coverage', 'source')
+    list_filter = ('source', 'family__codebase')
 
 
 admin.site.register(CodeBase)
@@ -117,3 +126,4 @@ admin.site.register(CodeSnippet, CodeSnippetAdmin)
 admin.site.register(CodeBaseDiff, CodeBaseDiffAdmin)
 admin.site.register(CodeElementLink, CodeElementLinkAdmin)
 admin.site.register(CodeElementFamily, CodeElementFamilyAdmin)
+admin.site.register(FamilyCoverage, FamilyCoverageAdmin)

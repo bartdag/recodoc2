@@ -618,6 +618,10 @@ class CodeElementFamily(models.Model):
             related_name='families')
     '''att.'''
 
+    codebase = models.ForeignKey(CodeBase, blank=True, null=True,
+            related_name='families')
+    '''att.'''
+
     criterion1 = models.CharField(max_length=2, choices=FAMILY_CRITERIA,
             blank=True, null=True)
     '''att.'''
@@ -640,8 +644,11 @@ class CodeElementFamily(models.Model):
     '''att.'''
 
     def __unicode__(self):
-        return '{0} - {1} {2} - ({3})'.format(self.head, self.criterion1,
-                self.criterion2, self.members.count())
+        return '({4}) - {0} - {1} {2} {3} - ({4})'.format(self.head,
+                self.get_criterion1_display(),
+                self.get_criterion2_display(),
+                self.token,
+                self.members.count(), self.pk)
 
     class Meta:
         verbose_name = 'family'

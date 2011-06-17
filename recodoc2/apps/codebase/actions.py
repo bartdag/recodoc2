@@ -461,7 +461,7 @@ def clear_families(pname, bname, release):
             filter(release=release)[0]
     codebase = CodeBase.objects.filter(project_release=prelease).\
             filter(name=bname)[0]
-    CodeElementFamily.objects.filter(head__codebase=codebase).delete()
+    CodeElementFamily.objects.filter(codebase=codebase).delete()
 
 
 ### ACTIONS USED BY OTHER ACTIONS ###
