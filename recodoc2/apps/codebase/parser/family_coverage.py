@@ -146,13 +146,15 @@ def compute_token_family(code_elements, first_criterion=True,
 
         for code_element in code_elements.all():
             name = code_element.simple_name.lower().strip()
-            if name.startswith(token):
+            element_tokens = tokenize(code_element.simple_name)
+
+            if token not in element_tokens:
+                continue
+            elif name.startswith(token):
                 addt(start, code_element)
-
-            if name.endswith(token):
+            elif name.endswith(token):
                 addt(end, code_element)
-
-            if name.find(token) > -1:
+            elif name.find(token) > -1:
                 addt(middle, code_element)
 
         for start_members in start.values():
