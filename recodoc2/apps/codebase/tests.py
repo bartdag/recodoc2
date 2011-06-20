@@ -274,6 +274,10 @@ class CodeParserTest(TransactionTestCase):
         ce = CodeElement.objects.get(fqn='RootApplication')
         self.assertEqual('RootApplication', ce.simple_name)
         self.assertEqual('class', ce.kind.kind)
+
+        ce2 = CodeElement.objects.get(fqn='p1.p2.Tag')
+        self.assertTrue(ce2.abstract)
+
         # Test containees & containers
         self.assertEqual(1, ce.containees.count())
         self.assertEqual('package', ce.containers.all()[0].kind.kind)

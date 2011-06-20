@@ -138,12 +138,17 @@ class CUWorker(Thread):
         (simple_name, fqn) = clean_java_name(type_binding.getQualifiedName())
         deprecated = type_binding.isDeprecated()
 
+        abstract = self.Modifier.isAbstract(type_binding.getModifiers()) or \
+            (type_binding.isInterface() and not type_binding.isAnnotation())
+
         type_code_element = CodeElement(codebase=self.codebase,
                 simple_name=simple_name,
                 fqn=fqn,
                 eclipse_handle=java_element.getHandleIdentifier(),
                 parser=JAVA_PARSER,
-                deprecated=deprecated)
+                deprecated=deprecated,
+                abstract=abstract)
+        type_code_element.binding = type_binding
 
         node_type = jtype.getNodeType()
         if node_type == self.annotation_type:
@@ -210,6 +215,12 @@ class CUWorker(Thread):
             (return_simple_name, return_fqn) = clean_java_name(
                     method_binding.getReturnType().getQualifiedName())
             deprecated = method_binding.isDeprecated()
+            
+            type_binding = container_code_element.binding
+            abstract = self.Modifier.isAbstract(method_binding.getModifiers())\
+                    or (type_binding.isInterface() and 
+                        not type_binding.isAnnotation())
+            
             method_code_element = MethodElement(codebase=self.codebase,
                     kind=self.method_kind, simple_name=simple_name,
                     fqn=fqn,
@@ -218,7 +229,8 @@ class CUWorker(Thread):
                     return_simple_name=return_simple_name,
                     return_fqn=return_fqn,
                     parser=JAVA_PARSER,
-                    deprecated=deprecated)
+                    deprecated=deprecated,
+                    abstract=abstract)
 
             # method container
             method_code_element.save()

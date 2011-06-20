@@ -17,7 +17,7 @@ class CodeElementAdmin(admin.ModelAdmin):
     fields = ('simple_name', 'fqn', 'kind', 'deprecated', 'parser',
             'attcontainer', 'type_attcontainers', 'containers', 
             'type_containers', 'parents')
-    list_filter = ('codebase', 'kind', 'parser')
+    list_filter = ('codebase', 'kind', 'parser', 'deprecated')
     list_display = ('pk', 'fqn', 'simple_name', 'kind', 'parser')
     list_display_links = ('fqn', 'simple_name')
     search_fields = ['id', 'simple_name', 'fqn']

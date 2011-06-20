@@ -152,6 +152,9 @@ class CodeElement(models.Model):
     deprecated = models.BooleanField(default=False)
     '''att.'''
 
+    abstract = models.BooleanField(default=False)
+    '''att.'''
+
     eclipse_handle = models.CharField(max_length=500, null=True, blank=True)
     '''Handle that can be used to identify the code element in an Eclipse
        workspace.'''
