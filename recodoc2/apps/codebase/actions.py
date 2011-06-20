@@ -464,6 +464,22 @@ def clear_families(pname, bname, release):
     CodeElementFamily.objects.filter(codebase=codebase).delete()
 
 
+def compare_coverage(pname, bname, release1, release2, source, resource_pk):
+    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release1)[0]
+    codebase1 = CodeBase.objects.filter(project_release=prelease1).\
+            filter(name=bname)[0]
+    prelease2 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release2)[0]
+    codebase2 = CodeBase.objects.filter(project_release=prelease2).\
+            filter(name=bname)[0]
+
+    progress_monitor = CLIProgressMonitor(min_step=1.0)
+
+    fcoverage.compare_coverage(codebase1, codebase2, source, resource_pk,
+            progress_monitor)
+
+
 ### ACTIONS USED BY OTHER ACTIONS ###
 
 def compute_filters(codebase):

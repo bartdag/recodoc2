@@ -226,3 +226,176 @@ def compute_coverage(families, source, resource,
         progress_monitor.work('Processed a family', 1)
 
     progress_monitor.done()
+
+
+def compare_coverage(codebase_from, codebase_to, source, resource_pk,
+        progress_monitor=NullProgressMonitor):
+
+    (heads_from, tokens_from) = compute_family_index(codebase_from,
+            progress_monitor)
+    (heads_to, tokens_to) = compute_family_index(codebase_to, progress_monitor)
+
+    removed = []
+    added = []
+
+    heads_family_diff = compute_family_diff(heads_from, heads_to, added,
+            removed, progress_monitor)
+    tokens_family_diff = compute_family_diff(tokens_from, tokens_to, added,
+            removed, progress_monitor)
+
+    progress_monitor.info('Sorting added/removed')
+    removed.sort(key=lambda f: f.members.count(), reverse=True)
+    added.sort(key=lambda f: f.members.count(), reverse=True)
+
+    progress_monitor.info('Sorting family diff')
+    heads_family_diff.sort(key=lambda d: d.members_diff)
+    tokens_family_diff.sort(key=lambda d: d.members_diff)
+
+    heads_coverage_diff = compute_coverage_diff(heads_family_diff, source,
+            resource_pk, progress_monitor)
+    tokens_coverage_diff = compute_coverage_diff(tokens_family_diff, source,
+            resource_pk, progress_monitor)
+
+    progress_monitor.info('Sorting coverage diff')
+    heads_coverage_diff.sort(key=lambda d: d.coverage_diff)
+    tokens_coverage_diff.sort(key=lambda d: d.coverage_diff)
+
+    report_diff(heads_family_diff, heads_coverage_diff, 'Head Report')
+
+    report_diff(tokens_family_diff, tokens_coverage_diff, 'Token Report')
+
+    report_add_remove(removed, added)
+
+
+def compute_family_index(codebase, progress_monitor):
+    heads = defaultdict(list)
+    tokens = defaultdict(list)
+
+    families = cmodel.CodeElementFamily.objects.filter(codebase=codebase)
+    progress_monitor.start('Computing family index for codebase {0}'
+            .format(codebase), families.count())
+
+    for family in families.all():
+        if family.head is not None:
+            heads[family.head.human_string()].append(family)
+        else:
+            tokens[family.token].append(family)
+        progress_monitor.work('Computed a family index', 1)
+
+    progress_monitor.done()
+
+    return (heads, tokens)
+
+
+def compute_family_diff(index_from, index_to, added, removed,
+        progress_monitor):
+    processed = set()
+    family_diffs = []
+    progress_monitor.start('Computing family diff', len(index_from))
+
+    for key in index_from:
+        for family_from in index_from[key]:
+            family_to = get_family(family_from, index_to, key)
+            if family_to is None:
+                removed.append(family_from)
+            else:
+                diff = cmodel.FamilyDiff(family_from, family_to)
+                family_diffs.append(diff)
+                processed.add(family_to.pk)
+        progress_monitor.work('Computed family diffs', 1)
+
+    progress_monitor.info('Computing added families')
+
+    for families_to in index_to.values():
+        for family_to in families_to:
+            if family_to.pk not in processed:
+                added.append(family_to)
+
+    progress_monitor.done()
+
+    return family_diffs
+
+
+def compute_coverage_diff(family_diffs, source, resource_pk, progress_monitor):
+    coverage_diffs = []
+
+    progress_monitor.start('Computing coverage diff', len(family_diffs))
+
+    for family_diff in family_diffs:
+        coverage_from = family_diff.family_from.get_coverage(source,
+                resource_pk)
+        coverage_to = family_diff.family_to.get_coverage(source,
+                resource_pk)
+        if coverage_from is None or coverage_to is None:
+            progress_monitor.info('ERROR! One coverage is none: {0} {1}'
+                    .format(family_diff.family_from.pk,
+                        family_diff.family_to.pk))
+            progress_monitor.work('Skipping coverage diff', 1)
+            continue
+
+        diff = cmodel.CoverageDiff(coverage_from, coverage_to)
+        coverage_diffs.append(diff)
+        progress_monitor.work('Computing coverage diff', 1)
+
+    progress_monitor.done()
+
+    return coverage_diffs
+
+
+def report_diff(family_diffs, coverage_diffs, report_title):
+    top = 25
+    print()
+    print(report_title)
+    print('\nREPORTING TOP {0} FAMILY DIFFS\n'.format(top))
+    print('Total Family Diffs: {0}'.format(len(family_diffs)))
+    for family_diff in family_diffs[:top]:
+        print('{0}: From: {1}[{2}]  To: {3} [{4}]'.
+                format(family_diff.members_diff, family_diff.family_from,
+                    family_diff.family_from.pk, family_diff.family_to,
+                    family_diff.family_to.pk))
+
+    print('\nREPORTING TOP {0} COVERAGE DIFFS\n'.format(top))
+    print('Total coverage diffs: {0}'.format(len(coverage_diffs)))
+    for cov_diff in coverage_diffs[:top]:
+        print('{0}: From: {1}[{2}]  To: {3} [{4}]'.
+                format(cov_diff.coverage_diff, cov_diff.coverage_from,
+                    cov_diff.coverage_from.pk, cov_diff.coverage_to,
+                    cov_diff.coverage_to.pk))
+        report_location(cov_diff.coverage_from)
+
+    print()
+
+
+def report_location(coverage):
+    for member in coverage.family.members.all():
+        for link in member.potential_links.filter(index=0).all():
+            if link.code_reference.resource_object_id ==\
+                coverage.resource_object_id and link.code_reference.source ==\
+                coverage.source:
+                print('  {0} in {1}/{2}'.format(member.human_string(),
+                    link.code_reference.local_context,
+                    link.code_reference.global_context))
+
+
+def report_add_remove(removed, added):
+    top = 25
+    print()
+    print('REPORTING TOP {0} REMOVED FAMILIES\n'.format(top))
+    for family in removed[:top]:
+        print('{0}: {1}[{2}]'.format(family.members.count(), family,
+            family.pk))
+
+    print('REPORTING TOP {0} ADDED FAMILIES\n'.format(top))
+    for family in added[:top]:
+        print('{0}: {1}[{2}]'.format(family.members.count(), family,
+            family.pk))
+
+
+def get_family(family, index, key):
+    if key not in index:
+        return None
+    else:
+        for temp_family in index[key]:
+            if family.equiv(temp_family):
+                return temp_family
+    return None

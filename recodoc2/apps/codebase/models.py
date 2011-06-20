@@ -643,12 +643,42 @@ class CodeElementFamily(models.Model):
             related_name='families_members')
     '''att.'''
 
+    def equiv(self, family):
+        equiv = True
+        if self.head is None:
+            equiv = family.head is None
+        elif family.head is None:
+            equiv = False
+        else:
+            equiv = self.head.human_string() == family.head.human_string()
+
+        equiv = equiv and (self.kind == family.kind)
+        equiv = equiv and (self.criterion1 == family.criterion1)
+        equiv = equiv and (self.criterion2 == family.criterion2)
+        equiv = equiv and (self.token == family.token)
+        equiv = equiv and (self.token_pos == family.token_pos)
+
+        return equiv
+
+    def get_coverage(self, source, resource_pk):
+        coverage_info = None
+
+        for temp in self.coverage_infos.all():
+            if temp.resource_object_id == resource_pk and temp.source == source:
+                coverage_info = temp
+                break
+
+        return coverage_info
+
     def __unicode__(self):
-        return '({4}) - {0} - {1} {2} {3} - ({4})'.format(self.head,
+        return '({0}) - {1} - {2} {3} {4} {5} - {6} members'.format(
+                self.pk,
+                self.head,
                 self.get_criterion1_display(),
                 self.get_criterion2_display(),
                 self.token,
-                self.members.count(), self.pk)
+                self.get_token_pos_display(),
+                self.members.count())
 
     class Meta:
         verbose_name = 'family'
@@ -696,3 +726,24 @@ class MethodInfo(object):
         self.fqn_container = fqn_container
         self.nb_params = nb_params
         self.type_params = type_params
+
+
+class CoverageDiff(object):
+
+    def __init__(self, coverage_from, coverage_to):
+        self.coverage_from = coverage_from
+        self.coverage_to = coverage_to
+        self.coverage_diff = \
+                self.coverage_to.coverage - self.coverage_from.coverage
+        self.members_diff = \
+                self.coverage_to.family.members.count() -\
+                self.coverage_from.family.members.count()
+
+
+class FamilyDiff(object):
+
+    def __init__(self, family_from, family_to):
+        self.family_from = family_from
+        self.family_to = family_to
+        self.members_diff = self.family_to.members.count() -\
+                self.family_from.members.count()
