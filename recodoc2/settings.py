@@ -176,7 +176,7 @@ LINKERS = {'javaclass': 'codebase.linker.java_linkers.JavaClassLinker',
 
 CUSTOM_LINKERS = {}
 
-CHANNEL_LINE_THRESHOLD = 250
+CHANNEL_LINE_THRESHOLD = 500
 
 try:
     from localsettings import *

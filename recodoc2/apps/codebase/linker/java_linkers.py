@@ -369,6 +369,8 @@ class JavaClassLinker(gl.DefaultLinker):
         potentials_size = len(potentials)
         if potentials_size > 0:
             return_code_element = potentials[0]
+        else:
+            return_code_element = None
 
         log.custom_filtered = filters.custom_filtered(filter_results)
 

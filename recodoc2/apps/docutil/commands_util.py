@@ -266,7 +266,10 @@ def download_html_tree(url, force=False, real_browser=False):
     (content, encoding) = download_content(url, force, real_browser)
     # I know, it's silly, but lxml does not support unicode
     # with encoding... Oh WOW!
-    new_content = content.encode(encoding)
+    try:
+        new_content = content.encode(encoding)
+    except Exception:
+        new_content = content.encode('utf8')
     tree = get_html_tree(new_content, encoding)
     return tree
 
@@ -284,7 +287,12 @@ def download_content(file_from_path, force=False, real_browser=False):
         content = file_from.read()
         file_from.close()
         encoding = get_encoding(content)
-        content = unicode(content, encoding)
+
+        try:
+            content = unicode(content, encoding)
+        except Exception:
+            content = unicode(content, 'utf8')
+
         return (content, encoding)
     except Exception:
         logger.exception('Error while downloading a file: {0}'.format(

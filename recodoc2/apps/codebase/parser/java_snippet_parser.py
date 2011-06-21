@@ -55,7 +55,7 @@ class JavaSnippetParser(object):
 
             # Don't parse snippets that are already parsed.
             if mcode.single_code_references.count() > 0:
-                progress_monitor.word('Skipped a parsed code snippet', 1)
+                progress_monitor.work('Skipped a parsed code snippet', 1)
                 continue
 
             text = mcode.snippet_text
