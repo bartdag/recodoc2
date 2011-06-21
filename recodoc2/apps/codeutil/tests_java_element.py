@@ -83,6 +83,23 @@ public class Foo { // Hello
 } // Comment again!
     '''
 
+    snippet4 = r'''
+// This is a comment.
+// Another one.
+new Hello() {
+    public void foo() {}
+};
+    '''
+
+    snippet5 = r'''
+/**
+ * @param hello; = asdw3{ {}
+ */
+public List<String> main(String[] args) {
+    System.out.println();
+}
+    '''
+
     def setUp(self):
         self.filters = [je.SQLFilter(), je.BuilderFilter()]
 
@@ -93,6 +110,10 @@ public class Foo { // Hello
         self.assertFalse(is_snippet)
         (is_snippet, _) = je.is_java_snippet(self.snippet3, self.filters)
         self.assertTrue(is_snippet)
+
+    def test_snippet_classification(self):
+        self.assertFalse(je.is_class_body(self.snippet4))
+        self.assertTrue(je.is_class_body(self.snippet5))
 
 
 class JavaStrategyTest(TestCase):

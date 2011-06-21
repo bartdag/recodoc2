@@ -163,6 +163,20 @@ def clean_potential_annotation(name):
     return new_name
 
 
+def clean_comments(snippet):
+    new_snippet = ''
+    skip = True
+    for line in snippet.split('\n'):
+        temp = line.strip()
+        if skip and (temp.startswith('//') or temp.startswith('/*') or
+                temp.startswith('*') or temp == ''):
+            continue
+        else:
+            skip = False
+            new_snippet += line + '\n'
+    return new_snippet
+
+
 ### JAVA SNIPPET ###
 
 JAVA_END_CHARACTERS = set([';', '{', '}'])
@@ -530,14 +544,16 @@ EXCEPTION_PATTERNS = [EXCEPTION_PATTERN1, EXCEPTION_PATTERN2,
 ### Java Body Recognition ###
 
 def is_cu_body(text):
+    text = clean_comments(text)
     new_text = su.clean_for_re(text)
     return CLASS_DECLARATION_RE.search(new_text) is not None
 
 
 def is_class_body(text):
+    text = clean_comments(text)
     new_text = su.clean_for_re(text)
-    return ANONYMOUS_CLASS_DECLARATION_RE.search(new_text) is not None or\
-           METHOD_DECLARATION_RE.search(new_text)
+    return ANONYMOUS_CLASS_DECLARATION_RE.match(new_text) is None and\
+           METHOD_DECLARATION_RE.match(new_text) is not None
 
 
 ### Java Snippet Regognition ###
