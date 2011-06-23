@@ -261,7 +261,7 @@ class CodeParserTest(TransactionTestCase):
         self.assertEqual(len(contents),
                 snippet.single_code_references.count())
         for content, ref in\
-                zip(contents, snippet.single_code_references.order_by('-index')):
+                zip(contents, snippet.single_code_references.order_by('index')):
             self.assertEqual(content, ref.content)
 
     @transaction.autocommit

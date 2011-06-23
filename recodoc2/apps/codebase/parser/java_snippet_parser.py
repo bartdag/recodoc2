@@ -105,7 +105,7 @@ class JavaSnippetParser(object):
         return cu
 
     def _process_name(self, bindings, declarations, nodes, mcode):
-        for i, binding in enumerate(bindings):
+        for i, binding in enumerate(reversed(bindings)):
             declaration = declarations[i]
             parts = binding.split(self.HANDLE_SEPARATOR)
             kind = parts[0][2]
