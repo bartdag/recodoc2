@@ -169,16 +169,20 @@ def get_descendants(code_element):
 
 def get_context_return_types_hierarchy(context_id, source, filter_func,
         codebase, context_level):
-    return cu.get_value(PREFIX_GETCONTEXT + HIERARCHY + source + context_level
-            + RETURN, context_id, get_context_return_types_hier_value,
-            [context_id, source, filter_func, codebase, context_level])
+    return get_context_return_types_hier_value(context_id, source, filter_func,
+            codebase, context_level)
+    #return cu.get_value(PREFIX_GETCONTEXT + HIERARCHY + source + context_level
+            #+ RETURN, context_id, get_context_return_types_hier_value,
+            #[context_id, source, filter_func, codebase, context_level])
 
 
 def get_context_return_types(context_id, source, filter_func, codebase,
         context_level):
-    return cu.get_value(PREFIX_GETCONTEXT + source + context_level + RETURN,
-            context_id, get_context_return_types_value, [context_id, source,
-                filter_func, codebase])
+    return get_context_return_types_value(context_id, source, filter_func,
+            codebase)
+    #return cu.get_value(PREFIX_GETCONTEXT + source + context_level + RETURN,
+            #context_id, get_context_return_types_value, [context_id, source,
+                #filter_func, codebase])
 
 
 def get_context_types_hierarchy(context_id, source, filter_func, codebase,

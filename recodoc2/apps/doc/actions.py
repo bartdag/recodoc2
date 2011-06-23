@@ -155,10 +155,13 @@ def show_section(section_pk):
     print(section.url)
     print(section.word_count)
     print(section.pk)
+    count = 0
     for code_reference in section.code_references.all():
         link = code_reference.first_link()
         if link is not None:
+            count += 1
             link_str = link.code_element.human_string()
         else:
             link_str = ''
         print('{0};{1}'.format(code_reference.content, link_str))
+    print('Total links: {0}'.format(count))

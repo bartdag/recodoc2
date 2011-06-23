@@ -176,9 +176,9 @@ class JavaClassLinker(gl.DefaultLinker):
         log = gl.LinkerLog(self, self.ann_kind.kind)
 
         for scode_reference in ann_refs:
-            if scode_reference.declaration:
-                progress_monitor.work('Skipped declaration', 1)
-                continue
+            #if scode_reference.declaration:
+                #progress_monitor.work('Skipped declaration', 1)
+                #continue
 
             (simple, fqn) = je.get_annotation_name(scode_reference.content,
                     scode_reference.snippet is not None)
@@ -212,9 +212,9 @@ class JavaClassLinker(gl.DefaultLinker):
         log = gl.LinkerLog(self, self.enum_kind.kind)
 
         for scode_reference in enum_refs:
-            if scode_reference.declaration:
-                progress_monitor.work('Skipped declaration', 1)
-                continue
+            #if scode_reference.declaration:
+                #progress_monitor.work('Skipped declaration', 1)
+                #continue
 
             (simple, fqn) = je.get_class_name(scode_reference.content,
                     scode_reference.snippet is not None)
@@ -248,9 +248,9 @@ class JavaClassLinker(gl.DefaultLinker):
         log = gl.LinkerLog(self, self.class_kind.kind)
 
         for scode_reference in class_refs:
-            if scode_reference.declaration:
-                progress_monitor.work('Skipped declaration', 1)
-                continue
+            #if scode_reference.declaration:
+                #progress_monitor.work('Skipped declaration', 1)
+                #continue
 
             (simple, fqn) = je.get_class_name(scode_reference.content,
                     scode_reference.snippet is not None)
@@ -555,7 +555,9 @@ class JavaMethodLinker(gl.DefaultLinker):
         mcount = method_refs.count()
         progress_monitor.info('Method count: {0}'.format(mcount))
         try:
-            self._link_methods(queryset_iterator(method_refs), mcount,
+            # Here, use an iterator instead of the query set because we really
+            # want to keep the ordering by index...
+            self._link_methods(method_refs.iterator(), mcount,
                     progress_monitor)
         except Exception:
             logger.exception('Error while processing methods')

@@ -253,13 +253,16 @@ def show_message(msg_pk):
     print('{0} - {1}'.format(message.index, message.author))
     print(message.word_count)
     print(message.pk)
+    count = 0
     for code_reference in message.code_references.all():
         link = code_reference.first_link()
         if link is not None:
             link_str = link.code_element.human_string()
+            count += 1
         else:
             link_str = ''
         print('{0};{1}'.format(code_reference.content, link_str))
+    print('Total links: {0}'.format(count))
 
 
 def post_process_message(channel, message):
