@@ -359,6 +359,8 @@ def compute_coverage_diff(family_diffs, source, resource_pk, progress_monitor):
                         family_diff.family_to.pk))
             progress_monitor.work('Skipping coverage diff', 1)
             continue
+        elif not coverage_from.is_interesting():
+            continue
 
         diff = cmodel.CoverageDiff(coverage_from, coverage_to)
         coverage_diffs.append(diff)

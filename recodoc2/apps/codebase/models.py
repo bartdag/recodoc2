@@ -61,6 +61,8 @@ FAMILY_CRITERIA = (
     (UNUSED, 'Unused')
 )
 
+COVERAGE_THRESHOLD = 0.40
+
 
 def add_language(lang_code, lang_name):
     global LANGUAGES
@@ -675,7 +677,8 @@ class CodeElementFamily(models.Model):
         coverage_info = None
 
         for temp in self.coverage_infos.all():
-            if temp.resource_object_id == resource_pk and temp.source == source:
+            if temp.resource_object_id == resource_pk and \
+                    temp.source == source:
                 coverage_info = temp
                 break
 
@@ -718,6 +721,10 @@ class FamilyCoverage(models.Model):
 
     coverage = models.FloatField(default=0.0)
     '''att.'''
+
+    def is_interesting(self):
+        return self.family.members.count() > 1 and \
+                self.coverage > COVERAGE_THRESHOLD
 
     def __unicode__(self):
         return '{0} - {1}'.format(self.family, self.coverage)
