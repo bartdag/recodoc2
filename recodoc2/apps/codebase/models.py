@@ -724,7 +724,7 @@ class FamilyCoverage(models.Model):
 
     def is_interesting(self):
         return self.family.members.count() > 1 and \
-                self.coverage > COVERAGE_THRESHOLD
+                self.coverage >= COVERAGE_THRESHOLD
 
     def __unicode__(self):
         return '{0} - {1}'.format(self.family, self.coverage)

@@ -513,6 +513,7 @@ def get_package_name(tree):
 
 
 def compute_code_words(codebase):
+    print('computing code words 2')
     d = enchant.Dict('en-US')
 
     elements = CodeElement.objects.\
@@ -531,6 +532,8 @@ def compute_code_words(codebase):
             if not d.check(simple_name):
                 code_words.add(simple_name)
 
+    print('before returning from code words')
+
     logger.debug('Computed {0} code words for codebase {1}'.format(
         len(code_words), str(codebase)))
 
@@ -538,6 +541,7 @@ def compute_code_words(codebase):
 
 
 def compute_project_code_words(codebases):
+    print('computing code words')
     code_words = set()
     for codebase in codebases:
         code_words.update(
@@ -550,7 +554,9 @@ def compute_project_code_words(codebases):
 
 
 def get_project_code_words(project):
+    print('in project code words')
     codebases = CodeBase.objects.filter(project_release__project=project).all()
+    print('checking cache?!')
     return get_value(
             PREFIX_PROJECT_CODE_WORDS,
             project.pk,
