@@ -91,6 +91,31 @@ def compute_hierarchy_family(code_elements, first_criterion=True,
     return (families1, familiesd)
 
 
+def compute_no_abstract_family(families,
+        progress_monitor=NullProgressMonitor()):
+
+    new_families = {}
+    progress_monitor.start('Comp. No Abstract Families', size(families))
+
+    for head_pk in families:
+        family = families[head_pk]
+        code_elements = family.members.all()
+        new_members = [code_element for code_element in code_elements if
+                code_element.abstract]
+        size = len(new_members)
+        if size > 0 and size < family.members.count():
+            new_family = create_family(family.head, family.codebase,
+                    cmodel.NO_ABSTRACT, False)
+            new_family.criterion1 = family.criterion1
+            new_family.save()
+            new_families[new_family.pk] = new_family
+        progress_monitor.work('Family processed', 1)
+
+    progress_monitor.done()
+
+    return new_families
+
+
 def compute_token_family_second(families,
         progress_monitor=NullProgressMonitor()):
 

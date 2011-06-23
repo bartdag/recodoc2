@@ -25,6 +25,8 @@ UNUSED = 'u'
 
 TOKEN = 't'
 
+NO_ABSTRACT = 'na'
+
 LANGUAGES = [
     ('j', 'Java'),
     ('p', 'Python'),
@@ -53,6 +55,7 @@ FAMILY_CRITERIA = (
     (DECLARATION, 'Declaration'),
     (HIERARCHY, 'Hierarchy'),
     (HIERARCHY_D, 'Hierarchy Descendants'),
+    (NO_ABSTRACT, 'No Abstract'),
     # Second criteria
     (TOKEN, 'Token'),
     (UNUSED, 'Unused')
