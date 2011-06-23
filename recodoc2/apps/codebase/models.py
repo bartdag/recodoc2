@@ -127,6 +127,11 @@ class CodeElementFilter(models.Model):
     '''If True, a code reference will be matched only if it is not
        attached to other references.'''
 
+    include_member = models.BooleanField(default=False)
+    '''If True, a code reference will not be matched if it refers to a member
+       and it matches this filter. Otherwise, only the container of the
+       reference is checked against the filter.'''
+
     def __unicode__(self):
         return self.fqn
 

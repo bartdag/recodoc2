@@ -385,7 +385,7 @@ def add_filter(pname, bname, release, filter_files):
 
 
 def add_a_filter(pname, bname, release, filter_fqn, include_snippet=True,
-        one_ref_only=False):
+        one_ref_only=False, include_member=False):
     prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
             filter(release=release)[0]
     codebase = CodeBase.objects.filter(project_release=prelease).\
@@ -394,7 +394,8 @@ def add_a_filter(pname, bname, release, filter_fqn, include_snippet=True,
             codebase=codebase,
             fqn=filter_fqn,
             include_snippet=include_snippet,
-            one_ref_only=one_ref_only)
+            one_ref_only=one_ref_only,
+            include_member=include_member)
     code_filter.save()
 
 

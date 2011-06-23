@@ -21,6 +21,9 @@ class Command(NoArgsCommand):
             default=False, help='Exclude snippets'),
         make_option('--one-ref-only', action='store_true', dest='one-ref-only',
             default=False, help='Only apply to single references'),
+        make_option('--include-member', action='store_true',
+            dest='include-member', default=False,
+            help='Match members to this filter'),
 
     )
     help = "Create a filter"
@@ -32,4 +35,4 @@ class Command(NoArgsCommand):
         release = smart_decode(options.get('release'))
         fqn = smart_decode(options.get('fqn'))
         add_a_filter(pname, bname, release, fqn, not options.get('no-snippet'),
-            options.get('one-ref-only'))
+            options.get('one-ref-only'), options.get('include-member'))

@@ -113,9 +113,13 @@ def custom_filtered(filter_results):
     return cfiltered
 
 
-def valid_filter(reference, code_filter):
+def valid_filter(reference, code_filter, check_member):
+    # Check that members are allowed
+    valid = not check_member or code_filter.include_member
+
     # Check that snippets are ok
-    valid = reference.snippet is None or code_filter.include_snippet
+    valid = valid and (reference.snippet is None or
+            code_filter.include_snippet)
 
     # Check that compound references are ok
     valid = valid and (not code_filter.one_ref_only or
@@ -125,7 +129,8 @@ def valid_filter(reference, code_filter):
     return valid
 
 
-def custom_filter(filter_inst, potentials, scode_reference, simple, fqn):
+def custom_filter(filter_inst, potentials, scode_reference, simple, fqn,
+        check_member=False):
     (simple_filters, fqn_filters) = get_filters(get_codebase(potentials))
     simple = simple.lower()
     fqn = fqn.lower()
@@ -133,11 +138,11 @@ def custom_filter(filter_inst, potentials, scode_reference, simple, fqn):
 
     if fqn in fqn_filters:
         afilter = fqn_filters[fqn]
-        if valid_filter(scode_reference, afilter):
+        if valid_filter(scode_reference, afilter, check_member):
             result = FilterResult(filter_inst, True, [])
     elif fqn == simple and simple in simple_filters:
         for afilter in simple_filters[simple]:
-            if valid_filter(scode_reference, afilter):
+            if valid_filter(scode_reference, afilter, check_member):
                 result = FilterResult(filter_inst, True, [])
                 break
 
@@ -204,10 +209,13 @@ class CustomClassMemberFilter(object):
         fqn_container = filter_input.fqn_container
         potentials = filter_input.potentials
         scode_reference = filter_input.scode_reference
-
+        name = filter_input.element_name
         result = FilterResult(self, False, potentials)
 
-        if fqn_container is not None and fqn_container != '':
+        result = custom_filter(self, potentials, scode_reference, name, name)
+
+        if not result.activated and (fqn_container is not None and
+                fqn_container != ''):
             (simple, fqn) = je.clean_java_name(fqn_container, True)
 
             result = custom_filter(self, potentials, scode_reference, simple,
