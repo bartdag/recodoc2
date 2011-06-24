@@ -234,7 +234,8 @@ class CodeElement(models.Model):
             #clazz = method.containers.all()[0]
             #human_string = '%s.%s(%s="")' % (clazz.simple_name,
             # method.simple_name, self.simple_name)
-        return '{0} - ({1})'.format(human_string, self.pk)
+        #return '{0} - ({1})'.format(human_string, self.pk)
+        return human_string
 
     def __unicode__(self):
         return self.human_string()

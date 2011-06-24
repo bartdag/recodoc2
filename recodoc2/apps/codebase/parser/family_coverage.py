@@ -159,7 +159,18 @@ def compute_token_family(code_elements, first_criterion=True,
 
     codebase = code_elements.all()[0].codebase
     tokens = compute_tokens(code_elements)
-    progress_monitor.start('Computing token for code elements', len(tokens))
+    progress_monitor.start('Processing {0} token for code elements'
+            .format(len(tokens)), len(tokens))
+   
+    progress_monitor.info('Computing code element names')
+    ctokens = []
+    for code_element in code_elements.all():
+        name = code_element.simple_name.lower().strip()
+        element_tokens = [token.lower().strip() for token in
+                tokenize(code_element.simple_name)]
+        ctokens.append((name, code_element, element_tokens))
+    progress_monitor.info('Computed code element names')
+
     for token in tokens:
         start = defaultdict(list)
         end = defaultdict(list)
@@ -170,9 +181,7 @@ def compute_token_family(code_elements, first_criterion=True,
         else:
             addt = lambda d, e: d[0].append(e)
 
-        for code_element in code_elements.all():
-            name = code_element.simple_name.lower().strip()
-            element_tokens = tokenize(code_element.simple_name)
+        for (name, code_element, element_tokens) in ctokens:
 
             if token not in element_tokens:
                 continue
@@ -183,6 +192,9 @@ def compute_token_family(code_elements, first_criterion=True,
             elif name.find(token) > -1:
                 addt(middle, code_element)
 
+        #print('Debugging {0}: {1} {2} {3}'.format(token, len(start), len(end),
+            #len(middle)))
+            
         for start_members in start.values():
             if len(start_members) > 1:
                 family = create_family(None, codebase, cmodel.TOKEN,
