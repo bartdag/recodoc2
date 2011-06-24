@@ -101,7 +101,7 @@ def compute_no_abstract_family(families,
         family = families[head_pk]
         code_elements = family.members.all()
         new_members = [code_element for code_element in code_elements if
-                code_element.abstract]
+                not code_element.abstract]
         new_size = len(new_members)
         if new_size > 0 and new_size < family.members.count():
             new_family = create_family(family.head, family.codebase,
