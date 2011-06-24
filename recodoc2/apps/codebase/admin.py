@@ -104,7 +104,7 @@ class CodeElementFamilyAdmin(admin.ModelAdmin):
     fields = ('head', 'criterion1', 'criterion2', 'token', 'token_pos',
     'members')
     readonly_fields = ('head', 'members')
-    search_fields = ('head', 'token')
+    search_fields = ('token',)
     list_filter = ('head__codebase', 'criterion1', 'criterion2', 'token_pos')
     list_display = ('pk', 'head', 'token', 'criterion1', 'criterion2')
     inlines = [FamilyCoverageInline]
@@ -113,8 +113,10 @@ class CodeElementFamilyAdmin(admin.ModelAdmin):
 class FamilyCoverageAdmin(admin.ModelAdmin):
     fields = ('family', 'coverage', 'source')
     readonly_fields = ('family',)
+    search_fields = ('family__pk', 'family__token')
     list_display = ('family', 'coverage', 'source')
-    list_filter = ('source', 'family__codebase')
+    list_filter = ('source', 'family__codebase', 'family__criterion1',
+        'family__criterion2')
 
 
 admin.site.register(CodeBase)
