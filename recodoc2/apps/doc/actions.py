@@ -10,9 +10,9 @@ from project.models import ProjectRelease
 from project.actions import DOC_PATH
 from codebase.models import CodeBase, CodeElementFamily, FamilyCoverage
 from codebase.parser.family_coverage import compute_coverage
-from doc.models import DocumentStatus, Document, Page, Section
+from doc.models import DocumentStatus, Document, Page, Section, DocDiff
 from doc.parser.generic_parser import parse
-from doc.parser.doc_diff import DocDiffer
+from doc.parser.doc_diff import DocDiffer, DocLinkerDiffer
 
 
 def get_doc_path(pname, dname=None, release=None, root=False):
@@ -111,6 +111,24 @@ def diff_doc(pname, dname, release1, release2):
 
     differ = DocDiffer()
     return differ.diff_docs(document_from, document_to)
+
+
+@transaction.autocommit
+def diff_links(pname, dname, release1, release2):
+    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release1)[0]
+    document_from = Document.objects.filter(project_release=prelease1).\
+            filter(title=dname)[0]
+    prelease2 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release2)[0]
+    document_to = Document.objects.filter(project_release=prelease2).\
+            filter(title=dname)[0]
+    doc_diff = DocDiff.objects.filter(document_from=document_from).\
+            get(document_to=document_to)
+    doc_linker_differ = DocLinkerDiffer(doc_diff)
+    (added_links, removed_links) = doc_linker_differ.diff_links()
+    print('Added links: {0}'.format(len(added_links)))
+    print('Removed links: {0}'.format(len(removed_links)))
 
 
 def compute_family_coverage(pname, bname, release, dname, srelease):

@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.contenttypes import generic
 
 from project.models import ProjectRelease, SourceElement
-from codebase.models import SingleCodeReference, CodeSnippet
+from codebase.models import SingleCodeReference, CodeSnippet, CodeElementLink
 
 
 class Document(models.Model):
@@ -125,20 +125,40 @@ class Section(SourceElement):
 class DocDiff(models.Model):
     document_from = models.ForeignKey(Document, blank=True, null=True,
             related_name="diff_document_froms")
+    '''att.'''
+
     document_to = models.ForeignKey(Document, blank=True, null=True,
             related_name="diff_document_tos")
+    '''att.'''
+
     removed_pages = models.ManyToManyField(Page, blank=True, null=True,
             related_name="diff_removed_pages")
+    '''att.'''
+
     added_pages = models.ManyToManyField(Page, blank=True, null=True,
             related_name="diff_added_pages")
+    '''att.'''
+
     removed_sections = models.ManyToManyField(Section, blank=True, null=True,
             related_name="diff_removed_sections")
+    '''att.'''
+
     added_sections = models.ManyToManyField(Section, blank=True, null=True,
             related_name="diff_added_sections")
+    '''att.'''
+
     pages_size_from = models.IntegerField(default=0)
+    '''att.'''
+
     pages_size_to = models.IntegerField(default=0)
+    '''att.'''
+
     sections_size_from = models.IntegerField(default=0)
+    '''att.'''
+
     sections_size_to = models.IntegerField(default=0)
+    '''att.'''
+
 
     def __unicode__(self):
         return 'Diff {0} - {1}'.format(self.document_from, self.document_to)
@@ -147,35 +167,104 @@ class DocDiff(models.Model):
 class PageMatcher(models.Model):
     page_from = models.ForeignKey(Page, blank=True, null=True,
             related_name="match_froms")
+    '''att.'''
+
     page_to = models.ForeignKey(Page, blank=True, null=True,
             related_name="match_tos")
+    '''att.'''
+
     confidence = models.FloatField(default=0.0)
+    '''att.'''
+
     refactored = models.BooleanField(default=False)
+    '''att.'''
+
     diff = models.ForeignKey(DocDiff, blank=True, null=True,
             related_name="page_matches")
+    '''att.'''
+
 
 
 class SectionMatcher(models.Model):
     section_from = models.ForeignKey(Section, blank=True, null=True,
             related_name="match_froms")
+    '''att.'''
+
     section_to = models.ForeignKey(Section, blank=True, null=True,
             related_name="match_tos")
+    '''att.'''
+
     confidence = models.FloatField(default=0.0)
+    '''att.'''
+
     refactored = models.BooleanField(default=False)
+    '''att.'''
+
     diff = models.ForeignKey(DocDiff, blank=True, null=True,
             related_name="section_matches")
+    '''att.'''
+
 
 
 class SectionChanger(models.Model):
     section_from = models.ForeignKey(Section, blank=True, null=True,
             related_name="changed_froms")
+    '''att.'''
+
     section_to = models.ForeignKey(Section, blank=True, null=True,
             related_name="changed_tos")
+    '''att.'''
+
     words_from = models.IntegerField(default=0)
+    '''att.'''
+
     words_to = models.IntegerField(default=0)
+    '''att.'''
+
     change = models.FloatField(default=0.0)
+    '''att.'''
+
     diff = models.ForeignKey(DocDiff, blank=True, null=True,
             related_name="section_changes")
+    '''att.'''
+
+
+class LinkChange(models.Model):
+    diff = models.ForeignKey(DocDiff, blank=True, null=True,
+            related_name="link_changes")
+    '''att.'''
+
+    from_matched_section = models.BooleanField(default=False)
+    '''True if the link change came from a section that already existed in the
+       previous release of the documentation.'''
+
+    link_from = models.ForeignKey(CodeElementLink, blank=True, null=True,
+            related_name="link_from_changes")
+    '''att.'''
+
+    link_to = models.ForeignKey(CodeElementLink, blank=True, null=True,
+            related_name="link_to_changes")
+    '''att.'''
+
+    def __unicode__(self):
+        msg = ''
+        if self.link_from is not None:
+            msg = self._get_message(self.link_from, 'removed')
+        else:
+            msg = self._get_message(self.link_to, 'added')
+
+        return msg
+
+    def _get_message(self, link, text):
+        msg = '{0} {1}'.\
+                format(link.code_element.human_string(), text)
+        section_title = (link.code_reference.local_context.title)
+        if self.from_matched_section:
+            msg += ' from matched section {0}'.format(section_title)
+        else:
+            msg += ' from section {0}'.format(section_title)
+
+        return msg
 
 
 ### SYNCER MODEL ###

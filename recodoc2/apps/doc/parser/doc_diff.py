@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from difflib import SequenceMatcher
 from doc.models import SectionMatcher, DocDiff, Section, PageMatcher,\
-        SectionChanger
+        SectionChanger, LinkChange
 
 
 ABS_THRESHOLD = 2.0
@@ -331,3 +331,124 @@ class DocDiffer(object):
                 SectionPageMatcher().match(section_from, section_tos))
         best_match = get_best_match(match_results)
         return best_match
+
+
+class DocLinkerDiffer(object):
+    
+    def __init__(self, docdiff):
+        self.docdiff = docdiff
+
+    def diff_links(self):
+        added_links = []
+        removed_links = []
+        processed_sections = set()
+
+        sections_from = Section.objects.\
+                filter(page__document=self.docdiff.document_from).all()
+        sections_to = Section.objects.\
+                filter(page__document=self.docdiff.document_to).all()
+
+        self._process_sections_from(added_links, removed_links,
+                processed_sections, sections_from)
+
+        self._process_sections_to(added_links, removed_links,
+                processed_sections, sections_to)
+        return (added_links, removed_links)
+
+    def _process_sections_from(self, added_links, removed_links,
+            processed_sections, sections_from):
+        for section_from in sections_from:
+            try:
+                matcher = section_from.match_froms.get(diff=self.docdiff)
+                section_to = matcher.section_to
+                links_from = self._get_links(section_from)
+                links_to = self._get_links(section_to)
+                self._diff_links(links_from, links_to, added_links,
+                        removed_links)
+                processed_sections.add(section_to.pk)
+            except Exception:
+                self._add_removed_links(section_from, removed_links)
+
+    def _process_sections_to(self, added_links, removed_links,
+            processed_sections, sections_to):
+        for section_to in sections_to:
+            if section_to.pk not in processed_sections:
+                self._add_added_links(section_to, added_links)
+
+    def _get_links(self, section):
+        links = []
+        for single_ref in section.code_references.all():
+            link = self._get_link(single_ref,
+                    single_ref.project_release)
+            if link is not None:
+                links.append(link)
+        return links
+
+    def _diff_links(self, links_from, links_to, added_links, removed_links):
+        for link_from in links_from:
+            link_to = self._pop_link(link_from, links_to)
+            # This means the link was removed!
+            if link_to is None:
+                link_change = LinkChange(diff=self.docdiff,
+                        link_from=link_from, from_matched_section=True)
+                link_change.save()
+                removed_links.append(link_change)
+
+        # Remaining links were added!
+        for link_to in links_to:
+            link_change = LinkChange(diff=self.docdiff,
+                    link_to=link_to, from_matched_section=True)
+            link_change.save()
+            added_links.append(link_change)
+
+
+    def _pop_link(self, link_to_find, links):
+        index = -1
+        link = None
+        human_string = link_to_find.code_element.human_string()
+        is_snippet = link_to_find.code_reference.snippet is not None
+        
+        for i, temp_link in enumerate(links):
+            temp_human = temp_link.code_element.human_string()     
+            temp_snippet = temp_link.code_reference.snippet is not None
+            if human_string == temp_human and is_snippet == temp_snippet:
+                index = i
+                link = temp_link
+                break
+
+        if index > -1:
+            del links[index]
+
+        return link
+
+    def _add_removed_links(self, section, removed_links):
+        for link in self._get_links(section):
+            if link is None:
+                continue
+            else:
+                link_change = LinkChange(
+                        diff=self.docdiff,
+                        link_from=link)
+                link_change.save()
+                removed_links.append(link_change)
+
+    def _add_added_links(self, section, added_links):
+        for link in self._get_links(section):
+            if link is None:
+                continue
+            else:
+                link_change = LinkChange(
+                        diff=self.docdiff,
+                        link_to=link)
+                link_change.save()
+                added_links.append(link_change)
+
+    def _get_link(self, code_reference, project_release):
+        link = None
+        try:
+            release_links = code_reference.release_links.\
+                get(project_release=project_release)
+            link = release_links.first_link
+        except Exception:
+            pass
+        return link

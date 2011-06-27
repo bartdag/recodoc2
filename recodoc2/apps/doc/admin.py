@@ -2,7 +2,8 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.contrib.contenttypes import generic
 from codebase.models import SingleCodeReference, CodeSnippet
-from doc.models import Document, Page, Section, DocDiff, SectionChanger
+from doc.models import Document, Page, Section, DocDiff, SectionChanger,\
+        LinkChange
 
 
 class SingleCodeReferenceInline(generic.GenericTabularInline):
@@ -74,7 +75,14 @@ class DocDiffAdmin(admin.ModelAdmin):
     inlines = [SectionChangerInline]
 
 
+class LinkChangeAdmin(admin.ModelAdmin):
+    read_only_fields = ('link_from', 'link_to')
+    list_filter = ('diff', 'from_matched_section')
+    link_display = ('link_from', 'link_to', 'diff')
+
+
 admin.site.register(Document, DocumentAdmin)
 admin.site.register(Page, PageAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(DocDiff, DocDiffAdmin)
+admin.site.register(LinkChange, LinkChangeAdmin)
