@@ -798,6 +798,10 @@ class AddRecommendation(models.Model):
             related_name='add_recommendations')
     '''att.'''
 
+    old_members = models.ManyToManyField(CodeElement, blank=True, null=True,
+            related_name='add_recommendations_covered')
+    '''att.'''
+
     new_members = models.ManyToManyField(CodeElement, blank=True, null=True,
             related_name='add_recommendations')
     '''att.'''
@@ -822,6 +826,26 @@ class SuperAddRecommendation(models.Model):
 
     index = models.IntegerField(default=-1)
     '''att.'''
+
+    codebase_from = models.ForeignKey(CodeBase, blank=True, null=True,
+            related_name='superaddrecos_from')
+    '''att.'''
+
+    codebase_to = models.ForeignKey(CodeBase, blank=True, null=True,
+            related_name='superaddrecos_to')
+    '''att.'''
+
+    # E.g., a document or a channel
+    resource_content_type = models.ForeignKey(ContentType, null=True,
+            blank=True, related_name='resource_superaddrecos')
+    resource_object_id = models.PositiveIntegerField(null=True, blank=True)
+    resource = generic.GenericForeignKey('resource_content_type',
+            'resource_object_id')
+    '''A resource represents a specific document or channel.'''
+
+    source = models.CharField(max_length=1, null=True, blank=True,
+            choices=SOURCE_TYPE, default='d')
+    '''Type of resource (doc or channel)'''
 
     def __unicode__(self):
         if self.best_rec is None:

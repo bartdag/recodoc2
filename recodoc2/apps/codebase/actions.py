@@ -33,7 +33,7 @@ from project.models import ProjectRelease, Project
 from project.actions import CODEBASE_PATH
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
         SingleCodeReference, CodeSnippet, CodeElementFilter, ReleaseLinkSet,\
-        CodeElementFamily, CoverageDiff
+        CodeElementFamily, CoverageDiff, SuperAddRecommendation
 from codebase.parser.java_diff import JavaDiffer
 import codebase.parser.family_coverage as fcoverage
 
@@ -508,8 +508,26 @@ def compute_addition_reco(pname, bname, release1, release2, source,
     progress_monitor = CLIProgressMonitor(min_step=1.0)
     recs = fcoverage.compute_coverage_recommendation(coverage_diffs,
             progress_monitor)
-    super_recs = fcoverage.compute_super_recommendations(recs,
+    fcoverage.compute_super_recommendations(recs,
             progress_monitor)
+
+def show_addition_reco(pname, bname, release1, release2, source, resource_pk):
+    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release1)[0]
+    codebase1 = CodeBase.objects.filter(project_release=prelease1).\
+            filter(name=bname)[0]
+    prelease2 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release2)[0]
+    codebase2 = CodeBase.objects.filter(project_release=prelease2).\
+            filter(name=bname)[0]
+
+    super_recs = SuperAddRecommendation.objects.\
+            filter(resource_object_id=resource_pk).\
+            filter(source=source).\
+            filter(codebase_from=codebase1).\
+            filter(codebase_to=codebase2).all()
+
+    fcoverage.report_super(super_recs)
 
 
 ### ACTIONS USED BY OTHER ACTIONS ###

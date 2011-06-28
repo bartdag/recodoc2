@@ -7,7 +7,9 @@ from docutil.str_util import tokenize
 from docutil.commands_util import size
 
 
-SUPER_REC_THRESHOLD = 0.20
+SUPER_REC_THRESHOLD = 0.2
+
+LOCATION_THRESHOLD = 0.5
 
 
 def create_family(head, codebase, criterion, first_criterion):
@@ -472,6 +474,7 @@ def compute_coverage_recommendation(coverage_diffs,
                     coverage_diff=coverage_diff)
             recommendation.save()
             recommendation.new_members.add(*members_to_doc)
+            recommendation.old_members.add(*covered_mem_from.values())
             recommendations.append(recommendation)
 
         progress_monitor.work('Processed diff', 1)
@@ -518,7 +521,11 @@ def compute_super_recommendations(recommendations,
             progress_monitor.work('Skipped rec', 1)
 
         processed_recs.add(rec.pk)
-        super_rec = cmodel.SuperAddRecommendation(initial_rec=rec)
+        super_rec = cmodel.SuperAddRecommendation(initial_rec=rec,
+                codebase_from=rec.coverage_diff.coverage_from.family.codebase,
+                codebase_to=rec.coverage_diff.coverage_to.family.codebase,
+                resource=rec.coverage_diff.coverage_from.resource,
+                source=rec.coverage_diff.coverage_from.source)
         super_rec.save()
         super_rec.recommendations.add(rec)
         super_recs.append(super_rec)
@@ -545,8 +552,6 @@ def compute_super_recommendations(recommendations,
     for i, super_rec in enumerate(super_recs):
         super_rec.index = i
         super_rec.save()
-
-    report_super(super_recs)
 
     return super_recs
 
@@ -602,8 +607,70 @@ def sort_super_recs(super_recommendations):
 
 def report_super(super_recs):
     for super_rec in super_recs:
+        (sections, pages, section_spread, page_spread) = \
+                get_locations(super_rec)
+
         print('SUPER REC: {0}'.format(super_rec))
         for member in super_rec.best_rec.new_members.all():
             print('  to document: {0}'.format(member.human_string()))
+
+        print('\n  Important Pages:')
+        for (page, members) in pages:
+            print('    {0}'.format(page.title))
+            for member in members:
+                print('      {0}'.format(member.human_string()))
+        if page_spread:
+            print('  New members will probably be added in new pages')
+
+        print('\n  Important Sections:')
+        for (section, members) in sections:
+            print('    {0}'.format(section.title))
+            for member in members:
+                print('      {0}'.format(member.human_string()))
+        if section_spread:
+            print('  New members will probably be added in new sections')
+
         for rec in super_rec.recommendations.all():
             print('  subrec: {0}'.format(rec))
+
+
+def get_locations(super_rec):
+    sections = ()
+    pages = ()
+    section_spread = False
+    page_spread = False
+    
+    sections_objects = {}
+    pages_objects = {}
+
+    sectionsd = defaultdict(list)
+    pagesd = defaultdict(list)
+
+    resource_pk = super_rec.resource_object_id
+    source = super_rec.source
+
+    count = 0
+
+    for member in super_rec.best_rec.old_members.all():
+        for link in member.potential_links.filter(index=0).all():
+            if link.code_reference.resource_object_id == resource_pk and\
+                    link.code_reference.source == source:
+                section = link.code_reference.local_context
+                page = link.code_reference.global_context
+                sections_objects[section.pk] = section
+                pages_objects[page.pk] = page
+                sectionsd[section.pk].append(member)
+                pagesd[page.pk].append(member)
+        count += 1
+
+    sections = [(sections_objects[pk], sectionsd[pk]) for pk in sectionsd]
+    pages = [(pages_objects[pk], pagesd[pk]) for pk in pagesd]
+
+    # Sort them
+    sections.sort(key=lambda v: len(v[1]), reverse=True)
+    pages.sort(key=lambda v: len(v[1]), reverse=True)
+
+    section_spread = (len(sections[0][1]) / float(count)) > LOCATION_THRESHOLD
+    page_spread = (len(pages[0][1]) / float(count)) > LOCATION_THRESHOLD
+
+    return (sections, pages, section_spread, page_spread)
