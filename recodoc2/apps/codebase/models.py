@@ -792,6 +792,33 @@ class FamilyDiff(models.Model):
         return '{0} : {1}'.format(self.members_diff, self.family_from)
 
 
+class AddRecommendation(models.Model):
+
+    coverage_diff = models.ForeignKey(CoverageDiff, blank=True, null=True,
+            related_name='add_recommendations')
+
+    new_members = models.ManyToManyField(CodeElement, blank=True, null=True,
+            related_name='add_recommendations')
+
+    super_rec = models.ForeignKey('SuperAddRecommendation', blank=True,
+            null=True, related_name='recommendations')
+
+    def __unicode__(self):
+        return '{0} : {1}'.format(self.new_members.count(), self.coverage_diff)
+
+
+class SuperAddRecommendation(models.Model):
+
+    initial_rec = models.OneToOneField(AddRecommendation, blank=True,
+            null=True, related_name='super_recommendation')
+
+    best_rec = models.OneToOneField(AddRecommendation, blank=True, null=True,
+            related_name='super_recommendation_best')
+
+    def __unicode__(self):
+        return self.best_rec.__unicode__()
+
+
 ### Transient Classes ###
 
 class MethodInfo(object):
@@ -803,16 +830,3 @@ class MethodInfo(object):
         self.type_params = type_params
 
 
-class CoverageRecommendation(object):
-
-    def __init__(self, coverage_diff, new_members):
-        self.coverage_diff = coverage_diff
-        self.new_members = new_members
-        self.new_members_size = len(new_members)
-
-
-class SuperCoverageRecommendation(object):
-
-    def __init__(self, initial_rec):
-        self.initial_rec = initial_rec
-        self.recommendations = []

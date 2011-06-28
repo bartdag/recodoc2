@@ -465,12 +465,14 @@ def compute_coverage_recommendation(coverage_diffs,
         members_to_doc = []
         for member_key in uncovered_mem_to:
             if member_key not in covered_mem_from and \
-                    member_key not in uncovered_mem_to:
+                    member_key not in uncovered_mem_from:
                 members_to_doc.append(uncovered_mem_to[member_key])
 
         if len(members_to_doc) > 0:
-            recommendation = cmodel.CoverageRecommendation(coverage_diff,
-                    members_to_doc)
+            recommendation = cmodel.AddRecommendation(
+                    coverage_diff=coverage_diff)
+            recommendation.save()
+            recommendation.new_members.add(*members_to_doc)
             recommendations.append(recommendation)
 
         progress_monitor.work('Processed diff', 1)
@@ -493,6 +495,6 @@ def get_members(fam_coverage):
                 filter(code_reference__source=source).exists():
             covered_members[member.human_string()] = member
         else:
-            uncovered_members.append[member.human_string()] = member
+            uncovered_members[member.human_string()] = member
 
     return (covered_members, uncovered_members)

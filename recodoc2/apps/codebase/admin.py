@@ -2,7 +2,8 @@ from __future__ import unicode_literals
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
         SingleCodeReference, CodeSnippet, CodeElementFilter,\
         ParameterElement, CodeBaseDiff, CodeElementLink, CodeElementFamily,\
-        FamilyCoverage, FamilyDiff, CoverageDiff
+        FamilyCoverage, FamilyDiff, CoverageDiff, AddRecommendation,\
+        SuperAddRecommendation
 from django.contrib import admin
 
 
@@ -130,6 +131,14 @@ class FamilyDiffAdmin(admin.ModelAdmin):
     list_display = ('family_from', 'members_diff', )
 
 
+class AddRecommendationAdmin(admin.ModelAdmin):
+    readonly_fields = ('coverage_diff', 'new_members', 'super_rec')
+
+
+class SuperAddRecommendationAdmin(admin.ModelAdmin):
+    readonly_fields = ('initial_rec', 'best_rec')
+
+
 admin.site.register(CodeBase)
 admin.site.register(CodeElementFilter, CodeElementFilterAdmin)
 admin.site.register(CodeElementKind)
@@ -142,3 +151,5 @@ admin.site.register(CodeElementFamily, CodeElementFamilyAdmin)
 admin.site.register(FamilyCoverage, FamilyCoverageAdmin)
 admin.site.register(CoverageDiff, CoverageDiffAdmin)
 admin.site.register(FamilyDiff, FamilyDiffAdmin)
+admin.site.register(AddRecommendation, AddRecommendationAdmin)
+admin.site.register(SuperAddRecommendation, SuperAddRecommendationAdmin)
