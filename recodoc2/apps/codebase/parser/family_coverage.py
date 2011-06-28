@@ -610,23 +610,27 @@ def report_super(super_recs):
         (sections, pages, section_spread, page_spread) = \
                 get_locations(super_rec)
 
-        print('SUPER REC: {0}'.format(super_rec))
+        print('\nSUPER REC: {0}'.format(super_rec))
         for member in super_rec.best_rec.new_members.all():
             print('  to document: {0}'.format(member.human_string()))
 
         print('\n  Important Pages:')
         for (page, members) in pages:
-            print('    {0}'.format(page.title))
-            for member in members:
-                print('      {0}'.format(member.human_string()))
+            old_count = super_rec.best_rec.old_members.count()
+            covered = len(members)
+            print('    {0}: {1} / {2}'.format(page.title, covered, old_count))
+            #for member in members:
+                #print('      {0}'.format(member.human_string()))
         if page_spread:
             print('  New members will probably be added in new pages')
 
         print('\n  Important Sections:')
         for (section, members) in sections:
-            print('    {0}'.format(section.title))
-            for member in members:
-                print('      {0}'.format(member.human_string()))
+            old_count = super_rec.best_rec.old_members.count()
+            covered = len(members)
+            print('    {0}: {1} / {2}'.format(section.title, covered, old_count))
+            #for member in members:
+                #print('      {0}'.format(member.human_string()))
         if section_spread:
             print('  New members will probably be added in new sections')
 
@@ -652,15 +656,23 @@ def get_locations(super_rec):
     count = 0
 
     for member in super_rec.best_rec.old_members.all():
+        visited_sections = set()
+        visited_pages = set()
         for link in member.potential_links.filter(index=0).all():
             if link.code_reference.resource_object_id == resource_pk and\
                     link.code_reference.source == source:
                 section = link.code_reference.local_context
                 page = link.code_reference.global_context
-                sections_objects[section.pk] = section
-                pages_objects[page.pk] = page
-                sectionsd[section.pk].append(member)
-                pagesd[page.pk].append(member)
+                if section.pk not in visited_sections:
+                    sections_objects[section.pk] = section
+                    sectionsd[section.pk].append(member)
+                    visited_sections.add(section.pk)
+
+                if page.pk not in visited_pages:
+                    pages_objects[page.pk] = page
+                    pagesd[page.pk].append(member)
+                    visited_pages.add(page.pk)
+
         count += 1
 
     sections = [(sections_objects[pk], sectionsd[pk]) for pk in sectionsd]
@@ -670,7 +682,7 @@ def get_locations(super_rec):
     sections.sort(key=lambda v: len(v[1]), reverse=True)
     pages.sort(key=lambda v: len(v[1]), reverse=True)
 
-    section_spread = (len(sections[0][1]) / float(count)) > LOCATION_THRESHOLD
-    page_spread = (len(pages[0][1]) / float(count)) > LOCATION_THRESHOLD
+    section_spread = (len(sections[0][1]) / float(count)) < LOCATION_THRESHOLD
+    page_spread = (len(pages[0][1]) / float(count)) < LOCATION_THRESHOLD
 
     return (sections, pages, section_spread, page_spread)
