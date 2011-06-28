@@ -59,6 +59,9 @@ def parse(document, pages, parse_refs=True,
         pool_size=DEFAULT_POOL_SIZE):
     progress_monitor.start('Parsing Pages', pool_size + 1)
 
+    progress_monitor.info('Building code words cache')
+    get_project_code_words(document.project_release.project)
+
     # Prepare input
     pages = [(page.local_url, page.url) for page in
             pages.values() if page.local_url is not None]
