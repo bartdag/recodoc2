@@ -6,9 +6,8 @@ from docutil.progress_monitor import NullProgressMonitor, CLIProgressMonitor
 from docutil.str_util import tokenize
 from docutil.commands_util import size
 
-# TODO
-# 1- Work on token identification
-# 2- Work on coverage
+
+SUPER_REC_THRESHOLD = 0.20
 
 
 def create_family(head, codebase, criterion, first_criterion):
@@ -479,6 +478,8 @@ def compute_coverage_recommendation(coverage_diffs,
 
     progress_monitor.done()
 
+    return recommendations
+
 
 def get_members(fam_coverage):
     family = fam_coverage.family
@@ -498,3 +499,111 @@ def get_members(fam_coverage):
             uncovered_members[member.human_string()] = member
 
     return (covered_members, uncovered_members)
+
+
+def compute_super_recommendations(recommendations,
+        progress_monitor=NullProgressMonitor()):
+
+    recommendations.sort(key=lambda r: r.new_members.count(), reverse=True)
+    processed_recs = set()
+    super_recs = []
+
+    reclen = len(recommendations)
+    progress_monitor.start('Processing {0} recommendations'.format(reclen),
+            reclen)
+    
+    for i, rec in enumerate(recommendations):
+        if rec.pk in processed_recs:
+            continue
+            progress_monitor.work('Skipped rec', 1)
+
+        processed_recs.add(rec.pk)
+        super_rec = cmodel.SuperAddRecommendation(initial_rec=rec)
+        super_rec.save()
+        super_rec.recommendations.add(rec)
+        super_recs.append(super_rec)
+        new_members = list(rec.new_members.all())
+        count = float(len(new_members))
+        
+        for temprec in recommendations[i+1:]:
+            if (1.0 - (temprec.new_members.count() / count)) > \
+                    SUPER_REC_THRESHOLD:
+                break
+            if proper_subset(list(temprec.new_members.all()), new_members):
+                super_rec.recommendations.add(temprec)
+                processed_recs.add(temprec.pk)
+        
+        super_rec.best_rec =\
+            get_best_rec(list(super_rec.recommendations.all()))
+        super_rec.save()
+
+        progress_monitor.work('Processed rec', 1)
+
+    progress_monitor.done()
+
+    sort_super_recs(super_recs)
+    for i, super_rec in enumerate(super_recs):
+        super_rec.index = i
+        super_rec.save()
+
+    report_super(super_recs)
+
+    return super_recs
+
+
+def proper_subset(members1, members2):
+    members1set = {member.human_string() for member in members1}
+    members2set = {member.human_string() for member in members2}
+    return members1set <= members2set
+
+
+def get_best_rec(recommendations):
+    def snd_crit(rec):
+        fam = rec.coverage_diff.coverage_from.family
+        if fam.criterion2 is None:
+            return 1
+        else:
+            return 0
+    def fst_crit(rec):
+        fam = rec.coverage_diff.coverage_from.family
+        if fam.criterion1 == cmodel.TOKEN:
+            return 0
+        else:
+            return 1
+    def cvr(rec):
+        return rec.coverage_diff.coverage_from.coverage
+
+    recommendations.sort(key=snd_crit, reverse=True)
+    recommendations.sort(key=fst_crit, reverse=True)
+    recommendations.sort(key=cvr, reverse=True)
+
+    return recommendations[0]
+
+def sort_super_recs(super_recommendations):
+    def snd_crit(super_rec):
+        fam = super_rec.best_rec.coverage_diff.coverage_from.family
+        if fam.criterion2 is None:
+            return 1
+        else:
+            return 0
+    def fst_crit(super_rec):
+        fam = super_rec.best_rec.coverage_diff.coverage_from.family
+        if fam.criterion1 == cmodel.TOKEN:
+            return 0
+        else:
+            return 1
+    def cvr(super_rec):
+        return super_rec.best_rec.coverage_diff.coverage_from.coverage
+
+    super_recommendations.sort(key=snd_crit, reverse=True)
+    super_recommendations.sort(key=fst_crit, reverse=True)
+    super_recommendations.sort(key=cvr, reverse=True)
+
+
+def report_super(super_recs):
+    for super_rec in super_recs:
+        print('SUPER REC: {0}'.format(super_rec))
+        for member in super_rec.best_rec.new_members.all():
+            print('  to document: {0}'.format(member.human_string()))
+        for rec in super_rec.recommendations.all():
+            print('  subrec: {0}'.format(rec))

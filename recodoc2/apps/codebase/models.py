@@ -796,12 +796,15 @@ class AddRecommendation(models.Model):
 
     coverage_diff = models.ForeignKey(CoverageDiff, blank=True, null=True,
             related_name='add_recommendations')
+    '''att.'''
 
     new_members = models.ManyToManyField(CodeElement, blank=True, null=True,
             related_name='add_recommendations')
+    '''att.'''
 
     super_rec = models.ForeignKey('SuperAddRecommendation', blank=True,
             null=True, related_name='recommendations')
+    '''att.'''
 
     def __unicode__(self):
         return '{0} : {1}'.format(self.new_members.count(), self.coverage_diff)
@@ -811,12 +814,20 @@ class SuperAddRecommendation(models.Model):
 
     initial_rec = models.OneToOneField(AddRecommendation, blank=True,
             null=True, related_name='super_recommendation')
+    '''att.'''
 
     best_rec = models.OneToOneField(AddRecommendation, blank=True, null=True,
             related_name='super_recommendation_best')
+    '''att.'''
+
+    index = models.IntegerField(default=-1)
+    '''att.'''
 
     def __unicode__(self):
-        return self.best_rec.__unicode__()
+        if self.best_rec is None:
+            return self.initial_rec.__unicode__()
+        else:
+            return self.best_rec.__unicode__()
 
 
 ### Transient Classes ###

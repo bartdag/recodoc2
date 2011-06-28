@@ -485,6 +485,7 @@ def compare_coverage(pname, bname, release1, release2, source, resource_pk):
     fcoverage.compare_coverage(codebase1, codebase2, source, resource_pk,
             progress_monitor)
 
+
 def compute_addition_reco(pname, bname, release1, release2, source,
         resource_pk):
     prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
@@ -505,8 +506,10 @@ def compute_addition_reco(pname, bname, release1, release2, source,
             filter(coverage_to__family__codebase=codebase2).all()
 
     progress_monitor = CLIProgressMonitor(min_step=1.0)
-    fcoverage.compute_coverage_recommendation(coverage_diffs, progress_monitor)
-
+    recs = fcoverage.compute_coverage_recommendation(coverage_diffs,
+            progress_monitor)
+    super_recs = fcoverage.compute_super_recommendations(recs,
+            progress_monitor)
 
 
 ### ACTIONS USED BY OTHER ACTIONS ###
