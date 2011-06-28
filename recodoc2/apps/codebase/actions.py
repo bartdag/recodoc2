@@ -5,6 +5,7 @@ import os
 import logging
 from collections import defaultdict
 from functools import partial
+from traceback import print_exc
 from lxml import etree
 import enchant
 from py4j.java_gateway import JavaGateway
@@ -513,29 +514,34 @@ def get_package_name(tree):
 
 
 def compute_code_words(codebase):
-    print('computing code words 2')
-    d = enchant.Dict('en-US')
-
-    elements = CodeElement.objects.\
-            filter(codebase=codebase).\
-            filter(kind__is_type=True).\
-            iterator()
-
     code_words = set()
-    for element in elements:
-        simple_name = element.simple_name
-        tokens = tokenize(simple_name)
-        if len(tokens) > 1:
-            code_words.add(simple_name.lower())
-        else:
-            simple_name = simple_name.lower()
-            if not d.check(simple_name):
-                code_words.add(simple_name)
+    try:
+        print('computing code words 2')
+        d = enchant.Dict('en-US')
+        print('enchant is ok')
 
-    print('before returning from code words')
+        elements = CodeElement.objects.\
+                filter(codebase=codebase).\
+                filter(kind__is_type=True).\
+                iterator()
 
-    logger.debug('Computed {0} code words for codebase {1}'.format(
-        len(code_words), str(codebase)))
+        for element in elements:
+            simple_name = element.simple_name
+            tokens = tokenize(simple_name)
+            if len(tokens) > 1:
+                code_words.add(simple_name.lower())
+            else:
+                simple_name = simple_name.lower()
+                if not d.check(simple_name):
+                    code_words.add(simple_name)
+
+        print('before returning from code words')
+
+        logger.debug('Computed {0} code words for codebase {1}'.format(
+            len(code_words), str(codebase)))
+    except Exception:
+        print('In exception')
+        print_exc()
 
     return code_words
 
@@ -557,12 +563,14 @@ def get_project_code_words(project):
     print('in project code words')
     codebases = CodeBase.objects.filter(project_release__project=project).all()
     print('checking cache?!')
-    return get_value(
+    value = get_value(
             PREFIX_PROJECT_CODE_WORDS,
             project.pk,
             compute_project_code_words,
             [codebases]
             )
+    print('returning value')
+    return value
 
 
 def get_default_kind_dict():

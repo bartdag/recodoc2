@@ -91,7 +91,7 @@ class CodeElementLinkAdmin(admin.ModelAdmin):
     readonly_fields = ('code_reference', 'code_element')
     search_fields = ('id', )
     list_filter = ('release_link_set__project_release',
-            'code_reference__project_release', 'index', )
+            'code_reference__project_release', 'code_element__kind', 'index', )
 
 
 class FamilyCoverageInline(admin.TabularInline):

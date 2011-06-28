@@ -118,6 +118,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    'devserver',
     'docutil',
     'codeutil',
     'project',
@@ -178,6 +179,18 @@ LINKERS = {'javaclass': 'codebase.linker.java_linkers.JavaClassLinker',
 CUSTOM_LINKERS = {}
 
 CHANNEL_LINE_THRESHOLD = 500
+
+DEVSERVER_MODULES = (
+    #'devserver.modules.sql.SQLRealTimeModule',
+    'devserver.modules.sql.SQLSummaryModule',
+    'devserver.modules.profile.ProfileSummaryModule',
+
+    # Modules not enabled by default
+    #'devserver.modules.ajax.AjaxDumpModule',
+    #'devserver.modules.profile.MemoryUseModule',
+    'devserver.modules.cache.CacheSummaryModule',
+    #'devserver.modules.profile.LineProfilerModule',
+)
 
 try:
     from localsettings import *

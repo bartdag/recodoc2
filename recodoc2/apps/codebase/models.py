@@ -356,6 +356,14 @@ class CodeSnippet(SourceElement):
             'global_object_id')
     '''Large context, i.e., thread or page that contains the snippet.'''
 
+    # E.g., a document or a channel
+    resource_content_type = models.ForeignKey(ContentType, null=True,
+            blank=True, related_name='resource_code_snippets')
+    resource_object_id = models.PositiveIntegerField(null=True, blank=True)
+    resource = generic.GenericForeignKey('resource_content_type',
+            'resource_object_id')
+    '''A resource represents a specific document or channel.'''
+
     def __unicode__(self):
         return "{0} - {1}".format(self.get_language_display(), self.pk)
 
@@ -766,3 +774,9 @@ class FamilyDiff(object):
         self.family_to = family_to
         self.members_diff = self.family_to.members.count() -\
                 self.family_from.members.count()
+
+
+class CoverageRecommendation(object):
+
+    def __init__(self, coverage_diff):
+        self.coverage_diff = coverage_diff

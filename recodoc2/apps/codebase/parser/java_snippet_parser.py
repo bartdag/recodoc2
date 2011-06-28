@@ -141,4 +141,5 @@ class JavaSnippetParser(object):
                 code.local_context = mcode.local_context
                 code.mid_context = mcode.mid_context
                 code.global_context = mcode.global_context
+                code.resource = mcode.resource
                 code.save()
