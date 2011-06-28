@@ -339,7 +339,10 @@ def compute_family_diff(index_from, index_to, added, removed,
             if family_to is None:
                 removed.append(family_from)
             else:
-                diff = cmodel.FamilyDiff(family_from, family_to)
+                diff = cmodel.FamilyDiff(family_from=family_from,
+                        family_to=family_to)
+                diff.compute_diffs()
+                diff.save()
                 family_diffs.append(diff)
                 processed.add(family_to.pk)
         progress_monitor.work('Computed family diffs', 1)
@@ -375,7 +378,10 @@ def compute_coverage_diff(family_diffs, source, resource_pk, progress_monitor):
         elif not coverage_from.is_interesting():
             continue
 
-        diff = cmodel.CoverageDiff(coverage_from, coverage_to)
+        diff = cmodel.CoverageDiff(coverage_from=coverage_from,
+                coverage_to=coverage_to)
+        diff.compute_diffs()
+        diff.save()
         coverage_diffs.append(diff)
         progress_monitor.work('Computing coverage diff', 1)
 
@@ -441,3 +447,52 @@ def get_family(family, index, key):
             if family.equiv(temp_family):
                 return temp_family
     return None
+
+
+def compute_coverage_recommendation(coverage_diffs,
+        progress_monitor=NullProgressMonitor()):
+
+    recommendations = []
+    diffs_len = size(coverage_diffs)
+    progress_monitor.start('Processing {0} diffs'.format(diffs_len),
+            diffs_len)
+
+    for coverage_diff in coverage_diffs:
+        (covered_mem_from, uncovered_mem_from) =\
+            get_members(coverage_diff.coverage_from)
+        (_, uncovered_mem_to) = get_members(coverage_diff.coverage_to)
+
+        members_to_doc = []
+        for member_key in uncovered_mem_to:
+            if member_key not in covered_mem_from and \
+                    member_key not in uncovered_mem_to:
+                members_to_doc.append(uncovered_mem_to[member_key])
+
+        if len(members_to_doc) > 0:
+            recommendation = cmodel.CoverageRecommendation(coverage_diff,
+                    members_to_doc)
+            recommendations.append(recommendation)
+
+        progress_monitor.work('Processed diff', 1)
+
+    progress_monitor.done()
+
+
+def get_members(fam_coverage):
+    family = fam_coverage.family
+    pk = fam_coverage.resource_object_id
+    source = fam_coverage.source
+    covered_members = {}
+    uncovered_members = {}
+
+    for member in family.members.all():
+        if cmodel.CodeElementLink.objects.\
+                filter(code_element=member).\
+                filter(index=0).\
+                filter(code_reference__resource_object_id=pk).\
+                filter(code_reference__source=source).exists():
+            covered_members[member.human_string()] = member
+        else:
+            uncovered_members.append[member.human_string()] = member
+
+    return (covered_members, uncovered_members)

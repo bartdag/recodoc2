@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
         SingleCodeReference, CodeSnippet, CodeElementFilter,\
         ParameterElement, CodeBaseDiff, CodeElementLink, CodeElementFamily,\
-        FamilyCoverage
+        FamilyCoverage, FamilyDiff, CoverageDiff
 from django.contrib import admin
 
 
@@ -120,6 +120,16 @@ class FamilyCoverageAdmin(admin.ModelAdmin):
         'family__criterion2', 'family__kind')
 
 
+class CoverageDiffAdmin(admin.ModelAdmin):
+    readonly_fields = ('coverage_from', 'coverage_to')
+    list_display = ('coverage_from', 'coverage_diff', 'members_diff')
+
+
+class FamilyDiffAdmin(admin.ModelAdmin):
+    readonly_fields = ('family_from', 'family_to')
+    list_display = ('family_from', 'members_diff', )
+
+
 admin.site.register(CodeBase)
 admin.site.register(CodeElementFilter, CodeElementFilterAdmin)
 admin.site.register(CodeElementKind)
@@ -130,3 +140,5 @@ admin.site.register(CodeBaseDiff, CodeBaseDiffAdmin)
 admin.site.register(CodeElementLink, CodeElementLinkAdmin)
 admin.site.register(CodeElementFamily, CodeElementFamilyAdmin)
 admin.site.register(FamilyCoverage, FamilyCoverageAdmin)
+admin.site.register(CoverageDiff, CoverageDiffAdmin)
+admin.site.register(FamilyDiff, FamilyDiffAdmin)

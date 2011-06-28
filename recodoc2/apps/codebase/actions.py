@@ -33,7 +33,7 @@ from project.models import ProjectRelease, Project
 from project.actions import CODEBASE_PATH
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
         SingleCodeReference, CodeSnippet, CodeElementFilter, ReleaseLinkSet,\
-        CodeElementFamily
+        CodeElementFamily, CoverageDiff
 from codebase.parser.java_diff import JavaDiffer
 import codebase.parser.family_coverage as fcoverage
 
@@ -484,6 +484,29 @@ def compare_coverage(pname, bname, release1, release2, source, resource_pk):
 
     fcoverage.compare_coverage(codebase1, codebase2, source, resource_pk,
             progress_monitor)
+
+def compute_addition_reco(pname, bname, release1, release2, source,
+        resource_pk):
+    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release1)[0]
+    codebase1 = CodeBase.objects.filter(project_release=prelease1).\
+            filter(name=bname)[0]
+    prelease2 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release2)[0]
+    codebase2 = CodeBase.objects.filter(project_release=prelease2).\
+            filter(name=bname)[0]
+
+    coverage_diffs = CoverageDiff.objects.\
+            filter(coverage_from__resource_object_id=resource_pk).\
+            filter(coverage_from__source=source).\
+            filter(coverage_from__family__codebase=codebase1).\
+            filter(coverage_to__resource_object_id=resource_pk).\
+            filter(coverage_to__source=source).\
+            filter(coverage_to__family__codebase=codebase2).all()
+
+    progress_monitor = CLIProgressMonitor(min_step=1.0)
+    fcoverage.compute_coverage_recommendation(coverage_diffs, progress_monitor)
+
 
 
 ### ACTIONS USED BY OTHER ACTIONS ###

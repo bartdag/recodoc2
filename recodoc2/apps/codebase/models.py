@@ -744,6 +744,54 @@ class FamilyCoverage(models.Model):
         verbose_name_plural = 'family coverages'
 
 
+class CoverageDiff(models.Model):
+    coverage_from = models.ForeignKey(FamilyCoverage, blank=True, null=True,
+            related_name='coverage_diffs_from')
+    '''att.'''
+
+    coverage_to = models.ForeignKey(FamilyCoverage, blank=True, null=True,
+            related_name='coverage_diffs_to')
+    '''att.'''
+
+    coverage_diff = models.FloatField(default=0)
+    '''att.'''
+
+    members_diff = models.IntegerField(default=0)
+    '''att.'''
+
+    def compute_diffs(self):
+        self.coverage_diff = \
+                self.coverage_to.coverage - self.coverage_from.coverage
+        self.members_diff = \
+                self.coverage_to.family.members.count() -\
+                self.coverage_from.family.members.count()
+
+    def __unicode__(self):
+        return '{0} : {1}'.format(self.coverage_diff,
+                self.coverage_from.family)
+
+
+class FamilyDiff(models.Model):
+
+    family_from = models.ForeignKey(CodeElementFamily, blank=True, null=True,
+            related_name='family_diffs_from')
+    '''att.'''
+
+    family_to = models.ForeignKey(CodeElementFamily, blank=True, null=True,
+            related_name='family_diffs_to')
+    '''att.'''
+
+    members_diff = models.IntegerField(default=0)
+    '''att.'''
+
+    def compute_diffs(self):
+        self.members_diff = self.family_to.members.count() -\
+                self.family_from.members.count()
+
+    def __unicode__(self):
+        return '{0} : {1}'.format(self.members_diff, self.family_from)
+
+
 ### Transient Classes ###
 
 class MethodInfo(object):
@@ -755,28 +803,16 @@ class MethodInfo(object):
         self.type_params = type_params
 
 
-class CoverageDiff(object):
-
-    def __init__(self, coverage_from, coverage_to):
-        self.coverage_from = coverage_from
-        self.coverage_to = coverage_to
-        self.coverage_diff = \
-                self.coverage_to.coverage - self.coverage_from.coverage
-        self.members_diff = \
-                self.coverage_to.family.members.count() -\
-                self.coverage_from.family.members.count()
-
-
-class FamilyDiff(object):
-
-    def __init__(self, family_from, family_to):
-        self.family_from = family_from
-        self.family_to = family_to
-        self.members_diff = self.family_to.members.count() -\
-                self.family_from.members.count()
-
-
 class CoverageRecommendation(object):
 
-    def __init__(self, coverage_diff):
+    def __init__(self, coverage_diff, new_members):
         self.coverage_diff = coverage_diff
+        self.new_members = new_members
+        self.new_members_size = len(new_members)
+
+
+class SuperCoverageRecommendation(object):
+
+    def __init__(self, initial_rec):
+        self.initial_rec = initial_rec
+        self.recommendations = []
