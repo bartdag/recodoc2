@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from collections import defaultdict
 import codebase.models as cmodel
+import recommender.models as rmodel
 import codebase.linker.context as ctx
 from docutil.progress_monitor import NullProgressMonitor, CLIProgressMonitor
 from docutil.str_util import tokenize
@@ -13,7 +14,7 @@ LOCATION_THRESHOLD = 0.5
 
 
 def create_family(head, codebase, criterion, first_criterion):
-    family = cmodel.CodeElementFamily(head=head)
+    family = rmodel.CodeElementFamily(head=head)
     if first_criterion:
         family.criterion1 = criterion
     else:
@@ -37,7 +38,7 @@ def compute_declaration_family(code_elements, first_criterion=True,
             key = '{0}-{1}'.format(pk, kind_pk)
             if key not in families:
                 families[key] = create_family(container, container.codebase,
-                        cmodel.DECLARATION, first_criterion)
+                        rmodel.DECLARATION, first_criterion)
                 families[key].kind = code_element.kind
                 families[key].save()
             families[key].members.add(code_element)
@@ -69,7 +70,7 @@ def compute_hierarchy_family(code_elements, first_criterion=True,
             pk = parent.pk
             if pk not in families1:
                 families1[pk] = create_family(parent, parent.codebase,
-                        cmodel.HIERARCHY, first_criterion)
+                        rmodel.HIERARCHY, first_criterion)
             families1[pk].members.add(code_element)
 
         # Hierarchy D
@@ -81,7 +82,7 @@ def compute_hierarchy_family(code_elements, first_criterion=True,
                 familiesd[ancestor_pk] = create_family(
                         ancestors[ancestor_pk],
                         code_element.codebase,
-                        cmodel.HIERARCHY_D,
+                        rmodel.HIERARCHY_D,
                         first_criterion)
             familiesd[ancestor_pk].members.add(code_element)
 
@@ -106,7 +107,7 @@ def compute_no_abstract_family(families,
         new_size = len(new_members)
         if new_size > 0 and new_size < family.members.count():
             new_family = create_family(family.head, family.codebase,
-                    cmodel.NO_ABSTRACT, False)
+                    rmodel.NO_ABSTRACT, False)
             new_family.criterion1 = family.criterion1
             new_family.save()
             new_family.members.add(*new_members)
@@ -198,10 +199,10 @@ def compute_token_family(code_elements, first_criterion=True,
             
         for start_members in start.values():
             if len(start_members) > 1:
-                family = create_family(None, codebase, cmodel.TOKEN,
+                family = create_family(None, codebase, rmodel.TOKEN,
                         first_criterion)
                 family.token = token
-                family.token_pos = cmodel.PREFIX
+                family.token_pos = rmodel.PREFIX
                 family.save()
                 family.members.add(*start_members)
                 families[family.pk] = family
@@ -211,10 +212,10 @@ def compute_token_family(code_elements, first_criterion=True,
 
         for end_members in end.values():
             if len(end_members) > 1:
-                family = create_family(None, codebase, cmodel.TOKEN,
+                family = create_family(None, codebase, rmodel.TOKEN,
                         first_criterion)
                 family.token = token
-                family.token_pos = cmodel.SUFFIX
+                family.token_pos = rmodel.SUFFIX
                 family.save()
                 family.members.add(*end_members)
                 families[family.pk] = family
@@ -224,10 +225,10 @@ def compute_token_family(code_elements, first_criterion=True,
 
         for mid_members in middle.values():
             if len(mid_members) > 1:
-                family = create_family(None, codebase, cmodel.TOKEN,
+                family = create_family(None, codebase, rmodel.TOKEN,
                         first_criterion)
                 family.token = token
-                family.token_pos = cmodel.MIDDLE
+                family.token_pos = rmodel.MIDDLE
                 family.save()
                 family.members.add(*mid_members)
                 families[family.pk] = family
@@ -261,7 +262,7 @@ def compute_coverage(families, source, resource,
         else:
             coverage = 0.0
 
-        fam_coverage = cmodel.FamilyCoverage(family=family, resource=resource,
+        fam_coverage = rmodel.FamilyCoverage(family=family, resource=resource,
                 source=source, coverage=coverage)
         fam_coverage.save()
         progress_monitor.work('Processed a family', 1)
@@ -312,7 +313,7 @@ def compute_family_index(codebase, progress_monitor):
     heads = defaultdict(list)
     tokens = defaultdict(list)
 
-    families = cmodel.CodeElementFamily.objects.filter(codebase=codebase)
+    families = rmodel.CodeElementFamily.objects.filter(codebase=codebase)
     progress_monitor.start('Computing family index for codebase {0}'
             .format(codebase), families.count())
 
@@ -340,7 +341,7 @@ def compute_family_diff(index_from, index_to, added, removed,
             if family_to is None:
                 removed.append(family_from)
             else:
-                diff = cmodel.FamilyDiff(family_from=family_from,
+                diff = rmodel.FamilyDiff(family_from=family_from,
                         family_to=family_to)
                 diff.compute_diffs()
                 diff.save()
@@ -379,7 +380,7 @@ def compute_coverage_diff(family_diffs, source, resource_pk, progress_monitor):
         elif not coverage_from.is_interesting():
             continue
 
-        diff = cmodel.CoverageDiff(coverage_from=coverage_from,
+        diff = rmodel.CoverageDiff(coverage_from=coverage_from,
                 coverage_to=coverage_to)
         diff.compute_diffs()
         diff.save()
@@ -470,7 +471,7 @@ def compute_coverage_recommendation(coverage_diffs,
                 members_to_doc.append(uncovered_mem_to[member_key])
 
         if len(members_to_doc) > 0:
-            recommendation = cmodel.AddRecommendation(
+            recommendation = rmodel.AddRecommendation(
                     coverage_diff=coverage_diff)
             recommendation.save()
             recommendation.new_members.add(*members_to_doc)
@@ -521,7 +522,7 @@ def compute_super_recommendations(recommendations,
             progress_monitor.work('Skipped rec', 1)
 
         processed_recs.add(rec.pk)
-        super_rec = cmodel.SuperAddRecommendation(initial_rec=rec,
+        super_rec = rmodel.SuperAddRecommendation(initial_rec=rec,
                 codebase_from=rec.coverage_diff.coverage_from.family.codebase,
                 codebase_to=rec.coverage_diff.coverage_to.family.codebase,
                 resource=rec.coverage_diff.coverage_from.resource,
@@ -571,7 +572,7 @@ def get_best_rec(recommendations):
             return 0
     def fst_crit(rec):
         fam = rec.coverage_diff.coverage_from.family
-        if fam.criterion1 == cmodel.TOKEN:
+        if fam.criterion1 == rmodel.TOKEN:
             return 0
         else:
             return 1
@@ -593,7 +594,7 @@ def sort_super_recs(super_recommendations):
             return 0
     def fst_crit(super_rec):
         fam = super_rec.best_rec.coverage_diff.coverage_from.family
-        if fam.criterion1 == cmodel.TOKEN:
+        if fam.criterion1 == rmodel.TOKEN:
             return 0
         else:
             return 1

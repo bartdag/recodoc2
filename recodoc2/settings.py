@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'doc',
     'channel',
     'linkertest',
+    'recommender',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )

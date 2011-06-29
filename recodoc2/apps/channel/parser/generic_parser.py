@@ -103,6 +103,10 @@ def parse_channel(channel, model, pool_size=DEFAULT_POOL_SIZE,
     connection.close()
 
     progress_monitor.start('Parsing Channel Entries', len(inputs))
+    
+    progress_monitor.info('Building code words cache')
+    get_project_code_words(channel.project)
+
     progress_monitor.info('Sending {0} chunks to worker pool'
             .format(len(inputs)))
     pool = multiprocessing.Pool(pool_size)

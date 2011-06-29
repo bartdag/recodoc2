@@ -8,8 +8,9 @@ from docutil.commands_util import mkdir_safe, dump_model, load_model,\
     import_clazz
 from project.models import ProjectRelease
 from project.actions import DOC_PATH
-from codebase.models import CodeBase, CodeElementFamily, FamilyCoverage
-from codebase.parser.family_coverage import compute_coverage
+from codebase.models import CodeBase
+from recommender.models import CodeElementFamily, FamilyCoverage
+from recommender.parser.family_coverage import compute_coverage
 from doc.models import DocumentStatus, Document, Page, Section, DocDiff
 from doc.parser.generic_parser import parse
 from doc.parser.doc_diff import DocDiffer, DocLinkerDiffer

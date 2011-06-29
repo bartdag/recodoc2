@@ -4,7 +4,7 @@ from django.core.management.base import NoArgsCommand
 
 from docutil.commands_util import recocommand
 from docutil.str_util import smart_decode
-from codebase.actions import compute_addition_reco
+from recommender.actions import compare_coverage
 
 
 class Command(NoArgsCommand):
@@ -22,7 +22,7 @@ class Command(NoArgsCommand):
         make_option('--pk', action='store', dest='pk',
             default='-1', help='PK of the resource'),
     )
-    help = "Compute addition recommendations"
+    help = "Compare coverage of code element families"
 
     @recocommand
     def handle_noargs(self, **options):
@@ -32,4 +32,4 @@ class Command(NoArgsCommand):
         release2 = smart_decode(options.get('release2'))
         source = smart_decode(options.get('source'))
         pk = int(smart_decode(options.get('pk')))
-        compute_addition_reco(pname, bname, release1, release2, source, pk)
+        compare_coverage(pname, bname, release1, release2, source, pk)

@@ -4,7 +4,7 @@ from django.core.management.base import NoArgsCommand
 
 from docutil.commands_util import recocommand
 from docutil.str_util import smart_decode
-from codebase.actions import show_addition_reco
+from recommender.actions import show_addition_reco
 
 
 class Command(NoArgsCommand):

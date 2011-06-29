@@ -1,9 +1,7 @@
 from __future__ import unicode_literals
 from codebase.models import CodeBase, CodeElementKind, CodeElement,\
         SingleCodeReference, CodeSnippet, CodeElementFilter,\
-        ParameterElement, CodeBaseDiff, CodeElementLink, CodeElementFamily,\
-        FamilyCoverage, FamilyDiff, CoverageDiff, AddRecommendation,\
-        SuperAddRecommendation
+        ParameterElement, CodeBaseDiff, CodeElementLink
 from django.contrib import admin
 
 
@@ -95,48 +93,6 @@ class CodeElementLinkAdmin(admin.ModelAdmin):
             'code_reference__project_release', 'code_element__kind', 'index', )
 
 
-class FamilyCoverageInline(admin.TabularInline):
-    model = FamilyCoverage
-    fk_name = 'family'
-    fields = ('coverage', )
-    extra = 0
-
-
-class CodeElementFamilyAdmin(admin.ModelAdmin):
-    fields = ('head', 'criterion1', 'criterion2', 'token', 'token_pos',
-        'codebase', 'members')
-    readonly_fields = ('head', 'members')
-    search_fields = ('token',)
-    list_filter = ('codebase', 'criterion1', 'criterion2', 'token_pos', 'kind')
-    list_display = ('pk', 'head', 'token', 'criterion1', 'criterion2')
-    inlines = [FamilyCoverageInline]
-
-
-class FamilyCoverageAdmin(admin.ModelAdmin):
-    fields = ('family', 'coverage', 'source')
-    readonly_fields = ('family',)
-    search_fields = ('family__pk', 'family__token')
-    list_display = ('family', 'coverage', 'source')
-    list_filter = ('source', 'family__codebase', 'family__criterion1',
-        'family__criterion2', 'family__kind')
-
-
-class CoverageDiffAdmin(admin.ModelAdmin):
-    readonly_fields = ('coverage_from', 'coverage_to')
-    list_display = ('coverage_from', 'coverage_diff', 'members_diff')
-
-
-class FamilyDiffAdmin(admin.ModelAdmin):
-    readonly_fields = ('family_from', 'family_to')
-    list_display = ('family_from', 'members_diff', )
-
-
-class AddRecommendationAdmin(admin.ModelAdmin):
-    readonly_fields = ('coverage_diff', 'new_members', 'super_rec')
-
-
-class SuperAddRecommendationAdmin(admin.ModelAdmin):
-    readonly_fields = ('initial_rec', 'best_rec')
 
 
 admin.site.register(CodeBase)
@@ -147,9 +103,3 @@ admin.site.register(SingleCodeReference, SingleCodeReferenceAdmin)
 admin.site.register(CodeSnippet, CodeSnippetAdmin)
 admin.site.register(CodeBaseDiff, CodeBaseDiffAdmin)
 admin.site.register(CodeElementLink, CodeElementLinkAdmin)
-admin.site.register(CodeElementFamily, CodeElementFamilyAdmin)
-admin.site.register(FamilyCoverage, FamilyCoverageAdmin)
-admin.site.register(CoverageDiff, CoverageDiffAdmin)
-admin.site.register(FamilyDiff, FamilyDiffAdmin)
-admin.site.register(AddRecommendation, AddRecommendationAdmin)
-admin.site.register(SuperAddRecommendation, SuperAddRecommendationAdmin)
