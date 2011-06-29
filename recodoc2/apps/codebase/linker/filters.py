@@ -212,7 +212,8 @@ class CustomClassMemberFilter(object):
         name = filter_input.element_name
         result = FilterResult(self, False, potentials)
 
-        result = custom_filter(self, potentials, scode_reference, name, name)
+        result = custom_filter(self, potentials, scode_reference, name, name,
+                True)
 
         if not result.activated and (fqn_container is not None and
                 fqn_container != ''):
