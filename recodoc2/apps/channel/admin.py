@@ -28,9 +28,9 @@ class CodeSnippetInline(generic.GenericTabularInline):
 class MessageAdmin(admin.ModelAdmin):
     ordering = ('title',)
     list_filter = ('sthread__channel',)
-    list_display = ('pk', 'index', 'sthread', 'title')
+    list_display = ('pk', 'index', 'sthread', 'title', 'author')
     list_display_links = ('pk', 'title',)
-    search_fields = ['title', 'id']
+    search_fields = ['title', 'id', 'url']
     inlines = [SingleCodeReferenceInline, CodeSnippetInline]
 
 

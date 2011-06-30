@@ -161,6 +161,15 @@ LOG_DATE_RE = re.compile(r'''
     \d{3}
     ''', re.VERBOSE)
 
+LOG_HOUR_RE = re.compile(r'''
+    \d{2}
+    \.|:
+    \d{2}
+    \.|:
+    \d{2}
+    \.|:
+    ''', re.VERBOSE)
+
 LOG_SOURCE_LOCATION_RE = re.compile(r'''
     [a-zA-Z_\-.]+
     :
@@ -184,7 +193,8 @@ def is_log_lines(lines):
         elif LOG_LEVEL_RE.search(line) is not None:
             log_lines += 1
             if LOG_DATE_RE.search(line) is not None or\
-               LOG_SOURCE_LOCATION_RE.search(line) is not None:
+               LOG_SOURCE_LOCATION_RE.search(line) is not None or\
+               LOG_HOUR_RE.search(line) is not None:
                 strong_hint = True
         elif LOG_DATE_RE.search(line) is not None:
             log_lines += 1
