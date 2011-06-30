@@ -202,6 +202,32 @@ class CustomClassFilter(object):
         return result
 
 
+class FQNCaseFilter(object):
+
+    @empty_potentials
+    def filter(self, filter_input):
+        element_name = filter_input.element_name
+        (simple, fqn) = je.clean_java_name(element_name, True)
+        potentials = filter_input.potentials
+        scode_reference = filter_input.scode_reference
+
+        result = FilterResult(self, False, potentials)
+
+        if scode_reference.snippet is None and simple != fqn and\
+                fqn.find(je.UNKNOWN_PACKAGE) < 0 and\
+                fqn.find(je.SNIPPET_PACKAGE) < 0:
+            new_potentials = []
+            for potential in potentials:
+                # In english: the fqn must perfectly match or the case must
+                # match. Otherwise we are not matching the right thing!
+                if potential.fqn.lower() == fqn.lower() or\
+                        potential.simple_name == simple:
+                    new_potentials.append(potential)
+            result = FilterResult(self, True, new_potentials)
+
+        return result
+
+
 class CustomClassMemberFilter(object):
 
     @empty_potentials

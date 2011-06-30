@@ -132,6 +132,7 @@ class JavaClassLinker(gl.DefaultLinker):
         self.enum_kind = CodeElementKind.objects.get(kind='enumeration')
         self.class_filters = [
                 filters.CustomClassFilter(),
+                filters.FQNCaseFilter(),
                 ]
 
     def link_references(self, progress_monitor=NullProgressMonitor(),
@@ -376,7 +377,7 @@ class JavaClassLinker(gl.DefaultLinker):
 
         # Logging
         log.log_type(simple, fqn, scode_reference, return_code_element,
-                potentials, size)
+                potentials, size, filter_results)
 
         return (return_code_element, potentials)
 
@@ -403,7 +404,7 @@ class JavaPostClassLinker(gl.DefaultLinker):
             if lcount <= 1:
                 log.log_type('', '', scode_reference,
                         linkset.first_link.code_element,
-                        [linkset.first_link], lcount, 'onlyone')
+                        [linkset.first_link], lcount, [], 'onlyone')
                 progress_monitor.work('Skipped a linkset.', 1)
                 continue
 
@@ -436,7 +437,7 @@ class JavaPostClassLinker(gl.DefaultLinker):
                     link.delete()
                 log.log_type('', '', scode_reference,
                         linkset.first_link.code_element,
-                        [linkset.first_link], lcount, rationale)
+                        [linkset.first_link], lcount, [], rationale)
                 progress_monitor.info('FOUND Best Package {0} because {1}'
                         .format(code_element.fqn, rationale))
             else:
@@ -526,6 +527,7 @@ class JavaMethodLinker(gl.DefaultLinker):
         self.method_filters = [
                 filters.ObjectMethodsFilter(),
                 filters.ExceptionFilter(),
+                filters.FQNCaseFilter(),
                 filters.CustomClassMemberFilter(),
                 filters.ParameterNumberFilter(),
                 filters.ParameterTypeFilter(),
@@ -771,6 +773,7 @@ class JavaFieldLinker(gl.DefaultLinker):
             CodeElementKind.objects.get(kind='enumeration value')
         self.field_filters = [
                 filters.ExceptionFilter(),
+                filters.FQNCaseFilter(),
                 filters.CustomClassMemberFilter(),
                 filters.ImmediateContextFilter(),
                 filters.ImmediateContextHierarchyFilter(),

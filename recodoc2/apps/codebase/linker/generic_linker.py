@@ -101,7 +101,7 @@ class LinkerLog(object):
         self.log_file.close()
 
     def log_type(self, simple_name, fqn, scode_reference, code_element,
-            potentials, original_size, rationale=None):
+            potentials, original_size, fresults, rationale=None):
         potential_size = 0
         if potentials is not None:
             potential_size = len(potentials)
@@ -128,6 +128,10 @@ class LinkerLog(object):
         log_file.write('  Filtering\n')
         log_file.write('    Strategy {0} {1} {2} {3}\n'.format(
             self.one, self.arbitrary, self.insensitive, self.sensitive))
+        for fresult in fresults:
+            log_file.write('    {0} {1}: {2} - {3}\n'.format(
+                fresult.name, fresult.options, fresult.activated,
+                len(fresult.potentials)))
 
         if code_element is not None:
             log_file.write('  Element: {0}\n'.
@@ -140,10 +144,10 @@ class LinkerLog(object):
 
         log_file.write('\n\n')
         self.debug_log_type(simple_name, fqn, scode_reference, code_element,
-                potentials, original_size, rationale)
+                potentials, original_size, fresults, rationale)
 
     def debug_log_type(self, simple_name, fqn, scode_reference, code_element,
-            potentials, original_size, rationale=None):
+            potentials, original_size, fresults, rationale=None):
         if not settings.DEBUG:
             return
 
@@ -157,6 +161,9 @@ class LinkerLog(object):
         type_log['rationale'] = rationale
         type_log['custom filtered'] = self.custom_filtered
         type_log['linker'] = self.linker.name
+        for fresult in fresults:
+            type_log[fresult.name] = (fresult.activated,
+                    len(fresult.potentials))
 
         DEBUG_LOG[scode_reference.pk].append(type_log)
 

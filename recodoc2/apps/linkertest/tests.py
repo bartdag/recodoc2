@@ -618,6 +618,46 @@ class CodeParserTest(TransactionTestCase):
         coderef10.save()
         self.code_refs.append(coderef10)
 
+        # Index = 30
+        coderef11 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='p1.parentclazz',
+                source='s',
+                kind_hint=self.class_kind,
+                local_context=message4,
+                global_context=thread2,
+                )
+        coderef11.save()
+        self.code_refs.append(coderef11)
+
+        # Index = 31
+        coderef12 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='p1.bar.parentclazz.foo_bar_constant',
+                source='s',
+                kind_hint=self.class_kind,
+                local_context=message2,
+                global_context=thread1,
+                )
+        coderef12.save()
+        self.code_refs.append(coderef12)
+
+        # Index = 32
+        coderef13 = SingleCodeReference(
+                project=self.project,
+                project_release=self.releasedb,
+                content='p1.bar.parentclazz.foo_bar_constant',
+                source='s',
+                kind_hint=self.field_kind,
+                local_context=message2,
+                global_context=thread1,
+                parent_reference=coderef12,
+                )
+        coderef13.save()
+        self.code_refs.append(coderef13)
+
     def parse_snippets(self):
         parse_snippets(self.pname, 'd', 'java')
         parse_snippets(self.pname, 's', 'java')
@@ -1093,3 +1133,24 @@ class CodeParserTest(TransactionTestCase):
                 .first_link.code_element.containers.all()[0].fqn)
         self.assertEqual(1, field_log['final size'])
         self.assertEqual('javageneric', field_log['linker'])
+
+        # Test class linker
+        code_ref31 = self.code_refs[30]
+        code_ref31 = SingleCodeReference.objects.get(pk=code_ref31.pk)
+        field_log = DEBUG_LOG[code_ref31.pk][1]
+        print(field_log)
+        self.assertEqual('p1.ParentClazz',
+                code_ref31.release_links.all()[0]
+                .first_link.code_element.fqn)
+        self.assertEqual(1, field_log['final size'])
+
+        code_ref31 = self.code_refs[31]
+        code_ref31 = SingleCodeReference.objects.get(pk=code_ref31.pk)
+        field_log = DEBUG_LOG[code_ref31.pk][0]
+        self.assertEqual(0, field_log['final size'])
+        self.assertTrue(field_log['FQNCaseFilter'][0])
+
+        code_ref31 = self.code_refs[32]
+        code_ref31 = SingleCodeReference.objects.get(pk=code_ref31.pk)
+        field_log = DEBUG_LOG[code_ref31.pk][0]
+        self.assertEqual(0, field_log['final size'])
