@@ -4,7 +4,7 @@ import logging
 from multiprocessing.pool import Pool
 from traceback import print_exc
 from lxml import etree
-from django.db import transaction, connection
+from django.db import transaction
 from django.conf import settings
 from docutil.str_util import clean_breaks
 from docutil.etree_util import clean_tree, get_word_count, XPathList,\
@@ -29,7 +29,10 @@ def sub_process_parse(pinput):
         # Unecessary if already closed by parent process.
         # But it's ok to be sure.
         #print('In subprocess')
+        from django.db import connection
         connection.close()
+        from django.core.cache import cache
+        cache.close()
         (parser_clazz, doc_pk, parse_refs, pages) = pinput
         parser = import_clazz(parser_clazz)(doc_pk)
         #print('Got input')
@@ -51,6 +54,7 @@ def sub_process_parse(pinput):
         # Manually close this connection
         #print('Closing connection')
         connection.close()
+        cache.close()
 
 
 @transaction.autocommit
@@ -71,7 +75,10 @@ def parse(document, pages, parse_refs=True,
         inputs.append((document.parser, document.pk, parse_refs, pages_chunk))
 
     # Close connection to allow the new processes to create their own.
+    from django.db import connection
     connection.close()
+    from django.core.cache import cache
+    cache.close()
 
     # Split work
     progress_monitor.info('Sending {0} chunks to worker pool'

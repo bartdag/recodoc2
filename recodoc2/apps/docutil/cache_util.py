@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 import hashlib
+from traceback import print_exc
 from django.core.cache import cache
-from docutil.str_util import smart_decode
+from docutil.str_util import smart_decode, normalize
 
 DEFAULT_EXPIRED = '!hasxpired_'
 DEFAULT_EXPIRATION_TIME = 3600
@@ -30,7 +31,11 @@ def get_value(prefix, key, cache_function, args=None,
     global cache_miss
 
     new_key = get_safe_key(smart_decode(prefix) + smart_decode(key))
-    value = cache.get(new_key, DEFAULT_EXPIRED)
+    try:
+        value = cache.get(new_key, DEFAULT_EXPIRED)
+    except Exception:
+        value = DEFAULT_EXPIRED
+        print_exc()
     cache_total += 1
     if value == DEFAULT_EXPIRED:
         cache_miss += 1
@@ -49,7 +54,8 @@ def set_value(prefix, key, value, expiration=DEFAULT_EXPIRATION_TIME):
 
 def get_safe_key(key):
     m = hashlib.md5()
-    m.update(key)
+    new_key = normalize(smart_decode(key))
+    m.update(new_key.encode('utf8'))
     return m.hexdigest()
 
 

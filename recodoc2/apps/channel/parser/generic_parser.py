@@ -4,7 +4,6 @@ import logging
 import os
 import multiprocessing
 from traceback import print_exc
-from django.db import connection
 from django.conf import settings
 from docutil.str_util import clean_breaks, get_paragraphs, filter_paragraphs,\
         REPLY_LANGUAGE, merge_lines
@@ -29,7 +28,11 @@ def sub_process_parse(einput):
     try:
         # Unecessary if already closed by parent process.
         # But it's ok to be sure.
+        from django.db import connection
         connection.close()
+        from django.core.cache import cache
+        cache.close()
+
         (parser_cls, channel_pk, entry_chunk, parse_refs, lock) = einput
 
         parser = import_clazz(parser_cls)(channel_pk, parse_refs, lock)
@@ -46,6 +49,7 @@ def sub_process_parse(einput):
     finally:
         # Manually close this connection
         connection.close()
+        cache.close()
 
 
 def debug_channel(channel, model, progress_monitor=NullProgressMonitor(),
@@ -67,7 +71,10 @@ def debug_channel(channel, model, progress_monitor=NullProgressMonitor(),
             lock))
 
     # Close connection to allow the new processes to create their own
+    from django.db import connection
     connection.close()
+    from django.core.cache import cache
+    cache.close()
 
     progress_monitor.start('Parsing Channel Entries', len(inputs))
     progress_monitor.info('Sending {0} chunks to worker pool'
@@ -99,13 +106,16 @@ def parse_channel(channel, model, pool_size=DEFAULT_POOL_SIZE,
         inputs.append((channel.parser, channel.pk, entry_chunk, parse_refs,
             lock))
 
-    # Close connection to allow the new processes to create their own
-    connection.close()
-
     progress_monitor.start('Parsing Channel Entries', len(inputs))
     
     progress_monitor.info('Building code words cache')
     get_project_code_words(channel.project)
+
+    # Close connection to allow the new processes to create their own
+    from django.db import connection
+    connection.close()
+    from django.core.cache import cache
+    cache.close()
 
     progress_monitor.info('Sending {0} chunks to worker pool'
             .format(len(inputs)))
