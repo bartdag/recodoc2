@@ -225,7 +225,7 @@ def filter_paragraphs(paragraphs, p_classifiers):
 
     for paragraph in paragraphs:
         language = get_paragraph_language(paragraph, p_classifiers)
-        #print('Language {0} Paragraph {1}'.format(language, paragraph))
+        print('Language {0} Paragraph {1}'.format(language, paragraph))
         if language == STOP_LANGUAGE:
             break
         elif language != OTHER_LANGUAGE:

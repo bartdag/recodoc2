@@ -14,6 +14,7 @@ THRESHOLD_REPLY = 0.40
 
 WROTE_RE = re.compile(r'''
     ^
+    (\s|-)*
     on
     \s+
     .*
