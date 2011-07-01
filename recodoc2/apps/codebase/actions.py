@@ -649,6 +649,7 @@ def process_matches(text, matches, single_refs, kinds, kinds_hierarchies,
             main_reference = SingleCodeReference(
                     content=content,
                     kind_hint=kinds[parent[2]])
+            #print('Main reference: {0}'.format(content))
             if save_index:
                 main_reference.index = index
             if find_context:
@@ -657,6 +658,7 @@ def process_matches(text, matches, single_refs, kinds, kinds_hierarchies,
                 main_reference.paragraph = find_paragraph(text, parent[0],
                         parent[1])
             main_reference.save()
+            #print('Main reference pk: {0}'.format(main_reference.pk))
             single_refs.append(main_reference)
 
             # Process children

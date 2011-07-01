@@ -31,6 +31,6 @@ def is_valid_match(match, matches, filtered):
 
 def find_parent_reference(current_kind, references, kinds_hierarchy):
     parent_kind = kinds_hierarchy[current_kind]
-    for reference in references:
+    for reference in reversed(references):
         if reference.kind_hint.kind == parent_kind:
             return reference
