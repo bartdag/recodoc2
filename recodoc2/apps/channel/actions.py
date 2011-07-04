@@ -265,6 +265,11 @@ def show_message(msg_pk):
     print('Total links: {0}'.format(count))
 
 
+def show_messageu(url):
+    message = Message.objects.filter(url=url).all()[0]
+    show_message(message.pk)
+
+
 def post_process_message(channel, message):
     original_title = get_original_title(message.title)
 

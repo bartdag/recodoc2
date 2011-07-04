@@ -184,3 +184,14 @@ def show_section(section_pk):
             link_str = ''
         print('{0};{1}'.format(code_reference.content, link_str))
     print('Total links: {0}'.format(count))
+
+
+def show_sectionn(number, release=None):
+    section = Section.objects.filter(number=number)
+    if release is None:
+        pk = section.all()[0].pk
+    else:
+        pk = \
+            section.filter(page__document__project_release__release=release).\
+                all()[0].pk
+    show_section(pk)
