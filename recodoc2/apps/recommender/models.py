@@ -262,3 +262,55 @@ class SuperAddRecommendation(models.Model):
             return self.initial_rec.__unicode__()
         else:
             return self.best_rec.__unicode__()
+
+
+class RemoveRecommendation(models.Model):
+
+    code_element_from = models.ForeignKey(CodeElement, null=True,
+            blank=True, related_name='remove_recommendation_froms')
+    '''att.'''
+
+    code_element_to = models.ForeignKey(CodeElement, null=True,
+            blank=True, related_name='remove_recommendation_tos')
+    '''att.'''
+
+    deprecated_element = models.ForeignKey(CodeElement, null=True,
+            blank=True, related_name='remove_recommendation_deprecateds')
+    '''att.'''
+
+    codebase_from = models.ForeignKey(CodeBase, blank=True, null=True,
+            related_name='remove_recommendation_froms')
+    '''att.'''
+
+    codebase_to = models.ForeignKey(CodeBase, blank=True, null=True,
+            related_name='remove_recommendation_tos')
+    '''att.'''
+
+    # E.g., a document or a channel
+    resource_content_type = models.ForeignKey(ContentType, null=True,
+            blank=True, related_name='resource_removerecs')
+    resource_object_id = models.PositiveIntegerField(null=True, blank=True)
+    resource = generic.GenericForeignKey('resource_content_type',
+            'resource_object_id')
+    '''A resource represents a specific document or channel.'''
+
+    source = models.CharField(max_length=1, null=True, blank=True,
+            choices=SOURCE_TYPE, default='d')
+    '''Type of resource (doc or channel)'''
+
+    def human_string(self):
+        return self.__unicode__()
+    
+    def __unicode__(self):
+        if self.code_element_to is None:
+            return '{0} was deleted in {1}'.\
+                    format(self.code_element_from.human_string(),
+                            self.codebase_to)
+        elif self.deprecated_element is None:
+            return 'Ref to {0} has probably changed in {1}'.\
+                    format(self.code_element_from.human_string(),
+                            self.codebase_to)
+        else:
+            return '{0} was deprecaded in {1}'.\
+                    format(self.code_element_from.human_string(),
+                            self.codebase_to)

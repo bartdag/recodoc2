@@ -14,6 +14,7 @@ import chardet
 from itertools import izip_longest
 from django.db import transaction
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 
 from project.models import RecoDocError
 from docutil.url_util import get_sanitized_url, is_local
@@ -353,3 +354,13 @@ def size(seq):
     except Exception:
         size = len(seq)
     return size
+
+
+def get_content_type(source):
+    if source == 'd':
+        return ContentType.objects.get(app_label="doc", model="document")
+    elif source == 's':
+        return ContentType.objects.get(app_label="channel",
+                model="SupportChannel")
+    else:
+        return None
