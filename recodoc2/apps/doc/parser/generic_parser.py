@@ -36,23 +36,18 @@ def sub_process_parse(pinput):
         (parser_clazz, doc_pk, parse_refs, pages) = pinput
         parser = import_clazz(parser_clazz)(doc_pk)
         #print('Got input')
-        print('Input: {0}'.format(pinput))
+        #print('Input: {0}'.format(pinput))
         for page_input in pages:
             #print('Considering page {0}'.format(page_input))
             if page_input is not None:
                 (local_path, page_url) = page_input
-                print('Parsing {0}'.format(page_url))
                 parser.parse_page(local_path, page_url, parse_refs)
-                print('Parsed {0}'.format(page_url))
-        #print('Returning True')
         return True
     except Exception:
         print_exc()
-        #print('Returning False')
         return False
     finally:
         # Manually close this connection
-        #print('Closing connection')
         connection.close()
         cache.close()
 
@@ -149,20 +144,20 @@ class GenericParser(object):
 
     def parse_page(self, page_local_path, page_url, parse_refs=True):
         try:
-            print('Starting parser {0}'.format(page_url))
+            #print('Starting parser {0}'.format(page_url))
             relative_url = get_relative_url(get_path(page_local_path))
             page = Page(url=page_url,
                     file_path=relative_url,
                     document=self.document)
             page.save()
-            print('After save {0}'.format(page_url))
+            #print('After save {0}'.format(page_url))
             load = ParserLoad()
             load.parse_refs = parse_refs
 
             self._build_code_words(load)
-            print('Parser will be processing page {0}'.format(page_url))
+            #print('Parser will be processing page {0}'.format(page_url))
             self._process_page(page, load)
-            print('Parser processed page {0}'.format(page_url))
+            #print('Parser processed page {0}'.format(page_url))
         except Exception:
             print('An exception occurred in the parser {0}'.format(page_url))
             print_exc()
@@ -173,7 +168,6 @@ class GenericParser(object):
             get_project_code_words(self.document.project_release.project)
 
     def _process_page(self, page, load):
-        print('step 1 {0}'.format(page.url))
         page_path = os.path.join(settings.PROJECT_FS_ROOT, page.file_path)
         page_file = open(page_path)
         content = page_file.read()
@@ -223,7 +217,6 @@ class GenericParser(object):
         return check
 
     def _process_sections(self, page, load):
-        print('step 2 {0}'.format(page.url))
         sections = []
         sections_number = {}
 
@@ -289,7 +282,6 @@ class GenericParser(object):
         pass
 
     def _parse_section_references(self, page, load, sections):
-        print('step 3 {0}'.format(page.url))
         s_code_references = []
         snippets = []
 

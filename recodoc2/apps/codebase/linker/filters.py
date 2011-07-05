@@ -218,11 +218,15 @@ class FQNCaseFilter(object):
                 fqn.find(je.SNIPPET_PACKAGE) < 0:
             new_potentials = []
             for potential in potentials:
-                # In english: the fqn must perfectly match or the case must
-                # match. Otherwise we are not matching the right thing!
-                if potential.fqn.lower() == fqn.lower() or\
-                        potential.simple_name == simple:
-                    new_potentials.append(potential)
+                if potential.kind.is_type:
+                    if potential.fqn.lower() == fqn.lower():
+                        new_potentials.append(potential)
+                else:
+                    # In english: the fqn must perfectly match or the case must
+                    # match. Otherwise we are not matching the right thing!
+                    if potential.fqn.lower() == fqn.lower() or\
+                            potential.simple_name == simple:
+                        new_potentials.append(potential)
             result = FilterResult(self, True, new_potentials)
 
         return result

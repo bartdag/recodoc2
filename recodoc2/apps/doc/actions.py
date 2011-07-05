@@ -182,7 +182,7 @@ def show_section(section_pk):
             link_str = link.code_element.human_string()
         else:
             link_str = ''
-        print('{0};{1}'.format(code_reference.content, link_str))
+        print('{0};;{1}'.format(code_reference.content, link_str))
     print('Total links: {0}'.format(count))
 
 
