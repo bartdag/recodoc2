@@ -131,6 +131,7 @@ class JavaSnippetParser(object):
                         xpath=mcode.xpath,
                         file_path=mcode.file_path,
                         kind_hint=kind_hint,
+                        original_kind_hint=kind_hint,
                         declaration=declaration,
                         snippet=mcode,
                         source=mcode.source,

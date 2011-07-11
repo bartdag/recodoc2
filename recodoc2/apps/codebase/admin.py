@@ -36,7 +36,7 @@ class CodeElementLinkInline(admin.TabularInline):
 class SingleCodeReferenceAdmin(admin.ModelAdmin):
     fields = ('content', 'kind_hint', 'sentence', 'paragraph', 'snippet',
             'xpath', 'url', 'source', 'local_object_id', 'mid_object_id',
-            'global_object_id')
+            'global_object_id', 'original_kind_hint')
     list_display = ('content', 'kind_hint', 'source')
     list_display_links = ('content',)
 #    readonly_fields = ('potential_elements', 'code_element')

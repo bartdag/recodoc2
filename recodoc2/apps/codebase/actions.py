@@ -3,6 +3,7 @@ import subprocess
 import time
 import os
 import logging
+import codecs
 from collections import defaultdict
 from functools import partial
 #from traceback import print_exc
@@ -437,6 +438,27 @@ def clear_links(pname, release, source='-1'):
     query.delete()
 
 
+def restore_kinds(pname, release='-1', source='-1'):
+    project = Project.objects.get(dir_name=pname)
+    query = SingleCodeReference.objects.filter(project=project)
+    if release != '-1':
+        prelease = ProjectRelease.objects.filter(project=project).\
+                filter(release=release)[0]
+        query = query.filter(project_release=prelease)
+    if source != '-1':
+        query = query.filter(source=source)
+
+    count = query.count()
+
+    progress_monitor = CLIProgressMonitor(min_step=1.0)
+    progress_monitor.start('Restoring {0} references'.format(count), count)
+
+    for reference in query.iterator():
+        reference.kind_hint = reference.original_kind_hint
+        reference.save()
+        progress_monitor.work(1)
+
+    progress_monitor.done()
 
 
 ### ACTIONS USED BY OTHER ACTIONS ###
@@ -610,6 +632,7 @@ def process_children_matches(text, matches, children, index, single_refs,
         child_reference = SingleCodeReference(
                 content=content,
                 kind_hint=kinds[child[2]],
+                original_kind_hint=kinds[child[2]],
                 child_index=i,
                 parent_reference=parent_reference)
         if save_index:
@@ -648,6 +671,7 @@ def process_matches(text, matches, single_refs, kinds, kinds_hierarchies,
 
             main_reference = SingleCodeReference(
                     content=content,
+                    original_kind_hint=kinds[parent[2]],
                     kind_hint=kinds[parent[2]])
             #print('Main reference: {0}'.format(content))
             if save_index:
@@ -698,7 +722,8 @@ def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
             kinds_hierarchies, save_index, find_context, existing_refs)
 
     if len(single_refs) == 0 and not avoided and not strict:
-        code = SingleCodeReference(content=text, kind_hint=kind_hint)
+        code = SingleCodeReference(content=text, kind_hint=kind_hint,
+                original_kind_hint=kind_hint)
         code.save()
         single_refs.append(code)
 
@@ -720,3 +745,15 @@ def get_default_p_classifiers():
     p_classifiers.append((is_xml_lines, XML_LANGUAGE))
 
     return p_classifiers
+
+
+def restore_original_kind(path, kind_str):
+    kind = CodeElementKind.objects.get(kind=kind_str)
+    with codecs.open(path,'r', 'utf8') as f:
+        for line in f:
+            new_line = line.strip()
+            if new_line.startswith('Ref pk:'):
+                pk = int(new_line[8:].strip())
+                ref = SingleCodeReference.objects.get(pk=pk)
+                ref.original_kind_hint = kind
+                ref.save()

@@ -352,6 +352,10 @@ class SingleCodeReference(SourceElement):
             choices=SOURCE_TYPE, default='d')
     '''Where the snippet comes from (doc or support channel)'''
 
+    original_kind_hint = models.ForeignKey(CodeElementKind, null=True,
+            blank=True, related_name='original_kinds')
+    '''Original kind. Never changes!'''
+
     kind_hint = models.ForeignKey(CodeElementKind, null=True, blank=True)
     '''Probable kind of a reference (e.g., a Java method, an xml element)'''
 
