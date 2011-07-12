@@ -298,12 +298,18 @@ class LinkerLog(object):
 
 class DefaultLinker(object):
 
-    def __init__(self, project, prelease, codebase, source, srelease=None):
+    def __init__(self, project, prelease, codebase, source, srelease=None,
+            filtered_ids=None):
         self.project = project
         self.prelease = prelease
         self.codebase = codebase
         self.source = source
         self.srelease = srelease
+        if filtered_ids is not None:
+            (self.f_ids, self.f_level) = filtered_ids
+        else:
+            self.f_ids = None
+            self.f_level = None
 
     def _get_query(self, kind_hint, local_object_id):
         refs = SingleCodeReference.objects.\
@@ -318,3 +324,12 @@ class DefaultLinker(object):
             refs = refs.filter(local_object_id=local_object_id)
 
         return refs
+
+    def _reject_reference(self, reference):
+        if self.f_level is None:
+            return False
+
+        if self.f_level == 'global':
+            return reference.global_object_id not in self.f_ids
+        elif self.f_level == 'local':
+            return reference.local_object_id not in self.f_ids

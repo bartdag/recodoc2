@@ -63,6 +63,12 @@ class PHPBBForumSyncer(ThreadSyncer):
         url = self.section_url.format(base_url, self.ENTRY_PER_PAGE * index)
         return url
 
+    def _clean_url(self, url):
+        index = url.find('&sid=')
+        if index > -1:
+            url = url[:index]
+        return url
+
     def _get_number_of_pages(self, url):
         tree = download_html_tree(url)
         number_of_pages = self.xnumber_pages(tree)
@@ -78,6 +84,7 @@ class PHPBBForumSyncer(ThreadSyncer):
         size = len(links)
         for link in links[size - self.ENTRY_PER_PAGE:]:
             url = urlparse.urljoin(page_url, link.attrib['href'])
+            url = self._clean_url(url)
             entry_urls.append(url)
         return entry_urls
 
@@ -87,6 +94,7 @@ class PHPBBForumSyncer(ThreadSyncer):
         for link in next_links:
             if link.text.strip().lower() == 'next':
                 next_url = urlparse.urljoin(url, link.attrib['href'])
+                next_url = self._clean_url(next_url)
                 break
         return next_url
 

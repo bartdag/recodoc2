@@ -124,9 +124,10 @@ def get_package_freq(local_ctx_id, source, prelease):
 class JavaClassLinker(gl.DefaultLinker):
     name = 'javaclass'
 
-    def __init__(self, project, prelease, codebase, source, srelease=None):
+    def __init__(self, project, prelease, codebase, source, srelease=None,
+            filtered_ids=None):
         super(JavaClassLinker, self).__init__(project, prelease, codebase,
-                source, srelease)
+                source, srelease, filtered_ids)
         self.ann_kind = CodeElementKind.objects.get(kind='annotation')
         self.class_kind = CodeElementKind.objects.get(kind='class')
         self.enum_kind = CodeElementKind.objects.get(kind='enumeration')
@@ -180,6 +181,9 @@ class JavaClassLinker(gl.DefaultLinker):
             #if scode_reference.declaration:
                 #progress_monitor.work('Skipped declaration', 1)
                 #continue
+            if self._reject_reference(scode_reference):
+                progress_monitor.work('Skipped reference', 1)
+                continue
 
             (simple, fqn) = je.get_annotation_name(scode_reference.content,
                     scode_reference.snippet is not None)
@@ -217,6 +221,10 @@ class JavaClassLinker(gl.DefaultLinker):
                 #progress_monitor.work('Skipped declaration', 1)
                 #continue
 
+            if self._reject_reference(scode_reference):
+                progress_monitor.work('Skipped reference', 1)
+                continue
+
             (simple, fqn) = je.get_class_name(scode_reference.content,
                     scode_reference.snippet is not None)
 
@@ -252,6 +260,10 @@ class JavaClassLinker(gl.DefaultLinker):
             #if scode_reference.declaration:
                 #progress_monitor.work('Skipped declaration', 1)
                 #continue
+
+            if self._reject_reference(scode_reference):
+                progress_monitor.work('Skipped reference', 1)
+                continue
 
             (simple, fqn) = je.get_class_name(scode_reference.content,
                     scode_reference.snippet is not None)
@@ -520,9 +532,10 @@ class JavaPostClassLinker(gl.DefaultLinker):
 class JavaMethodLinker(gl.DefaultLinker):
     name = 'javamethod'
 
-    def __init__(self, project, prelease, codebase, source, srelease=None):
+    def __init__(self, project, prelease, codebase, source, srelease=None,
+            filtered_ids=None):
         super(JavaMethodLinker, self).__init__(project, prelease, codebase,
-                source, srelease)
+                source, srelease, filtered_ids)
         self.method_kind = CodeElementKind.objects.get(kind='method')
         self.method_filters = [
                 filters.ObjectMethodsFilter(),
@@ -572,6 +585,9 @@ class JavaMethodLinker(gl.DefaultLinker):
         log = gl.LinkerLog(self, self.method_kind.kind)
 
         for scode_reference in method_refs:
+            if self._reject_reference(scode_reference):
+                progress_monitor.work('Skipped reference', 1)
+                continue
             method_info = self._get_method_info(scode_reference)
             code_elements = self._get_method_elements(method_info)
 
@@ -763,9 +779,10 @@ class JavaMethodLinker(gl.DefaultLinker):
 class JavaFieldLinker(gl.DefaultLinker):
     name = 'javafield'
 
-    def __init__(self, project, prelease, codebase, source, srelease=None):
+    def __init__(self, project, prelease, codebase, source, srelease=None,
+            filtered_ids=None):
         super(JavaFieldLinker, self).__init__(project, prelease, codebase,
-                source, srelease)
+                source, srelease, filtered_ids)
         self.field_kind = CodeElementKind.objects.get(kind='field')
         self.ann_field_kind =\
             CodeElementKind.objects.get(kind='annotation field')
@@ -836,6 +853,9 @@ class JavaFieldLinker(gl.DefaultLinker):
         log = gl.LinkerLog(self, self.ann_field_kind.kind)
 
         for scode_reference in ann_refs:
+            if self._reject_reference(scode_reference):
+                progress_monitor.work('Skipped reference', 1)
+                continue
             (field_name, fqn_container) = self._get_field_name(scode_reference)
             code_elements = self._get_field_elements(field_name,
                     PREFIX_ANN_FIELD_LINKER, self.ann_field_kind)
@@ -861,6 +881,9 @@ class JavaFieldLinker(gl.DefaultLinker):
         log = gl.LinkerLog(self, self.enum_value_kind.kind)
 
         for scode_reference in enum_refs:
+            if self._reject_reference(scode_reference):
+                progress_monitor.work('Skipped reference', 1)
+                continue
             (field_name, fqn_container) = self._get_field_name(scode_reference)
             code_elements = self._get_field_elements(field_name,
                     PREFIX_ENUM_VAL_LINKER, self.enum_value_kind)
@@ -886,6 +909,9 @@ class JavaFieldLinker(gl.DefaultLinker):
         log = gl.LinkerLog(self, self.field_kind.kind)
 
         for scode_reference in field_refs:
+            if self._reject_reference(scode_reference):
+                progress_monitor.work('Skipped reference', 1)
+                continue
             (field_name, fqn_container) = self._get_field_name(scode_reference)
             code_elements = []
             code_elements.extend(self._get_field_elements(field_name,
@@ -995,9 +1021,10 @@ class JavaFieldLinker(gl.DefaultLinker):
 class JavaGenericLinker(gl.DefaultLinker):
     name = 'javageneric'
 
-    def __init__(self, project, prelease, codebase, source, srelease=None):
+    def __init__(self, project, prelease, codebase, source, srelease=None,
+            filtered_ids=None):
         super(JavaGenericLinker, self).__init__(project, prelease, codebase,
-                source, srelease)
+                source, srelease, filtered_ids)
         self.unknown_kind = CodeElementKind.objects.get(kind='unknown')
         self.ann_kind = CodeElementKind.objects.get(kind='annotation')
         self.class_kind = CodeElementKind.objects.get(kind='class')
@@ -1039,6 +1066,10 @@ class JavaGenericLinker(gl.DefaultLinker):
 
         progress_monitor.start('Parsing all unknown refs', ucount)
         for reference in unknown_refs:
+
+            if self._reject_reference(unknown_refs):
+                continue
+
             content = su.safe_strip(reference.content)
             if content is None or content == '':
                 progress_monitor.info('Empty {0}'.format(reference.pk))

@@ -400,7 +400,7 @@ def add_a_filter(pname, bname, release, filter_fqn, include_snippet=True,
 
 
 def link_code(pname, bname, release, linker_name, source, source_release=None,
-        local_object_id=None):
+        local_object_id=None, filtered_ids_path=None, filtered_ids_level=None):
     project = Project.objects.get(dir_name=pname)
     prelease = ProjectRelease.objects.filter(project=project).\
             filter(release=release)[0]
@@ -411,13 +411,22 @@ def link_code(pname, bname, release, linker_name, source, source_release=None,
         srelease = None
     codebase = CodeBase.objects.filter(project_release=prelease).\
             filter(name=bname)[0]
+
+    (f_ids, f_ids_level) = compute_f_ids(filtered_ids_path, filtered_ids_level)
+    if f_ids is not None:
+        count = len(f_ids)
+    else:
+        count = 0
+
     linker_cls_name = LINKERS[linker_name]
     linker_cls = import_clazz(linker_cls_name)
-    linker = linker_cls(project, prelease, codebase, source, srelease)
+    linker = linker_cls(project, prelease, codebase, source, srelease, 
+            (f_ids, f_ids_level))
 
     progress_monitor = CLIProgressMonitor(min_step=1.0)
     progress_monitor.info('Cache Count {0} miss of {1}'
             .format(cache_util.cache_miss, cache_util.cache_total))
+    progress_monitor.info('Ref ids to keep: {0}'.format(count))
 
     start = time.clock()
 
@@ -462,6 +471,26 @@ def restore_kinds(pname, release='-1', source='-1'):
 
 
 ### ACTIONS USED BY OTHER ACTIONS ###
+
+def compute_f_ids(filtered_ids_path, filtered_ids_level):
+    if filtered_ids_level is not None:
+        if filtered_ids_level == 'g':
+            f_level = 'global'
+        else:
+            f_level = 'local'
+    else:
+        f_level = None
+
+    if filtered_ids_path is not None:
+        f_ids = set()
+        with codecs.open(filtered_ids_path, 'r', 'utf8') as f:
+            for line in f:
+                f_ids.add(int(line.strip()))
+    else:
+        f_ids = None
+
+    return (f_ids, f_level)
+
 
 def compute_filters(codebase):
     filters = CodeElementFilter.objects.filter(codebase=codebase).all()

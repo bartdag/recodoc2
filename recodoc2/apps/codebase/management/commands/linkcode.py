@@ -22,6 +22,12 @@ class Command(NoArgsCommand):
         make_option('--srelease', action='store', dest='srelease',
             default='-1', help='Release of the code references '
             '(optional for channels'),
+        make_option('--lid', action='store', dest='lid',
+            default='-1', help='Refs from local object id to keep. (optional)'),
+        make_option('--fid', action='store', dest='fid',
+            default='-1', help='Path to file with ids to keep. (optional)'),
+        make_option('--flevel', action='store', dest='flevel',
+            default='-1', help='Level of context ids in file. (optional)'),
 
     )
     help = "Link code"
@@ -34,4 +40,20 @@ class Command(NoArgsCommand):
         linker = smart_decode(options.get('linker'))
         source = smart_decode(options.get('source'))
         srelease = smart_decode(options.get('srelease'))
-        link_code(pname, bname, release, linker, source, srelease)
+
+        # Optional parts
+        lid = smart_decode(options.get('lid'))
+        if lid == '-1':
+            lid = None
+        else:
+            lid = int(lid)
+        f_ids_path = smart_decode(options.get('fid'))
+        if f_ids_path == '-1':
+            f_ids_path = None
+        f_ids_level = smart_decode(options.get('flevel'))
+        if f_ids_level == '-1':
+            f_ids_level = None
+
+        link_code(pname, bname, release, linker, source, srelease,
+                local_object_id=lid, filtered_ids_path=f_ids_path,
+                filtered_ids_level=f_ids_level)

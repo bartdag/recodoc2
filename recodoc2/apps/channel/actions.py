@@ -338,3 +338,15 @@ def post_process_message_refs(message):
     for snippet in message.code_snippets.all():
         snippet.global_context = sthread
         snippet.save()
+
+
+def write_thread_ids(file_path, date_from, date_to=None):
+    query = SupportThread.objects.filter(first_date__gte=date_from)
+    if date_to is not None:
+        query = query.filter(first_date__lt=date_to)
+    count = 0
+    with codecs.open(file_path, 'w', 'utf8') as f:
+        for sthread in query.iterator():
+            f.write('{0}\n'.format(sthread.pk))
+            count += 1
+    print('Wrote {0} ids'.format(count))
