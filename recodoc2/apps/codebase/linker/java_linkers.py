@@ -1067,14 +1067,15 @@ class JavaGenericLinker(gl.DefaultLinker):
         progress_monitor.start('Parsing all unknown refs', ucount)
         for reference in unknown_refs:
 
-            if self._reject_reference(unknown_refs):
+            if self._reject_reference(reference):
+                progress_monitor.work('Rejected reference.', 1)
                 continue
 
             content = su.safe_strip(reference.content)
             if content is None or content == '':
-                progress_monitor.info('Empty {0}'.format(reference.pk))
                 progress_monitor.work('Empty {0}'.format(reference.pk), 1)
                 skipped += 1
+                continue
 
             (simple, fqn) = je.clean_java_name(je.get_clean_name(content))
             prefix = '{0}{1}'.format(PREFIX_GENERIC_LINKER,
@@ -1093,7 +1094,10 @@ class JavaGenericLinker(gl.DefaultLinker):
 
             classified_elements = self._classify_code_elements(code_elements)
             class_tuples.append((reference, simple, fqn) + classified_elements)
+            progress_monitor.work('Classified reference', 1)
+        progress_monitor.done()
 
+        progress_monitor.info('Classified all refs. Processing now')
         count = self._process_tuples(class_tuples, progress_monitor)
 
         progress_monitor.info('Associated {0} elements, Skipped {1} elements'
@@ -1126,6 +1130,7 @@ class JavaGenericLinker(gl.DefaultLinker):
 
         progress_monitor.info('Processing {0} classes'
                 .format(len(class_tuples)))
+        progress_monitor.start('Processing classes', len(class_tuples))
         log = gl.LinkerLog(self, 'generic-' + self.class_kind.kind)
         for (reference, simple, fqn, class_elements, method_elements,
                 field_elements) in class_tuples:
@@ -1142,11 +1147,15 @@ class JavaGenericLinker(gl.DefaultLinker):
             else:
                 method_tuples.append((reference, simple, fqn,
                     method_elements, field_elements))
+            progress_monitor.work('Processed a class', 1)
+
+        progress_monitor.done()
         log.close()
         progress_monitor.info('Processed classes')
 
         progress_monitor.info('Processing {0} methods'
                 .format(len(method_tuples)))
+        progress_monitor.start('Processing methods', len(method_tuples))
         log = gl.LinkerLog(self, 'generic-' + self.method_kind.kind)
         for (reference, simple, fqn, method_elements,
                 field_elements) in method_tuples:
@@ -1166,11 +1175,15 @@ class JavaGenericLinker(gl.DefaultLinker):
                         field_elements))
             else:
                 field_tuples.append((reference, simple, fqn, field_elements))
+            progress_monitor.work('Processed method', 1)
+
+        progress_monitor.done()
         log.close()
         progress_monitor.info('Processed methods')
 
         progress_monitor.info('Processing {0} fields'
                 .format(len(field_tuples)))
+        progress_monitor.start('Processing fields', len(field_tuples))
         log = gl.LinkerLog(self, 'generic-' + self.field_kind.kind)
         for (reference, simple, fqn, field_elements) in field_tuples:
             if len(field_elements) > 0:
@@ -1183,6 +1196,8 @@ class JavaGenericLinker(gl.DefaultLinker):
                 if code_element is not None:
                     count += gl.save_link(reference, code_element,
                             potentials, self)
+            progress_monitor.work('Processing fields', 1)
+        progress_monitor.done()
         log.close()
         progress_monitor.info('Processed fields')
 
