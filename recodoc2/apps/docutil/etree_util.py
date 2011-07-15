@@ -252,3 +252,52 @@ class HierarchyXPath(SingleXPath):
             text_parts = new_element.xpath('.//text()')
         text = '\n'.join(text_parts)
         return normalize(text)
+
+
+class FlatXPath(object):
+    def __init__(self, xpath_str, xtext=XTEXT):
+        self.xpath = etree.XPath(xpath_str)
+        self.xtext = xtext
+
+    def get_element(self, parent, index=0):
+        elems = self.xpath(parent)
+        if len(elems) > 0:
+            return elems[index]
+        else:
+            return None
+
+    def get_element_as_list(self, element):
+        return [element]
+
+    def get_elements(self, parent):
+        elems = self.xpath(parent)
+        if len(elems) > 0:
+            return elems
+        else:
+            return []
+
+    def get_text_from_parent(self, parent, index=0):
+        text = ''
+        elem = self.get_element(parent, index)
+        if elem is not None:
+            text = self.get_text(elem)
+        return normalize(text)
+
+    def get_text(self, element):
+        parent = element.getparent()
+        index = parent.index(element)
+        majors = self.get_elements(parent)
+        potentials = parent[index+1:]
+        reals = [element]
+        for potential in potentials:
+            if potential in majors:
+                break
+            reals.append(potential)
+        text_parts = []
+        for real in reals:
+            get_recursive_text(real, text_parts)
+            text_parts.append('')
+
+        text = '\n'.join(text_parts)
+        return normalize(text)
+

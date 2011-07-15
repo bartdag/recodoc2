@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from doc.syncer.generic_syncer import GenericSyncer
+from doc.syncer.generic_syncer import GenericSyncer, SingleURLSyncer
 from docutil.url_util import get_sanitized_url
 import os
 
@@ -50,3 +50,16 @@ class CommonsMathSyncer(GenericSyncer):
                 scope=scope)
 
 
+class XStreamSyncer(SingleURLSyncer):
+    def __init__(self, input_url, output_url):
+
+        super(XStreamSyncer, self).__init__(
+                input_url=input_url,
+                output_url=output_url,
+                )
+
+    def _should_avoid(self, link):
+        should_avoid = super(XStreamSyncer, self)._should_avoid(link)
+        if not should_avoid:
+            should_avoid = link.find('javadoc') > -1
+        return should_avoid
