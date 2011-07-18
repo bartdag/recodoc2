@@ -115,6 +115,10 @@ class FlatParentMixin(object):
     def _find_section(self, reference, sections, page, load):
         parent_section = None
 
+        if len(sections) == 0:
+            reference.delete()
+            return
+
         parent = load.tree.xpath(sections[0].xpath)[0].getparent()
         ref_element = load.tree.xpath(reference.xpath)[0]
         ref_index = self._get_ref_index(parent, ref_element)
@@ -207,7 +211,7 @@ class XStreamParser(FlatParentMixin, NoNumberMixin, GenericParser):
     '''Page title'''
 
     xsections = FlatXPath('//div[@id="content"]/h1 | //div[@id="content"]/h2'
-            ' | //div[@id="content"]/h3')
+            ' | //div[@id="content"]/h3 | //body/h1 | //body/h2 | //body/h3')
 
     xsectiontitle = SingleXPath('.')
 
@@ -217,6 +221,10 @@ class XStreamParser(FlatParentMixin, NoNumberMixin, GenericParser):
 
     xsnippet = SingleXPath('//pre')
 
+    xparagraphs = FlatXPath('//div[@id="content"]/h1 | //div[@id="content"]/h2'
+            ' | //div[@id="content"]/h3 | //body/h1 | //body/h2 | //body/h3',
+            './pre | ./div')
+
     def _process_page_title(self, page, load):
         title = super(XStreamParser, self)._process_page_title(page, load)
         index = title.rfind('-')
@@ -224,3 +232,6 @@ class XStreamParser(FlatParentMixin, NoNumberMixin, GenericParser):
             title = title[index + 2:]
 
         return title.strip()
+
+    def _process_init_page(self, page, load):
+        load.mix_mode = True

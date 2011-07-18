@@ -181,3 +181,32 @@ class SourceForgeSyncer(MessageSyncer):
             next_page_url = page_link.attrib['href']
             next_page_url = urlparse.urljoin(page_url, next_page_url)
         return next_page_url
+
+
+class GmaneSyncer(MessageSyncer):
+    reverse_entries = False
+    
+    xsection_urls = etree.XPath('//select[@name="page"]/option')
+
+    xentries = etree.XPath('//td/a')
+
+    def _get_section_urls(self, channel_url):
+        tree = download_html_tree(channel_url)
+        section_numbers = len(self.xsection_urls(tree))
+        section_urls = []
+        for section_number in reversed(xrange(section_numbers)):
+            url = channel_url.replace('page=0',
+                    'page={0}'.format(section_number))
+            section_urls.append(url)
+        return section_urls
+
+    def _parse_toc_entries(self, page_url, tree):
+        links = self.xentries(tree)
+        entry_urls = []
+        for link in links:
+            url = link.attrib['href']
+            entry_urls.append(url)
+        return entry_urls
+
+    def _get_next_toc_page(self, page_url, tree):
+        return None

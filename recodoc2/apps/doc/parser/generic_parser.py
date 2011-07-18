@@ -57,6 +57,7 @@ def parse(document, pages, parse_refs=True,
         progress_monitor=NullProgressMonitor(),
         pool_size=DEFAULT_POOL_SIZE):
     progress_monitor.start('Parsing Pages', pool_size + 1)
+    progress_monitor.info('Pages: {0}'.format(len(pages)))
 
     progress_monitor.info('Building code words cache')
     get_project_code_words(document.project_release.project)
@@ -439,6 +440,8 @@ class GenericParser(object):
     def _process_mix_mode(self, page, load, section):
         section_element = load.tree.xpath(section.xpath)[0]
         section_text = self.xparagraphs.get_text(section_element)
+        #print('\n\nDEBUG: {0}\n{1}\n\n'.format(section.title,
+            #section_text).encode('utf8'))
         section_refs = section.code_references.all()
         existing_refs = [code_ref.content for code_ref in section_refs]
         kind_hint = self.kinds['unknown']

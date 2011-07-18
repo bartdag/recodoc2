@@ -129,7 +129,7 @@ class PHPBBForumParser(GenericThreadParser):
 
 
 class FUDEclipseForumParser(GenericThreadParser):
-    
+
     xmessages = SingleXPath('//table[@class="MsgTable"]')
 
     xtitle = SingleXPath('.//a[@class="MsgSubText"]')
@@ -154,7 +154,8 @@ class FUDEclipseForumParser(GenericThreadParser):
         ''', re.VERBOSE)
 
     def __init__(self, channel_pk, parse_refs, lock):
-        super(FUDEclipseForumParser, self).__init__(channel_pk, parse_refs, lock)
+        super(FUDEclipseForumParser, self).__init__(channel_pk, parse_refs,
+                lock)
 
     def _process_date_text(self, message, load, date_text):
         match = self.date_regex.search(date_text)
@@ -172,6 +173,7 @@ class FUDEclipseForumParser(GenericThreadParser):
                 )
 
         return date
+
 
 class SourceForgeParser(GenericMailParser):
 
@@ -222,3 +224,58 @@ class SourceForgeParser(GenericMailParser):
                 load)
         author_text = author_text[self.start:]
         return author_text.strip()
+
+
+class GmaneParser(GenericMailParser):
+
+    xtitle = SingleXPath('//div[@class="headers"]')
+
+    xauthor = SingleXPath('//div[@class="headers"]')
+
+    xdate = SingleXPath('//div[@class="headers"]')
+
+    xcontent = HierarchyXPath('//div/table | //td[@class="bodytd"]',
+        './/div[@class="headers"]')
+
+    date_regex = re.compile(r'''
+    (?P<year>\d{4})-
+    (?P<month>\d{2})-
+    (?P<day>\d{2})\s
+    (?P<hour>\d{2}):
+    (?P<minute>\d{2}):
+    (?P<second>\d{2})
+    ''', re.VERBOSE)
+
+    def __init__(self, channel_pk, parse_refs, lock):
+        super(GmaneParser, self).__init__(channel_pk, parse_refs, lock)
+
+    def _process_author(self, message, load):
+        author = super(GmaneParser, self)._process_author(message, load)
+        index1 = author.find('From:')
+        index2 = author.find(' <')
+        author = author[index1 + len('From: '):index2]
+        return author.strip()
+
+    def _process_title(self, message, load):
+        title = super(GmaneParser, self)._process_title(message, load)
+        index1 = title.find('Subject:')
+        index2 = title.find('\n', index1)
+        title = title[index1 + len('Subject: '):index2]
+        return title.strip()
+
+    def _process_date_text(self, message, load, date_text):
+        match = self.date_regex.search(date_text)
+        if match is None:
+            logger.error('This date text does not match expected pattern: {0}'
+                    .format(date_text))
+            return None
+
+        date = datetime(
+                int(match.group('year')),
+                int(match.group('month')),
+                int(match.group('day')),
+                int(match.group('hour')),
+                int(match.group('minute')),
+                int(match.group('second'))
+                )
+        return date

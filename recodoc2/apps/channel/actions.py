@@ -261,7 +261,7 @@ def show_message(msg_pk):
             count += 1
         else:
             link_str = ''
-        print('{0};{1}'.format(code_reference.content, link_str))
+        print('{0};;{1}'.format(code_reference.content, link_str))
     print('Total links: {0}'.format(count))
 
 

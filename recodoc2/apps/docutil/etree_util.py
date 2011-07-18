@@ -255,9 +255,13 @@ class HierarchyXPath(SingleXPath):
 
 
 class FlatXPath(object):
-    def __init__(self, xpath_str, xtext=XTEXT):
+    def __init__(self, xpath_str, xpath_str_filter=None, xtext=XTEXT):
         self.xpath = etree.XPath(xpath_str)
         self.xtext = xtext
+        if xpath_str_filter is not None:
+            self.first_filter = etree.XPath(xpath_str_filter)
+        else:
+            self.first_filter = None
 
     def get_element(self, parent, index=0):
         elems = self.xpath(parent)
@@ -285,6 +289,10 @@ class FlatXPath(object):
 
     def get_text(self, element):
         parent = element.getparent()
+        if self.first_filter is not None:
+            bad_elements = self.first_filter(parent)
+        else:
+            bad_elements = set()
         index = parent.index(element)
         majors = self.get_elements(parent)
         potentials = parent[index+1:]
@@ -292,7 +300,8 @@ class FlatXPath(object):
         for potential in potentials:
             if potential in majors:
                 break
-            reals.append(potential)
+            elif potential not in bad_elements:
+                reals.append(potential)
         text_parts = []
         for real in reals:
             get_recursive_text(real, text_parts)

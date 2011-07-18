@@ -29,7 +29,7 @@ class CodeSnippetInline(generic.GenericTabularInline):
 class SectionAdmin(admin.ModelAdmin):
     ordering = ('title',)
     list_filter = ('page__document', 'page')
-    list_display = ('pk', 'page', 'title')
+    list_display = ('pk', 'page', 'title', 'parent')
     list_display_links = ('title',)
     search_fields = ['title', 'id']
     inlines = [SingleCodeReferenceInline, CodeSnippetInline]

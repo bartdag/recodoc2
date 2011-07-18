@@ -50,13 +50,51 @@ class CommonsMathSyncer(GenericSyncer):
                 scope=scope)
 
 
-class XStreamSyncer(SingleURLSyncer):
+class XStreamSyncer(GenericSyncer):
     def __init__(self, input_url, output_url):
 
+        input_url = get_sanitized_url(input_url)
+        output_url = get_sanitized_url(output_url)
+
+        if input_url.endswith('/'):
+            scope_url = input_url
+        else:
+            (scope_url, _) = os.path.split(input_url)
+            scope_url += '/'
+        scope = [scope_url]
+        input_urls = [input_url]
+        input_urls.append(scope_url + 'alias-tutorial.html')
+        input_urls.append(scope_url + 'annotations-tutorial.html')
+        input_urls.append(scope_url + 'architecture.html')
+        input_urls.append(scope_url + 'changes.html')
+        input_urls.append(scope_url + 'converter-tutorial.html')
+        input_urls.append(scope_url + 'converters.html')
+        input_urls.append(scope_url + 'download.html')
+        input_urls.append(scope_url + 'faq.html')
+        input_urls.append(scope_url + 'graphs.html')
+        input_urls.append(scope_url + 'how-to-contribute.html')
+        input_urls.append(scope_url + 'index.html')
+        input_urls.append(scope_url + 'json-tutorial.html')
+        input_urls.append(scope_url + 'license.html')
+        input_urls.append(scope_url + 'list-dev.html')
+        input_urls.append(scope_url + 'list-user.html')
+        input_urls.append(scope_url + 'manual-tweaking-output.html')
+        input_urls.append(scope_url + 'manual.html')
+        input_urls.append(scope_url + 'news.html')
+        input_urls.append(scope_url + 'objectstream.html')
+        input_urls.append(scope_url + 'persistence-tutorial.html')
+        input_urls.append(scope_url + 'references.html')
+        input_urls.append(scope_url + 'repository.html')
+        input_urls.append(scope_url + 'team.html')
+        input_urls.append(scope_url + 'tutorial.html')
+        input_urls.append(scope_url + 'versioning.html')
+        
+        GenericSyncer.logger.debug('SCOPE: {0}'.format(scope_url))
+
         super(XStreamSyncer, self).__init__(
-                input_url=input_url,
+                input_urls=input_urls,
                 output_url=output_url,
-                )
+                scope=scope)
 
     def _should_avoid(self, link):
         should_avoid = super(XStreamSyncer, self)._should_avoid(link)
