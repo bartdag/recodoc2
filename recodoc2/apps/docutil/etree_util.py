@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from copy import deepcopy
 from lxml import etree
 from docutil.str_util import normalize, find_list, find_sentence,\
-        smart_decode
+        smart_decode, clean_breaks
 
 XTEXT = etree.XPath("string()")
 XSCRIPTS = etree.XPath(".//script")
@@ -34,7 +34,7 @@ def get_recursive_text(element, text_parts):
         if tail is None:
             text_parts.append('')
         else:
-            text_parts.append(smart_decode(tail).strip())
+            text_parts.append(clean_breaks(smart_decode(tail).strip()))
     else:
         if element.tag in PARAGRAPHS:
             text_parts.append('')
@@ -46,10 +46,10 @@ def get_recursive_text(element, text_parts):
         # If it is a paragraph, separate the content.
         # Otherwise, inline the content with previous line.
         if element.tag in PARAGRAPHS or len(text_parts) == 0:
-            text_parts.append(smart_decode(text).strip())
+            text_parts.append(clean_breaks(smart_decode(text).strip()))
         else:
             text_parts[-1] = '{0} {1}'.format(
-                    text_parts[-1], smart_decode(text).strip())
+                    text_parts[-1], clean_breaks(smart_decode(text).strip()))
 
         for child in element:
             get_recursive_text(child, text_parts)
@@ -64,10 +64,10 @@ def get_recursive_text(element, text_parts):
         # If it is a paragraph, separate the content.
         # Otherwise, inline the content with previous line.
         if element.tag in PARAGRAPHS or len(text_parts) == 0:
-            text_parts.append(smart_decode(tail).strip())
+            text_parts.append(clean_breaks(smart_decode(tail).strip()))
         else:
             text_parts[-1] = '{0} {1}'.format(
-                    text_parts[-1], smart_decode(tail).strip())
+                    text_parts[-1], clean_breaks(smart_decode(tail).strip()))
 
 
 def get_html_tree(ucontent, encoding=None):
