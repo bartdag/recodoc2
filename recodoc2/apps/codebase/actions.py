@@ -12,6 +12,7 @@ import enchant
 from py4j.java_gateway import JavaGateway
 from django.conf import settings
 from django.db import transaction
+from django.db.models import F
 from codeutil.parser import is_valid_match, find_parent_reference,\
         create_match
 from codeutil.xml_element import XMLStrategy, XML_LANGUAGE, is_xml_snippet,\
@@ -19,7 +20,8 @@ from codeutil.xml_element import XMLStrategy, XML_LANGUAGE, is_xml_snippet,\
 from codeutil.java_element import ClassMethodStrategy, MethodStrategy,\
         FieldStrategy, OtherStrategy, AnnotationStrategy, SQLFilter,\
         BuilderFilter, JAVA_LANGUAGE, is_java_snippet, is_java_lines,\
-        is_exception_trace_lines, JAVA_EXCEPTION_TRACE, clean_java_name
+        is_exception_trace_lines, JAVA_EXCEPTION_TRACE, clean_java_name,\
+        can_merge_java
 from codeutil.other_element import FileStrategy, IgnoreStrategy,\
         IGNORE_KIND, EMAIL_PATTERN_RE, URL_PATTERN_RE, OTHER_LANGUAGE,\
         is_empty_lines, is_log_lines, LOG_LANGUAGE
@@ -462,10 +464,12 @@ def restore_kinds(pname, release='-1', source='-1'):
     progress_monitor = CLIProgressMonitor(min_step=1.0)
     progress_monitor.start('Restoring {0} references'.format(count), count)
 
-    for reference in query.iterator():
-        reference.kind_hint = reference.original_kind_hint
-        reference.save()
-        progress_monitor.work(1)
+    query.update(kind_hint=F('original_kind_hint'))
+
+    #for reference in query.iterator():
+        #reference.kind_hint = reference.original_kind_hint
+        #reference.save()
+        #progress_monitor.work(1)
 
     progress_monitor.done()
 
@@ -774,6 +778,13 @@ def get_default_p_classifiers():
     p_classifiers.append((is_xml_lines, XML_LANGUAGE))
 
     return p_classifiers
+
+
+def get_default_s_classifiers():
+    s_classifiers = {}
+    s_classifiers[JAVA_LANGUAGE] = can_merge_java
+
+    return s_classifiers
 
 
 def restore_original_kind(path, kind_str):

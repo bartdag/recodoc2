@@ -279,3 +279,8 @@ class GmaneParser(GenericMailParser):
                 int(match.group('second'))
                 )
         return date
+
+    def _process_content(self, message, load):
+        ucontent = self.xcontent.get_text_from_parent(load.entry_element, 0,
+                True).strip()
+        return ucontent

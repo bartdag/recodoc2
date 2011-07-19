@@ -24,7 +24,17 @@ SNIPPET_PACKAGE_LEN = len(SNIPPET_PACKAGE)
 
 UNKNOWN_PACKAGE_LEN = len(UNKNOWN_PACKAGE)
 
+
 ### FUNCTIONS ###
+
+def can_merge_java(current_snippet, new_snippet):
+    if is_cu_body(current_snippet) and not is_cu_body(new_snippet) and \
+            not is_class_body(new_snippet):
+        count_open = current_snippet.count('{')
+        count_closed = current_snippet.count('}')
+        return count_closed < count_open
+    else:
+        return True
 
 
 def is_field_ref(name):

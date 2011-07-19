@@ -773,3 +773,46 @@ class StrictFilter(object):
         result = FilterResult(self, strict_filtered, new_potentials, options)
 
         return result
+
+
+class UniqueHierarchyFilter(object):
+
+    def process_hierarchies(self, hierarchies, hierarchy, container):
+        done = False
+        hierarchy_list = hierarchies[0]
+        hier = hierarchy_list[0]
+        fqns = {element.fqn for element in hier}
+        for cont in hierarchy:
+            if cont.fqn in fqns:
+                done = True
+                hierarchy_list.append(hierarchy)
+                break
+
+        if not done:
+            hierarchies.append([hierarchy])
+
+    @empty_potentials
+    @context_filter
+    def filter(self, filter_input):
+        #print('Filtering {0}'.format(filter_input.element_name))
+        potentials = filter_input.potentials
+        hierarchies = []
+        result = FilterResult(self, False, potentials)
+        for potential in potentials:
+            container = get_container(potential)
+            hierarchy = ctx.get_hierarchy(container)
+            if len(hierarchies) == 0:
+                hierarchies.append([hierarchy])
+            else:
+                self.process_hierarchies(hierarchies, hierarchy, container) 
+
+            if len(hierarchies) > 1:
+                #print('Broke on {0}'.format(potential.fqn))
+                break
+
+        #print('Hierarchies: {0}'.format(len(hierarchies)))
+
+        if len(hierarchies) == 1 and len(hierarchies[0]) > 1:
+            result = FilterResult(self, True, potentials)
+
+        return result

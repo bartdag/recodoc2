@@ -13,7 +13,8 @@ from docutil.commands_util import chunk_it, import_clazz, download_html_tree
 from project.models import Person
 from codebase.actions import get_default_p_classifiers,\
         get_default_kind_dict, get_java_strategies,\
-        parse_single_code_references, get_project_code_words
+        parse_single_code_references, get_project_code_words,\
+        get_default_s_classifiers
 from codebase.models import CHANNEL_SOURCE, CodeSnippet
 from channel.models import SupportChannel, SupportThread, Message
 
@@ -272,7 +273,7 @@ class GenericParser(object):
 
         self._process_title_references(message, load)
         (text_paragraphs, snippets) = filter_paragraphs(paragraphs,
-                get_default_p_classifiers())
+                get_default_p_classifiers(), get_default_s_classifiers())
         self._parse_paragraphs(message, load, text_paragraphs)
         self._save_snippets(message, load, snippets)
 

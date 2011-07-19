@@ -559,6 +559,7 @@ class JavaMethodLinker(gl.DefaultLinker):
                 filters.ContextFilter(ctx.GLOBAL),
                 filters.ContextFilter(ctx.GLOBAL, True),
                 filters.ContextNameSimilarityFilter(),
+                filters.UniqueHierarchyFilter(),
                 filters.AbstractTypeFilter(),
                 filters.StrictFilter(),
                 ]

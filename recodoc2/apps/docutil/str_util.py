@@ -217,7 +217,15 @@ def get_paragraph_language(paragraph, p_classifiers):
     return p_language
 
 
-def filter_paragraphs(paragraphs, p_classifiers):
+def merge_snippets(current_snippet, new_snippet, language, s_classifiers):
+    if s_classifiers is None or language not in s_classifiers:
+        return True
+    s_classifier = s_classifiers[language]
+
+    return s_classifier('\n'.join(current_snippet), '\n'.join(new_snippet))
+
+
+def filter_paragraphs(paragraphs, p_classifiers, s_classifiers=None):
     current_language = None
     current_snippet = []
     snippets = []
@@ -229,7 +237,9 @@ def filter_paragraphs(paragraphs, p_classifiers):
         if language == STOP_LANGUAGE:
             break
         elif language != OTHER_LANGUAGE:
-            if language == current_language:
+            if language == current_language and \
+                    merge_snippets(current_snippet, paragraph, language,
+                            s_classifiers):
                 current_snippet.append('')
                 current_snippet.extend(paragraph)
             else:
