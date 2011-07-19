@@ -518,6 +518,18 @@ CLASS_DECLARATION_RE = re.compile(r'''
     ''', re.VERBOSE)
 
 
+CLASS_DECLARATION_FUZZY_RE = re.compile(r'''
+    [^{};]*
+    \s*
+    (public|protected|private|static|final)*
+    \s*
+    (class|interface|enum) # type of class
+    (\s+)                  # whitespaces
+    ([^{]+)                # name of class + generics + extends/implements
+    {                      # bracket
+    ''', re.VERBOSE)
+
+
 ANONYMOUS_CLASS_DECLARATION_RE = re.compile(r'''
     ([^;{}()]*)            # anything is accepted except java lines
     \bnew\s                # new
@@ -556,7 +568,8 @@ EXCEPTION_PATTERNS = [EXCEPTION_PATTERN1, EXCEPTION_PATTERN2,
 def is_cu_body(text):
     text = clean_comments(text)
     new_text = su.clean_for_re(text)
-    return CLASS_DECLARATION_RE.search(new_text) is not None
+    return CLASS_DECLARATION_RE.search(new_text) is not None or\
+            CLASS_DECLARATION_FUZZY_RE.match(new_text) is not None
 
 
 def is_class_body(text):
