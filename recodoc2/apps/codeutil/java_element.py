@@ -519,7 +519,7 @@ CLASS_DECLARATION_RE = re.compile(r'''
 
 
 CLASS_DECLARATION_FUZZY_RE = re.compile(r'''
-    [^{};]*
+    ([^{};]*\s+)*          # \s+ prevents .class to match!
     \s*
     (public|protected|private|static|final)*
     \s*
