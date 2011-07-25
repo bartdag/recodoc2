@@ -83,6 +83,9 @@ class PHPBBForumParser(GenericThreadParser):
     def __init__(self, channel_pk, parse_refs, lock):
         super(PHPBBForumParser, self).__init__(channel_pk, parse_refs, lock)
 
+    def _pre_parse_entry(self, load, local_paths, url):
+        load.include_stop = False
+
     def _get_messages(self, load):
         message_elements = self.xmessages.get_elements(load.tree)
         if len(message_elements) > 0:
@@ -127,6 +130,12 @@ class PHPBBForumParser(GenericThreadParser):
 
         return date
 
+    def _process_title_references(self, message, load):
+        title = message.title.lower()
+        if not title.startswith('re:'):
+            super(PHPBBForumParser, self)._process_title_references(message,
+                    load)
+
 
 class FUDEclipseForumParser(GenericThreadParser):
 
@@ -156,6 +165,9 @@ class FUDEclipseForumParser(GenericThreadParser):
     def __init__(self, channel_pk, parse_refs, lock):
         super(FUDEclipseForumParser, self).__init__(channel_pk, parse_refs,
                 lock)
+
+    def _pre_parse_entry(self, load, local_paths, url):
+        load.include_stop = False
 
     def _process_date_text(self, message, load, date_text):
         match = self.date_regex.search(date_text)

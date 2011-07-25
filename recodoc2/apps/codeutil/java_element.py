@@ -20,6 +20,8 @@ UNKNOWN_PACKAGE = 'UNKNOWNP'
 
 UNKNOWN_CONTAINER = 'UNKNOWNP.UNKNOWN'
 
+UNKNOWN_CLASS = 'UNKNOWN'
+
 SNIPPET_PACKAGE_LEN = len(SNIPPET_PACKAGE)
 
 UNKNOWN_PACKAGE_LEN = len(UNKNOWN_PACKAGE)
@@ -99,9 +101,9 @@ def get_class_name(name, is_handle, skip_fancy_search=False):
     if is_handle:
         parts = name.split(HANDLE_SEPARATOR)
         (simple, fqn) = clean_java_name(parts[1])
-    elif is_field_ref(name):
-        full_name = get_package_name(name)
-        (simple, fqn) = clean_java_name(full_name)
+    #elif is_field_ref(name):
+        #full_name = get_package_name(name)
+        #(simple, fqn) = clean_java_name(full_name)
     else:
         new_content = name
         match1 = CALL_CHAIN_TARGET_RE.search(name)
@@ -114,8 +116,8 @@ def get_class_name(name, is_handle, skip_fancy_search=False):
             new_content = match2.group('target')
         elif match3 and not skip_fancy_search:
             new_content = match3.group('target')
-        #elif not skip_fancy_search and is_field_ref(name):
-            #new_content = get_package_name(name)
+        elif is_field_ref(name):
+            new_content = get_package_name(name)
         else:
             new_content = get_clean_name(name)
 
@@ -184,6 +186,10 @@ def clean_comments(snippet):
         else:
             skip = False
             new_snippet += line + '\n'
+    return new_snippet
+
+def clean_dots(snippet):
+    new_snippet = SNIPPET_DOTS.sub('', snippet)
     return new_snippet
 
 
@@ -505,6 +511,23 @@ ANNOTATION_RE = re.compile(r'''
     )
     ''', re.VERBOSE)
 
+PACKAGE_DECLARATION_RE = re.compile(r'''
+    ^
+    \s*
+    package\s
+    [^;]+
+    \s*
+    ;
+    ''', re.VERBOSE)
+
+IMPORT_DECLARATION_RE = re.compile(r'''
+    ^
+    \s*
+    import\s
+    [^;]+
+    \s*
+    ;
+    ''', re.VERBOSE)
 
 CLASS_DECLARATION_RE = re.compile(r'''
     ^
@@ -538,6 +561,9 @@ ANONYMOUS_CLASS_DECLARATION_RE = re.compile(r'''
     [\s]*{
     ''', re.VERBOSE)
 
+# Used to remove three dots in code snippets. Should be really useful!
+SNIPPET_DOTS = re.compile(r'\s\.{3,}\s')
+
 
 ### REGEX FIELDS ###
 
@@ -567,13 +593,17 @@ EXCEPTION_PATTERNS = [EXCEPTION_PATTERN1, EXCEPTION_PATTERN2,
 
 def is_cu_body(text):
     text = clean_comments(text)
+    text = clean_dots(text)
     new_text = su.clean_for_re(text)
     return CLASS_DECLARATION_RE.search(new_text) is not None or\
-            CLASS_DECLARATION_FUZZY_RE.match(new_text) is not None
+            CLASS_DECLARATION_FUZZY_RE.match(new_text) is not None or\
+            PACKAGE_DECLARATION_RE.search(new_text) is not None or\
+            IMPORT_DECLARATION_RE.search(new_text) is not None
 
 
 def is_class_body(text):
     text = clean_comments(text)
+    text = clean_dots(text)
     new_text = su.clean_for_re(text)
     return ANONYMOUS_CLASS_DECLARATION_RE.match(new_text) is None and\
            METHOD_DECLARATION_RE.match(new_text) is not None

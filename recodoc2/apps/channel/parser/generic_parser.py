@@ -137,6 +137,7 @@ class ParserLoad(object):
         self.sub_entries = []
         self.code_words = None
         self.entry_element = None
+        self.include_stop = True
 
 
 class GenericParser(object):
@@ -273,7 +274,8 @@ class GenericParser(object):
 
         self._process_title_references(message, load)
         (text_paragraphs, snippets) = filter_paragraphs(paragraphs,
-                get_default_p_classifiers(), get_default_s_classifiers())
+                get_default_p_classifiers(load.include_stop),
+                get_default_s_classifiers())
         self._parse_paragraphs(message, load, text_paragraphs)
         self._save_snippets(message, load, snippets)
 

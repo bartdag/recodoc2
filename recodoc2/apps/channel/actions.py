@@ -265,8 +265,15 @@ def show_message(msg_pk):
     print('Total links: {0}'.format(count))
 
 
-def show_messageu(url):
-    message = Message.objects.filter(url=url).all()[0]
+def show_messageu(url, mindex=None):
+    if url.find('hibernate') > -1:
+        index = url.find('&start=0')
+        if index > -1:
+            url = url[:index]
+    query = Message.objects.filter(url=url)
+    if mindex is not None:
+        query = query.filter(index=mindex)
+    message = query.all()[0]
     show_message(message.pk)
 
 

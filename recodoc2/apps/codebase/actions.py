@@ -504,7 +504,8 @@ def compute_filters(codebase):
         simple_name = clean_java_name(cfilter.fqn)[0].lower()
         simple_filters[simple_name].append(cfilter)
 
-    fqn_filters = {cfilter.fqn.lower(): cfilter for cfilter in filters}
+    fqn_filters = {clean_java_name(cfilter.fqn.lower()): cfilter
+            for cfilter in filters}
 
     return (simple_filters, fqn_filters)
 
@@ -763,13 +764,14 @@ def parse_single_code_references(text, kind_hint, kind_strategies, kinds,
     return single_refs
 
 
-def get_default_p_classifiers():
+def get_default_p_classifiers(include_stop=True):
     p_classifiers = []
 
     p_classifiers.append((is_empty_lines, REPLY_LANGUAGE))
     p_classifiers.append((is_reply_lines, REPLY_LANGUAGE))
     p_classifiers.append((is_reply_header, REPLY_LANGUAGE))
-    p_classifiers.append((is_rest_reply, STOP_LANGUAGE))
+    if include_stop:
+        p_classifiers.append((is_rest_reply, STOP_LANGUAGE))
     p_classifiers.append((
         partial(is_java_lines, filters=get_default_filters()[JAVA_LANGUAGE]),
         JAVA_LANGUAGE))

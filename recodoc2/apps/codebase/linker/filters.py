@@ -140,7 +140,8 @@ def custom_filter(filter_inst, potentials, scode_reference, simple, fqn,
         afilter = fqn_filters[fqn]
         if valid_filter(scode_reference, afilter, check_member):
             result = FilterResult(filter_inst, True, [])
-    elif fqn == simple and simple in simple_filters:
+    # Let's try this!
+    if fqn == simple and simple in simple_filters:
         for afilter in simple_filters[simple]:
             if valid_filter(scode_reference, afilter, check_member):
                 result = FilterResult(filter_inst, True, [])
@@ -796,8 +797,16 @@ class UniqueHierarchyFilter(object):
     def filter(self, filter_input):
         #print('Filtering {0}'.format(filter_input.element_name))
         potentials = filter_input.potentials
-        hierarchies = []
+        fqn_container = filter_input.fqn_container
+        (simple, _) = je.clean_java_name(fqn_container)
         result = FilterResult(self, False, potentials)
+
+        # If we know the container, we don't want to force this one
+        # as it is quite a last resort context filter (permissive).
+        if not (simple == je.UNKNOWN or simple.isupper() or simple.islower()):
+            return result
+
+        hierarchies = []
         for potential in potentials:
             container = get_container(potential)
             hierarchy = ctx.get_hierarchy(container)
