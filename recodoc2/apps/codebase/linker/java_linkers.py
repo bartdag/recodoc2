@@ -397,6 +397,11 @@ class JavaClassLinker(gl.DefaultLinker):
 class JavaPostClassLinker(gl.DefaultLinker):
     name = 'javapostclass'
 
+    def __init__(self, project, prelease, codebase, source, srelease=None,
+            filtered_ids=None):
+        super(JavaPostClassLinker, self).__init__(project, prelease, codebase,
+                source, srelease, filtered_ids)
+
     def link_references(self, progress_monitor=NullProgressMonitor(),
             local_object_id=None):
 
@@ -412,6 +417,11 @@ class JavaPostClassLinker(gl.DefaultLinker):
         for linkset in queryset_iterator(linksets):
             log.reset_variables()
             scode_reference = linkset.code_reference
+
+            if self._reject_reference(scode_reference):
+                progress_monitor.work('Skipped reference', 1)
+                continue
+
             lcount = linkset.links.count()
             if lcount <= 1:
                 log.log_type('', '', scode_reference,
