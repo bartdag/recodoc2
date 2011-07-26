@@ -3,7 +3,8 @@ import logging
 import gc
 from py4j.java_gateway import JavaGateway
 from codebase.models import CodeElementKind, CodeSnippet, SingleCodeReference
-from codeutil.java_element import is_cu_body, is_class_body
+from codeutil.java_element import is_cu_body, is_class_body, clean_intro, \
+    clean_dots, clean_comments
 from docutil.progress_monitor import NullProgressMonitor
 from traceback import print_exc
 
@@ -91,6 +92,9 @@ class JavaSnippetParser(object):
 
     def _get_cu(self, text, options):
         try:
+            text = clean_comments(text)
+            text = clean_dots(text)
+            text = clean_intro(text)
             if is_cu_body(text):
                 cu = self.PPACoreUtil.getCU(text, options, self.REQUEST_NAME)
             elif is_class_body(text):

@@ -188,6 +188,19 @@ def clean_comments(snippet):
             new_snippet += line + '\n'
     return new_snippet
 
+def clean_intro(snippet):
+    new_snippet = snippet
+    lines = snippet.split('\n')
+    index_from = 0
+    if len(lines) > 0 and lines[0].rstrip().endswith(':'):
+        index_from = 1
+    elif len(lines) > 1 and lines[1].rstrip().endswith(':'):
+        index_from = 2
+    if index_from > 0:
+        new_lines = lines[index_from:]
+        new_snippet = '\n'.join(new_lines)
+    return new_snippet
+
 def clean_dots(snippet):
     new_snippet = SNIPPET_DOTS.sub('', snippet)
     return new_snippet
@@ -229,6 +242,23 @@ class BuilderFilter(object):
             elif line.find('={') > -1 and not line.startswith('@'):
                 builder_syntax = True
         return builder_syntax
+
+
+class MacroFilter(object):
+
+    def filter(self, lines, long_line):
+        macro_filter = False
+
+        for line in lines:
+            new_line = line.strip().replace(' ', '')
+            if new_line == '':
+                continue
+            if new_line[0] == '{' and new_line[-1] == '}' and \
+                not new_line[1].isalnum() and new_line[1] != '/':
+                macro_filter = True
+                break
+
+        return macro_filter
 
 
 ### REGEX METHODS ###
@@ -594,6 +624,7 @@ EXCEPTION_PATTERNS = [EXCEPTION_PATTERN1, EXCEPTION_PATTERN2,
 def is_cu_body(text):
     text = clean_comments(text)
     text = clean_dots(text)
+    text = clean_intro(text)
     new_text = su.clean_for_re(text)
     return CLASS_DECLARATION_RE.search(new_text) is not None or\
             CLASS_DECLARATION_FUZZY_RE.match(new_text) is not None or\
@@ -604,6 +635,7 @@ def is_cu_body(text):
 def is_class_body(text):
     text = clean_comments(text)
     text = clean_dots(text)
+    text = clean_intro(text)
     new_text = su.clean_for_re(text)
     return ANONYMOUS_CLASS_DECLARATION_RE.match(new_text) is None and\
            METHOD_DECLARATION_RE.match(new_text) is not None

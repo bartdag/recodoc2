@@ -21,7 +21,7 @@ from codeutil.java_element import ClassMethodStrategy, MethodStrategy,\
         FieldStrategy, OtherStrategy, AnnotationStrategy, SQLFilter,\
         BuilderFilter, JAVA_LANGUAGE, is_java_snippet, is_java_lines,\
         is_exception_trace_lines, JAVA_EXCEPTION_TRACE, clean_java_name,\
-        can_merge_java
+        can_merge_java, MacroFilter
 from codeutil.other_element import FileStrategy, IgnoreStrategy,\
         IGNORE_KIND, EMAIL_PATTERN_RE, URL_PATTERN_RE, OTHER_LANGUAGE,\
         is_empty_lines, is_log_lines, LOG_LANGUAGE
@@ -616,7 +616,7 @@ def get_java_strategies():
 
 def get_default_filters():
     filters = {
-        JAVA_LANGUAGE: [SQLFilter(), BuilderFilter()],
+        JAVA_LANGUAGE: [SQLFilter(), BuilderFilter(), MacroFilter()],
         XML_LANGUAGE: [],
         OTHER_LANGUAGE: [],
         }
