@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 import re
-from docutil.etree_util import HierarchyXPath
+from docutil.etree_util import HierarchyXPath, SingleXPath
 import doc.parser.common_parsers as cp
 
 
@@ -23,3 +23,14 @@ class HibernateParser(cp.NewDocBookParser):
 
     def __init__(self, document_pk):
         super(HibernateParser, self).__init__(document_pk)
+
+
+class JodaParser(cp.MavenParser):
+
+    xparagraphs = SingleXPath('.//pre')
+
+    def _process_init_page(self, page, load):
+        load.mix_mode = True
+
+    def _process_mix_mode_section(self, page, load, section):
+        return section.title.strip().lower() == 'upgrade'

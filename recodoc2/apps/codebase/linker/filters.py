@@ -797,13 +797,19 @@ class UniqueHierarchyFilter(object):
     def filter(self, filter_input):
         #print('Filtering {0}'.format(filter_input.element_name))
         potentials = filter_input.potentials
+
         fqn_container = filter_input.fqn_container
-        (simple, _) = je.clean_java_name(fqn_container)
+        if fqn_container is not None and fqn_container != '':
+            (simple, _) = je.clean_java_name(fqn_container)
+        else:
+            simple = None
+
         result = FilterResult(self, False, potentials)
 
         # If we know the container, we don't want to force this one
         # as it is quite a last resort context filter (permissive).
-        if not (simple == je.UNKNOWN or simple.isupper() or simple.islower()):
+        if not (simple is None or simple == je.UNKNOWN_CLASS or 
+                simple.isupper() or simple.islower()):
             return result
 
         hierarchies = []

@@ -559,10 +559,19 @@ IMPORT_DECLARATION_RE = re.compile(r'''
     ;
     ''', re.VERBOSE)
 
+FIELD_DECLARATION_RE = re.compile(r'''
+    ^
+    \s*
+    ((public|protected|private|static|final)\s+)*
+    \s*
+    ([^;]+)
+    ;
+    ''', re.VERBOSE)
+
 CLASS_DECLARATION_RE = re.compile(r'''
     ^
     \s*
-    (public|protected|private|static|final)*
+    ((public|protected|private|static|final)\s+)*
     \s*
     (class|interface|enum) # type of class
     (\s+)                  # whitespaces
@@ -574,7 +583,7 @@ CLASS_DECLARATION_RE = re.compile(r'''
 CLASS_DECLARATION_FUZZY_RE = re.compile(r'''
     ([^{};]+\s+)?
     \s*
-    (public|protected|private|static|final)*
+    ((public|protected|private|static|final)\s+)*
     \s*
     (class|interface|enum) # type of class
     (\s+)                  # whitespaces
@@ -637,8 +646,9 @@ def is_class_body(text):
     text = clean_dots(text)
     text = clean_intro(text)
     new_text = su.clean_for_re(text)
-    return ANONYMOUS_CLASS_DECLARATION_RE.match(new_text) is None and\
-           METHOD_DECLARATION_RE.match(new_text) is not None
+    return (ANONYMOUS_CLASS_DECLARATION_RE.match(new_text) is None and
+           METHOD_DECLARATION_RE.match(new_text) is not None) or\
+            FIELD_DECLARATION_RE.match(new_text)
 
 
 ### Java Snippet Regognition ###
