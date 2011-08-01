@@ -562,7 +562,7 @@ IMPORT_DECLARATION_RE = re.compile(r'''
 FIELD_DECLARATION_RE = re.compile(r'''
     ^
     \s*
-    ((public|protected|private|static|final)\s+)*
+    ((public|protected|private|static|final)\s+)+
     \s*
     ([^;]+)
     ;
@@ -648,7 +648,7 @@ def is_class_body(text):
     new_text = su.clean_for_re(text)
     return (ANONYMOUS_CLASS_DECLARATION_RE.match(new_text) is None and
            METHOD_DECLARATION_RE.match(new_text) is not None) or\
-            FIELD_DECLARATION_RE.match(new_text)
+            FIELD_DECLARATION_RE.match(new_text) is not None
 
 
 ### Java Snippet Regognition ###

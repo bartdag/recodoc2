@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-import re
 from docutil.etree_util import HierarchyXPath, SingleXPath
 import doc.parser.common_parsers as cp
 
@@ -15,7 +14,8 @@ class HTClientParser(cp.NewDocBookParser):
         load.mix_mode = True
 
     def _process_mix_mode_section(self, page, load, section):
-        return section.number.startswith('6')
+        return section.number.startswith('6') and \
+                not section.title.startswith('Chapter')
 
 
 class HibernateParser(cp.NewDocBookParser):
