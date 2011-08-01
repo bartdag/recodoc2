@@ -187,6 +187,7 @@ Step 2. Install the required dependencies
   pip install pyenchant
   pip install Py4J
   pip install chardet
+  pip install django-devserver
 
   # For MySQL
   pip install MySQL-python
