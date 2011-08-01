@@ -219,8 +219,11 @@ class FQNCaseFilter(object):
                 fqn.find(je.SNIPPET_PACKAGE) < 0:
             new_potentials = []
             for potential in potentials:
+                # We apply the same treatment for types and methods... for
+                # now...
                 if potential.kind.is_type:
-                    if potential.fqn.lower() == fqn.lower():
+                    if potential.fqn.lower() == fqn.lower() or\
+                            potential.simple_name == simple:
                         new_potentials.append(potential)
                 else:
                     # In english: the fqn must perfectly match or the case must
