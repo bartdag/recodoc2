@@ -12,7 +12,7 @@ import enchant
 from py4j.java_gateway import JavaGateway
 from django.conf import settings
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, Q
 from codeutil.parser import is_valid_match, find_parent_reference,\
         create_match
 from codeutil.xml_element import XMLStrategy, XML_LANGUAGE, is_xml_snippet,\
@@ -422,7 +422,7 @@ def link_code(pname, bname, release, linker_name, source, source_release=None,
 
     linker_cls_name = LINKERS[linker_name]
     linker_cls = import_clazz(linker_cls_name)
-    linker = linker_cls(project, prelease, codebase, source, srelease, 
+    linker = linker_cls(project, prelease, codebase, source, srelease,
             (f_ids, f_ids_level))
 
     progress_monitor = CLIProgressMonitor(min_step=1.0)
@@ -474,7 +474,86 @@ def restore_kinds(pname, release='-1', source='-1'):
     progress_monitor.done()
 
 
+def recommend_filters(pname, bname, release, nofilter=False):
+    prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    codebase = CodeBase.objects.filter(project_release=prelease).\
+            filter(name=bname)[0]
+    if not nofilter:
+        (simple_filters, _) = get_filters(codebase)
+    else:
+        simple_filters = []
+    d = enchant.Dict('en-US')
+    single_types = recommend_single_types(codebase, simple_filters, d)
+    acronyms = recommend_acronyms(codebase, simple_filters)
+    single_fields = recommend_single_fields(codebase, simple_filters)
+    print_recommendations(single_types, acronyms, single_fields)
+
+
 ### ACTIONS USED BY OTHER ACTIONS ###
+
+def recommend_single_types(codebase, simple_filters, d):
+    single_types = set()
+    types = CodeElement.objects.\
+            filter(codebase=codebase).\
+            filter(kind__is_type=True).\
+            iterator()
+
+    for element in types:
+        simple_name = element.simple_name
+        tokens = tokenize(simple_name)
+        if len(tokens) == 1:
+            lower = simple_name.lower()
+            if lower not in simple_filters and d.check(lower):
+                single_types.add(simple_name)
+
+    return single_types
+
+
+def recommend_acronyms(codebase, simple_filters):
+    acronyms = set()
+    types = CodeElement.objects.\
+            filter(codebase=codebase).\
+            filter(kind__is_type=True).\
+            iterator()
+
+    for element in types:
+        simple_name = element.simple_name
+        if simple_name.replace('_', '').isupper() and \
+                simple_name.lower() not in simple_filters:
+            acronyms.add(simple_name)
+
+    return acronyms
+
+
+def recommend_single_fields(codebase, simple_filters):
+    single_fields = set()
+    fields = CodeElement.objects.\
+            filter(Q(kind__kind='field') |
+                   Q(kind__kind='enumeration value') |
+                   Q(kind__kind='annotation field')).iterator()
+
+    for element in fields:
+        simple_name = element.simple_name
+        if simple_name.replace('_','a').isupper() and \
+                simple_name.lower() not in simple_filters:
+            single_fields.add(simple_name)
+
+    return single_fields
+
+
+def print_recommendations(single_types, acronyms, single_fields):
+    print('FILTER RECOMMENDATIONS')
+    print('\nSINGLE TYPE THAT LOOK LIKE WORDS')
+    for single_type in single_types:
+        print(single_type)
+    print('\nSINGLE TYPES THAT LOOK LIKE ACRONYMS')
+    for acronym in acronyms:
+        print(acronym)
+    print('\nFIELDS THAT LOOK LIKE ACRONYMS/WORDS')
+    for single_field in single_fields:
+        print(single_field)
+
 
 def compute_f_ids(filtered_ids_path, filtered_ids_level):
     if filtered_ids_level is not None:
@@ -791,7 +870,7 @@ def get_default_s_classifiers():
 
 def restore_original_kind(path, kind_str):
     kind = CodeElementKind.objects.get(kind=kind_str)
-    with codecs.open(path,'r', 'utf8') as f:
+    with codecs.open(path, 'r', 'utf8') as f:
         for line in f:
             new_line = line.strip()
             if new_line.startswith('Ref pk:'):
