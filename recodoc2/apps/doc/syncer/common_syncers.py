@@ -3,6 +3,23 @@ from doc.syncer.generic_syncer import GenericSyncer, SingleURLSyncer
 from docutil.url_util import get_sanitized_url
 import os
 
+class JavadocSyncer(SingleURLSyncer):
+
+    def _should_avoid(self, link):
+        should_avoid = super(JavadocSyncer, self)._should_avoid(link)
+
+        return should_avoid or\
+                link.endswith('package-tree.html') or\
+                link.endswith('overview-tree.html') or\
+                link.endswith('package-use.html') or\
+                link.endswith('deprecated-list.html') or\
+                link.find('/index-files/') > -1 or\
+                link.endswith('help-doc.html') or\
+                link.endswith('allclasses-noframe.html') or\
+                link.find('/class-use/') > -1 or\
+                link.endswith('index.html') or\
+                link.find('?') > -1
+
 
 class HtmlUnitSyncer(GenericSyncer):
     def __init__(self, input_url, output_url):

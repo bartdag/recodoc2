@@ -235,3 +235,7 @@ class XStreamParser(FlatParentMixin, NoNumberMixin, GenericParser):
 
     def _process_init_page(self, page, load):
         load.mix_mode = True
+
+
+class JavadocParser(FlatParentMixin, NoNumberMixin, GenericParser):
+    pass
