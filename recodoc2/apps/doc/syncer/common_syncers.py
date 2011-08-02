@@ -18,7 +18,21 @@ class JavadocSyncer(SingleURLSyncer):
                 link.endswith('allclasses-noframe.html') or\
                 link.find('/class-use/') > -1 or\
                 link.endswith('index.html') or\
-                link.find('?') > -1
+                link.find('?') > -1 
+                
+                # To add to a syncer to only get certain packages...
+                #or\
+                #(link.find('docs/api/) > -1 and link.find('api/java/') < 0)
+
+
+class JavaJavadocSyncer(JavadocSyncer):
+
+    def _should_avoid(self, link):
+        should_avoid = super(JavaJavadocSyncer, self)._should_avoid(link)
+
+        return should_avoid or\
+                (link.find('docs/api/') > -1 and
+                 link.find('docs/api/java/') < 0)
 
 
 class HtmlUnitSyncer(GenericSyncer):
