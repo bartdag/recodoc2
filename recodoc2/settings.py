@@ -18,7 +18,8 @@ MANAGERS = ADMINS
 
 CACHES = {
         'default': {
-            'BACKEND': 'locmem://',
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'recodoc2-main',
             }
         }
 
