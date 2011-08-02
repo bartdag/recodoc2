@@ -21,6 +21,7 @@ from codebase.actions import start_eclipse, stop_eclipse, check_eclipse,\
 from project.models import Project
 from project.actions import create_project_local, create_project_db,\
                             create_release_db
+from docutil.cache_util import clear_cache
 
 
 class EclipseTest(TestCase):
@@ -149,6 +150,7 @@ class CodeParserTest(TransactionTestCase):
 
     @transaction.commit_on_success
     def setUp(self):
+        clear_cache()
         logging.basicConfig(level=logging.WARNING)
         create_code_element_kinds()
         self.project = create_project_db('Project 1', 'http://www.example1.com',
@@ -160,6 +162,7 @@ class CodeParserTest(TransactionTestCase):
     def tearDown(self):
         Project.objects.all().delete()
         CodeElementKind.objects.all().delete()
+        clear_cache()
 
     @transaction.autocommit
     def testCodeWords(self):
@@ -173,7 +176,7 @@ class CodeParserTest(TransactionTestCase):
         self.assertTrue('rootapplication' in code_words)
         self.assertTrue('tag2' in code_words)
         self.assertTrue('dog' not in code_words)
-        self.assertEqual(10, len(code_words))
+        self.assertEqual(12, len(code_words))
 
     @transaction.autocommit
     def testJavaDiff(self):
@@ -188,12 +191,12 @@ class CodeParserTest(TransactionTestCase):
         self.assertEqual(1, cdiff.added_packages.count())
         self.assertEqual(0, cdiff.removed_packages.count())
 
-        self.assertEqual(18, cdiff.types_size_from)
+        self.assertEqual(20, cdiff.types_size_from)
         self.assertEqual(19, cdiff.types_size_to)
         self.assertEqual(1, cdiff.added_types.count())
-        self.assertEqual(1, cdiff.removed_types.count())
+        self.assertEqual(2, cdiff.removed_types.count())
 
-        self.assertEqual(44, cdiff.methods_size_from)
+        self.assertEqual(45, cdiff.methods_size_from)
         self.assertEqual(44, cdiff.methods_size_to)
         self.assertEqual(1, cdiff.added_methods.count())
         self.assertEqual(1, cdiff.removed_methods.count())
@@ -389,9 +392,9 @@ class CodeParserTest(TransactionTestCase):
         self.assertEqual('java.lang.String', fooBar.fieldelement.type_fqn)
         self.assertEqual(6, ce.containees.count())
 
-        self.assertEqual(106, codebase.code_elements.count())
+        self.assertEqual(109, codebase.code_elements.count())
 
         clear_code_elements('project1', 'core', '3.0', 'xml')
-        self.assertEqual(106, codebase.code_elements.count())
+        self.assertEqual(109, codebase.code_elements.count())
         clear_code_elements('project1', 'core', '3.0')
         self.assertEqual(0, codebase.code_elements.count())

@@ -7,6 +7,7 @@ import time
 from traceback import print_exc
 from django.db import connection
 from py4j.java_gateway import JavaGateway
+from py4j.protocol import Py4JJavaError
 from codebase.models import CodeElementKind, CodeElement, MethodElement,\
         ParameterElement, FieldElement
 from docutil.progress_monitor import NullProgressMonitor
@@ -96,16 +97,26 @@ class CUWorker(Thread):
         self.enumeration_value_kind = CodeElementKind.objects.get(
                 kind='enumeration value')
 
-        self.ASTNode = self.gateway.jvm.org.eclipse.jdt.core.dom.ASTNode
+        self.ASTParser = self.gateway.jvm.org.eclipse.jdt.core.dom.ASTParser
+        self.JLS3 = self.gateway.jvm.org.eclipse.jdt.core.dom.AST.JLS3
+        self.ast_parser = self.ASTParser.newParser(self.JLS3)
+        self.IJavaElement = self.gateway.jvm.org.eclipse.jdt.core.IJavaElement
         self.Modifier = self.gateway.jvm.org.eclipse.jdt.core.dom.Modifier
-        self.type_type = self.ASTNode.TYPE_DECLARATION
-        self.annotation_type = self.ASTNode.ANNOTATION_TYPE_DECLARATION
-        self.enumeration_type = self.ASTNode.ENUM_DECLARATION
-        self.method_type = self.ASTNode.METHOD_DECLARATION
-        self.field_type = self.ASTNode.FIELD_DECLARATION
-        #self.enumeration_value_type = self.ASTNode.ENUM_CONSTANT_DECLARATION
-        self.annotation_field_type = \
-                self.ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION
+
+    def _get_type_bindings(self, cunit):
+        children = cunit.getChildren()
+        new_types = []
+        type_type = self.IJavaElement.TYPE
+        for child in children:
+            if child.getElementType() == type_type:
+                new_types.append(child)
+
+        array = self.gateway.new_array(self.IJavaElement, len(new_types))
+        for i, type_element in enumerate(new_types):
+            array[i] = type_element
+        self.ast_parser.setSource(cunit)
+        bindings = self.ast_parser.createBindings(array, None)
+        return bindings
 
     def run(self):
         while True:
@@ -116,8 +127,11 @@ class CUWorker(Thread):
             (cu, package_code_element, cu_name, work_amount) = item
             self.progress_monitor.info('Parsing {0}'.format(cu_name))
             try:
-                for jtype in cu.types():
-                    self._parse_type(jtype, package_code_element)
+                for type_binding in self._get_type_bindings(cu):
+                    if type_binding is None:
+                        # This is an anonymous class in a .class
+                        continue
+                    self._parse_type(type_binding, package_code_element)
             except Exception:
                 print_exc()
 
@@ -132,8 +146,9 @@ class CUWorker(Thread):
         # a custom thread...
         connection.close()
 
-    def _parse_type(self, jtype, container_code_element):
-        type_binding = jtype.resolveBinding()
+    def _parse_type(self, type_binding, container_code_element):
+        if type_binding.isAnonymous():
+            return
         java_element = type_binding.getJavaElement()
         (simple_name, fqn) = clean_java_name(type_binding.getQualifiedName())
         deprecated = type_binding.isDeprecated()
@@ -150,42 +165,36 @@ class CUWorker(Thread):
                 abstract=abstract)
         type_code_element.binding = type_binding
 
-        node_type = jtype.getNodeType()
-        if node_type == self.annotation_type:
+        if type_binding.isAnnotation():
             type_code_element.kind = self.annotation_kind
-        elif node_type == self.enumeration_type:
+        elif type_binding.isEnum():
             type_code_element.kind = self.enumeration_kind
         else:
             type_code_element.kind = self.class_kind
         type_code_element.save()
         type_code_element.containers.add(container_code_element)
 
-        self._parse_type_members(jtype, type_code_element)
+        self._parse_type_members(type_binding, type_code_element)
 
-        self._parse_type_hierarchy(jtype, type_binding, type_code_element)
+        self._parse_type_hierarchy(type_binding, type_code_element)
 
-    def _parse_type_members(self, jtype, type_code_element):
-        for body_declaration in jtype.bodyDeclarations():
-            node_type = body_declaration.getNodeType()
-            if node_type == self.annotation_type or \
-                    node_type == self.enumeration_type or \
-                    node_type == self.type_type:
-                self._parse_type(body_declaration, type_code_element)
-            elif node_type == self.method_type:
-                self._parse_method(body_declaration, type_code_element)
-            elif node_type == self.field_type:
-                self._parse_field(body_declaration, type_code_element)
-            elif node_type == self.annotation_field_type:
-                self._parse_annotation_field(body_declaration,
-                        type_code_element)
+    def _parse_type_members(self, type_binding, type_code_element):
+        for method_binding in type_binding.getDeclaredMethods():
+            if method_binding.isAnnotationMember():
+                self._parse_annotation_field(method_binding, type_code_element)
+            else:
+                self._parse_method(method_binding, type_code_element)
 
-        # Special case for enumerations...
-        if type_code_element.kind == self.enumeration_kind:
-            for body_declaration in jtype.enumConstants():
-                self._parse_enumeration_value(body_declaration,
-                        type_code_element)
+        for field_binding in type_binding.getDeclaredFields():
+            if field_binding.isEnumConstant():
+                self._parse_enumeration_value(field_binding, type_code_element)
+            else:
+                self._parse_field(field_binding, type_code_element)
 
-    def _parse_type_hierarchy(self, jtype, type_binding, type_code_element):
+        for tbinding in type_binding.getDeclaredTypes():
+            self._parse_type(tbinding, type_code_element)
+
+    def _parse_type_hierarchy(self, type_binding, type_code_element):
         supertypes = [type_code_element.fqn]
         super_class = type_binding.getSuperclass()
         if super_class != None:
@@ -200,97 +209,108 @@ class CUWorker(Thread):
         if len(supertypes) > 1:
             self.hierarchies.append(supertypes)
 
-    def _parse_method(self, method, container_code_element):
+    def _parse_method(self, method_binding, container_code_element):
         # method header
-        method_binding = method.resolveBinding()
-        if not self._is_private(method_binding):
-            java_element = method_binding.getJavaElement()
-            simple_name = method_binding.getName()
-            (_, fqn) = clean_java_name(
-                    method_binding.getDeclaringClass().getQualifiedName())
-            fqn = fqn + '.' + simple_name
-            parameters = method_binding.getParameterTypes()
-            parameter_declarations = method.parameters()
-            params_length = len(parameters)
-            (return_simple_name, return_fqn) = clean_java_name(
-                    method_binding.getReturnType().getQualifiedName())
-            deprecated = method_binding.isDeprecated()
-            
-            type_binding = container_code_element.binding
-            abstract = self.Modifier.isAbstract(method_binding.getModifiers())\
-                    or (type_binding.isInterface() and 
-                        not type_binding.isAnnotation())
-            
-            method_code_element = MethodElement(codebase=self.codebase,
-                    kind=self.method_kind, simple_name=simple_name,
+        if self._is_private(method_binding):
+            return
+
+        java_element = method_binding.getJavaElement()
+        if java_element is None:
+            # This means that the method was inferred like default
+            # constructor.
+            # This is for compatibility with previous recodoc.
+            return
+
+        simple_name = method_binding.getName()
+        (_, fqn) = clean_java_name(
+                method_binding.getDeclaringClass().getQualifiedName())
+        fqn = fqn + '.' + simple_name
+        parameters = method_binding.getParameterTypes()
+        try:
+            parameter_names = java_element.getParameterNames()
+        except Py4JJavaError:
+            parameter_names = ["arg" for param in parameters]
+        params_length = len(parameters)
+        (return_simple_name, return_fqn) = clean_java_name(
+                method_binding.getReturnType().getQualifiedName())
+        deprecated = method_binding.isDeprecated()
+
+        type_binding = container_code_element.binding
+        abstract = self.Modifier.isAbstract(method_binding.getModifiers())\
+                or (type_binding.isInterface() and
+                    not type_binding.isAnnotation())
+
+        method_code_element = MethodElement(codebase=self.codebase,
+                kind=self.method_kind, simple_name=simple_name,
+                fqn=fqn,
+                parameters_length=params_length,
+                eclipse_handle=java_element.getHandleIdentifier(),
+                return_simple_name=return_simple_name,
+                return_fqn=return_fqn,
+                parser=JAVA_PARSER,
+                deprecated=deprecated,
+                abstract=abstract)
+
+        # method container
+        method_code_element.save()
+        method_code_element.containers.add(container_code_element)
+
+        # parse parameters
+        for i, parameter in enumerate(parameters):
+            (type_simple_name, type_fqn) = clean_java_name(
+                    parameter.getQualifiedName())
+
+            parameter_name = parameter_names[i]
+            if parameter_name.startswith('arg'):
+                parameter_name = ''
+            simple_name = fqn = parameter_name
+
+            parameter_code_element = ParameterElement(
+                    codebase=self.codebase,
+                    kind=self.method_parameter_kind,
+                    simple_name=simple_name,
                     fqn=fqn,
-                    parameters_length=params_length,
-                    eclipse_handle=java_element.getHandleIdentifier(),
-                    return_simple_name=return_simple_name,
-                    return_fqn=return_fqn,
-                    parser=JAVA_PARSER,
-                    deprecated=deprecated,
-                    abstract=abstract)
+                    type_simple_name=type_simple_name,
+                    type_fqn=type_fqn,
+                    index=i,
+                    attcontainer=method_code_element,
+                    parser=JAVA_PARSER)
+            parameter_code_element.save()
 
-            # method container
-            method_code_element.save()
-            method_code_element.containers.add(container_code_element)
-
-            # parse parameters
-            for i, parameter in enumerate(parameters):
-                (type_simple_name, type_fqn) = clean_java_name(
-                        parameter.getQualifiedName())
-                simple_name = fqn = \
-                        parameter_declarations[i].getName().getIdentifier()
-                parameter_code_element = ParameterElement(
-                        codebase=self.codebase,
-                        kind=self.method_parameter_kind,
-                        simple_name=simple_name,
-                        fqn=fqn,
-                        type_simple_name=type_simple_name,
-                        type_fqn=type_fqn,
-                        index=i,
-                        attcontainer=method_code_element,
-                        parser=JAVA_PARSER)
-                parameter_code_element.save()
-
-            # If we ever need to get the deprecated replace
-            # method.getJavadoc()
-            # method.tags()
-            # look for tag.getTagName() == 'deprecated'
-            # look at subtag link or just plain text...
+        # If we ever need to get the deprecated replace
+        # method.getJavadoc()
+        # method.tags()
+        # look for tag.getTagName() == 'deprecated'
+        # look at subtag link or just plain text...
 
     def _is_private(self, binding):
         return self.Modifier.isPrivate(binding.getModifiers())
 
-    def _parse_field(self, field, container_code_element):
-        for fragment in field.fragments():
-            field_binding = fragment.resolveBinding()
-            if not self._is_private(field_binding):
-                java_element = field_binding.getJavaElement()
-                simple_name = fragment.getName().getIdentifier()
-                (_, fqn) = clean_java_name(
-                        field_binding.getDeclaringClass().getQualifiedName())
-                fqn = fqn + '.' + simple_name
-                (type_simple_name, type_fqn) = clean_java_name(
-                        field_binding.getType().getQualifiedName())
-
-                field_code_element = FieldElement(codebase=self.codebase,
-                        kind=self.field_kind,
-                        simple_name=simple_name,
-                        fqn=fqn,
-                        eclipse_handle=java_element.getHandleIdentifier(),
-                        type_simple_name=type_simple_name,
-                        type_fqn=type_fqn,
-                        parser=JAVA_PARSER)
-                field_code_element.save()
-                field_code_element.containers.add(container_code_element)
-
-    def _parse_enumeration_value(self, value, container_code_element):
-        field_binding = value.resolveVariable()
+    def _parse_field(self, field_binding, container_code_element):
         if not self._is_private(field_binding):
             java_element = field_binding.getJavaElement()
-            simple_name = value.getName().getIdentifier()
+            simple_name = field_binding.getName()
+            (_, fqn) = clean_java_name(
+                    field_binding.getDeclaringClass().getQualifiedName())
+            fqn = fqn + '.' + simple_name
+            (type_simple_name, type_fqn) = clean_java_name(
+                    field_binding.getType().getQualifiedName())
+
+            field_code_element = FieldElement(codebase=self.codebase,
+                    kind=self.field_kind,
+                    simple_name=simple_name,
+                    fqn=fqn,
+                    eclipse_handle=java_element.getHandleIdentifier(),
+                    type_simple_name=type_simple_name,
+                    type_fqn=type_fqn,
+                    parser=JAVA_PARSER)
+            field_code_element.save()
+            field_code_element.containers.add(container_code_element)
+
+    def _parse_enumeration_value(self, field_binding, container_code_element):
+        if not self._is_private(field_binding):
+            java_element = field_binding.getJavaElement()
+            simple_name = field_binding.getName()
             (_, fqn) = clean_java_name(
                     field_binding.getDeclaringClass().getQualifiedName())
             fqn = fqn + '.' + simple_name
@@ -308,11 +328,10 @@ class CUWorker(Thread):
             field_code_element.save()
             field_code_element.containers.add(container_code_element)
 
-    def _parse_annotation_field(self, field, container_code_element):
-        method_binding = field.resolveBinding()
+    def _parse_annotation_field(self, method_binding, container_code_element):
         if not self._is_private(method_binding):
             java_element = method_binding.getJavaElement()
-            simple_name = field.getName().getIdentifier()
+            simple_name = method_binding.getName()
             (_, fqn) = clean_java_name(
                     method_binding.getDeclaringClass().getQualifiedName())
             fqn = fqn + '.' + simple_name
@@ -355,8 +374,14 @@ class JavaParser(object):
         self.queue = Queue()
 
         self.package_kind = CodeElementKind.objects.get(kind='package')
-        self.ASTParser = self.gateway.jvm.org.eclipse.jdt.core.dom.ASTParser
-        self.JLS3 = self.gateway.jvm.org.eclipse.jdt.core.dom.AST.JLS3
+
+        if opt_input is None or opt_input.strip() == '' or opt_input == '-1':
+            self.proot_name = None
+            self.package_names = None
+        else:
+            inputs = opt_input.split(',')
+            self.proot_name = inputs[0].strip()
+            self.package_names = inputs[1:]
 
     def _get_package_root(self):
         ResourcePlugin = self.gateway.jvm.org.eclipse.core.resources.\
@@ -365,15 +390,35 @@ class JavaParser(object):
         project = workspaceRoot.getProject(self.project_name)
         java_project = self.gateway.jvm.org.eclipse.jdt.core.JavaCore.\
                 create(project)
-        src_folder = project.getFolder(JavaParser.JAVA_SRC_FOLDER)
-        proot = java_project.getPackageFragmentRoot(src_folder)
+        if self.proot_name is None:
+            src_folder = project.getFolder(JavaParser.JAVA_SRC_FOLDER)
+            proot = java_project.getPackageFragmentRoot(src_folder)
+        else:
+            proot = None
+            for temp_proot in java_project.getAllPackageFragmentRoots():
+                if temp_proot.getElementName() == self.proot_name:
+                    proot = temp_proot
+                    break
         return proot
+
+    def _should_filter_package(self, package_name):
+        if self.package_names is None:
+            return False
+        else:
+            should_keep = False
+            for pname in self.package_names:
+                if package_name.startswith(pname):
+                    should_keep = True
+                    break
+            return not should_keep
 
     def _parse_packages(self, proot):
         packages = []
         for package in proot.getChildren():
             if package.hasChildren():
                 package_name = package.getElementName()
+                if self._should_filter_package(package_name):
+                    continue
                 package_code_element = CodeElement(codebase=self.codebase,
                         simple_name=package_name, fqn=package_name,
                         eclipse_handle=package.getHandleIdentifier(),
@@ -381,6 +426,9 @@ class JavaParser(object):
                 package_code_element.save()
                 packages.append((package, package_code_element))
         return packages
+
+    def _need_class_files(self):
+        return self.proot_name is not None and self.proot_name.endswith('.jar')
 
     def parse(self, progress_monitor=NullProgressMonitor()):
         '''Parses the codebase and creates CodeElement instances.
@@ -400,14 +448,21 @@ class JavaParser(object):
         start = time.time()
         for (package, package_code_element) in packages:
             gc.collect()  # for Py4J
-            cunits = package.getCompilationUnits()
+
+            if self._need_class_files():
+                cunits = package.getClassFiles()
+            else:
+                cunits = package.getCompilationUnits()
+
             unit_length = float(len(cunits))
             for cunit in cunits:
-                ast_parser = self.ASTParser.newParser(self.JLS3)
-                ast_parser.setResolveBindings(True)
-                ast_parser.setSource(cunit)
-                cu = ast_parser.createAST(None)
-                winput = (cu, package_code_element, cunit.getElementName(),
+                cu_name = cunit.getElementName()
+                if cu_name.find('$') > -1:
+                    # Do not send internal classes: they will be parsed
+                    # using type_binding.getDeclaredTypes()
+                    continue
+
+                winput = (cunit, package_code_element, cu_name,
                         1.0 / unit_length)
                 self.queue.put(winput)
 
