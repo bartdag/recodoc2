@@ -458,6 +458,7 @@ Execute the following command to create the appropriate model and directory
 structure:
 
 ::
+
     ./manage.py createdoc --pname htclient --release 4.0 --dname clienttut \
     --parser doc.parser.common_parsers.NewDocBookParser \
     --url "file:///local_path/httpcomponents-client-4.0.1/tutorial/html/index.html" \
@@ -587,5 +588,5 @@ TBD
 License
 -------
 
-This software is licensed under the `New BSD License`. See the `LICENSE` file
+This software is **not yet** licensed under the `New BSD License`. See the `LICENSE` file
 in the for the full license text.
