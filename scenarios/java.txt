@@ -1,3 +1,6 @@
+# only do this once per db
+./manage.py initcodekind
+
 ### PROJECT
 
 ./manage.py clearcache
@@ -14,7 +17,7 @@
 ./manage.py linkeclipse --pname java --bname main --release '6.0'
 
 ./manage.py parsecode --pname java --bname main --release '6.0' --parse java \
---input 'rt.jar,java.lang,java.math'
+--input 'rt.jar,java.lang'
 
 # Alternatively (will take a while)
 ./manage.py parsecode --pname java --bname main --release '6.0' --parse java \
@@ -36,3 +39,36 @@
 
 # Will take a while...
 ./manage.py syncdoc --pname java --release '6.0' --dname javadoc
+
+./manage.py parsedoc --pname java --release '6.0' --dname javadoc
+
+# To clear doc in the db
+./manage.py cleardoc --pname java --release '6.0' --dname javadoc
+
+
+### Code snippets
+
+./manage.py parsesnippets --pname java --parser java --source d
+
+./manage.py clearsnippets --pname java --language j --source d
+
+
+### Links
+
+./manage.py clearcache
+./manage.py linkcode --pname java --bname main --release 6.0 --linker javaclass --source d --srelease 6.0
+./manage.py clearcache
+./manage.py linkcode --pname java --bname main --release 6.0 --linker javapostclass --source d --srelease 6.0
+./manage.py clearcache
+./manage.py linkcode --pname java --bname main --release 6.0 --linker javafield --source d --srelease 6.0
+./manage.py clearcache
+./manage.py linkcode --pname java --bname main --release 6.0 --linker javamethod --source d --srelease 6.0
+./manage.py clearcache
+./manage.py linkcode --pname java --bname main --release 6.0 --linker javageneric --source d --srelease 6.0
+
+# To clear all the links.
+./manage.py clearlinks --pname java --release 6.0 --source d
+
+# Do this before launching link for a second time if there was a bug (and a
+# fix) in link
+./manage.py restorekinds --pname java --release '6.0' --source d

@@ -279,8 +279,8 @@ METHOD_SIGNATURE_RE = re.compile(r'''
     (?:(?P<target>[a-zA-Z][\w\-.<>]*)[.:#/])? # Target. Does not begin with numbers or _ or -.
     (?P<method_name>[a-zA-Z][^(\s.]*)     # method name
     \([\s]*                               # opening parenthesis
-    (?:(?P<first_argument_type>[a-zA-Z][\w\-_.<>]*)(?:[\W][a-zA-Z][\w\-_.]*))? # first argument 'Type name'
-    (?:[\s]*,[\s]*([a-zA-Z][\w\-.<>]*[\s][a-zA-Z][\w\-.]*))*           # other arguments
+    (?:(?P<first_argument_type>[a-zA-Z][\w\-_.<>[\]]*)(?:[\W][a-zA-Z][\w\-_.]*))? # first argument 'Type name'
+    (?:[\s]*,[\s]*([a-zA-Z][\w\-.<>[\]]*[\s][a-zA-Z][\w\-.]*))*           # other arguments
     [\s]*\)                               # closing parenthesis
     [;]?                                  # optional ; at the end
     ''', re.VERBOSE)
@@ -291,13 +291,13 @@ CALL_CHAIN_TARGET_RE = re.compile(r'''
     (?P<method_name>[a-zA-Z][^(\s.]*)     # method name
     \([\s]*                               # opening parenthesis
     (                                     # first argument 'arg'
-    [\w\-_<>.]* |                         # non string arg
+    [\w\-_<>.[\]]* |                      # non string arg
     "[^"]*" |                             # or string
     '[^']*'                               # or char
     )?
     (?:[\s]*,[\s]*
     (                                     # other arguments
-    [\w\-_<>.]* |                         # non string arg
+    [\w\-_<>.[\]]* |                      # non string arg
     "[^"]*"                               # or string
     )
     )*
@@ -307,13 +307,13 @@ CALL_CHAIN_TARGET_RE = re.compile(r'''
     ([a-zA-Z][^(\s.]*)                    # method name
     \([\s]*                               # opening parenthesis
     (                                     # first argument 'arg'
-    [\w\-_<>.]* |                         # non string arg
+    [\w\-_<>.[\]]* |                      # non string arg
     "[^"]*" |                             # or string
     '[^']*'                               # or char
     )?
     (?:[\s]*,[\s]*
     (                                     # other arguments
-    [\w\-_<>.]* |                         # non string arg
+    [\w\-_<>.[\]]* |                      # non string arg
     "[^"]*" |                             # or string
     '[^']*'                               # or char
     )

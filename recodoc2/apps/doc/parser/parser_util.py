@@ -27,41 +27,63 @@ class JavadocTransformer(object):
 
         # Remove package
         elem = self.xpackage.get_element(new_tree)
-        parent = elem.getparent()
-        parent.remove(elem)
-        self.change_title(parent, False)
+        if elem is not None:
+            parent = elem.getparent()
+            parent.remove(elem)
+            self.change_title(parent, False)
          
         body = self.xbody.get_element(new_tree)
 
         self.remove_headers(body)
         self.remove_tables(body)
 
+        if self.clazz_name is not None:
+            self.modify_members(body, new_tree)
+
+        self.modify_code_ref(new_tree)
+
+        return new_tree
+
+    def modify_members(self, body, tree):
         upper_bound = len(body)
         indexes = self.get_toc(body)
         (constructor, method, field, anno, enum) = indexes
         to_remove = []
         if constructor > -1:
+            #print(constructor)
+            #print(self.get_upper_bound(constructor, indexes, upper_bound))
             to_remove.extend(self.modify_constructor(body, constructor,
                 self.get_upper_bound(constructor, indexes, upper_bound)))
         if method > -1:
+            #print(method)
+            #print(self.get_upper_bound(method, indexes, upper_bound))
             to_remove.extend(self.modify_method(body, method,
                 self.get_upper_bound(method, indexes, upper_bound)))
         if field > -1:
+            #print(field)
+            #print(self.get_upper_bound(field, indexes, upper_bound))
             to_remove.extend(self.modify_field(body, field,
                 self.get_upper_bound(field, indexes, upper_bound)))
         if anno > -1:
+            #print(self.get_upper_bound(anno, indexes, upper_bound))
             to_remove.extend(self.modify_field(body, anno,
                 self.get_upper_bound(anno, indexes, upper_bound)))
         if enum > -1:
+            #print(self.get_upper_bound(enum, indexes, upper_bound))
             to_remove.extend(self.modify_field(body, enum,
                 self.get_upper_bound(enum, indexes, upper_bound)))
         
         for (parent, elem) in to_remove:
-            parent.remove(elem)
+            try:
+                parent.remove(elem)
+            except Exception:
+                # Sometimes happen. Probably because of hardcoded children
+                # range.
+                pass
+                #print(tree.getpath(parent))
+                #print(tree.getpath(elem))
 
-        self.modify_code_ref(new_tree)
 
-        return new_tree
 
     def change_title(self, elem, change_clazz=True):
         text = self.xtext(elem).strip()
@@ -95,6 +117,10 @@ class JavadocTransformer(object):
             parent.remove(elem)
         to_remove = []
 
+        # Stop here for packages/overview
+        if self.clazz_name is None:
+            return
+        
         # Remove other headers (subclasses and that kind of stuff)
         stop = False
         for child in body[1:]:
@@ -199,7 +225,12 @@ class JavadocTransformer(object):
         elements = self.xbold.get_elements(description)
 
         for element in elements:
-            if element.text.strip() == 'Specified by:':
+            if element.text is None:
+                continue
+            elif element.text.strip() == 'Specified by:':
+                to_remove.append((element.getparent().getparent().getparent(),
+                        element.getparent().getparent()))
+            elif element.text.strip() == 'Overrides:':
                 to_remove.append((element.getparent().getparent().getparent(),
                         element.getparent().getparent()))
 
@@ -209,24 +240,26 @@ class JavadocTransformer(object):
         elements = self.xcode.get_elements(tree)
 
         for element in elements:
-            try:
-                link = ref = None
-                parent = element.getparent()
-                if self._is_linked_ref(parent):
-                    link = parent
-                    ref = element
-
-                if len(element) > 0:
-                    child = element[0]
-                    if self._is_linked_ref(child):
-                        link = child
+            link = ref = None
+            parent = element.getparent()
+            if self._is_linked_ref(parent):
+                link = parent
+                # Sometimes, code is replaced by i
+                # Bad javadoc formatting: <a><code></code><i>ref</i></a>
+                for child in parent:
+                    text = child.text
+                    if text is not None and text.strip() != '':
                         ref = child
+                        break
 
-                if link is not None:
-                    self.modify_ref(link, ref)
-            except Exception:
-                print('Error while modifying a reference')
-                print_exc()
+            if len(element) > 0:
+                child = element[0]
+                if self._is_linked_ref(child):
+                    link = child
+                    ref = child
+
+            if link is not None and ref is not None and ref.text is not None:
+                self.modify_ref(link, ref)
 
     def modify_ref(self, link, ref):
         href = link.get('href')

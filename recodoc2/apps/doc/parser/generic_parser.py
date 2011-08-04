@@ -259,11 +259,14 @@ class GenericParser(object):
         tree = load.tree
         title = \
             self.xsectiontitle.get_text_from_parent(section_element).strip()
+        title = title.replace('\n',' ').replace('\t', ' ').replace('\r', '')
         xpath = tree.getpath(section_element)
         number = \
             self._get_section_number(page, load, section_element, title,
                 xpath).strip()
         word_count = get_word_count_text(text)
+        if (len(title) > 500):
+            title = title[:497] + '...'
         section = Section(
                 page=page,
                 title=title,

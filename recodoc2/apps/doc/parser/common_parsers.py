@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from traceback import print_exc
 import re
 import logging
 from docutil.str_util import find_list
@@ -97,7 +98,7 @@ class FlatParentMixin(object):
                     continue
                 else:
                     temp_elem = load.tree.xpath(temp.xpath)[0]
-                    parent_index = parent.index(temp_elem)
+                    parent_index = self._get_safe_index(parent, temp_elem)
                     if section_index > parent_index > max_index and \
                             self._can_be_parent(temp.xpath, section.xpath):
                         max_index = parent_index
@@ -127,12 +128,19 @@ class FlatParentMixin(object):
 
         if ref_index > -1:
             for section in sections:
-                section_index = parent.index(load.tree.xpath(section.xpath)[0])
+                section_index = self._get_safe_index(parent,
+                        load.tree.xpath(section.xpath)[0])
                 if ref_index > section_index > max_index:
                     parent_section = section
                     max_index = section_index
+        else:
+            for section in sections:
+                if self._get_safe_index(load.tree.xpath(section.xpath)[0],
+                        ref_element) > -1:
+                    parent_section = section
+                    break
 
-        if parent_section != None:
+        if parent_section is not None:
             reference.local_context = parent_section
             reference.mid_context = self._get_mid_context(parent_section)
             reference.global_context = parent_section.page
@@ -159,6 +167,12 @@ class FlatParentMixin(object):
             else:
                 ref_element = temp_parent
         return index
+
+    def _get_safe_index(self, parent, child):
+        try:
+            return parent.index(child)
+        except Exception:
+            return -1
 
 
 class NewDocBookParser(NumberDotParentMixin, StandardNumberMixin,
@@ -241,22 +255,26 @@ class JavadocParser(FlatParentMixin, NoNumberMixin, GenericParser):
     
     xtitles = SingleXPath('//title[1]')
 
-    xsections = FlatXPath('//h2 | //h3 | //a/h2 | //a/h3')
+    xsections = FlatXPath('//h2 | //h3')
+
+    xsectiontitle = SingleXPath('.')
 
     # not used for now.
     xcoderef_url = '../'
 
-    xcoderef = SingleXPath('//code')
+    xcoderef = SingleXPath('//code | //i')
 
     xsnippet = SingleXPath('//pre')
 
     xpackage = SingleXPath('//body/h2[1]/font[1]')
 
+    xpackage2 = SingleXPath('//body/h2[1]')
+
     def _process_page_title(self, page, load):
         title = super(JavadocParser, self)._process_page_title(page, load)
         index = title.find('(')
         if index > -1:
-            title[:index-1].strip()
+            title = title[:index-1].strip()
         return title
 
     def _process_init_page(self, page, load):
@@ -271,12 +289,9 @@ class JavadocParser(FlatParentMixin, NoNumberMixin, GenericParser):
         return path[0].isupper()
 
     def _remove_generated_content(self, page, load):
-        if self._is_class_page(page):
-            transformer = JavadocTransformer(load.current_element['package'],
-                    load.current_element['type'])
-            return transformer.transform(load.tree)
-        else:
-            return load.tree
+        transformer = JavadocTransformer(load.current_element['package'],
+                load.current_element['type'])
+        return transformer.transform(load.tree)
 
     def _get_current_element(self, page, load):
         current_element = {}
@@ -286,3 +301,15 @@ class JavadocParser(FlatParentMixin, NoNumberMixin, GenericParser):
                 current_element['package'] = \
                     self.xpackage.get_text(package_element)
                 current_element['type'] = self._process_page_title(page, load)
+        else:
+            package_element = self.xpackage2.get_element(load.tree)
+            if package_element is not None:
+                text = self.xpackage2.get_text(package_element).strip()
+                if text.startswith('Package'):
+                    current_element['package'] = text[8:]
+                    current_element['type'] = None
+            else:
+                current_element['package'] = None
+                current_element['type'] = None
+
+        load.current_element = current_element

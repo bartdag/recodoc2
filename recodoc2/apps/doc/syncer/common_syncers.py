@@ -20,10 +20,6 @@ class JavadocSyncer(SingleURLSyncer):
                 link.endswith('index.html') or\
                 link.find('?') > -1 
                 
-                # To add to a syncer to only get certain packages...
-                #or\
-                #(link.find('docs/api/) > -1 and link.find('api/java/') < 0)
-
 
 class JavaJavadocSyncer(JavadocSyncer):
 
@@ -32,7 +28,7 @@ class JavaJavadocSyncer(JavadocSyncer):
 
         return should_avoid or\
                 (link.find('docs/api/') > -1 and
-                 link.find('docs/api/java/') < 0)
+                 link.find('docs/api/java/lang/') < 0)
 
 
 class HtmlUnitSyncer(GenericSyncer):
