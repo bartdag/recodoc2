@@ -264,6 +264,7 @@ class GenericParser(object):
 
     def _process_references(self, message, load, ucontent):
         lines = self._get_lines(message, load, ucontent)
+        self._post_process_lines(lines)
         paragraphs = get_paragraphs(lines)
 
         (count, skip) = self._skip_message(paragraphs)
@@ -296,6 +297,9 @@ class GenericParser(object):
                 lines.append(content_line)
 
         return lines
+    
+    def _post_process_lines(self, lines):
+        pass
 
     def _uninteresting_line(self, line):
         line = line.strip()

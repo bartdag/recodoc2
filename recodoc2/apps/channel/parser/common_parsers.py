@@ -7,6 +7,7 @@ from docutil.str_util import get_month_as_int
 from docutil.etree_util import SingleXPath, HierarchyXPath
 from channel.parser.generic_parser import GenericMailParser,\
     GenericThreadParser
+from codeutil import reply_element
 
 logger = logging.getLogger("recodoc.doc.parser.common")
 
@@ -246,8 +247,9 @@ class GmaneParser(GenericMailParser):
 
     xdate = SingleXPath('//div[@class="headers"]')
 
-    xcontent = HierarchyXPath('//div/table | //td[@class="bodytd"]',
-        './/div[@class="headers"]')
+    xcontent = HierarchyXPath('//div/table | //td[@class="bodytd"]/div[2]'
+            ' | //td[@class="bodytd"]/pre[1]',
+            './/div[@class="headers"] | .//blockquote')
 
     date_regex = re.compile(r'''
     (?P<year>\d{4})-
@@ -296,3 +298,14 @@ class GmaneParser(GenericMailParser):
         ucontent = self.xcontent.get_text_from_parent(load.entry_element, 0,
                 True).strip()
         return ucontent
+
+    def _post_process_lines(self, lines):
+        prefix = False
+        for i, line in enumerate(lines):
+            if reply_element.UNDERSCORE_RE.match(line.strip()):
+                prefix = not prefix
+                lines[i] = ''
+            elif prefix:
+                lines[i] = '> ' + line
+            elif line.strip().startswith('<at> '):
+                lines[i] = line.replace('<at> ', '@')
