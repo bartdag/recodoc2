@@ -814,6 +814,9 @@ class UniqueHierarchyFilter(object):
         if not (simple is None or simple == je.UNKNOWN_CLASS or 
                 simple.isupper() or simple.islower()):
             return result
+        elif filter_input.scode_reference.source == 'd':
+            # If from documentation, don't use this.
+            return result
 
         hierarchies = []
         for potential in potentials:

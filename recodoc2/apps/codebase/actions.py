@@ -583,7 +583,7 @@ def compute_filters(codebase):
         simple_name = clean_java_name(cfilter.fqn)[0].lower()
         simple_filters[simple_name].append(cfilter)
 
-    fqn_filters = {clean_java_name(cfilter.fqn.lower()): cfilter
+    fqn_filters = {clean_java_name(cfilter.fqn.lower())[1]: cfilter
             for cfilter in filters}
 
     return (simple_filters, fqn_filters)
