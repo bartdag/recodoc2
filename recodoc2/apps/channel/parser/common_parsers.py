@@ -85,6 +85,7 @@ class PHPBBForumParser(GenericThreadParser):
         super(PHPBBForumParser, self).__init__(channel_pk, parse_refs, lock)
 
     def _pre_parse_entry(self, load, local_paths, url):
+        super(PHPBBForumParser, self)._pre_parse_entry(load, local_paths, url)
         load.include_stop = False
 
     def _get_messages(self, load):
