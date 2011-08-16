@@ -747,12 +747,10 @@ class JavaMethodLinker(gl.DefaultLinker):
             log):
         log.reset_variables()
         return_code_element = None
-        potentials = code_elements
         if code_elements is None:
-            size = 0
-            potentials = []
-        else:
-            size = len(code_elements)
+            code_elements = []
+        potentials = list(code_elements)
+        size = len(code_elements)
 
         #print('DEBUG FOR {0}:{1}'.format(scode_reference.pk,
             #scode_reference.content))
@@ -783,7 +781,7 @@ class JavaMethodLinker(gl.DefaultLinker):
 
         # Logging
         log.log_method(method_info, scode_reference, return_code_element,
-                potentials, size, filter_results)
+                potentials, size, filter_results, code_elements)
         return (return_code_element, potentials)
 
 
@@ -993,12 +991,10 @@ class JavaFieldLinker(gl.DefaultLinker):
             fqn_container, log):
         log.reset_variables()
         return_code_element = None
-        potentials = code_elements
         if code_elements is None:
-            size = 0
-            potentials = []
-        else:
-            size = len(code_elements)
+            code_elements = []
+        potentials = list(code_elements)
+        size = len(code_elements)
 
         #print('DEBUG FOR {0}:{1}'.format(scode_reference.pk,
             #scode_reference.content))
@@ -1025,7 +1021,8 @@ class JavaFieldLinker(gl.DefaultLinker):
 
         # Logging
         log.log_field(field_name, fqn_container, scode_reference,
-                return_code_element, potentials, size, filter_results)
+                return_code_element, potentials, size, filter_results,
+                code_elements)
         return (return_code_element, potentials)
 
 

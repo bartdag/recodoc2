@@ -100,6 +100,7 @@ class LinkerLog(object):
     def close(self):
         self.log_file.close()
 
+        pass
     def log_type(self, simple_name, fqn, scode_reference, code_element,
             potentials, original_size, fresults, rationale=None):
         potential_size = 0
@@ -168,7 +169,7 @@ class LinkerLog(object):
         DEBUG_LOG[scode_reference.pk].append(type_log)
 
     def log_method(self, method_info, scode_reference, return_code_element,
-            potentials, original_size, fresults):
+            potentials, original_size, fresults, code_elements):
 
         potential_size = 0
         if potentials is not None:
@@ -206,6 +207,11 @@ class LinkerLog(object):
                 log_file.write('  Potential: {0}\n'.
                         format(potential.human_string()))
 
+        if code_elements is not None:
+            for original in code_elements:
+                log_file.write('  Original: {0}\n'.
+                        format(original.human_string()))
+
         log_file.write('\n\n')
 
         self.debug_log_method(method_info, scode_reference,
@@ -232,7 +238,8 @@ class LinkerLog(object):
         DEBUG_LOG[scode_reference.pk].append(method_log)
 
     def log_field(self, field_name, fqn_container, scode_reference,
-            return_code_element, potentials, original_size, fresults):
+            return_code_element, potentials, original_size, fresults,
+            code_elements):
 
         potential_size = 0
         if potentials is not None:
@@ -269,6 +276,11 @@ class LinkerLog(object):
             for potential in potentials[1:]:
                 log_file.write('  Potential: {0}\n'.
                         format(potential.human_string()))
+
+        if code_elements is not None:
+            for original in code_elements:
+                log_file.write('  Original: {0}\n'.
+                        format(original.human_string()))
 
         log_file.write('\n\n')
 
