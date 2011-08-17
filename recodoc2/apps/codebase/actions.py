@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from math import sqrt
 import subprocess
 import time
 import os
@@ -491,6 +492,211 @@ def recommend_filters(pname, bname, release, nofilter=False):
 
 
 ### ACTIONS USED BY OTHER ACTIONS ###
+
+class LogEntry(object):
+    def __init__(self):
+        self.origin_size = 0
+        self.final_size = 0
+        self.custom_filtered = False
+        self.filters = {}
+        self.from_snippet = False
+        self.unique_types = 0
+        self.temp_types = []
+
+    def compute_unique_types(self):
+        types = set()
+        for t in self.temp_types:
+            index = t.rfind('.')
+            types.add(t[:index])
+        self.unique_types = len(types)
+
+
+def analyze_class_log(base_dir, project, version, source, generic=False):
+    # TODO Process generic with all files, but don't include refs if it has
+    # been processed already.
+    if not generic:
+        files = [
+                '{0}/linking-annotation-{1}-{2}-javaclass-{3}.log'.format(base_dir,
+                    project, version, source),
+                '{0}/linking-enumeration-{1}-{2}-javaclass-{3}.log'.format(base_dir,
+                    project, version, source),
+                '{0}/linking-class-{1}-{2}-javaclass-{3}.log'.format(base_dir,
+                    project, version, source),
+                ]
+    else:
+        files = [
+                '{0}/linking-generic-class-{1}-{2}-javageneric-{3}.log'.format(base_dir,
+                    project, version, source),
+                ]
+    log_entries = process_log_files(files)
+    log_stats(log_entries, 'class {0}'.format(generic))
+
+
+def analyze_method_log(base_dir, project, version, source, generic=False):
+    if not generic:
+        files = [
+                '{0}/linking-method-{1}-{2}-javamethod-{3}.log'.format(base_dir,
+                    project, version, source),
+                ]
+    else:
+        files = [
+                '{0}/linking-generic-method-{1}-{2}-javageneric-{3}.log'.format(base_dir,
+                    project, version, source),
+                ]
+    log_entries = process_log_files(files)
+    log_stats(log_entries, 'method {0}'.format(generic))
+
+
+def analyze_field_log(base_dir, project, version, source, generic=False):
+    if not generic:
+        files = [
+                '{0}/linking-annotation-field-{1}-{2}-javafield-{3}.log'.format(base_dir,
+                    project, version, source),
+                '{0}/linking-enumeration value-{1}-{2}-javafield-{3}.log'.format(base_dir,
+                    project, version, source),
+                '{0}/linking-field-{1}-{2}-javafield-{3}.log'.format(base_dir,
+                    project, version, source),
+                ]
+    else:
+        files = [
+                '{0}/linking-generic-field-{1}-{2}-javageneric-{3}.log'.format(base_dir,
+                    project, version, source),
+                ]
+    log_entries = process_log_files(files)
+    log_stats(log_entries, 'field {0}'.format(generic))
+
+
+def log_stats(log_entries, title):
+
+    nonzero = 0
+    filters = defaultdict(int)
+    count = defaultdict(int)
+    m = defaultdict(int)
+    s = defaultdict(int)
+    maxv = defaultdict(int)
+    count0 = defaultdict(int)
+    m0 = defaultdict(int)
+    s0 = defaultdict(int)
+    for log_entry in log_entries:
+        if log_entry.origin_size > 0:
+            nonzero += 1 
+            # Original
+            record_stat_entry(count, m, s, maxv, 'original',
+                    log_entry.origin_size)
+            record_stat_entry(count, m, s, maxv, 'finalsize',
+                    log_entry.final_size)
+            record_stat_entry(count, m, s, maxv, 'unique',
+                    log_entry.unique_types)
+            if log_entry.final_size > 0:
+                count['linked'] += 1
+            if log_entry.from_snippet:
+                count['snippet'] += 1
+            if log_entry.custom_filtered:
+                count['custom'] += 1
+            for filter in log_entry.filters:
+                if log_entry.filters[filter][0]:
+                    filters[filter] += 1
+
+        record_stat_entry(count0, m0, s0, None, 'original',
+                log_entry.origin_size)
+        if log_entry.from_snippet:
+            count0['snippet'] += 1
+
+    print('Report for {0}'.format(title))
+    print('Number of code-like terms: {0}'.format(len(log_entries)))
+    print('Number of code-like terms that matched at least one elem: {0}'
+            .format(nonzero))
+    print('Number of code-like terms linked: {0}'.format(count['linked']))
+    print('Number of code-like terms from snippets: {0}'
+            .format(count['snippet']))
+    print('Number of code-like terms from snippets with 0: {0}'
+            .format(count0['snippet']))
+    print('Number of code-like terms custom filtered: {0}'
+            .format(count['custom']))
+    print('Original size: {0}:{1}:{2}'.format(m['original'], sqrt(s['original']
+        / float(max(1, count['original']))), maxv['original']))
+    print('Original size with 0: {0}:{1}'.format(m0['original'],
+        sqrt(s0['original'] / float(max(1, count0['original'])))))
+    print('Final size: {0}:{1}:{2}'.format(m['finalsize'], sqrt(s['finalsize']
+        / float(max(1, count['finalsize']))), maxv['finalsize']))
+    print('Unique Types: {0}:{1}:{2}'.format(m['unique'], sqrt(s['unique']
+        / float(max(1, count['unique']))), maxv['unique']))
+    print('Filters:')
+    for filter in filters:
+        print('{0}: {1}'.format(filter, filters[filter]))
+            
+        # original
+        # original no zero
+        # final no zero
+        # unique no zero
+        # snippet
+        # snippet no zero
+        # custom no zero
+        # filters: activated no zero
+
+def record_stat_entry(count, m, s, maxv, key, val):
+    count[key] += 1
+    temp = m[key]
+    m[key] += (val - temp) / float(count[key])
+    s[key] += (val - temp) * (val - m[key])
+    if maxv is not None:
+        if val > maxv[key]:
+            maxv[key] = val
+
+
+def process_log_files(files):
+
+    log_entries = []
+    entry = None
+    filtering = False
+
+    for f in files:
+        if not os.path.exists(f):
+            continue
+
+        with codecs.open(f, 'r', 'utf-8') as finput:
+            for line in finput:
+                line = line.strip()
+                size = len(line)
+                if line.startswith('Type ') or line.startswith('Method ') or \
+                    line.startswith('Field '):
+                    filtering = False
+                    if entry is not None:
+                        entry.compute_unique_types()
+                        log_entries.append(entry)
+                    entry = LogEntry()
+                elif line.startswith('Original Size:'):
+                    entry.origin_size = int(line[15:].strip())
+                elif line.startswith('Final Size:'):
+                    entry.final_size = int(line[12:].strip())
+                elif line.startswith('Snippet'):
+                    entry.from_snippet = line.find('True') > -1
+                elif line.startswith('Custom Filtered'):
+                    entry.custom_filtered = line.find('True') > -1
+                elif line.startswith('Filtering'):
+                    filtering = True
+                elif line.startswith('Element:'):
+                    filtering = False
+                elif line.startswith('Original:'):
+                    filtering = False
+                    entry.temp_types.append(line[10:].strip())
+                elif filtering and size > 0:
+                    index = line.find(':')
+                    if index < 0:
+                        continue
+                    name = line[:index].strip()
+                    index2 = line.rfind('-')
+                    activated = line[index:index2].find('True') > -1
+                    number = int(line[index2+1:].strip())
+                    entry.filters[name] = (activated, number)
+
+        if entry is not None:
+            log_entries.append(entry)
+            entry = None
+            filtering = False
+
+    return log_entries
+
 
 def recommend_single_types(codebase, simple_filters, d):
     single_types = set()
