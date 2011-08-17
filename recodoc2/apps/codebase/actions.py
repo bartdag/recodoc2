@@ -511,6 +511,38 @@ class LogEntry(object):
         self.unique_types = len(types)
 
 
+def analyze_all_logs(base_dir, project, version, source):
+    analyze_class_log(base_dir, project, version, source)
+    print()
+    analyze_post_log(base_dir, project, version, source)
+    print()
+    analyze_method_log(base_dir, project, version, source)
+    print()
+    analyze_field_log(base_dir, project, version, source)
+
+
+def analyze_post_log(base_dir, project, version, source):
+    path = '{0}/linking-type-{1}-{2}-javapostclass-{3}.log'.format(base_dir,
+            project, version, source)
+    count = 0
+    high_freq = 0
+    depth = 0
+    with codecs.open(path, 'r', 'utf-8') as finput:
+        for line in finput:
+            line = line.strip()
+            if line.startswith('Type'):
+                count += 1
+            elif line == 'Rationale: highest_frequency':
+                high_freq += 1
+            elif line == 'Rationale: heuristic_depth':
+                depth += 1
+
+    print('Report for post-class')
+    print('Count: {0}'.format(count))
+    print('Filtered: {0}'.format(high_freq + depth))
+    print('Heuristic depth: {0}'.format(depth))
+    print('Highest Frequency: {0}'.format(high_freq))
+
 def analyze_class_log(base_dir, project, version, source, generic=False):
     # TODO Process generic with all files, but don't include refs if it has
     # been processed already.
