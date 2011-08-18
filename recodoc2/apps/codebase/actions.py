@@ -543,59 +543,45 @@ def analyze_post_log(base_dir, project, version, source):
     print('Heuristic depth: {0}'.format(depth))
     print('Highest Frequency: {0}'.format(high_freq))
 
-def analyze_class_log(base_dir, project, version, source, generic=False):
-    # TODO Process generic with all files, but don't include refs if it has
-    # been processed already.
-    if not generic:
-        files = [
-                '{0}/linking-annotation-{1}-{2}-javaclass-{3}.log'.format(base_dir,
-                    project, version, source),
-                '{0}/linking-enumeration-{1}-{2}-javaclass-{3}.log'.format(base_dir,
-                    project, version, source),
-                '{0}/linking-class-{1}-{2}-javaclass-{3}.log'.format(base_dir,
-                    project, version, source),
-                ]
-    else:
-        files = [
-                '{0}/linking-generic-class-{1}-{2}-javageneric-{3}.log'.format(base_dir,
-                    project, version, source),
-                ]
+def analyze_class_log(base_dir, project, version, source):
+    files = [
+            '{0}/linking-annotation-{1}-{2}-javaclass-{3}.log'.format(base_dir,
+                project, version, source),
+            '{0}/linking-enumeration-{1}-{2}-javaclass-{3}.log'.format(base_dir,
+                project, version, source),
+            '{0}/linking-class-{1}-{2}-javaclass-{3}.log'.format(base_dir,
+                project, version, source),
+            '{0}/linking-generic-class-{1}-{2}-javageneric-{3}.log'.format(base_dir,
+                project, version, source),
+            ]
     log_entries = process_log_files(files)
-    log_stats(log_entries, 'class {0}'.format(generic))
+    log_stats(log_entries, 'class')
 
 
-def analyze_method_log(base_dir, project, version, source, generic=False):
-    if not generic:
-        files = [
-                '{0}/linking-method-{1}-{2}-javamethod-{3}.log'.format(base_dir,
-                    project, version, source),
-                ]
-    else:
-        files = [
-                '{0}/linking-generic-method-{1}-{2}-javageneric-{3}.log'.format(base_dir,
-                    project, version, source),
-                ]
+def analyze_method_log(base_dir, project, version, source):
+    files = [
+            '{0}/linking-method-{1}-{2}-javamethod-{3}.log'.format(base_dir,
+                project, version, source),
+            '{0}/linking-generic-method-{1}-{2}-javageneric-{3}.log'.format(base_dir,
+                project, version, source),
+            ]
     log_entries = process_log_files(files)
-    log_stats(log_entries, 'method {0}'.format(generic))
+    log_stats(log_entries, 'method')
 
 
-def analyze_field_log(base_dir, project, version, source, generic=False):
-    if not generic:
-        files = [
-                '{0}/linking-annotation-field-{1}-{2}-javafield-{3}.log'.format(base_dir,
-                    project, version, source),
-                '{0}/linking-enumeration value-{1}-{2}-javafield-{3}.log'.format(base_dir,
-                    project, version, source),
-                '{0}/linking-field-{1}-{2}-javafield-{3}.log'.format(base_dir,
-                    project, version, source),
-                ]
-    else:
-        files = [
-                '{0}/linking-generic-field-{1}-{2}-javageneric-{3}.log'.format(base_dir,
-                    project, version, source),
-                ]
+def analyze_field_log(base_dir, project, version, source):
+    files = [
+            '{0}/linking-annotation-field-{1}-{2}-javafield-{3}.log'.format(base_dir,
+                project, version, source),
+            '{0}/linking-enumeration value-{1}-{2}-javafield-{3}.log'.format(base_dir,
+                project, version, source),
+            '{0}/linking-field-{1}-{2}-javafield-{3}.log'.format(base_dir,
+                project, version, source),
+            '{0}/linking-generic-field-{1}-{2}-javageneric-{3}.log'.format(base_dir,
+                project, version, source),
+            ]
     log_entries = process_log_files(files)
-    log_stats(log_entries, 'field {0}'.format(generic))
+    log_stats(log_entries, 'field')
 
 
 def log_stats(log_entries, title):
@@ -628,6 +614,9 @@ def log_stats(log_entries, title):
             for filter in log_entry.filters:
                 if log_entry.filters[filter][0]:
                     filters[filter] += 1
+                else:
+                    # To ensure that all filters are reported
+                    filters[filter] += 0
 
         record_stat_entry(count0, m0, s0, None, 'original',
                 log_entry.origin_size)
@@ -681,6 +670,8 @@ def process_log_files(files):
     log_entries = []
     entry = None
     filtering = False
+    visited = set()
+    skip = False
 
     for f in files:
         if not os.path.exists(f):
@@ -693,10 +684,11 @@ def process_log_files(files):
                 if line.startswith('Type ') or line.startswith('Method ') or \
                     line.startswith('Field '):
                     filtering = False
-                    if entry is not None:
+                    if entry is not None and not skip:
                         entry.compute_unique_types()
                         log_entries.append(entry)
                     entry = LogEntry()
+                    skip = False
                 elif line.startswith('Original Size:'):
                     entry.origin_size = int(line[15:].strip())
                 elif line.startswith('Final Size:'):
@@ -705,6 +697,12 @@ def process_log_files(files):
                     entry.from_snippet = line.find('True') > -1
                 elif line.startswith('Custom Filtered'):
                     entry.custom_filtered = line.find('True') > -1
+                elif line.startswith('Ref pk:'):
+                    ref = line[8:]
+                    if ref in visited:
+                        skip = True
+                    else:
+                        visited.add(ref)
                 elif line.startswith('Filtering'):
                     filtering = True
                 elif line.startswith('Element:'):
@@ -722,10 +720,11 @@ def process_log_files(files):
                     number = int(line[index2+1:].strip())
                     entry.filters[name] = (activated, number)
 
-        if entry is not None:
+        if entry is not None and not skip:
             log_entries.append(entry)
             entry = None
             filtering = False
+        skip = False
 
     return log_entries
 
