@@ -8,7 +8,7 @@ from docutil.str_util import tokenize
 from docutil.commands_util import size
 
 
-SUPER_REC_THRESHOLD = 0.2
+SUPER_REC_THRESHOLD = 0.4
 
 LOCATION_THRESHOLD = 0.5
 
@@ -29,6 +29,9 @@ def create_family(head, codebase, criterion, first_criterion):
 
 def compute_declaration_family(code_elements, first_criterion=True,
         progress_monitor=NullProgressMonitor()):
+    '''Go through all code element and insert it in a family represented by its
+       container.
+    '''
     families = {}
 
     progress_monitor.start('Comp. Declaration Families', size(code_elements))
@@ -61,6 +64,10 @@ def compute_ancestors(code_element, ancestors):
 
 def compute_hierarchy_family(code_elements, first_criterion=True,
         progress_monitor=NullProgressMonitor()):
+    '''Go through all code elements and insert it in a family represented by
+       its direct container. Then, insert it in a family represented by any of
+       its ancestor.
+    '''
     families1 = {}
     familiesd = {}
 
@@ -97,6 +104,9 @@ def compute_hierarchy_family(code_elements, first_criterion=True,
 
 def compute_no_abstract_family(families,
         progress_monitor=NullProgressMonitor()):
+    '''Go through all families. If a proper subset of the families is non
+       abstract, create a new family, with non-abstract as a second criteria.
+    '''
 
     new_families = {}
     progress_monitor.start('Comp. No Abstract Families', len(families))
@@ -123,6 +133,7 @@ def compute_no_abstract_family(families,
 
 def compute_token_family_second(families,
         progress_monitor=NullProgressMonitor()):
+    '''For each family, compute sub families based on token.'''
 
     progress_monitor.start('Computing token for a set of families',
             len(families))
@@ -147,6 +158,7 @@ def compute_token_family_second(families,
 
 
 def compute_tokens(code_elements):
+    '''Compute a set of all tokens contained in the provided code elements.'''
     tokens = set()
     for code_element in code_elements.all():
         temp = [token.lower().strip() for token in
@@ -157,6 +169,10 @@ def compute_tokens(code_elements):
 
 def compute_token_family(code_elements, first_criterion=True,
         progress_monitor=NullProgressMonitor()):
+    '''For each token, go through all code elements and create three families:
+       code elements that start with a token, elements that end with a token,
+       and elements that have the token in the middle. This is exclusive.
+    '''
     families = {}
     if size(code_elements) == 0:
         return families
@@ -165,7 +181,7 @@ def compute_token_family(code_elements, first_criterion=True,
     tokens = compute_tokens(code_elements)
     progress_monitor.start('Processing {0} token for code elements'
             .format(len(tokens)), len(tokens))
-   
+
     progress_monitor.info('Computing code element names')
     ctokens = []
     for code_element in code_elements.all():
@@ -181,8 +197,11 @@ def compute_token_family(code_elements, first_criterion=True,
         middle = defaultdict(list)
 
         if first_criterion:
+            # Here, we want to avoid mixing classes with methods and fields!
             addt = lambda d, e: d[e.kind.pk].append(e)
         else:
+            # Here, we already know that they are part of the same family, so
+            # they don't mix.
             addt = lambda d, e: d[0].append(e)
 
         for (name, code_element, element_tokens) in ctokens:
@@ -198,7 +217,7 @@ def compute_token_family(code_elements, first_criterion=True,
 
         #print('Debugging {0}: {1} {2} {3}'.format(token, len(start), len(end),
             #len(middle)))
-            
+
         for start_members in start.values():
             if len(start_members) > 1:
                 family = create_family(None, codebase, rmodel.TOKEN,
@@ -245,6 +264,8 @@ def compute_token_family(code_elements, first_criterion=True,
 
 def compute_coverage(families, source, resource,
         progress_monitor=NullProgressMonitor):
+    '''For each family, compute coverage (linked elements / total elements).
+    '''
 
     progress_monitor.start('Computing Coverage', size(families))
 
@@ -274,6 +295,10 @@ def compute_coverage(families, source, resource,
 
 def compare_coverage(codebase_from, codebase_to, source, resource_pk,
         progress_monitor=NullProgressMonitor):
+    '''First, match head-based (declaration/hierarchy) and token-based
+       families.
+       Then, for each matched family, compare their coverage.
+    '''
 
     (heads_from, tokens_from) = compute_family_index(codebase_from,
             progress_monitor)
@@ -312,6 +337,7 @@ def compare_coverage(codebase_from, codebase_to, source, resource_pk,
 
 
 def compute_family_index(codebase, progress_monitor):
+    '''Compute an index of the families based on their head or token.'''
     heads = defaultdict(list)
     tokens = defaultdict(list)
 
@@ -333,6 +359,9 @@ def compute_family_index(codebase, progress_monitor):
 
 def compute_family_diff(index_from, index_to, added, removed,
         progress_monitor):
+    '''For each index and each family, try to find a matching family based on
+       family.equiv.
+    '''
     processed = set()
     family_diffs = []
     progress_monitor.start('Computing family diff', len(index_from))
@@ -364,6 +393,10 @@ def compute_family_diff(index_from, index_to, added, removed,
 
 
 def compute_coverage_diff(family_diffs, source, resource_pk, progress_monitor):
+    '''For each family, get the coverage related to a particular resource.
+       Note: a family in a codebase could have coverage for more than one
+       document (especially during experimentation/evaluation :-) ).
+    '''
     coverage_diffs = []
 
     progress_monitor.start('Computing coverage diff', len(family_diffs))
@@ -455,6 +488,12 @@ def get_family(family, index, key):
 
 def compute_coverage_recommendation(coverage_diffs,
         progress_monitor=NullProgressMonitor()):
+    '''For each coverage diff, check if there is at least one new element in a
+       family that was not there before (release 1) and that is not documented
+       now (release 2).
+
+       For each such coverage diff, create a recommendation.
+    '''
 
     recommendations = []
     diffs_len = size(coverage_diffs)
@@ -509,6 +548,10 @@ def get_members(fam_coverage):
 
 def compute_super_recommendations(recommendations,
         progress_monitor=NullProgressMonitor()):
+    '''Combine similar recommendations together.
+       Recommendations are combined if there isn't more than 20% difference and
+       one is a proper subset of the other.
+    '''
 
     recommendations.sort(key=lambda r: r.new_members.count(), reverse=True)
     processed_recs = set()
@@ -517,12 +560,13 @@ def compute_super_recommendations(recommendations,
     reclen = len(recommendations)
     progress_monitor.start('Processing {0} recommendations'.format(reclen),
             reclen)
-    
+
     for i, rec in enumerate(recommendations):
         if rec.pk in processed_recs:
             continue
             progress_monitor.work('Skipped rec', 1)
 
+        current_best_cov = rec.coverage_diff.coverage_from.coverage
         processed_recs.add(rec.pk)
         super_rec = rmodel.SuperAddRecommendation(initial_rec=rec,
                 codebase_from=rec.coverage_diff.coverage_from.family.codebase,
@@ -534,15 +578,19 @@ def compute_super_recommendations(recommendations,
         super_recs.append(super_rec)
         new_members = list(rec.new_members.all())
         count = float(len(new_members))
-        
-        for temprec in recommendations[i+1:]:
+
+        for temprec in recommendations[i + 1:]:
+            coverage_from = temprec.coverage_diff.coverage_from.coverage
             if (1.0 - (temprec.new_members.count() / count)) > \
                     SUPER_REC_THRESHOLD:
-                break
+                if coverage_from > current_best_cov: 
+                    break
             if proper_subset(list(temprec.new_members.all()), new_members):
+                if coverage_from > current_best_cov:
+                    current_best_cov = coverage_from
                 super_rec.recommendations.add(temprec)
                 processed_recs.add(temprec.pk)
-        
+
         super_rec.best_rec =\
             get_best_rec(list(super_rec.recommendations.all()))
         check_overloading(super_rec)
@@ -581,18 +629,21 @@ def proper_subset(members1, members2):
 
 
 def get_best_rec(recommendations):
+
     def snd_crit(rec):
         fam = rec.coverage_diff.coverage_from.family
         if fam.criterion2 is None:
             return 1
         else:
             return 0
+
     def fst_crit(rec):
         fam = rec.coverage_diff.coverage_from.family
         if fam.criterion1 == rmodel.TOKEN:
             return 0
         else:
             return 1
+
     def cvr(rec):
         return rec.coverage_diff.coverage_from.coverage
 
@@ -602,6 +653,7 @@ def get_best_rec(recommendations):
 
     return recommendations[0]
 
+
 def sort_super_recs(super_recommendations):
     def snd_crit(super_rec):
         fam = super_rec.best_rec.coverage_diff.coverage_from.family
@@ -609,12 +661,14 @@ def sort_super_recs(super_recommendations):
             return 1
         else:
             return 0
+
     def fst_crit(super_rec):
         fam = super_rec.best_rec.coverage_diff.coverage_from.family
         if fam.criterion1 == rmodel.TOKEN:
             return 0
         else:
             return 1
+
     def cvr(super_rec):
         return super_rec.best_rec.coverage_diff.coverage_from.coverage
 
@@ -633,7 +687,7 @@ def report_super(super_recs):
             print('  to document: {0}'.format(member.human_string()))
 
         if super_rec.overloaded:
-            print('\nOverloaded recommendation\n')
+            print('\n  **Overloaded recommendation**')
 
         print('\n  Important Pages:')
         for (page, members) in pages:
@@ -643,17 +697,18 @@ def report_super(super_recs):
             #for member in members:
                 #print('      {0}'.format(member.human_string()))
         if page_spread:
-            print('  New members will probably be added in new pages')
+            print('\n  **New members will probably be added in new pages**')
 
         print('\n  Important Sections:')
         for (section, members) in sections:
             old_count = super_rec.best_rec.old_members.count()
             covered = len(members)
-            print('    {0}: {1} / {2}'.format(section.title, covered, old_count))
+            print('    {0}: {1} / {2}'.format(section.title,
+                covered, old_count))
             #for member in members:
                 #print('      {0}'.format(member.human_string()))
         if section_spread:
-            print('  New members will probably be added in new sections')
+            print('\n  **New members will probably be added in new sections**')
 
         for rec in super_rec.recommendations.all():
             print('  subrec: {0}'.format(rec))
@@ -664,7 +719,7 @@ def get_locations(super_rec):
     pages = ()
     section_spread = False
     page_spread = False
-    
+
     sections_objects = {}
     pages_objects = {}
 

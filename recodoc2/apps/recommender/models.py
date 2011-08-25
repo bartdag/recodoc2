@@ -177,8 +177,8 @@ class CoverageDiff(models.Model):
                 self.coverage_from.family.members.count()
 
     def __unicode__(self):
-        return '{0} : {1}'.format(self.coverage_diff,
-                self.coverage_from.family)
+        return '{0} (init: {1}) : {2}'.format(self.coverage_diff,
+                self.coverage_from.coverage, self.coverage_from.family)
 
 
 class FamilyDiff(models.Model):
