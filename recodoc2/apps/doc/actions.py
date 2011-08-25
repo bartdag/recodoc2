@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import os
+import re
 from django.conf import settings
 from django.db import transaction
 
@@ -164,6 +165,23 @@ def clear_family_coverage(pname, bname, release, dname, srelease):
     print('Deleting {0} family coverages'.format(query.count()))
 
     query.delete()
+
+
+def remove_page(pname, dname, release, url_regex):
+    prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    document = Document.objects.filter(project_release=prelease).\
+            filter(title=dname)[0]
+    pattern = re.compile(url_regex)
+    to_delete = []
+    for page in document.pages.all():
+        if pattern.search(page.url):
+            to_delete.append(page)
+    for page in to_delete:
+        print('Page {0} deleted'.format(page.url))
+        page.delete()
+
+    print('{0} pages deleted'.format(len(to_delete)))
 
 
 # Functions
