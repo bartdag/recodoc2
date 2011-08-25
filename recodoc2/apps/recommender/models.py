@@ -257,6 +257,9 @@ class SuperAddRecommendation(models.Model):
             choices=SOURCE_TYPE, default='d')
     '''Type of resource (doc or channel)'''
 
+    overloaded = models.BooleanField(default=False)
+    '''If >50% of the recommendation is about overloaded methods.'''
+
     def __unicode__(self):
         if self.best_rec is None:
             return self.initial_rec.__unicode__()

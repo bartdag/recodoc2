@@ -12,6 +12,8 @@ SUPER_REC_THRESHOLD = 0.2
 
 LOCATION_THRESHOLD = 0.5
 
+OVERLOADED_THRESHOLD = 0.5
+
 
 def create_family(head, codebase, criterion, first_criterion):
     family = rmodel.CodeElementFamily(head=head)
@@ -543,6 +545,7 @@ def compute_super_recommendations(recommendations,
         
         super_rec.best_rec =\
             get_best_rec(list(super_rec.recommendations.all()))
+        check_overloading(super_rec)
         super_rec.save()
 
         progress_monitor.work('Processed rec', 1)
@@ -555,6 +558,20 @@ def compute_super_recommendations(recommendations,
         super_rec.save()
 
     return super_recs
+
+
+def check_overloading(super_rec):
+    overloaded = 0
+    total = 0
+    for member in super_rec.best_rec.new_members.all():
+        total += 1
+        codebase = member.codebase
+        if member.kind.kind != 'method':
+            continue
+        if codebase.code_elements.filter(fqn=member.fqn).count() > 1:
+            overloaded += 1
+    if float(overloaded) / float(total) > OVERLOADED_THRESHOLD:
+        super_rec.overloaded = True
 
 
 def proper_subset(members1, members2):
@@ -614,6 +631,9 @@ def report_super(super_recs):
         print('\nSUPER REC: {0}'.format(super_rec))
         for member in super_rec.best_rec.new_members.all():
             print('  to document: {0}'.format(member.human_string()))
+
+        if super_rec.overloaded:
+            print('\nOverloaded recommendation\n')
 
         print('\n  Important Pages:')
         for (page, members) in pages:

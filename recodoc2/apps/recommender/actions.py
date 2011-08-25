@@ -98,7 +98,8 @@ def show_addition_reco(pname, bname, release1, release2, source, resource_pk):
     fcoverage.report_super(super_recs)
 
 
-def compute_remove_reco(pname, bname, release1, release2, source, resource_pk):
+def compute_remove_reco(pname, bname, release1, release2, source, resource_pk,
+        keep_all=True):
     prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
             filter(release=release1)[0]
     codebase1 = CodeBase.objects.filter(project_release=prelease1).\
@@ -133,11 +134,19 @@ def compute_remove_reco(pname, bname, release1, release2, source, resource_pk):
             deprecated = find_deprecated(equivalent)
             if deprecated:
                 rec.deprecated_element = deprecated
-            rec.save()
-            recs.append(rec)
+                # If not keep all, ensure that the element was not already
+                # deprecated
+                if keep_all or not find_deprecated(code_element):
+                    rec.save()
+                    recs.append(rec)
+            else:
+                rec.save()
+                recs.append(rec)
         else:
             deprecated = find_deprecated(equivalent)
-            if deprecated:
+            # If not keep all, ensure that the element was not already
+            # deprecated
+            if deprecated and (keep_all or not find_deprecated(code_element)):
                 rec.deprecated_element = deprecated
                 rec.save()
                 recs.append(rec)

@@ -21,6 +21,9 @@ class Command(NoArgsCommand):
             default='d', help='Source of the resource (d or s)'),
         make_option('--pk', action='store', dest='pk',
             default='-1', help='PK of the resource'),
+        make_option('--all', action='store_true', dest='all',
+            default=False,
+            help='Compute all deprecated elements, not just new ones.'),
     )
     help = "Compute remove recommendations"
 
@@ -32,5 +35,6 @@ class Command(NoArgsCommand):
         release2 = smart_decode(options.get('release2'))
         source = smart_decode(options.get('source'))
         pk = int(smart_decode(options.get('pk')))
-        compute_remove_reco(pname, bname, release1, release2, source, pk)
-
+        keep_all = options.get('all')
+        compute_remove_reco(pname, bname, release1, release2, source, pk,
+                keep_all)

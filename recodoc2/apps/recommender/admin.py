@@ -40,7 +40,8 @@ class FamilyDiffAdmin(admin.ModelAdmin):
 
 
 class AddRecommendationAdmin(admin.ModelAdmin):
-    readonly_fields = ('coverage_diff', 'new_members', 'super_rec')
+    readonly_fields = ('coverage_diff', 'new_members', 'super_rec',
+        'old_members')
 
 
 class SuperAddRecommendationAdmin(admin.ModelAdmin):
