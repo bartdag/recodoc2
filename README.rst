@@ -588,5 +588,5 @@ TBD
 License
 -------
 
-This software is **not yet** licensed under the `New BSD License`. See the `LICENSE` file
+This software is licensed under the `New BSD License`. See the `LICENSE` file
 in the for the full license text.
