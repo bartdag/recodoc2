@@ -188,6 +188,8 @@ Step 2. Install the required dependencies
   pip install Py4J
   pip install chardet
   pip install django-devserver
+  pip install pylibmc
+  pip install ipython
 
   # For MySQL
   pip install MySQL-python
@@ -203,24 +205,14 @@ Step 3. Install the optional dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These dependencies are only required if you want to analyze Java code. First,
-install the following Python libraries:
-
-::
-
-  # This is for memcached
-  pip install pylibmc
-
-  # This is for the advanced Python shell
-  pip install ipython
-
-Then, install Py4J in Eclipse using the following update site:
+install Py4J in Eclipse using the following update site:
 ``http://py4j.sourceforge.net/py4j_eclipse``.
 
-Finally, install PPA in Eclipse using the following update site:
+Then, install PPA in Eclipse using the following update site:
 ``http://www.sable.mcgill.ca/ppa/site_1.2.x``.
 
-Since PPA is updated frequently but not released often, you might be better
-downloading it and building the update site locally. The source code is
+Since PPA is updated frequently but not released often, it might be better
+to download it and build the update site locally. The source code is
 `located on bitbucket <https://bitbucket.org/barthe/ppa/wiki/Home>`_.  
 
 Step 4. Install the development dependencies
@@ -233,7 +225,6 @@ If you want to contribute to Recodoc, install the following Python programs:
   pip install gitli
   pip install coverage
   pip install django-test-coverage
-  pip install sphinx
 
 
 Step 5. Download and Install Recodoc
@@ -244,9 +235,6 @@ First, clone the Recodoc git repository.
 ::
 
   git clone -b develop git@github.com:bartdag/recodoc2.git
-
-  # alternatively, using mercurial:
-  hg clone https://barthe@bitbucket.org/barthe/recodoc2
 
 
 Then, copy and edit the localsettings file. The file is heavily commented and
@@ -567,26 +555,87 @@ command:
 Analyzing code snippets
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-TBD
+Once you have analyzed the documentation and the support channel, you need to
+further analyze the code snippets identified by Recodoc. In the following
+step, individual code-like terms will be extracted from the code snippets.
+
+This step assumes that Eclipse is running. Run the command once to parse all
+snippets from the documentation, then from the support channel.
+
+::
+
+  ./manage.py parsesnippets --pname hclient --parser java --source d
+  ./manage.py parsesnippets --pname hclient --parser java --source s
+
+
+If there is a problem while parsing the code snippets (e.g., there is a
+thunderstorm and your computer crashes), you can delete all the code-like
+terms that were extracted from the code snippets with this command:
+
+::
+
+  ./manage.py clearsnippets --pname hclient --language j --source d
+
 
 Linking models
 ~~~~~~~~~~~~~~
 
-TBD
+Once all code-like terms have been identified and classified, you can ask
+Recodoc to link the terms with specific code elements. Run these two commands
+to start the linking process:
+
+::
+  
+  # Link code elements from main 4.0 with terms in documentation from 4.0
+  ./manage.py linkall --pname hclient --bname main --release 4.0  --srelease 4.0 --source d
+
+  # Link code elements from main 4.0 with terms in the support channel
+  ./manage.py linkall --pname hclient --bname main --release 4.0  --source s
+
+Note that it is possible to link different releases together: for example, you
+could try to link the release 4.1 of the codebase with the release 4.0 of the
+documentation.
+
+Linking large support channels can take several days on modern hardware so it
+makes sense to divide the work in smaller chunks. Contact me if you want to
+learn how to do this.
+
+If you want to remove all links and start again (e.g., because you found a bug
+in the linker...), execute these commands:
+
+::
+
+  # To clear all the links.
+  ./manage.py clearlinks --pname hclient --release 4.0 --source d
+  ./manage.py clearlinks --pname hclient --release 4.0 --source s
+
+  # Restore the original classification computed by the parser
+  ./manage.py restorekinds --pname hclient --release 4.0 --source d
+  ./manage.py restorekinds --pname hclient --release 4.0 --source s
 
 
 Recommendations
 ~~~~~~~~~~~~~~~
 
-TBD
+This section will be filled after I submit my PhD thesis :-)
 
-Parser and Syncer Reference
----------------------------
 
-TBD
+List of Implemented Parsers and Syncers
+---------------------------------------
+
+For now, please look in the following modules:
+
+* doc.syncer.generic_syncer (SingleURLSyncer)
+* doc.syncer.common_syncers
+* doc.parser.common_parsers
+* doc.parser.special_parsers
+* channel.syncer.common_syncers
+* chanel.parser.common_parsers
+
 
 License
 -------
 
 This software is licensed under the `New BSD License`. See the `LICENSE` file
 in the for the full license text.
+
