@@ -66,6 +66,9 @@ class Page(models.Model):
             related_name="page_refs")
     '''att.'''
 
+    def get_text(self):
+        pass
+
     def __unicode__(self):
         return self.title
 

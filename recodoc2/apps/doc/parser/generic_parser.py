@@ -6,9 +6,10 @@ from traceback import print_exc
 from lxml import etree
 from django.db import transaction
 from django.conf import settings
-from docutil.str_util import clean_breaks
+from docutil.str_util import clean_breaks, normalize
 from docutil.etree_util import clean_tree, get_word_count, XPathList,\
-        SingleXPath, get_word_count_text, get_text_context, get_sentence
+        SingleXPath, get_word_count_text, get_text_context, get_sentence,\
+        get_complex_text
 from docutil.url_util import get_relative_url, get_path
 from docutil.commands_util import chunk_it, import_clazz, get_encoding
 from docutil.progress_monitor import NullProgressMonitor
@@ -169,13 +170,7 @@ class GenericParser(object):
             get_project_code_words(self.document.project_release.project)
 
     def _process_page(self, page, load):
-        page_path = os.path.join(settings.PROJECT_FS_ROOT, page.file_path)
-        page_file = open(page_path)
-        content = page_file.read()
-        page_file.close()
-        encoding = get_encoding(content)
-        parser = etree.HTMLParser(remove_comments=True, encoding=encoding)
-        load.tree = etree.fromstring(content, parser).getroottree()
+        load.tree = self.get_page_etree(page)
         clean_tree(load.tree)
 
         page.title = self._process_page_title(page, load)
@@ -192,6 +187,33 @@ class GenericParser(object):
         if not check:
             return
         self._process_sections(page, load)
+
+    def get_page_text(self, page, complex_text=False):
+        tree = self.get_page_etree(page)
+        clean_tree(tree)
+        body = self.xbody.get_element(tree)
+        if complex_text:
+            text = normalize(get_complex_text(body))
+        else:
+            text = self.xbody.get_text(body)
+        return text
+
+    def get_page_etree(self, page):
+        page_path = os.path.join(settings.PROJECT_FS_ROOT, page.file_path)
+        page_file = open(page_path)
+        content = page_file.read()
+        page_file.close()
+        encoding = get_encoding(content)
+        parser = etree.HTMLParser(remove_comments=True, encoding=encoding)
+        tree = etree.fromstring(content, parser).getroottree()
+        return tree
+
+    def get_section_text(self, section, tree=None, complex_text=False):
+        if tree is None:
+            tree = self.get_page_etree(self, section.page)
+        element = tree.xpath(section.xpath)[0]
+        text = self.xsections.get_text(element, complex_text)
+        return text
 
     def _process_page_title(self, page, load):
         title = self.xtitles.get_text_from_parent(load.tree)

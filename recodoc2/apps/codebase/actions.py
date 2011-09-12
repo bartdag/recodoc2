@@ -605,6 +605,8 @@ def log_stats(log_entries, title):
                     log_entry.final_size)
             record_stat_entry(count, m, s, maxv, 'unique',
                     log_entry.unique_types)
+            if log_entry.unique_types > 1 and log_entry.final_size > 0:
+                count['hard'] += 1
             if log_entry.final_size > 0:
                 count['linked'] += 1
             if log_entry.from_snippet:
@@ -628,6 +630,7 @@ def log_stats(log_entries, title):
     print('Number of code-like terms that matched at least one elem: {0}'
             .format(nonzero))
     print('Number of code-like terms linked: {0}'.format(count['linked']))
+    print('Number of code-like terms difficult to link: {0}'.format(count['hard']))
     print('Number of code-like terms from snippets: {0}'
             .format(count['snippet']))
     print('Number of code-like terms from snippets with 0: {0}'

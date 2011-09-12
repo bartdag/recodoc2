@@ -56,7 +56,7 @@ def get_recursive_text(element, text_parts):
 
         if element.tag in PARAGRAPHS:
             text_parts.append('')
-        
+
         tail = element.tail
         if tail is None:
             tail = ''
@@ -140,6 +140,13 @@ def get_sentence(element, element_text, text_context, xtext=XTEXT):
                     indexes[0] + len(element_text))
 
 
+def get_complex_text(element):
+    text_parts = []
+    get_recursive_text(element, text_parts)
+    text = '\n'.join(text_parts)
+    return text
+
+
 class XPathList(object):
     def __init__(self, xpath_strs, xtext=XTEXT):
         xpaths = []
@@ -167,15 +174,19 @@ class XPathList(object):
                 break
         return elems
 
-    def get_text_from_parent(self, parent, index=0):
+    def get_text_from_parent(self, parent, index=0, complex_text=False):
         text = ''
         elem = self.get_element(parent, index)
         if elem is not None:
-            text = self.xtext(elem)
+            text = self.get_text(elem, complex_text)
         return normalize(text)
 
-    def get_text(self, element):
-        return normalize(self.xtext(element))
+    def get_text(self, element, complex_text=False):
+        if complex_text:
+            text = get_complex_text(element)
+        else:
+            text = self.xtext(element)
+        return normalize(text)
 
 
 class SingleXPath(object):
@@ -200,15 +211,19 @@ class SingleXPath(object):
         else:
             return []
 
-    def get_text_from_parent(self, parent, index=0):
+    def get_text_from_parent(self, parent, index=0, complex_text=False):
         text = ''
         elem = self.get_element(parent, index)
         if elem is not None:
-            text = self.xtext(elem)
+            text = self.get_text(elem, complex_text)
         return normalize(text)
 
-    def get_text(self, element):
-        return normalize(self.xtext(element))
+    def get_text(self, element, complex_text=False):
+        if complex_text:
+            text = get_complex_text(element)
+        else:
+            text = self.xtext(element)
+        return normalize(text)
 
 
 class HierarchyXPath(SingleXPath):
@@ -280,14 +295,14 @@ class FlatXPath(object):
         else:
             return []
 
-    def get_text_from_parent(self, parent, index=0):
+    def get_text_from_parent(self, parent, index=0, complex_text=False):
         text = ''
         elem = self.get_element(parent, index)
         if elem is not None:
-            text = self.get_text(elem)
+            text = self.get_text(elem, complex_text)
         return normalize(text)
 
-    def get_text(self, element):
+    def get_text(self, element, complex_text=False):
         parent = element.getparent()
         if self.first_filter is not None:
             bad_elements = self.first_filter(parent)
@@ -295,7 +310,7 @@ class FlatXPath(object):
             bad_elements = set()
         index = parent.index(element)
         majors = self.get_elements(parent)
-        potentials = parent[index+1:]
+        potentials = parent[index + 1:]
         reals = [element]
         for potential in potentials:
             if potential in majors:
@@ -309,4 +324,3 @@ class FlatXPath(object):
 
         text = '\n'.join(text_parts)
         return normalize(text)
-

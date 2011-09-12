@@ -179,11 +179,11 @@ class NewDocBookParser(NumberDotParentMixin, StandardNumberMixin,
         GenericParser):
 
     xtopsection = HierarchyXPath('//div[@class="chapter"]',
-            'div[@class="section"]')
+            'div[@class="section"]|div[@class="sect1"]|div[@class="sect2"]')
 
     xsections = \
-        HierarchyXPath('//div[@class="section"]|//div[@class="sect1"]|//div[@class="sect2"]|//div[@class="sect3"]',
-            'div[@class="section"]|div[@class="sect1"]|div[@class="sect2"]|div[@class="sect3"]')
+        HierarchyXPath('//div[@class="section"]|//div[@class="sect1"]|//div[@class="sect2"]|//div[@class="sect3"]|//div[@class="sect4"]',
+            'div[@class="section"]|div[@class="sect1"]|div[@class="sect2"]|div[@class="sect3"]|//div[@class="sect4"]')
 
     xsectiontitle = SingleXPath('.//div[@class="titlepage"]')
 
