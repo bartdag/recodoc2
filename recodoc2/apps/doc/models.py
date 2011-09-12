@@ -4,6 +4,7 @@ from django.contrib.contenttypes import generic
 
 from project.models import ProjectRelease, SourceElement
 from codebase.models import SingleCodeReference, CodeSnippet, CodeElementLink
+from docutil.commands_util import import_clazz
 
 
 class Document(models.Model):
@@ -66,8 +67,17 @@ class Page(models.Model):
             related_name="page_refs")
     '''att.'''
 
-    def get_text(self):
-        pass
+    def get_text(self, complex_text=False):
+        parser_clazz = self.document.parser
+        doc_pk = self.document.pk
+        parser = import_clazz(parser_clazz)(doc_pk)
+        return parser.get_page_text(self, complex_text)
+
+    def get_etree(self):
+        parser_clazz = self.document.parser
+        doc_pk = self.document.pk
+        parser = import_clazz(parser_clazz)(doc_pk)
+        return parser.get_page_etree(self)
 
     def __unicode__(self):
         return self.title
@@ -116,6 +126,12 @@ class Section(SourceElement):
             object_id_field="local_object_id",
             related_name="section_snippets")
     '''att.'''
+
+    def get_text(self, tree=None, complex_text=False):
+        parser_clazz = self.page.document.parser
+        doc_pk = self.page.document.pk
+        parser = import_clazz(parser_clazz)(doc_pk)
+        return parser.get_section_text(self, tree, complex_text)
 
     def __unicode__(self):
         return self.title

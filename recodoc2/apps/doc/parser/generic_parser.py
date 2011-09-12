@@ -210,7 +210,7 @@ class GenericParser(object):
 
     def get_section_text(self, section, tree=None, complex_text=False):
         if tree is None:
-            tree = self.get_page_etree(self, section.page)
+            tree = self.get_page_etree(section.page)
         element = tree.xpath(section.xpath)[0]
         text = self.xsections.get_text(element, complex_text)
         return text

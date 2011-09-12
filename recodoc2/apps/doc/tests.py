@@ -328,12 +328,14 @@ class DocParserTest(TransactionTestCase):
                 title='Chapter 2. Connection management').all()[0]
         self.assertEqual('/html/body', page.xpath)
         self.assertEqual(23, page.sections.count())
+        self.assertEqual(page.word_count, len(page.get_text().split()))
 
         section = Section.objects.filter(page=page).filter(
                 number='2.3.1.').all()[0]
         self.assertEqual('2.3.1. Route computation', section.title)
         self.assertEqual(182, section.word_count)
         self.assertEqual('2.3.', section.parent.number)
+        self.assertEqual(section.word_count, len(section.get_text().split()))
 
         # With code snippets:
         section = Section.objects.filter(page=page).filter(
@@ -342,6 +344,7 @@ class DocParserTest(TransactionTestCase):
         self.assertEqual(110, section.word_count)
         self.assertEqual('2.', section.parent.number)
         self.assertTrue(section.parent.parent is None)
+        self.assertEqual(section.word_count, len(section.get_text().split()))
 
     #@unittest.skip('Usually works.')
     def test_docbook_parse_sp25_doc(self):
@@ -367,12 +370,14 @@ class DocParserTest(TransactionTestCase):
                 title='Chapter 22. Email').all()[0]
         self.assertEqual('/html/body', page.xpath)
         self.assertEqual(11, page.sections.count())
+        self.assertEqual(page.word_count, len(page.get_text().split()))
 
         section = Section.objects.filter(page=page).filter(
                 number='22.3.1.1.').all()[0]
         self.assertEqual('22.3.1.1. Attachments', section.title)
         self.assertEqual(78, section.word_count)
         self.assertEqual('22.3.1.', section.parent.number)
+        self.assertEqual(section.word_count, len(section.get_text().split()))
 
         section = Section.objects.filter(page=page).filter(
                 number='22.2.').all()[0]
@@ -380,6 +385,7 @@ class DocParserTest(TransactionTestCase):
         self.assertEqual(51, section.word_count)
         self.assertEqual('22.', section.parent.number)
         self.assertTrue(section.parent.parent is None)
+        self.assertEqual(section.word_count, len(section.get_text().split()))
 
     @unittest.skip('Usually works.')
     def test_docbook_parse_hib3_doc(self):
@@ -519,6 +525,7 @@ class DocParserTest(TransactionTestCase):
         
         page = Page.objects.filter(document=document).filter(
                 title='User Guide').all()[0]
+        self.assertEqual(page.word_count, len(page.get_text().split()))
 
         section = Section.objects.filter(page=page).filter(
                 title='Direct access').all()[0]
@@ -526,6 +533,7 @@ class DocParserTest(TransactionTestCase):
         # Only 2, because small references are not added! Yay!
         self.assertEqual(2, section.code_references.count())
         self.assertEqual(1, section.code_snippets.count())
+        self.assertEqual(section.word_count, len(section.get_text().split()))
         
         section = Section.objects.filter(page=page).filter(
                 title='Using a MutableDateTime').all()[0]
@@ -533,6 +541,7 @@ class DocParserTest(TransactionTestCase):
         # Include the ref in the title too!
         self.assertEqual(2, section.code_references.count())
         self.assertEqual(1, section.code_snippets.count())
+        self.assertEqual(section.word_count, len(section.get_text().split()))
 
     @unittest.skip('Usually works.')
     def test_docbook_parse_hib3_doc_code(self):
@@ -556,18 +565,21 @@ class DocParserTest(TransactionTestCase):
         
         page = Page.objects.filter(document=document).filter(
                 title='Chapter 12. Transactions and Concurrency').all()[0]
+        self.assertEqual(page.word_count, len(page.get_text().split()))
 
         section = Section.objects.filter(page=page).filter(
                 number='12.3.4.').all()[0]
         self.assertEqual(0, section.title_references.count())
         self.assertEqual(13, section.code_references.count())
         self.assertEqual(0, section.code_snippets.count())
+        self.assertEqual(section.word_count, len(section.get_text().split()))
 
         section = Section.objects.filter(page=page).filter(
                 number='12.3.3.').all()[0]
         self.assertEqual(0, section.title_references.count())
         self.assertEqual(12, section.code_references.count())
         self.assertEqual(1, section.code_snippets.count())
+        self.assertEqual(section.word_count, len(section.get_text().split()))
 
     @transaction.autocommit
     def test_docbook_parse_ht4_doc_code(self):
