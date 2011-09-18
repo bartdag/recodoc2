@@ -38,6 +38,9 @@ class SupportChannel(models.Model):
 
 
 class SupportThread(models.Model):
+    text_content = models.TextField(blank=True, null=True)
+    '''att.'''
+
     url = models.URLField(null=True, blank=True, max_length=500)
     '''att.'''
 
@@ -86,7 +89,10 @@ class SupportThread(models.Model):
 class Message(SourceElement):
 
     title = models.CharField(max_length=500, null=True, blank=True)
-    '''at'''
+    '''att'''
+
+    text_content = models.TextField(blank=True, null=True)
+    '''att.'''
 
     index = models.IntegerField(default=-1)
     '''Index of the message in the thread. 0-based.'''

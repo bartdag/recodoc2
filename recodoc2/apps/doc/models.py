@@ -42,6 +42,13 @@ class Document(models.Model):
 
 
 class Page(models.Model):
+    '''
+    A page in a document.
+    '''
+
+    text_content = models.TextField(null=True, blank=True)
+    '''att.'''
+
     url = models.URLField(null=True, blank=True, max_length=500)
     '''att.'''
 
@@ -93,6 +100,9 @@ class Section(SourceElement):
     '''
 
     title = models.CharField(max_length=500, blank=True, null=True)
+    '''att.'''
+
+    text_content = models.TextField(blank=True, null=True)
     '''att.'''
 
     page = models.ForeignKey(Page, blank=True, null=True,
@@ -178,7 +188,6 @@ class DocDiff(models.Model):
     sections_size_to = models.IntegerField(default=0)
     '''att.'''
 
-
     def __unicode__(self):
         return 'Diff {0} - {1}'.format(self.document_from, self.document_to)
 
@@ -203,7 +212,6 @@ class PageMatcher(models.Model):
     '''att.'''
 
 
-
 class SectionMatcher(models.Model):
     section_from = models.ForeignKey(Section, blank=True, null=True,
             related_name="match_froms")
@@ -222,7 +230,6 @@ class SectionMatcher(models.Model):
     diff = models.ForeignKey(DocDiff, blank=True, null=True,
             related_name="section_matches")
     '''att.'''
-
 
 
 class SectionChanger(models.Model):

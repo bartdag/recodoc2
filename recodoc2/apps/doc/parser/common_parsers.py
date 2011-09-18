@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from traceback import print_exc
+from copy import deepcopy
 import re
 import logging
 from docutil.str_util import find_list
@@ -59,13 +60,15 @@ class NumberDotParentMixin(object):
                 parent_number1 = section.number[:indexes[-1]]
                 parent_number2 = section.number[:indexes[-1] + 1]
 
-            if parent_number1 is not None and parent_number1 in sections_number:
+            if parent_number1 is not None and \
+                    parent_number1 in sections_number:
                 section.parent = sections_number[parent_number1]
                 section.save()
             elif parent_number2 is not None and \
                     parent_number2 in sections_number:
                 section.parent = sections_number[parent_number2]
                 section.save()
+
 
 class XPathParentMixin(object):
 
@@ -112,7 +115,6 @@ class FlatParentMixin(object):
         return (parent_xpath.find('h1') > -1 and child_xpath.find('h2') > -1) \
                 or \
                 (parent_xpath.find('h2') > -1 and child_xpath.find('h3') > -1)
-
 
     def _find_section(self, reference, sections, page, load):
         parent_section = None
@@ -251,8 +253,46 @@ class XStreamParser(FlatParentMixin, NoNumberMixin, GenericParser):
         load.mix_mode = True
 
 
+class JavaTutorialParser(FlatParentMixin, NoNumberMixin, GenericParser):
+
+    xtitles = SingleXPath('//title[1]')
+
+    xsections = FlatXPath('//div[@id="PageContent"]/h1'
+            ' | //div[@id="PageContent"]/h2  | //div[@id="PageContent"]/h2')
+
+    xsectiontitle = SingleXPath('.')
+
+    xcoderef_url = 'docs/api'
+
+    xcoderef = SingleXPath('//code | //tt | //em | //a')
+
+    xsnippet = SingleXPath('//pre')
+
+    xfirst_title = SingleXPath('//div[@id="PageTitle"]/h1')
+
+    xcontentbody = SingleXPath('//div[@id="PageContent"]')
+
+    def _process_page_title(self, page, load):
+        title = super(JavaTutorialParser, self)._process_page_title(page, load)
+        index = title.rfind('(The Java')
+        if index > -1 and index < (len(title) + 2):
+            title = title[:index]
+
+        return title.strip()
+
+    def get_page_etree(self, page):
+        tree = super(JavaTutorialParser, self).get_page_etree(page)
+        first_title = self.xfirst_title.get_element(tree)
+        content = self.xcontentbody.get_element(tree)
+        if first_title is not None and content is not None:
+            new_title = deepcopy(first_title)
+            content.insert(0, new_title)
+
+        return tree
+
+
 class JavadocParser(FlatParentMixin, NoNumberMixin, GenericParser):
-    
+
     xtitles = SingleXPath('//title[1]')
 
     xsections = FlatXPath('//h2 | //h3')
@@ -274,7 +314,7 @@ class JavadocParser(FlatParentMixin, NoNumberMixin, GenericParser):
         title = super(JavadocParser, self)._process_page_title(page, load)
         index = title.find('(')
         if index > -1:
-            title = title[:index-1].strip()
+            title = title[:index - 1].strip()
         return title
 
     def _process_init_page(self, page, load):

@@ -42,7 +42,9 @@ def sub_process_parse(pinput):
             #print('Considering page {0}'.format(page_input))
             if page_input is not None:
                 (local_path, page_url) = page_input
-                parser.parse_page(local_path, page_url, parse_refs)
+                # Do not parse gifs...
+                if local_path.endswith('.html'):
+                    parser.parse_page(local_path, page_url, parse_refs)
         return True
     except Exception:
         print_exc()
@@ -281,12 +283,13 @@ class GenericParser(object):
         tree = load.tree
         title = \
             self.xsectiontitle.get_text_from_parent(section_element).strip()
-        title = title.replace('\n',' ').replace('\t', ' ').replace('\r', '')
+        title = title.replace('\n', ' ').replace('\t', ' ').replace('\r', '')
         xpath = tree.getpath(section_element)
         number = \
             self._get_section_number(page, load, section_element, title,
                 xpath).strip()
         word_count = get_word_count_text(text)
+
         if (len(title) > 500):
             title = title[:497] + '...'
         section = Section(
@@ -297,6 +300,10 @@ class GenericParser(object):
                 url=page.url,
                 number=number,
                 word_count=word_count)
+
+        if settings.SAVE_MESSAGE_TEXT:
+            section.text_content = text
+
         section.save()
         return section
 

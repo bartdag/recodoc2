@@ -182,6 +182,14 @@ CUSTOM_LINKERS = {}
 
 CHANNEL_LINE_THRESHOLD = 500
 
+# Not supported yet
+#SAVE_THREAD_TEXT = False
+# Not supported yet
+#SAVE_PAGE_TEXT = False
+
+SAVE_MESSAGE_TEXT = False
+SAVE_SECTION_TEXT = False
+
 DEVSERVER_MODULES = (
     #'devserver.modules.sql.SQLRealTimeModule',
     #'devserver.modules.sql.SQLSummaryModule',

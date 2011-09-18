@@ -108,7 +108,7 @@ def parse_channel(channel, model, pool_size=DEFAULT_POOL_SIZE,
             lock))
 
     progress_monitor.start('Parsing Channel Entries', len(inputs))
-    
+
     progress_monitor.info('Building code words cache')
     get_project_code_words(channel.project)
 
@@ -212,6 +212,9 @@ class GenericParser(object):
         if load.entry is not None:
             message.sthread = load.entry
 
+        if settings.SAVE_MESSAGE_TEXT:
+            message.text_content = ucontent
+
         message.save()
 
         load.sub_entries.append(message)
@@ -297,7 +300,7 @@ class GenericParser(object):
                 lines.append(content_line)
 
         return lines
-    
+
     def _post_process_lines(self, lines):
         pass
 
@@ -419,7 +422,7 @@ class GenericThreadParser(GenericParser):
     def _get_messages(self, load):
         message_elements = self.xmessages.get_elements(load.tree)
         return message_elements
-        
+
     def _parse_entry(self, path, relative_path, url, index, load):
         message_elements = self._get_messages(load)
         for i, message_element in enumerate(message_elements):
