@@ -1,0 +1,728 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Bean Context #1: Containment Only (The Java&trade; Tutorials &gt;        
+            JavaBeans(TM) &gt; Using the BeanContext API)
+</title>
+
+     <meta name="description" content="This JavaBean Java tutorial describes using the JavaBeans API to develop JavaBean components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, javabean, bean persistence, java introspection, beancontext" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> JavaBeans(TM)
+        <br><b>Lesson:</b> Using the BeanContext API
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Using the BeanContext API</a></div>
+<div class="linkAHEAD"><a href="overview.html">Overview of the BeanContext API</a></div>
+<div class="nolinkAHEAD">Bean Context #1: Containment Only</div>
+<div class="linkAHEAD"><a href="services.html">Bean Context #2: Containment and Services</a></div>
+<div class="linkAHEAD"><a href="gui.html">AWT Containers and the BeanContextProxy Interface</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>JavaBeans(TM)</a>
+                &gt;
+                <a href=index.html target=_top>Using the BeanContext API</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=overview.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=services.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Bean Context #1: Containment Only</h1></div>
+            <div id=PageContent>
+<P>The &quot;containment&quot; portion of the Extensible Runtime Containment and Services Protocol is defined by
+the <code>BeanContext</code> interface. In its most basic form, a <code>BeanContext</code> is used to
+logically
+group a set of related java beans, bean contexts, or arbitrary objects.
+ JavaBeans nested into a <code>BeanContext</code> are known as &quot;child&quot; beans.
+
+Once nested, a child bean can query its <code>BeanContext</code>
+for various membership information, as illustrated in the following
+examples. 
+</P>
+
+
+<P><A NAME="containment_scenarios"></A> Here are some possible <code>BeanContext</code> containment
+scenarios:</P>
+
+<P>
+<IMG SRC="../../figures/javabeans/emptyBeanContext.gif" WIDTH="201" HEIGHT="119" ALT="A rectangle with nothing in it."></P>
+
+<P>
+<IMG SRC="../../figures/javabeans/single.gif" WIDTH="191" HEIGHT="158" ALT="A rectangle with a single coffee bean labeled JavaBean."></P>
+
+<P>
+<IMG SRC="../../figures/javabeans/3beans.gif" WIDTH="285" HEIGHT="199" ALT="A rectangle with three coffee beans, each below the previous, indented, and labeled JavaBean."></P>
+
+<P>
+<IMG SRC="../../figures/javabeans/2contexts.gif" WIDTH="245" HEIGHT="181" ALT="A rectangle (BeanContext #2) inside another rectangle (BeanContext #1)"></P>
+<P>
+The sample code presented in this chapter uses instances of the 
+<code>BeanContextSupport</code> helper class to provide the basic <code>BeanContext</code>
+functionality. A <code>BeanContextSupport</code> object is simply a concrete
+implementation of the <code>BeanContext</code> interface.
+</P>
+
+<P>With a <code>BeanContextSupport</code> instance, it is possible to:</P>
+
+<UL>
+<LI>Add an object, bean, or <code>BeanContext</code>:
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextSupport.html#add(java.lang.Object)"><code>boolean add(Object o)</code></a>
+<LI>Remove an object, bean, or <code>BeanContext</code>:
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextSupport.html#remove(java.lang.Object)"><code>boolean remove(Object o)</code></a>
+<LI>Add a <code>BeanContextMembershipListener</code>:
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextSupport.html#addBeanContextMembershipListener(java.beans.beancontext.BeanContextMembershipListener)"><code>void addBeanContextMembershipListener(BeanContextMembershipListener bcml)</code></a>
+<LI>Remove a <code>BeanContextMembershipListener</code>:
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextSupport.html#removeBeanContextMembershipListener(java.beans.beancontext.BeanContextMembershipListener)"><code>void removeBeanContextMembershipListener(BeanContextMembershipListener bcml)</code></a>
+<LI>Get all JavaBean or <code>BeanContext</code> instances currently
+    nested in this <code>BeanContext</code> as an array or as an Iterator:
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextSupport.html#toArray()"><code>Object[] toArray()</code></a>, 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextSupport.html#toArray(java.lang.Object[])"><code>Object[] toArray(Object[] a)</code></a>, and
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextSupport.html#iterator()"><code>Iterator iterator()</code></a>
+<LI>Determine whether or not a specified object
+    is currently a child of the <code>BeanContext</code>:
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextSupport.html#contains(java.lang.Object)"><code>boolean contains(Object o)</code></a>
+<LI>Get the number of children currently nested in this <code>BeanContext</code>:
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextSupport.html#size()"><code>int size()</code></a>
+<LI>Determine whether or not the <code>BeanContext</code> currently has zero children:
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextSupport.html#isEmpty()"><code>boolean isEmpty()</code></a>
+<LI>Instantiate a new JavaBean instance as a child of the target <code>BeanContext</code>:
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextSupport.html#instantiateChild(java.lang.String)"><code>Object instantiateChild(String beanName)</code></a></UL>
+
+<P>The following test programs, which are run from the command line, illustrate the use of these methods.</P>
+<P>The comments in the source code explain the purpose of each.</P>
+
+<A NAME="example1"></A>
+<B>File:
+<a class="SourceLink" target="_blank" href="examples/Example1.java"><code>Example1.java</code></a></B>
+
+<div class="codeblock"><pre>
+
+import java.beans.beancontext.*;
+
+public class Example1 {
+    private static BeanContextSupport context = new BeanContextSupport(); // The BeanContext
+    private static BeanContextChildSupport bean = new BeanContextChildSupport(); // The JavaBean
+  
+    public static void main(String[] args) {
+        report();  
+
+        // Add the bean to the context
+        System.out.println(&quot;Adding bean to context...&quot;);
+        context.add(bean);
+
+        report();
+    }
+
+    private static void report() {
+        // Print out a report of the context's membership state.
+        System.out.println(&quot;=============================================&quot;);
+
+        // Is the context empty?
+        System.out.println(&quot;Is the context empty? &quot; + context.isEmpty());
+
+        // Has the context been set for the child bean?
+        boolean result = (bean.getBeanContext()!=null);
+        System.out.println(&quot;Does the bean have a context yet? &quot; + result);
+
+        // Number of children in the context
+        System.out.println(&quot;Number of children in the context: &quot; + context.size());
+
+        // Is the specific bean a member of the context?
+        System.out.println(&quot;Is the bean a member of the context? &quot; + context.contains(bean));
+
+        // Equality test
+        if (bean.getBeanContext() != null) {
+            boolean isEqual = (bean.getBeanContext()==context); // true means both references point to the same object
+            System.out.println(&quot;Contexts are the same? &quot; + isEqual);
+        }
+        System.out.println(&quot;=============================================&quot;);   
+    }
+}
+</pre></div>
+
+<b>Output</b>:
+<div class="codeblock"><pre>
+=============================================
+Is the context empty? true
+Does the bean have a context yet? false
+Number of children in the context: 0
+Is the bean a member of the context? false
+=============================================
+Adding bean to context...
+=============================================
+Is the context empty? false
+Does the bean have a context yet? true
+Number of children in the context: 1
+Is the bean a member of the context? true
+Contexts are the same? true
+=============================================
+</pre></div>
+
+<A NAME="example2" </a></A>
+<B>File:
+<a class="SourceLink" target="_blank" href="examples/Example2.java"><code>Example2.java</code></a></B>
+
+<div class="codeblock"><pre>
+
+import java.beans.beancontext.*;
+
+public class Example2 {
+    public static void main(String[] args) {
+
+        // A BeanContext 
+        BeanContextSupport context = new BeanContextSupport(); 
+
+        // Many JavaBeans
+        BeanContextChildSupport[] beans = new BeanContextChildSupport[100];
+
+        System.out.println(&quot;Number of children in the context: &quot; + context.size());
+
+        // Create the beans and add them to the context
+        for (int i = 0; i &lt; beans.length; i++) {
+            beans[i] = new BeanContextSupport();
+            context.add(beans[i]);
+        }
+        System.out.println(&quot;Number of children in the context: &quot; + context.size());
+
+        // Context now has 100 beans in it, get references to them all
+        Object[] children = context.toArray();
+        System.out.println(&quot;Number of objects retrieved from the context: &quot; + children.length);
+    }
+}
+</pre></div>
+
+<B>Output:</B>
+<div class="codeblock"><pre>
+Number of children in the context: 0
+Number of children in the context: 100
+Number of objects retrieved from the context: 100
+</pre></div>
+
+<A NAME="example3"></A>
+<B>File:
+<a class="SourceLink" target="_blank" href="examples/Example3.java"><code>Example3.java</code></a></B>
+
+<div class="codeblock"><pre>
+
+import java.beans.beancontext.*;
+import java.io.*;
+
+public class Example3 {
+    public static void main(String[] args) {
+        BeanContextSupport context = new BeanContextSupport();
+        System.out.println(&quot;Number of children nested into the context: &quot; + context.size());
+
+        BeanContextChildSupport child = null;
+        try {
+            child = (BeanContextChildSupport)context.instantiateChild(&quot;java.beans.beancontext.BeanContextChildSupport&quot;);
+        }
+        catch(IOException e){
+            System.out.println(&quot;IOException occurred: &quot; + e.getMessage());
+        }
+        catch(ClassNotFoundException e){
+            System.out.println(&quot;Class not found: &quot; + e.getMessage());
+        }
+        System.out.println(&quot;Number of children nested into the context: &quot; + context.size());
+    }
+}
+</pre></div>
+
+<b>Output</b>:
+<div class="codeblock"><pre>
+Number of children nested into the context: 0
+Number of children nested into the context: 1
+</pre></div>
+
+<P><A NAME="membership"></A>
+<h2>BeanContextMembershipEvent Notification</h2>
+<P>The <code>BeanContext</code> API uses the standard Java event
+model to register listeners and deliver events.
+For an overview of this standard event model,
+refer to
+<a class="TutorialLink" target="_top" href="../../uiswing/events/index.html">Writing Event Listeners</a>.
+For details about handling specific events, see
+<a class="TutorialLink" target="_top" href="../../uiswing/events/index.html">Writing Event Listeners</a>.
+</P>
+<P>In a basic <code>BeanContext</code>, the event classes and interfaces involved are:
+
+<UL>
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextMembershipEvent.html"><code>java.beans.beancontext.BeanContextMembershipEvent</code></a>: Encapsulates the list of children added to, or removed from, the membership of
+a particular <code>BeanContext</code>.
+An instance of this event is fired whenever a successful add(), remove(), retainAll(),
+removeAll(), or clear() is invoked on a given <code>BeanContext</code> instance.
+
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextMembershipListener.html"><code>java.beans.BeanContextMembershipListener</code></a>: Objects
+wishing to receive BeanContextMembershipEvents implement this interface.
+It defines methods
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextMembershipListener.html#childrenAdded(java.beans.beancontext.BeanContextMembershipEvent)"><code>void childrenAdded(BeanContextMembershipEvent bcme)</code></a> and 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/beancontext/BeanContextMembershipListener.html#childrenRemoved(java.beans.beancontext.BeanContextMembershipEvent)"><code>void childrenRemoved(BeanContextMembershipEvent bcme)</code></a>, which are called when a child is added to or removed
+from a given <code>BeanContext</code> instance.
+</UL>
+
+<P><A NAME="bcme_sample"></A>
+<h2>BeanContextMembershipEvent Notification: Sample Code</h2>
+
+<b>
+File:
+<a class="SourceLink" target="_blank" href="examples/MembershipTest.java"><code>MembershipTest.java</code></a></b>
+
+<div class="codeblock"><pre>
+
+import java.beans.beancontext.*;
+
+public class MembershipTest {
+    public static void main(String[] args) {
+        BeanContextSupport context = new BeanContextSupport(); // the context
+        MyMembershipListener listener = new MyMembershipListener(); 
+        BeanContextChildSupport bean = new BeanContextChildSupport(); // a JavaBean
+        context.addBeanContextMembershipListener(listener); // now listening!
+        context.add(bean);
+        context.remove(bean);
+    }
+}
+
+class MyMembershipListener implements BeanContextMembershipListener {
+    public void childrenAdded(BeanContextMembershipEvent bcme) {
+        System.out.println(&quot;Another bean has been added to the context.&quot;);
+    }
+
+    public void childrenRemoved(BeanContextMembershipEvent bcme) {
+        System.out.println(&quot;A bean has been removed from the context.&quot;);
+    }
+}
+</pre></div>
+
+<B>Output:</B>
+<div class="codeblock"><pre>
+Another bean has been added to the context.
+A bean has been removed from the context.
+</pre></div>
+
+<h2>The same example, implemented using an anonymous inner class</h2>
+
+<div class="codeblock"><pre>
+import java.beans.beancontext.*;
+
+public class MembershipTest {
+    public static void main(String[] args) {
+        BeanContextSupport context = new BeanContextSupport();
+        context.addBeanContextMembershipListener(new BeanContextMembershipListener() {
+            public void childrenAdded(BeanContextMembershipEvent bcme) {
+                System.out.println(&quot;Another bean has been added to the context.&quot;);
+            }
+
+            public void childrenRemoved(BeanContextMembershipEvent bcme) {
+                System.out.println(&quot;A bean has been removed from the context.&quot;);
+            }
+        });
+        BeanContextChildSupport bean = new BeanContextChildSupport();
+        context.add(bean);
+        context.remove(bean);
+    }
+}
+</pre></div>
+
+<B>Output:</B>
+<div class="codeblock"><pre>
+Another bean has been added to the context.
+A bean has been removed from the context.
+</pre></div>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=overview.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=services.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Overview of the BeanContext API
+        <br><b>Next page:</b> Bean Context #2: Containment and Services
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

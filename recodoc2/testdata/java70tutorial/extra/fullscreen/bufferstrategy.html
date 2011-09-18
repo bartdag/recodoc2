@@ -1,0 +1,607 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title><code>BufferStrategy</code> and <code>BufferCapabilities</code> (The Java&trade; Tutorials &gt;        
+            Bonus &gt; Full-Screen Exclusive Mode API)
+</title>
+
+     <meta name="description" content="This Java tutorial describes generics, full screen mode API, and Java certification related resources" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java generics, full screen mode API, certification" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Bonus
+        <br><b>Lesson:</b> Full-Screen Exclusive Mode API
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Full-Screen Exclusive Mode API</a></div>
+<div class="linkAHEAD"><a href="exclusivemode.html">Full-Screen Exclusive Mode</a></div>
+<div class="linkAHEAD"><a href="displaymode.html">Display Mode</a></div>
+<div class="linkAHEAD"><a href="rendering.html">Passive vs. Active Rendering</a></div>
+<div class="linkAHEAD"><a href="doublebuf.html">Double Buffering and Page Flipping</a></div>
+<div class="nolinkAHEAD"><code>BufferStrategy</code> and <code>BufferCapabilities</code></div>
+<div class="linkAHEAD"><a href="example.html">Examples</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Bonus</a>
+                &gt;
+                <a href=index.html target=_top>Full-Screen Exclusive Mode API</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=doublebuf.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=example.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1><code>BufferStrategy</code> and <code>BufferCapabilities</code></h1></div>
+            <div id=PageContent>
+<!--BufferStrategy and BufferCapabilities-->
+
+<h2><code>BufferStrategy</code></h2>
+In Java 2 Standard Edition, you don't have to worry about video pointers
+or video memory in order to take full advantage of either double-buffering
+or page-flipping. The new class <tt>java.awt.image.BufferStrategy</tt>
+has been added for the convenience of dealing with drawing to surfaces
+and components in a general way, regardless of the number of buffers used
+or the technique used to display them.
+
+<p>A buffer strategy gives you two all-purpose methods for drawing: <tt>getDrawGraphics</tt>
+and <tt>show</tt>. When you want to start drawing, get a draw graphics
+and use it. When you are finished drawing and want to present your
+information to the screen, call <tt>show</tt>. These two methods
+are designed to fit rather gracefully into a rendering loop:
+
+<div class="codeblock"><pre>
+BufferStrategy myStrategy;
+
+while (!done) {
+    Graphics g = myStrategy.getDrawGraphics();
+    render(g);
+    g.dispose();
+    myStrategy.show();
+}
+</pre></div>
+Buffer strategies have also been set up to help you monitor <tt>VolatileImage</tt>
+issues. When in full-screen exclusive mode, <tt>VolatileImage</tt>
+issues are especially important because the windowing system can sometimes
+take back the video memory it has given you. One important example
+is when the user presses the <tt>ALT+TAB</tt> key combination in Windows--suddenly
+your full-screen program is running in the background and your video memory
+is lost. You can call the <tt>contentsLost</tt> method to find
+out if this has happened. Similarly, when the windowing system returns
+your memory to you, you can find out using the <tt>contentsRestored</tt>
+method.
+
+<h2><code>BufferCapabilities</code></h2>
+<p>As mentioned before, different operating systems, or even different
+graphics cards on the same operating system, have different techniques
+available at their disposal. These <i>capabilities</i> are exposed
+for you so that you can pick the best technique for your application.
+
+<p>The class <tt>java.awt.BufferCapabilities</tt> encapsulates these capabilities.
+Every buffer strategy is controlled by its buffer capabilities, so picking
+the right ones for your application is very crucial. To find out
+what capabilities are available, call the <tt>getBufferCapabilities</tt>
+method from the <tt>GraphicsConfiguration</tt> objects available on your
+graphics device. 
+
+<P>
+The capabilities available in Java 2 Standard Edition version 1.4 are:
+<dl>
+<dt><code>isPageFlipping</code></dt> <dd>This capability returns whether or not hardware
+page-flipping is available on this graphics configuration.</dd>
+
+<p>
+<dt><code>isFullScreenRequired</code></dt> <dd>This capability returns whether or not
+full-screen exclusive mode is required before hardware page-flipping should
+be attempted.</dd>
+
+<p>
+<dt><code>isMultiBufferAvailable</code></dt> <dd>This capability returns whether or
+not multiple buffering (two or more back buffers plus the primary surface)
+in hardware is available.</dd>
+
+<p>
+<dt><code>getFlipContents</code></dt> <dd>This capability returns a hint of the technique
+used to do hardware page-flipping. This is important because the
+contents of the back buffer after a <tt>show</tt> are different depending
+on the technique used. The value returned can be null (if <tt>isPageFlipping</tt>
+returns <tt>false</tt>) or one of the following values. Any value
+can be specified for a buffer strategy so long as the <tt>isPageFlipping</tt> method 
+returns true, though performance will vary depending on the available capabilities.</dd>
+
+<p>
+<dt><code>FlipContents.COPIED</code></dt> <dd>This value means that the contents of the
+back buffer are copied to the primary surface. A "flip" is probably
+performed as a hardware blt, which means that hardware double-buffering
+is probably done using blitting instead of true page-flipping. This
+should (in theory) be faster, or at least as fast, as blitting from a <tt>VolatileImage</tt>
+to the primary surface, though your mileage may vary. The contents
+of the back buffer are the same as the primary surface after a flip.</dd>
+
+<p>
+<dt><code>FlipContents.BACKGROUND</code></dt> <dd>This value means that the contents of
+the back buffer have been cleared with the background color. Either
+a true page-flip or a blt has occurred.</dd>
+
+<p>
+<dt><code>FlipContents.PRIOR</code></dt> <dd>This value means that the contents of the
+back buffer are now the contents of the old primary surface, and vice versa.
+Generally this value indicates that true page-flipping occurs, though this
+is not guaranteed and, once again, your mileage on this operation may vary.</dd>
+
+<p>
+<dt><code>FlipContents.UNKNOWN</code></dt> <dd>This value means that the contents of the
+back buffer are undefined after a flip. You may have to experiment
+to find which technique works best for you (or you may not care), and you
+will definitely have to set up the contents of the back buffer yourself
+each time you draw.</dd>
+</dl>
+
+To create a buffer strategy for a component, call the <tt>createBufferStrategy</tt>
+method, supplying the number of buffers desired (this number includes
+the primary surface).&nbsp; If any particular buffering technique
+is desired, supply an appropriate <tt>BufferCapabilities</tt> object.
+Note that when you use this version of the method, you must catch an
+<tt>AWTException</tt>
+in the event that your choice is not available. Also note that these
+methods are only available on <tt>Canvas</tt> and
+<tt>Window</tt>.
+
+<p>Once a particular buffer strategy has been created for a component,
+you can manipulate it using the <tt>getBufferStrategy</tt> method.
+Note that this method is also only available for canvases and windows.
+
+<h2>Programming Tips</h2>
+<p>
+Some tips about using buffer capabilities and buffer strategies:
+<ul>
+<li>
+Getting, using, and disposing a graphics object are more robust in a <tt>try...finally</tt>
+clause:</li>
+
+<div class="codeblock"><pre>
+BufferStrategy myStrategy;
+
+while (!done) {
+    Graphics g;
+    try {
+        g = myStrategy.getDrawGraphics();
+        render(g);
+    } finally {
+        g.dispose();
+    }
+    myStrategy.show();
+}
+</pre></div>
+
+<li>
+Check the available capabilities before using a buffer strategy.</li>
+
+<li>
+For best results, create your buffer strategy on a full-screen exclusive
+window. Make sure you check the <tt>isFullScreenRequired</tt> and
+<tt>isPageFlipping</tt>
+capabilities before using page-flipping.</li>
+
+<li>
+Don't make any assumptions about performance. Tweak your code as
+necessary, but remember that different operating systems and graphics cards
+have different capabilities. Profile your application!</li>
+
+<li>
+You may want to subclass your component to override the <tt>createBufferStrategy</tt>
+method. Use an algorithm for choosing a strategy that is best suited
+to your application. The <tt>FlipBufferStrategy</tt> and&nbsp; <tt>BltBufferStrategy</tt>
+inner classes are protected and can be subclassed.</li>
+
+<li>
+Don't forget that you may lose your drawing surfaces!&nbsp; Be sure to
+check <tt>contentsLost</tt> and <tt>contentsRestored</tt> before drawing.
+All buffers that have been lost have to be redrawn when they are restored.</li>
+
+<li>
+If you use a buffer strategy for double-buffering in a Swing application,
+you probably want to turn off double-buffering for your Swing components,
+since they will already be double-buffered. Video memory is somewhat
+valuable and should only be used whenever absolutely necessary.</li>
+
+<li>
+It may be end up being wasteful to use more than one back buffer.
+Multi-buffering is only useful when the drawing time exceeds the time spent
+to do a <tt>show</tt>. Profile your application!</li>
+</ul>
+<P>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=doublebuf.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=example.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Double Buffering and Page Flipping
+        <br><b>Next page:</b> Examples
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

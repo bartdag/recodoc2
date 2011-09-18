@@ -1,0 +1,573 @@
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>How to Use Swing Timers (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Using Other Swing Features)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Using Other Swing Features
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Using Other Swing Features</a></div>
+<div class="linkAHEAD"><a href="desktop.html">How to Integrate with the Desktop Class</a></div>
+<div class="linkAHEAD"><a href="trans_shaped_windows.html">How to Create Translucent and Shaped Windows</a></div>
+<div class="linkAHEAD"><a href="jlayer.html">How to Decorate Components with the JLayer Class</a></div>
+<div class="linkAHEAD"><a href="action.html">How to Use Actions</a></div>
+<div class="nolinkAHEAD">How to Use Swing Timers</div>
+<div class="linkAHEAD"><a href="access.html">How to Support Assistive Technologies</a></div>
+<div class="linkAHEAD"><a href="focus.html">How to Use the Focus Subsystem</a></div>
+<div class="linkAHEAD"><a href="keybinding.html">How to Use Key Bindings</a></div>
+<div class="linkAHEAD"><a href="modality.html">How to Use Modality in Dialogs</a></div>
+<div class="linkAHEAD"><a href="printtable.html">How to Print Tables</a></div>
+<div class="linkAHEAD"><a href="printtext.html">How to Print Text</a></div>
+<div class="linkAHEAD"><a href="splashscreen.html">How to Create a Splash Screen</a></div>
+<div class="linkAHEAD"><a href="systemtray.html">How to Use the System Tray</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Problems Using Other Swing Features</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Using Other Swing Features</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=action.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=access.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>How to Use Swing Timers</h1></div>
+            <div id=PageContent>
+A Swing timer
+(an instance of
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Timer.html"><code>javax.swing.Timer</code></a>) fires one or more action events
+after a specified delay.
+Don't confuse Swing timers with 
+the general-purpose timer facility that was added
+to the <code>java.util</code> package in release 1.3.
+This page describes only Swing timers.
+<p>
+In general, we recommend using Swing timers
+rather than general-purpose timers
+for GUI-related tasks because Swing timers
+all share the same, pre-existing timer thread
+and the GUI-related task automatically
+executes on the event-dispatch thread.
+However, you might use a general-purpose timer if
+you don't plan on touching the GUI from the timer,
+or need to perform lengthy processing.
+
+<p>
+
+You can use Swing timers in two ways:
+
+<ul>
+<li> To perform a task once, after a delay.
+<br>
+     For example, the tool tip manager
+     uses Swing timers to determine when to show a tool tip
+     and when to hide it.
+<li> To perform a task repeatedly.
+<br>
+     For example, you might perform animation
+     or update a component that displays progress toward a goal.
+</ul>
+
+<p>
+Swing timers are very easy to use.
+When you create the timer, you specify an
+action listener to be notified when the
+timer "goes off".  The <code>actionPerformed</code>
+method in this listener should contain the code for
+whatever task you need to be performed.
+When you create the timer, you also specify the
+number of milliseconds between timer firings.
+If you want the timer to go off only once, you can
+invoke <code>setRepeats(false)</code> on the timer.
+To start the timer, call its <code>start</code> method.
+To suspend it, call <code>stop</code>.
+
+<p>
+Note that the Swing timer's task is performed 
+in the event dispatch thread.
+This means that the task can safely
+manipulate components,
+but it also means that
+the task should execute quickly.
+If the task might take a while to execute,
+then consider using a <code>SwingWorker</code>
+instead of or in addition to the timer.
+See
+<a class="TutorialLink" target="_top" href="../concurrency/index.html">Concurrency in Swing</a>
+for instructions about using the <code>SwingWorker</code> class
+and information on using Swing components in multi-threaded programs.
+
+<p>
+
+Let's look at an example of using a timer
+to periodically update a component.
+The 
+<a class="SourceLink" target="_blank" href="../examples/components/TumbleItemProject/src/components/TumbleItem.java"><code><code>TumbleItem</code></code></a>
+applet uses a timer to update its display at regular intervals. (To
+see this applet running, go to 
+<a class="TutorialLink" target="_top" href="../components/applet.html">How to Make Applets</a>. This applet begins by creating and starting a timer:
+<div class="codeblock"><pre>
+timer = new Timer(speed, this);
+timer.setInitialDelay(pause);
+timer.start(); 
+</pre></div>
+The <code>speed</code> and <code>pause</code> variables represent
+applet parameters; as configured on the other page, these are 100 and
+1900 respectively, so that the first timer event will occur in
+approximately 1.9 seconds, and recur every 0.1 seconds. By specifying
+<code>this</code> as the second argument to the <code>Timer</code>
+constructor, <code>TumbleItem</code> specifies that it is the action
+listener for timer events.
+<p>
+After starting the timer, <code>TumbleItem</code> begins loading a
+series of images in a background thread. Meanwhile, the timer events
+begin to occur, causing the 
+<code>actionPerformed</code> method to execute:
+<div class="codeblock"><pre>
+public void actionPerformed(ActionEvent e) {
+    //If still loading, can't animate.
+    if (!worker.isDone()) {
+        return;
+    }
+
+    loopslot++;
+
+    if (loopslot &gt;= nimgs) {
+        loopslot = 0;
+        off += offset;
+
+        if (off &lt; 0) {
+            off = width - maxWidth;
+        } else if (off + maxWidth &gt; width) {
+            off = 0;
+        }
+    }
+
+    animator.repaint();
+
+    if (loopslot == nimgs - 1) {
+        timer.restart();
+    }
+}
+</pre></div>
+Until the images are loaded, <code>worker.isDone</code> returns
+<code>false</code>, so timer events are effectively ignored.  The
+first part of the event handling code simply sets values that are
+employed in the animation control's <code>paintComponent</code>
+method: <code>loopslot</code> (the index of the next graphic in the
+animation) and <code>off</code> (the horizontal offset of the next
+graphic). 
+<p>
+Eventually, <code>loopslot</code> will reach the end of the image
+array and start over. When this happens, the code at the end of
+<code>actionPerformed</code> restarts the timer. Doing this causes a
+short delay before the animation sequence begins again.
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=action.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=access.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Use Actions
+        <br><b>Next page:</b> How to Support Assistive Technologies
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

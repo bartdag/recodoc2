@@ -1,0 +1,444 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Lesson: Introduction to Collections (The Java&trade; Tutorials &gt; Collections)</title>
+     <meta name="description" content="This collections Java tutorial describes interfaces, implementations, and algorithms in the Java Collections framework" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java collections, set, list, queue, map, array, arraylist" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+    </head>
+<body>
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                    <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                        <br>
+                    </div> 
+                </div> </div> </div> </div> </div>
+
+    <div class=MainFlow_wide>
+        <div class=PrintHeaders>
+            <b>Trail:</b> Collections
+        </div>
+        <div id=BreadCrumbs>
+            <a href=../../index.html target=_top>Home Page</a>
+        &gt;
+            <a href=../index.html target=_top>Collections</a>
+        </div>
+        <div class=NavBit>
+                <a target=_top href=../index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../interfaces/index.html>Next&nbsp;&raquo;</a>
+        </div>
+        <div id=PageTitle><h1>Lesson: Introduction to Collections</h1></div>
+        <div id=PageContent>
+A <i>collection</i> &mdash; sometimes called a container &mdash; is simply
+an object that groups multiple elements into a single unit. Collections
+are used to store, retrieve, manipulate, and communicate aggregate data.
+Typically, they represent data items that form a natural group, such as
+a poker hand (a collection of cards), a mail folder (a collection of
+letters), or a telephone directory (a mapping of names to phone
+numbers).
+<P>
+If you've used the Java programming language &mdash; or just about any
+other programming language &mdash; you're already familiar with
+collections. Collection implementations in earlier (pre-1.2) versions
+of the Java platform included <code>Vector</code>,
+<code>Hashtable</code>, and <code>array</code>. However, those earlier versions did not contain a collections framework.
+
+
+<h2>What Is a Collections Framework?</h2>
+
+
+A <i>collections framework</i> is a unified architecture for representing and manipulating collections. All collections frameworks contain the following:
+
+<ul>
+<li><b>Interfaces:</b>  These are abstract data types that represent collections. Interfaces allow collections to be manipulated independently of the details of their representation. In object-oriented languages, interfaces generally form a hierarchy.
+
+<li><b>Implementations:</b> These are the concrete implementations of the collection interfaces. In essence, they are reusable data structures.
+
+<li><b>Algorithms:</b> These are the methods that perform useful computations, such as searching and sorting, on objects that implement collection interfaces. The algorithms are said to be <i>polymorphic</i>: that is, the same method can be used on many different implementations of the appropriate collection interface. In essence, algorithms are reusable functionality.
+</ul>
+<p>
+Apart from the Java Collections Framework, the best-known examples of collections frameworks are
+the C++ Standard Template Library (STL) and Smalltalk's collection hierarchy. Historically, collections
+frameworks have been quite complex, which gave them a reputation for having a steep learning curve.
+We believe that the Java Collections Framework breaks with this tradition, as you will learn for yourself in this chapter.
+</p>
+
+
+
+
+<h2>Benefits of the Java Collections Framework</h2>
+
+
+The Java Collections Framework provides the following benefits:
+
+<ul>
+
+<li><b>Reduces programming effort:</b> By providing useful data
+structures and algorithms, the Collections Framework frees you to
+concentrate on the important parts of your program rather than on the
+low-level "plumbing" required to make it work. By facilitating
+interoperability among unrelated APIs, the Java Collections
+Framework frees you from writing adapter objects or conversion code to connect
+APIs.
+
+<li><b>Increases program speed and quality:</b> This Collections Framework
+provides high-performance, high-quality implementations of useful data
+structures and algorithms. The various implementations of each interface
+are interchangeable, so programs can be easily tuned by switching collection
+implementations. Because you're freed from the drudgery of writing your own
+data structures, you'll have more time to devote to improving programs'
+quality and performance.
+
+<li><b>Allows interoperability among unrelated APIs:</b> The collection interfaces
+are the vernacular by which APIs pass collections back and forth. If my network
+administration API furnishes a collection of node names and if your GUI toolkit
+expects a collection of column headings, our APIs will interoperate seamlessly,
+even though they were written independently.
+
+<li><b>Reduces effort to learn and to use new APIs:</b> Many APIs naturally take
+collections on input and furnish them as output. In the past, each such API had a
+small sub-API devoted to manipulating its collections. There was little
+consistency among these ad hoc collections sub-APIs, so you had to learn each
+one from scratch, and it was easy to make mistakes when using them. With the
+advent of standard collection interfaces, the problem went away.
+
+<li><b>Reduces effort to design new APIs:</b> This is the flip side of the
+previous advantage. Designers and implementers don't have to reinvent the
+wheel each time they create an API that relies on collections;
+instead, they can use standard collection interfaces.
+
+<li><b>Fosters software reuse:</b> New data structures that conform to the
+standard collection interfaces are by nature reusable. The same goes for
+new algorithms that operate on objects that implement these interfaces.
+</ul>
+
+        </div>
+    <div class=NavBit>
+        <a href=../index.html>&laquo; Previous</a>
+        &bull;
+        <a href=../TOC.html>Trail</a>
+        &bull;
+        <a href=../interfaces/index.html>Next &raquo;</a>
+    </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Table of Contents
+        <br><b>Next page:</b> Interfaces
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

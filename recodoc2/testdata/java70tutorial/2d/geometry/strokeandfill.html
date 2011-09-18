@@ -1,0 +1,565 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Stroking and Filling Graphics Primitives (The Java&trade; Tutorials &gt;        
+            2D Graphics &gt; Working with Geometry)
+</title>
+
+    <meta name="description" content="Java Tutorials lesson shows how to use the Graphics2D class to draw graphic primitives, arbitrary shapes, and to display graphics with outline and fill styles" />
+    <meta name="keywords" content="java programming, learn java, java sample code, java 2d, 2d geometry" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> 2D Graphics
+        <br><b>Lesson:</b> Working with Geometry
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Working with Geometry</a></div>
+<div class="linkAHEAD"><a href="primitives.html">Drawing Geometric Primitives</a></div>
+<div class="linkAHEAD"><a href="arbitrary.html">Drawing Arbitrary Shapes</a></div>
+<div class="nolinkAHEAD">Stroking and Filling Graphics Primitives</div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>2D Graphics</a>
+                &gt;
+                <a href=index.html target=_top>Working with Geometry</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=arbitrary.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../text/index.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Stroking and Filling Graphics Primitives</h1></div>
+            <div id=PageContent>
+<P>You already know how to create different geometric
+primitives and more complicated shapes. This lesson teaches how to add some color and fancy outlines
+to your graphics and represents filling and stroking:
+<UL>
+<LI><EM CLASS="Emphasis">Filling</EM> &ndash; is a process of painting the shape&rsquo;s interior
+with solid color or a color gradient, or a texture pattern </LI>
+<LI><EM CLASS="Emphasis">Stroking</EM> &ndash; is a process of drawing a
+shape&rsquo;s outline applying stroke width, line style, and color attribute</LI>
+</UL>
+<P>To apply fancy line styles and fill patterns to geometric primitives change
+the stroke and paint attributes in the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Graphics2D.html"><code>Graphics2D</code></a> context before rendering. For
+example, draw a dashed line by creating an appropriate
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Stroke.html"><code>Stroke</code></a> object. To add this stroke to the <CODE>Graphics2D</CODE> context before
+you render the line call the <CODE>setStroke</CODE> method .
+Similarly, you apply a gradient fill to a <CODE>Shape</CODE> object by
+creating a <CODE>GradientPaint</CODE> object and adding it to the
+<CODE>Graphics2D</CODE> context.
+<P>
+The following code lines enrich geometric primitives with
+filling and stroking context:
+<div class="codeblock"><pre>
+// draw RoundRectangle2D.Double
+
+final static float dash1[] = {10.0f};
+    final static BasicStroke dashed = new BasicStroke(1.0f,
+                                          BasicStroke.CAP_BUTT,
+                                          BasicStroke.JOIN_MITER,
+                                          10.0f, dash1, 0.0f);
+g2.setStroke(dashed);
+g2.draw(new RoundRectangle2D.Double(x, y,
+                                   rectWidth,
+                                   rectHeight,
+                                   10, 10));
+</pre></div>
+
+<IMG SRC="../../figures/2d/2D-18.gif" WIDTH="135" HEIGHT="49" ALT="Dashed rounded rectangle">
+<div class="codeblock"><pre>
+// fill Ellipse2D.Double
+redtowhite = new GradientPaint(0,0,color.RED,100, 0,color.WHITE);
+g2.setPaint(redtowhite);
+g2.fill (new Ellipse2D.Double(0, 0, 100, 50));
+</pre></div>
+
+<IMG SRC="../../figures/2d/2D-26.gif" WIDTH="136" HEIGHT="49" ALT="Polygon filled with gradient color">
+<P>The
+<a class="SourceLink" target="_blank" href="examples/ShapesDemo2D.java"><code>ShapesDemo2D.java</code></a> code example represents additional implementations of stoking and filling.
+
+<h2>Defining Fancy Line Styles and Fill Patterns</h2>
+
+<p>Using the Java 2D&trade; <CODE>Stroke</CODE> and <CODE>Paint</CODE> classes, you can define fancy line styles and fill patterns.</p>
+
+<h3>Line Styles</h3>
+
+<p>Line styles are defined by the stroke attribute in the
+<CODE>Graphics2D</CODE> rendering context. To set the stroke attribute,
+you create a <CODE>BasicStroke</CODE> object and pass it into the
+<CODE>Graphics2D</CODE> <CODE>setStroke</CODE> method.</p>
+
+<P>A <CODE>BasicStroke</CODE> object holds information about the line
+width, join style, end-cap style, and dash style. This information is
+used when a <CODE>Shape</CODE> is rendered with the <CODE>draw</CODE>
+method.</p>
+
+<P>The <EM CLASS="Emphasis">line width</EM>
+is the thickness of the line measured perpendicular to its trajectory.
+The line width is specified as a <CODE>float</CODE> value in user
+coordinate units, which are roughly equivalent to 1/72 of an inch when the
+default transform is used.</p>
+
+<P>The <EM CLASS="Emphasis">join style</EM>
+is the decoration that is applied where two line segments meet.
+<CODE>BasicStroke</CODE> supports the following three join styles:</p>
+
+<P>
+
+<IMG SRC="../../figures/2d/2D-28.gif" WIDTH="30" HEIGHT="26" ALT="Join bevel stroke style"><CODE>JOIN_BEVEL</CODE>
+
+<P>
+<IMG SRC="../../figures/2d/2D-29.gif" WIDTH="30" HEIGHT="33" ALT="Join miter stroke style"><CODE>JOIN_MITER</CODE>
+
+<P>
+<IMG SRC="../../figures/2d/2D-30.gif" WIDTH="30" HEIGHT="29" ALT="Join round stroke style"><CODE> JOIN_ROUND</CODE>
+
+<P>
+The <EM CLASS="Emphasis">end-cap style</EM>
+is the decoration that is applied where a line segment ends.
+<CODE>BasicStroke</CODE> supports the following three end-cap styles:
+<P>
+<IMG SRC="../../figures/2d/2D-31.gif" WIDTH="26" HEIGHT="8" ALT="Butt end-cap style"><CODE>CAP_BUTT</CODE>
+
+<P>
+<IMG SRC="../../figures/2d/2D-32.gif" WIDTH="32" HEIGHT="8" ALT="Round end-cap style"><CODE>CAP_ROUND</CODE>
+
+<P>
+<IMG SRC="../../figures/2d/2D-33.gif" WIDTH="32" HEIGHT="8" ALT="Square end-cap style"><CODE>CAP_SQUARE</CODE>
+
+<P>
+The <EM CLASS="Emphasis">dash style</EM>
+defines the pattern of opaque and transparent sections applied along
+the length of the line. The dash style is defined by a dash array and
+a dash phase. The <EM CLASS="Emphasis">dash array</EM>
+defines the dash pattern. Alternating elements in the array represent
+the dash length and the length of the space between dashes in user
+coordinate units. Element 0 represents the first dash, element 1 the
+first space, and so on. The <EM CLASS="Emphasis">dash phase</EM>
+is an offset into the dash pattern, also specified in user coordinate
+units. The dash phase indicates what part of the dash pattern is
+applied to the beginning of the line.
+
+
+<h3>Fill Patterns</h3>
+
+
+Fill patterns are defined by the paint attribute in the
+<CODE>Graphics2D</CODE> rendering context. To set the paint attribute,
+you create an instance of an object that implements the
+<CODE>Paint</CODE> interface and pass it into the
+<CODE>Graphics2D</CODE> <CODE>setPaint</CODE> method.
+<P>
+The following three classes implement the <CODE>Paint</CODE> interface:
+<CODE>Color</CODE>, <CODE>GradientPaint</CODE>, and
+<CODE>TexturePaint</CODE>.
+<P>
+To create a <CODE>GradientPaint</CODE>,
+you specify a beginning position and color and an ending position and
+color. The gradient changes proportionally from one color to the other color
+along the line connecting the two positions. For example:
+
+<p><center><IMG SRC="../../figures/2d/2D-34.gif" WIDTH="302" HEIGHT="129" ALIGN="BOTTOM" ALT="Gradient filling"></center></p>
+<P>
+The pattern for a <CODE>TexturePaint</CODE> class
+is defined by a <CODE>BufferedImage</CODE> class.
+To create a <CODE>TexturePaint</CODE> object,
+you specify the image that contains the pattern and a rectangle that
+is used to replicate and anchor the pattern.
+The following image represents this feature:
+<p><center><IMG SRC="../../figures/2d/2D-35.gif" WIDTH="374" HEIGHT="127" ALIGN="BOTTOM" ALT="Using a texture to fill a rectangle"></center></p>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=arbitrary.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=../text/index.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Drawing Arbitrary Shapes
+        <br><b>Next page:</b> Working with Text APIs
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

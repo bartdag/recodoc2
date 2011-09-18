@@ -1,0 +1,647 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Using Sequencer Methods (The Java&trade; Tutorials &gt;        
+            Sound)
+</title>
+
+     <meta name="description" content="" />
+     <meta name="keywords" content="java programming, learn java, java sample code, " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Sound
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkAHEAD"><a href="sampled-overview.html">Overview of the Sampled Package</a></div>
+<div class="linkAHEAD"><a href="accessing.html">Accessing Audio System Resources</a></div>
+<div class="linkAHEAD"><a href="playing.html">Playing Back Audio</a></div>
+<div class="linkAHEAD"><a href="capturing.html">Capturing Audio</a></div>
+<div class="linkAHEAD"><a href="controls.html">Processing Audio with Controls</a></div>
+<div class="linkAHEAD"><a href="converters.html">Using Files and Format Converters</a></div>
+<div class="linkAHEAD"><a href="overview-MIDI.html">Overview of the MIDI Package</a></div>
+<div class="linkAHEAD"><a href="accessing-MIDI.html">Accessing MIDI System Resources</a></div>
+<div class="linkAHEAD"><a href="MIDI-messages.html">Transmitting and Receiving MIDI Messages</a></div>
+<div class="linkAHEAD"><a href="MIDI-seq-intro.html">Introduction to Sequencers</a></div>
+<div class="nolinkAHEAD">Using Sequencer Methods</div>
+<div class="linkAHEAD"><a href="MIDI-seq-adv.html">Using Advanced Sequencer Features</a></div>
+<div class="linkAHEAD"><a href="MIDI-synth.html">Synthesizing Sound</a></div>
+<div class="linkAHEAD"><a href="SPI-intro.html">Introduction to the Service Provider Interfaces</a></div>
+<div class="linkAHEAD"><a href="SPI-providing-sampled.html">Providing Sampled-Audio Services</a></div>
+<div class="linkAHEAD"><a href="SPI-providing-MIDI.html">Providing MIDI Services</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=./index.html target=_top>Sound</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=MIDI-seq-intro.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=./TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=MIDI-seq-adv.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Using Sequencer Methods</h1></div>
+            <div id=PageContent>
+The 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/midi/Sequencer.html"><code>Sequencer</code></a>
+interface provides methods in several categories:
+
+</p><ul>
+<li><a name="124593"> </a>Methods to load sequence data from a MIDI file or a <code>Sequence</code> object, and to save the currently loaded sequence data to a MIDI file.
+
+<li><a name="124594"> </a>Methods analogous to the transport functions of a tape recorder, for stopping and starting playback and recording, enabling and disabling recording on specific tracks, and shuttling the current playback or recording position in a <code>Sequence</code>.
+
+<li><a name="124595"> </a>Advanced methods for querying and setting the synchronization and timing parameters of the object. A <code>Sequencer</code> may play at different tempos, with some <code>Tracks</code> muted, and in various synchronization states with other objects.
+
+<li><a name="124596"> </a>Advanced methods for registering "listener" objects that are notified when the <code>Sequencer</code> processes certain kinds of MIDI events.
+</ul>
+
+<p><a name="124597"> </a>
+Regardless of which <code>Sequencer </code>methods you'll invoke, the first step is to obtain a <code>Sequencer</code> device from the system and reserve it for your program's use.
+<p></p><a name="124598"> </a>
+
+<h2> Obtaining a Sequencer</h2>
+<p><a name="124599"> </a> An application program doesn't instantiate a <code>Sequencer</code>; 
+  after all, <code>Sequencer</code> is just an interface. Instead, like all devices 
+  in the Java Sound API's MIDI package, a <code>Sequencer</code> is accessed through 
+  the static <code>MidiSystem</code> object. As previously mentioned in 
+
+
+<a class="TutorialLink" target="_top" href="accessing-MIDI.html">Accessing MIDI System Resources</a>, 
+
+the following <code>MidiSystem</code> method can 
+  be used to obtain the default <code>Sequencer</code>: </p>
+
+<div class="codeblock"><pre>
+static Sequencer getSequencer()
+</pre></div>
+
+<p><a name="124604"> </a>
+The following code fragment obtains the default<code> Sequencer</code>, acquires any system resources it needs, and makes it operational:
+<div class="codeblock"><pre>
+Sequencer sequencer;
+// Get default sequencer.
+sequencer = MidiSystem.getSequencer(); 
+if (sequencer == null) {
+    // Error -- sequencer device is not supported.
+    // Inform user and return...
+} else {
+    // Acquire resources and make operational.
+    sequencer.open();
+}
+</pre></div>
+
+<p><a name="124615"> </a>
+The invocation of <code>open</code> reserves the sequencer device for your program's use. It doesn't make much sense to imagine sharing a sequencer, because it can play only one sequence at a time. When you're done using the sequencer, you can make it available to other programs by invoking <code>close</code>.
+
+</p>
+<p><a name="124616"> </a> Non-default sequencers can be obtained as described 
+  in 
+
+<a class="TutorialLink" target="_top" href="accessing-MIDI.html">Accessing MIDI System Resources</a>.
+
+</p>
+<a name="124620"> </a>
+<h2> Loading a Sequence</h2>
+<p><a name="124621"> </a>
+Having obtained a sequencer from the system and reserved it, you then need load the data that the sequencer should play. There are three typical ways of accomplishing this:
+</p><ul>
+
+<li><a name="124622"> </a>Reading the sequence data from a MIDI file
+
+<li><a name="124623"> </a>Recording it in real time by receiving MIDI messages from another device, such as a MIDI input port
+
+<li><a name="124624"> </a>Building it programmatically "from scratch" by adding tracks to an empty sequence and adding <code>MidiEvent</code> objects to those tracks
+</ul>
+
+<p><a name="124625"> </a>
+We'll now look at the first of these ways of getting sequence data. (The other 
+two ways are described below under <a href="#124654">Recording 
+and Saving Sequences</a> and <a href="#124674">Editing a Sequence</a>, 
+respectively.) This first way actually encompasses two slightly different approaches. 
+One approach is to feed MIDI file data to an <code>InputStream</code> that you 
+then read directly to the sequencer by means of <code>Sequencer.setSequence(InputStream)</code>. 
+With this approach, you don't explicitly create a <code>Sequence</code> object. 
+In fact, the <code>Sequencer</code> implementation might not even create a <code>Sequence</code> 
+
+behind the scenes, because some sequencers have a built-in mechanism for handling 
+data directly from a file. 
+<p></p>
+<p><a name="124632"> </a> The other approach is to create a <code>Sequence</code> 
+  explicitly. You'll need to use this approach if you're going to edit the sequence 
+  data before playing it. With this approach, you invoke <code>MidiSystem's</code> 
+  overloaded method <code>getSequence</code>. The method is able to get the sequence 
+  from an <code>InputStream</code>, a <code>File</code>, or a <code>URL</code>. 
+  The method returns a <code>Sequence</code> object that can then be loaded into 
+  a <code>Sequencer</code> for playback. Expanding on the previous code excerpt, 
+  here's an example of obtaining a <code>Sequence</code> object from a <code>File</code> 
+  and loading it into our <code>sequencer</code>: </p>
+
+<div class="codeblock"><pre>
+try {
+    File myMidiFile = new File("seq1.mid");
+    // Construct a Sequence object, and
+    // load it into my sequencer.
+    Sequence mySeq = MidiSystem.getSequence(myMidiFile);
+    sequencer.setSequence(mySeq);
+} catch (Exception e) {
+   // Handle error and/or return
+}
+</pre></div>
+
+<p><a name="124642"> </a> Like <code>MidiSystem's</code> <code>getSequence</code> 
+  method, <code>setSequence</code> may throw an <code>InvalidMidiDataException</code>&#151;and, 
+  in the case of the <code>InputStream</code> variant, an <code>IOException</code>&#151;if 
+  it runs into any trouble. </p>
+
+<a name="124643"> </a>
+<h2> Playing a Sequence</h2>
+<p><a name="124644"> </a>
+Starting and stopping a <code>Sequencer</code> is accomplished using the following methods:
+</p>
+<div class="codeblock"><pre>
+    void start()
+</pre></div>
+<p><a name="124646"> </a>
+and
+
+<div class="codeblock"><pre>
+    void stop()
+</pre></div>
+<p><a name="124648"> </a>
+The <code>Sequencer.start</code> method begins playback of the sequence. Note that playback starts at the current position in a sequence. Loading an existing sequence using the <code>setSequence</code> method, described above, initializes the sequencer's current position to the very beginning of the sequence. The <code>stop</code> method stops the sequencer, but it does not automatically rewind the current <code>Sequence</code>. Starting a stopped <code>Sequence</code> without resetting the position simply resumes playback of the sequence from the current position. In this case, the <code>stop</code> method has served as a pause operation. However, there are various <code>Sequencer</code> methods for setting the current sequence position to an arbitrary value before playback is started. (We'll discuss these methods below.)
+
+</p>
+<p><a name="124649"> </a> As mentioned earlier, a <code>Sequencer</code> typically 
+  has one or more <code>Transmitter</code> objects, through which it sends <code>MidiMessages</code> 
+  to a <code>Receiver</code>. It is through these <code>Transmitters</code> that 
+  a <code>Sequencer</code> plays the <code>Sequence</code>, by emitting appropriately 
+  timed <code>MidiMessages</code> that correspond to the <code>MidiEvents</code> 
+  contained in the current <code>Sequence</code>. Therefore, part of the setup 
+  procedure for playing back a <code>Sequence</code> is to invoke the <code>setReceiver</code> 
+  method on the <code>Sequencer's</code> <code>Transmitter</code> object, in effect 
+  wiring its output to the device that will make use of the played-back data. 
+  For more details on <code>Transmitters</code> and <code>Receivers</code>, 
+  refer back to 
+
+<a class="TutorialLink" target="_top" href="MIDI-messages.html">Transmitting and Receiving MIDI Messages</a>.
+
+</p>
+<a name="124654"> </a>
+<h2> Recording and Saving Sequences</h2>
+<p><a name="124655"> </a>
+To capture MIDI data to a <code>Sequence</code>, and subsequently to a file, you need to perform some additional steps beyond those described above. The following outline shows the steps necessary to set up for recording to a <code>Track</code> in a <code>Sequence</code>:
+</p>
+
+<ol>
+
+<li><a name="124656"> </a>Use <code>MidiSystem.getSequencer</code> to get a new sequencer to use for recording, as above. 
+
+<li><a name="124657"> </a>Set up the "wiring" of the MIDI connections. The object that is transmitting the MIDI data to be recorded should be configured, through its <code>setReceiver</code> method, to send data to a <code>Receiver</code> associated with the recording <code>Sequencer</code>.
+
+<li><a name="124658"> </a>Create a new <code>Sequence</code> object, which will store the recorded data. When you create the <code>Sequence</code> object, you must specify the global timing information for the sequence. For example:
+
+<div class="codeblock"><pre>
+      Sequence mySeq;
+      try{
+          mySeq = new Sequence(Sequence.PPQ, 10);
+      } catch (Exception ex) { 
+          ex.printStackTrace(); 
+      }
+</pre></div>
+
+<a name="124666"> </a>
+The constructor for <code>Sequence</code> takes as arguments a <code>divisionType</code> and a timing resolution. The <code>divisionType</code> argument specifies the units of the resolution argument. In this case, we've specified that the timing resolution of the <code>Sequence</code> we're creating will be 10 pulses per quarter note. An additional optional argument to the <code>Sequence</code> constructor is a number of tracks argument, which would cause the initial sequence to begin with the specified number of (initially empty) <code>Tracks</code>. Otherwise the <code>Sequence</code> will be created with no initial <code>Tracks</code>; they can be added later as needed.
+
+
+<li><a name="124667"> </a>Create an empty <code>Track</code> in the <code>Sequence</code>, with <code>Sequence.createTrack</code>. This step is unnecessary if the <code>Sequence</code> was created with initial <code>Tracks</code>.
+
+<li><a name="124668"> </a>Using <code>Sequencer.setSequence</code>, select our new <code>Sequence</code> to receive the recording. The <code>setSequence</code> method ties together an existing <code>Sequence</code> with the <code>Sequencer</code>, which is somewhat analogous to loading a tape onto a tape recorder. 
+
+<li><a name="124669"> </a>Invoke <code>Sequencer.recordEnable</code> for each <code>Track</code> to be recorded. If necessary, get a reference to the available <code>Tracks</code> in the <code>Sequence</code> by invoking <code>Sequence.getTracks</code>.
+
+<li><a name="124670"> </a>Invoke <code>startRecording</code> on the <code>Sequencer</code>.
+
+<li><a name="124671"> </a>When done recording, invoke <code>Sequencer.stop</code> or <code>Sequencer.stopRecording</code>.
+
+<li><a name="124672"> </a>Save the recorded <code>Sequence</code> to a MIDI file with <code>MidiSystem.write</code>. The <code>write</code> method of <code>MidiSystem</code> takes a <code>Sequence</code> as one of its arguments, and will write that <code>Sequence</code> to a stream or file. 
+
+</ol>
+<a name="124674"> </a>
+<h2> Editing a Sequence</h2>
+<p><a name="124675"> </a>
+Many application programs allow a sequence to be created by loading it from a file, and quite a few also allow a sequence to be created by capturing it from live MIDI input (that is, recording). Some programs, however, will need to create MIDI sequences from scratch, whether programmatically or in response to user input. Full-featured sequencer programs permit the user to manually construct new sequences, as well as to edit existing ones. 
+</p><p><a name="124676"> </a>
+These data-editing operations are achieved in the Java Sound API not by <code>Sequencer</code> methods, but by methods of the data objects themselves: <code>Sequence</code>, <code>Track</code>, and <code>MidiEvent</code>. You can create an empty sequence using one of the <code>Sequence</code> constructors, and then add tracks to it by invoking the following <code>Sequence</code> method:
+
+</p>
+<div class="codeblock"><pre>
+    Track createTrack() 
+</pre></div>
+If your program allows the user to edit sequences, you'll need this <code>Sequence</code> method to remove tracks:
+<div class="codeblock"><pre>
+    boolean deleteTrack(Track track) 
+</pre></div>
+<p><a name="124680"> </a>
+Once the sequence contains tracks, you can modify the contents of the tracks by invoking methods of the <code>Track</code> class. The <code>MidiEvents</code> contained in the <code>Track</code> are stored as a<code> java.util.Vector</code> in the <code>Track</code> object, and <code>Track</code> provides a set of methods for accessing, adding, and removing the events in the list. The methods <code>add</code> and <code>remove</code> are fairly self-explanatory, adding or removing a specified <code>MidiEvent</code> from a <code>Track</code>. A <code>get</code> method is provided, which takes an index into the <code>Track's</code> event list and returns the <code>MidiEvent</code> stored there. In addition, there are <code>size</code> and <code>tick</code> methods, which respectively return the number of <code>MidiEvents</code> in the track, and the track's duration, expressed as a total number of <code>Ticks</code>.
+
+</p><p><a name="124681"> </a>
+To create a new event before adding it to the track, you'll of course use the <code>MidiEvent</code> constructor. To specify or modify the MIDI message embedded in the event, you can invoke the <code>setMessage</code> method of the appropriate <code>MidiMessage</code> subclass (<code>ShortMessage</code>, <code>SysexMessage</code>, or <code>MetaMessage</code>). To modify the time that the event should occur, invoke <code>MidiEvent.setTick</code>.
+
+</p><p><a name="124682"> </a>
+In combination, these low-level methods provide the basis for the editing functionality needed by a full-featured sequencer program.
+</p>
+<a name="124684"> </a> 
+        </div>
+        <div class=NavBit>
+            <a target=_top href=MIDI-seq-intro.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=./TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=MIDI-seq-adv.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Introduction to Sequencers
+        <br><b>Next page:</b> Using Advanced Sequencer Features
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

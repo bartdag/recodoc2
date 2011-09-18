@@ -1,0 +1,587 @@
+
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Pooling (The Java&trade; Tutorials &gt;        
+            Java Naming and Directory Interface(TM). &gt; Advanced Topics for LDAP Users)
+</title>
+
+     <meta name="description" content="This JNDI Java tutorial describes Java Naming and Directory Interface (JNDI) technology, naming and directory operations, and LDAP" />
+     <meta name="keywords" content="java programming, learn java, java sample code, jndi, ldap, jndi service provider" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Java Naming and Directory Interface(TM).
+        <br><b>Lesson:</b> Advanced Topics for LDAP Users
+        <br><b>Section:</b> Connection Management
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Advanced Topics for LDAP Users</a></div>
+<div class="linkAHEAD"><a href="ldap.html">LDAP v3</a></div>
+<div class="linkAHEAD"><a href="jndi.html">JNDI as an LDAP API</a></div>
+<div class="linkBHEAD"><a href="operations.html">How LDAP Operations Map to JNDI APIs</a></div>
+<div class="linkBHEAD"><a href="exceptions.html">How LDAP Error Codes Map to JNDI Exceptions</a></div>
+<div class="linkAHEAD"><a href="security.html">Security</a></div>
+<div class="linkBHEAD"><a href="authentication.html">Modes of Authenticating to LDAP</a></div>
+<div class="linkBHEAD"><a href="auth_mechs.html">Authentication Mechanisms</a></div>
+<div class="linkBHEAD"><a href="anonymous.html">Anonymous</a></div>
+<div class="linkBHEAD"><a href="simple.html">Simple</a></div>
+<div class="linkBHEAD"><a href="sasl.html">SASL</a></div>
+<div class="linkBHEAD"><a href="digest.html">Digest-MD5</a></div>
+<div class="linkBHEAD"><a href="ssl.html">SSL and Custom Sockets</a></div>
+<div class="linkAHEAD"><a href="rename.html">More LDAP Operations</a></div>
+<div class="linkBHEAD"><a href="compare.html">LDAP Compare</a></div>
+<div class="linkBHEAD"><a href="result.html">Search Results</a></div>
+<div class="linkBHEAD"><a href="unsol.html"> LDAP Unsolicited Notifications</a></div>
+<div class="linkAHEAD"><a href="connect.html">Connection Management</a></div>
+<div class="linkBHEAD"><a href="create.html">Creation</a></div>
+<div class="linkBHEAD"><a href="close.html"> Closing</a></div>
+<div class="nolinkBHEAD">Pooling</div>
+<div class="linkBHEAD"><a href="config.html">Configuration</a></div>
+<div class="linkAHEAD"><a href="faq.html">Frequently Asked Questions</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Java Naming and Directory Interface(TM).</a>
+                &gt;
+                <a href=index.html target=_top>Advanced Topics for LDAP Users</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=close.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=config.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Pooling</h1></div>
+            <div id=PageContent>
+The <a href=create.html>Connection Creation</a> section described when
+connections are created. It described how several <tt>Context</tt>
+instances can share the same connection.
+
+<P> 
+
+Another type of connection sharing supported by the LDAP service
+provider is called <em>connection pooling</em>.  In this type of
+sharing, the LDAP service provider maintains a pool of (possibly)
+previously used connections and assigns them to a <tt>Context</tt>
+instance as needed.  When a <tt>Context</tt>
+instance is done with a connection (closed or garbage collected), the
+connection is returned to the pool for future use. 
+Note that this form of sharing is sequential: a connection is retrieved
+from the pool, used, returned to the pool, and then, retrieved again
+from the pool for another <tt>Context</tt> instance. 
+<p>
+
+The pool of connections is maintained per Java runtime system.
+For some situations, connection pooling can improve performance
+significantly. For example, only one connection is required for
+processing a search response that contains four referral
+references to the same LDAP server if connection pooling is used.
+Without connection pooling, such a scenario would require four
+separate connections.
+
+<p>
+The rest of this lesson describes in more detail how to use connection pooling.
+
+<h2>How to Use Connection Pooling</h2>
+
+You request connection pooling by adding the property,
+<tt>"com.sun.jndi.ldap.connect.pool"</tt> to the environment properties
+passed to the initial context constructor.  
+
+Here is <a href=examples/UsePool.java>an example</a>.
+<div class="codeblock"><pre>
+// Set up environment for creating initial context
+Hashtable env = new Hashtable(11);
+env.put(Context.INITIAL_CONTEXT_FACTORY, 
+    "com.sun.jndi.ldap.LdapCtxFactory");
+env.put(Context.PROVIDER_URL, "ldap://localhost:389/o=JNDITutorial");
+
+// Enable connection pooling
+env.put("com.sun.jndi.ldap.connect.pool", "true");
+
+// Create one initial context (Get connection from pool)
+DirContext ctx = new InitialDirContext(env);
+
+// do something useful with ctx
+
+// Close the context when we're done
+ctx.close();   // Return connection to pool
+
+// Create another initial context (Get connection from pool)
+DirContext ctx2 = new InitialDirContext(env);
+
+// do something useful with ctx2
+
+// Close the context when we're done
+ctx2.close();   // Return connection to pool
+</pre></div>
+<p>
+This example creates two initial contexts in succession.
+The second initial context will reuse the connection used by
+the first.
+To run this program and observe how the connections are retrieved
+and returned to the pool, use the following command line.
+<div class="codeblock"><pre>
+#java -Dcom.sun.jndi.ldap.connect.pool.debug=fine UsePool
+</pre></div>
+This should produce output that looks as follows.
+<div class="codeblock"><pre>
+Create com.sun.jndi.ldap.LdapClient@5d173[localhost:389]
+Use com.sun.jndi.ldap.LdapClient@5d173
+{ou=ou: NewHires, objectclass=objectClass: top, organizationalUnit}
+Release com.sun.jndi.ldap.LdapClient@5d173
+Use com.sun.jndi.ldap.LdapClient@5d173
+{ou=ou: People, objectclass=objectClass: top, organizationalunit}
+Release com.sun.jndi.ldap.LdapClient@5d173
+</pre></div>
+<p>
+
+You can decide when and
+where to use pooling by including or omitting the
+<tt>"com.sun.jndi.ldap.connect.pool"</tt> property, and thus
+control pooling on a <em>per-context</em> basis.
+In the previous example, if you removed this property from the
+environment properties before creating the second initial context,
+the second initial context would not use a pooled connection.
+<p>
+The LDAP provider keeps track of whether a connection is being used
+through indications from the application. It assumes that an
+application that is maintaining an open context handle is using the
+connection.  Therefore, in order for the LDAP provider to properly
+manage the pooled connections, you must be diligent about
+invoking <tt>Context.close()</tt> on contexts that you no longer need.
+
+<p>
+Bad connections are automatically detected and removed from the
+pool by the LDAP provider. 
+The probability of a context ending up with a bad connection is the
+same regardless of whether connection pooling is used.
+
+<a name=TIMEOUT><h2>Creation Timeout</h2></a>
+
+The pool of connections maintained by the LDAP service provider may be
+limited in size; this is described in detail in the <a
+href=config.html>Connection Pooling Configuration</a> section.  When
+connection pooling has been enabled and no pooled connection is
+available, the client application will block, waiting for an available
+connection.  You can use the <tt>"com.sun.jndi.ldap.connect.timeout"</tt>
+environment property to specify how long to wait for a pooled connection.
+If you omit this property, the application will wait indefinitely.
+<p>
+This same property is also used to specify a timeout period for establishment of 
+the LDAP connection, as described in 
+the <a href=create.html#TIMEOUT>Connection Creation</a> section.
+
+
+<h2>When Not to Use Pooling!!</h2>
+
+Pooled connections are intended to be reused. Therefore, 
+if you plan to perform operations on a <tt>Context</tt> instance that might
+alter the underlying connection's state, then you should not use connection
+pooling for that <tt>Context</tt> instance.
+For example, if you plan to invoke the Start TLS extended operation on
+a <tt>Context</tt> instance, or plan to change security-related
+properties (such as <tt>"java.naming.security.principal"</tt> or
+<tt>"java.naming.security.protocol"</tt>) after the initial context has
+been created, you should not use connection pooling for that
+<tt>Context</tt> instance because the LDAP provider does not track any
+such state changes.
+If you use connection pooling in such situations, you might be
+compromising the security of your application.
+        </div>
+        <div class=NavBit>
+            <a target=_top href=close.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=config.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b>  Closing
+        <br><b>Next page:</b> Configuration
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

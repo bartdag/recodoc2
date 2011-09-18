@@ -1,0 +1,744 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Manipulating Characters in a String (The Java&trade; Tutorials &gt;        
+            Learning the Java Language &gt; Numbers and Strings)
+</title>
+
+     <meta name="description" content="This beginner Java tutorial describes fundamentals of programming in the Java programming language" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java objects, java classes, java inheritance, interfaces, variables, arrays, data types, operators, control flow, number, string" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Learning the Java Language
+        <br><b>Lesson:</b> Numbers and Strings
+        <br><b>Section:</b> Strings
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Numbers and Strings</a></div>
+<div class="linkAHEAD"><a href="numbers.html">Numbers</a></div>
+<div class="linkBHEAD"><a href="numberclasses.html">The Numbers Classes</a></div>
+<div class="linkBHEAD"><a href="numberformat.html">Formatting Numeric Print Output</a></div>
+<div class="linkBHEAD"><a href="beyondmath.html">Beyond Basic Arithmetic</a></div>
+<div class="linkBHEAD"><a href="numbersummary.html">Summary of Numbers</a></div>
+<div class="linkQUESTIONS"><a href="QandE/numbers-questions.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="characters.html">Characters</a></div>
+<div class="linkAHEAD"><a href="strings.html">Strings</a></div>
+<div class="linkBHEAD"><a href="converting.html">Converting Between Numbers and Strings</a></div>
+<div class="nolinkBHEAD">Manipulating Characters in a String</div>
+<div class="linkBHEAD"><a href="comparestrings.html">Comparing Strings and Portions of Strings</a></div>
+<div class="linkBHEAD"><a href="buffers.html">The StringBuilder Class</a></div>
+<div class="linkBHEAD"><a href="stringsummary.html">Summary of Characters and Strings</a></div>
+<div class="linkQUESTIONS"><a href="QandE/characters-questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Learning the Java Language</a>
+                &gt;
+                <a href=index.html target=_top>Numbers and Strings</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=converting.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=comparestrings.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Manipulating Characters in a String</h1></div>
+            <div id=PageContent>
+<!-- Manipulating Characters in a String -->
+
+The <code>String</code> class has a number of methods for examining the contents of strings, finding 
+characters or substrings within a string, changing case, and other tasks.
+<h2 fmstyle=C-Head>Getting Characters and Substrings by Index</h2>
+
+You can get the character at a particular index within a string by invoking the <code>charAt()</code>
+accessor method. The index of the first character is 0, while 
+the index of the last character is <code>length()-1</code>.
+For example, the following code gets the character at index 9 in a string:
+
+<div class="codeblock"><pre>
+String anotherPalindrome = "Niagara. O roar again!"; 
+char aChar = anotherPalindrome.charAt(9);
+</pre></div>
+
+Indices begin at 0, so the character at index 9 is 'O',
+as illustrated in the following figure:
+
+<!-- figure -->
+<p><center><IMG SRC="../../figures/java/objects-charAt.gif" WIDTH="569" HEIGHT="78" ALIGN="BOTTOM" ALT="Use the charAt method to get a character at a particular index."></center></p><p>
+
+
+
+If you want to get more than one consecutive character from a string, you can use the <code>substring</code> method.
+The <code>substring</code> method has two versions,
+as shown in the following table:
+<p>
+<table WIDTH=100% BORDER=1 CELLPADDING=4 CELLSPACING=3
+ summary="This table lists String methods">
+<caption><b>The <code>substring</code> Methods in the <code>String</code> Class</b></caption>
+<tr>
+<th id="h1">Method</th>
+<th id="h2" width=60%>Description</th>
+</tr>
+<tr>
+<td headers="h1"><code>String substring(int beginIndex, int endIndex)</code></td>
+<td headers="h2">Returns a new string that is a substring of this string.
+The first integer argument specifies the index 
+of the first character. The second integer argument is the 
+index of the last character - 1.</td>
+</tr>
+<tr>
+<td headers="h1"><code>String substring(int beginIndex)</code></td>
+<td headers="h2">Returns a new string that is a substring of this string.
+The integer argument specifies the index 
+of the first character. Here, the returned substring extends to the 
+end of the original string.</td>
+</tr>
+</table>
+
+<p>
+
+The following code gets from the Niagara palindrome the substring that
+extends from index 11 up to, but not including, index 15, which is the word "roar":
+
+<div class="codeblock"><pre>
+String anotherPalindrome = "Niagara. O roar again!"; 
+String roar = anotherPalindrome.substring(11, 15); 
+</pre></div>
+<!-- figure -->
+
+<p><center><IMG SRC="../../figures/java/objects-substring.gif" WIDTH="482" HEIGHT="90" ALIGN="BOTTOM" ALT="Use the substring method to get part of a string."></center></p>
+<h2 fmstyle=C-Head>Other Methods for Manipulating Strings</h2>
+Here are several other <code>String</code> methods for manipulating strings:
+<p>
+<table WIDTH=100% BORDER=1 CELLPADDING=4 CELLSPACING=3
+ summary="This table lists other methods in the String class for manipulating strings">
+<caption><b>Other Methods in the <code>String</code> Class for Manipulating Strings</b></caption>
+<tr>
+<th id="h101">Method</th>
+<th id="h102" width=50%>Description</th>
+</tr>
+<tr>
+<td headers="h101"><code>String[] split(String regex)</code><br>
+<code>String[] split(String regex, int limit)</code></td>
+<td headers="h102">Searches for a match as specified by the string argument (which contains
+a regular expression) and splits this string into an array of strings
+accordingly.  The optional integer argument specifies the maximum size
+of the returned array. Regular expressions are covered in 
+the lesson titled "Regular Expressions."</td>
+</tr>
+
+<tr>
+<td headers="h101"><code>CharSequence subSequence(int beginIndex, int endIndex)</code>
+<td headers="h102">Returns a new character sequence constructed from <code>beginIndex</code>
+index up until <code>endIndex</code> - 1.</td>
+</tr>
+
+<tr>
+<td headers="h101"><code>String trim()</code></td>
+<td headers="h102"> Returns a copy of this string with leading and trailing white
+space removed.</td>
+</tr>
+
+<tr>
+<td headers="h101"><code>String toLowerCase()<br>
+String toUpperCase()</code></td>
+<td headers="h102"> Returns a copy of this string converted to lowercase or uppercase.
+If no conversions are necessary, these methods return the original string.</td>
+</tr>
+
+</table>
+
+<h2 fmstyle=C-Head>Searching for Characters and Substrings in a String</h2>
+Here are some other <code>String</code> methods for finding characters or substrings within a string. 
+The <code>String</code> class provides accessor methods that
+return the position within the string of a specific character or
+substring: <code>indexOf()</code> and <code>lastIndexOf()</code>.
+The <code>indexOf()</code> methods search forward from the beginning
+of the string, and the <code>lastIndexOf()</code> methods search backward from
+the end of the string. If a character or substring is not found, <code>indexOf()</code> and 
+<code>lastIndexOf()</code> return -1.
+<p>
+The <code>String</code> class also provides a search method,
+<code>contains</code>, that returns true if the string
+contains a particular character sequence. Use this method when
+you only need to know that the string contains a character sequence,
+but the precise location isn't important.
+<p>
+The following table describes the various string search
+methods.
+<p>
+<table WIDTH=100% BORDER=1 CELLPADDING=4 CELLSPACING=3
+ summary="This table lists the search methods in the String class">
+<caption><b>The Search Methods in the <code>String</code> Class</b></caption>
+<tr>
+<th id="h201">Method</th>
+<th id="h202" width=50%>Description</th>
+</tr>
+
+<tr>
+<td headers="h201"><code>int indexOf(int ch)<br>
+int lastIndexOf(int ch)</code></td>
+<td headers="h202">Returns the index of the first (last) occurrence of the specified
+character.</td>
+</tr>
+
+<tr>
+<td headers="h201"><code>int indexOf(int ch, int fromIndex)<br>
+int lastIndexOf(int ch, int fromIndex)</code></td>
+<td headers="h202">Returns the index of the first (last) occurrence
+of the specified character, searching
+forward (backward) from the specified
+index.</td>
+</tr>
+
+<tr>
+<td headers="h201"><code>int indexOf(String str)<br>
+int lastIndexOf(String str)</code></td>
+<td headers="h202">Returns the index of the first (last) occurrence
+of the specified substring.</td>
+</tr>
+
+<tr>
+<td headers="h201"><code>int indexOf(String str, int fromIndex)<br>
+int lastIndexOf(String str, int fromIndex)</code></td>
+<td headers="h202">Returns the index of the first (last) occurrence
+of the specified substring, searching forward
+(backward) from the specified index.</td>
+</tr>
+
+<tr>
+<td headers="h201"><code>boolean contains(CharSequence s)</code></td>
+<td headers="h202">Returns true if the string contains the specified character sequence.</td>
+</tr>
+</table>
+<div class="note"><hr><strong>Note:</strong>&nbsp;<code>CharSequence</code> is an interface that is implemented by the <code>String</code> class. 
+Therefore, you can use a string as an argument for the <code>contains()</code> method.
+<hr></div>
+<h2 fmstyle=C-Head>Replacing Characters and Substrings into a String</h2>
+The <code>String</code> class has very few methods for inserting characters or substrings into a string. 
+In general, they are not needed: You can create a new string by concatenation of substrings you 
+have <i>removed</i> from a string with the substring that you want to insert.
+<p>
+The <code>String</code> class does have four methods for <i>replacing</i> found characters 
+or substrings, however. They are:
+<p>
+<table WIDTH=100% BORDER=1 CELLPADDING=4 CELLSPACING=3
+ summary="This table lists String methods for manipulating strings">
+<caption><b>Methods in the <code>String</code> Class for Manipulating Strings</b></caption>
+<tr>
+<th id="h301">Method</th>
+<th id="h302" width=50%>Description</th>
+</tr>
+<tr>
+<td headers="h301"><code>String replace(char oldChar, char newChar) </code></td>
+<td headers="h302"> Returns a new string resulting from replacing all occurrences of
+oldChar in this string with newChar.</td>
+</tr>
+
+<tr>
+<td headers="h301"><code>String replace(CharSequence target, CharSequence replacement)</code>
+<td headers="h302">Replaces each substring of this string that matches the literal
+target sequence with the specified literal replacement sequence.</td>
+</tr>
+
+<tr>
+<td headers="h301"><code>String replaceAll(String regex, String replacement)</code></td>
+<td headers="h302">Replaces each substring of this string that matches the given
+regular expression with the given replacement.</td>
+</tr>
+
+<tr>
+<td headers="h301"><code>String replaceFirst(String regex, String replacement)</code></td>
+<td headers="h302">Replaces the first substring of this string that matches the given
+regular expression with the given replacement.</td>
+</tr>
+
+</table>
+
+
+<h2 fmstyle=C-Head>An Example</h2>
+
+The following class, 
+
+<a class="SourceLink" target="_blank" href="examples/Filename.java"><code>Filename</code></a>, illustrates the use of <code>lastIndexOf()</code> and <code>substring()</code> to isolate different parts of a file name.
+
+<p>
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;The methods in the following <code>Filename</code> class don't
+do any error checking and assume that their argument contains a full directory path and a filename with an extension. 
+If these methods were production code, they would verify that their arguments were properly constructed.
+<hr></div>
+
+<div class="codeblock"><pre>
+
+public class Filename {
+    private String fullPath;
+    private char pathSeparator, extensionSeparator;
+
+    public Filename(String str, char sep, char ext) {
+        fullPath = str;
+        pathSeparator = sep;
+        extensionSeparator = ext;
+    }
+
+    public String extension() {
+        int dot = fullPath.lastIndexOf(extensionSeparator);
+        return fullPath.substring(dot + 1);
+    }
+
+    public String filename() {  // gets filename without extension
+        int dot = fullPath.lastIndexOf(extensionSeparator);
+        int sep = fullPath.lastIndexOf(pathSeparator);
+        return fullPath.substring(sep + 1, dot);
+    }
+
+    public String path() {
+        int sep = fullPath.lastIndexOf(pathSeparator);
+        return fullPath.substring(0, sep);
+    }
+}
+</pre></div>
+
+Here is a program,
+<a class="SourceLink" target="_blank" href="examples/FilenameDemo.java"><code>FilenameDemo</code></a>, that constructs a <code>Filename</code> object and calls all of
+its methods:
+
+<div class="codeblock"><pre>
+
+public class FilenameDemo {
+    public static void main(String[] args) {
+        final String FPATH = &quot;/home/mem/index.html&quot;;
+        Filename myHomePage = new Filename(FPATH,
+                                           '/', '.');
+        System.out.println(&quot;Extension = &quot; + 
+             myHomePage.extension());
+        System.out.println(&quot;Filename = &quot; + 
+             myHomePage.filename());
+        System.out.println(&quot;Path = &quot; + 
+             myHomePage.path());
+    }
+}
+</pre></div>
+
+And here's the output from the program:
+<div class="codeblock"><pre>
+Extension = html
+Filename = index
+Path = /home/mem
+</pre></div>
+
+
+As shown in the following figure, our <code>extension</code> method
+uses <code>lastIndexOf</code> to locate the last occurrence of the
+period (.) in the file name. Then <code>substring</code> uses the
+return value of <code>lastIndexOf</code> to extract the file name
+extension &mdash; that is, the substring from the period to the end
+of the string. This code assumes that
+the file name has a period in it; if the file name does not have a period,
+<code>lastIndexOf</code> returns -1, and the substring method throws a
+<code>StringIndexOutOfBoundsException</code>.
+
+
+<p><center><IMG SRC="../../figures/java/objects-lastIndexOf.gif" WIDTH="325" HEIGHT="127" ALIGN="BOTTOM" ALT="The use of lastIndexOf and substring in the extension method in the Filename class."></center></p>
+<p>
+Also, notice that the <code>extension</code> method uses <code>dot + 1</code> as the argument to <code>substring</code>. 
+If the period character (.) is the last character of the string, <code>dot + 1</code> is equal 
+to the length of the string, which is one larger than the largest index into the string
+(because indices start at 0). This is a legal argument to
+<code>substring</code> because that method accepts an index equal to, but not greater than, the length of 
+the string and interprets it to mean &quot;the end of the string.&quot;
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=converting.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=comparestrings.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h401" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h401" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h402" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Converting Between Numbers and Strings
+        <br><b>Next page:</b> Comparing Strings and Portions of Strings
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

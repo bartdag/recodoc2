@@ -1,0 +1,662 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Passing Information to a Method or a Constructor (The Java&trade; Tutorials &gt;        
+            Learning the Java Language &gt; Classes and Objects)
+</title>
+
+     <meta name="description" content="This beginner Java tutorial describes fundamentals of programming in the Java programming language" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java objects, java classes, java inheritance, interfaces, variables, arrays, data types, operators, control flow, number, string" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Learning the Java Language
+        <br><b>Lesson:</b> Classes and Objects
+        <br><b>Section:</b> Classes
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Classes and Objects</a></div>
+<div class="linkAHEAD"><a href="classes.html">Classes</a></div>
+<div class="linkBHEAD"><a href="classdecl.html">Declaring Classes</a></div>
+<div class="linkBHEAD"><a href="variables.html">Declaring Member Variables</a></div>
+<div class="linkBHEAD"><a href="methods.html">Defining Methods</a></div>
+<div class="linkBHEAD"><a href="constructors.html">Providing Constructors for Your Classes</a></div>
+<div class="nolinkBHEAD">Passing Information to a Method or a Constructor</div>
+<div class="linkAHEAD"><a href="objects.html">Objects</a></div>
+<div class="linkBHEAD"><a href="objectcreation.html">Creating Objects</a></div>
+<div class="linkBHEAD"><a href="usingobject.html">Using Objects</a></div>
+<div class="linkAHEAD"><a href="more.html">More on Classes</a></div>
+<div class="linkBHEAD"><a href="returnvalue.html">Returning a Value from a Method</a></div>
+<div class="linkBHEAD"><a href="thiskey.html">Using the this Keyword</a></div>
+<div class="linkBHEAD"><a href="accesscontrol.html">Controlling Access to Members of a Class</a></div>
+<div class="linkBHEAD"><a href="classvars.html">Understanding Instance and Class Members</a></div>
+<div class="linkBHEAD"><a href="initial.html">Initializing Fields</a></div>
+<div class="linkBHEAD"><a href="summaryclasses.html">Summary of Creating and Using Classes and Objects</a></div>
+<div class="linkQUESTIONS"><a href="QandE/creating-questions.html">Questions and Exercises</a></div>
+<div class="linkQUESTIONS"><a href="QandE/objects-questions.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="nested.html">Nested Classes</a></div>
+<div class="linkBHEAD"><a href="innerclasses.html">Inner Class Example</a></div>
+<div class="linkBHEAD"><a href="summarynested.html">Summary of Nested Classes</a></div>
+<div class="linkQUESTIONS"><a href="QandE/nested-questions.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="enum.html">Enum Types</a></div>
+<div class="linkQUESTIONS"><a href="QandE/enum-questions.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="annotations.html">Annotations</a></div>
+<div class="linkQUESTIONS"><a href="QandE/annotations-questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Learning the Java Language</a>
+                &gt;
+                <a href=index.html target=_top>Classes and Objects</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=constructors.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=objects.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Passing Information to a Method or a Constructor</h1></div>
+            <div id=PageContent>
+<!-- Passing Information to a Method or a Constructor -->
+
+The declaration for a method or a constructor 
+declares the number and the type of the arguments 
+for that method or constructor. For example, the 
+following is a method that computes the monthly 
+payments for a home loan, based on the amount of 
+the loan, the interest rate, the length of the 
+loan (the number of periods), and the future value of the loan: 
+<div class="codeblock"><pre>
+public double computePayment(double <b>loanAmt</b>,
+                             double <b>rate</b>,
+                             double <b>futureValue</b>,
+                             int <b>numPeriods</b>) {
+    double interest = <B>rate</B> / 100.0;
+    double partial1 = Math.pow((1 + interest), -<B>numPeriods</B>);
+    double denominator = (1 - partial1) / interest;
+    double answer = (-<B>loanAmt</B> / denominator)
+                    - ((<B>futureValue</B> * partial1) / denominator);
+    return answer;
+}
+</pre></div>
+
+This method has four parameters: the loan amount, the interest rate,
+the future value and the number of periods. The first three are double-precision
+floating point numbers, and the fourth is an integer. The parameters are used in the method body 
+and at runtime will take on the values of the arguments that are passed in. 
+
+<p>
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;<i>Parameters</i> refers to the list of variables in a method declaration. <i>Arguments</i> 
+are the actual values that are passed in when the method is invoked. 
+When you invoke a method, the arguments used must match the declaration's parameters in type and order.
+<hr></div>
+ 
+<h2>Parameter Types</h2>
+ 
+You can use any data type for a parameter of a method 
+or a constructor. This includes primitive data types, such 
+as doubles, floats, and integers, as you saw in the 
+<code>computePayment</code> method, and reference data types, 
+such as objects and arrays. 
+<p>
+Here's an example of a 
+method that accepts an array as an argument. In this example, 
+the method creates a new <code>Polygon</code> object and 
+initializes it from an array of <code>Point</code> objects (assume 
+that <code>Point</code> is a class that represents an x, 
+y coordinate): 
+
+<div class="codeblock"><pre>
+public Polygon polygonFrom(Point[] corners) {
+    // method body goes here
+}
+</pre></div>
+<p>
+<div class="note"><hr><strong>Note:</strong>&nbsp;The Java programming language doesn't let you pass methods 
+into methods. But you can pass an object into a method and 
+then invoke the object's methods. 
+<hr></div>
+ 
+<p><h2><a name="varargs">Arbitrary Number of Arguments</a></h2>
+ 
+You can use a construct called <em>varargs</em> to pass an arbitrary number of values to a method.
+ You use varargs when you don't know how many of a particular
+type of argument will be passed to the method. It's a shortcut
+to creating an array manually (the previous method could have used varargs rather than an array).
+<p>
+To use varargs, you follow the type of the last parameter by an ellipsis (three dots, ...), 
+then a space, and the parameter name. The method can then be called with any number of that parameter, including none.
+<div class="codeblock"><pre>
+public Polygon polygonFrom(Point... corners) {
+    int numberOfSides = corners.length;
+    double squareOfSide1, lengthOfSide1;
+    squareOfSide1 = (corners[1].x - corners[0].x)*(corners[1].x - corners[0].x) 
+			+ (corners[1].y - corners[0].y)*(corners[1].y - corners[0].y) ;
+    lengthOfSide1 = Math.sqrt(squareOfSide1);
+    // more method body code follows that creates 
+    // and returns a polygon connecting the Points
+}
+</pre></div>
+You can see that, inside the method, <code>corners</code> is treated like an
+array.  The method can be called either with an array or
+with a sequence of arguments. The code in the method body will treat the parameter as an array in either case.
+<p>
+You will most commonly see varargs with the printing
+methods; for example, this <code>printf</code> method:
+<div class="codeblock"><pre>
+public PrintStream printf(String format, Object... args)
+</pre></div>
+allows you to print an arbitrary number of objects. It can be called like this:
+<div class="codeblock"><pre>
+System.out.printf("%s: %d, %s%n", name, idnum, address);
+</pre></div>
+or like this
+<div class="codeblock"><pre>
+System.out.printf("%s: %d, %s, %s, %s%n", name, idnum, address, phone, email);
+</pre></div>
+or with yet a different number of arguments.
+<p>
+
+ 
+
+<h2>Parameter Names</h2>
+ 
+When you declare a parameter to a method or a constructor, you 
+provide a name for that parameter. This name is used within the 
+method body to refer to the passed-in argument. 
+
+<P>The name of a parameter must be unique in its scope. It cannot 
+be the same as the name of another parameter for the same method 
+or constructor, and it cannot be the name of a local variable within the method 
+or constructor. 
+
+<P>A parameter can have the same name as one of the class's 
+fields. If this is the case, the parameter is said to <I>shadow</I> 
+the field. Shadowing fields can make your code 
+difficult to read and is conventionally used only within 
+constructors and methods that set a particular 
+field. For example, consider the following <code>Circle</code> 
+class and its <code>setOrigin</code> method: 
+<div class="codeblock"><pre>
+public class Circle {
+    private int x, y, radius;
+    public void setOrigin(int x, int y) {
+        ...
+    }
+}
+</pre></div>
+
+The <code>Circle</code> class has three fields: 
+<code>x</code>, <code>y</code>, and <code>radius</code>. The 
+<code>setOrigin</code> method has two parameters, each of 
+which has the same name as one of the fields. Each 
+method parameter shadows the field that shares its name. 
+So using the simple names <code>x</code> or <code>y</code> 
+within the body of the method refers to the parameter, <i>not</i> 
+to the field. To access the field, you must use 
+a qualified name. This will be discussed later in this 
+lesson 
+in the 
+section titled "Using the <code>this</code> Keyword."
+ 
+ 
+<h2>Passing Primitive Data Type Arguments</h2>
+ 
+Primitive arguments, such as an <code>int</code> or a
+<code>double</code>, are passed into methods <I>by value</I>. 
+This means that any changes to the values of the parameters exist only within 
+the scope of the method. When the method returns, the parameters are gone and any changes to them are lost.
+Here is an example:
+<div class="codeblock"><pre>
+public class PassPrimitiveByValue {
+
+    public static void main(String[] args) {
+   	   
+        int x = 3;
+   	   
+        //invoke passMethod() with x as argument
+        passMethod(x);
+   	   
+        // print x to see if its value has changed
+        System.out.println("After invoking passMethod, x = " + x);
+   	   
+    }
+   	
+    // change parameter in passMethod()
+    public static void passMethod(int p) {
+        p = 10;
+    }
+}
+</pre></div>
+When you run this program, the output is:
+<div class="codeblock"><pre>
+After invoking passMethod, x = 3
+</pre></div>
+<p>
+ 
+<h2>Passing Reference Data Type Arguments</h2>
+ 
+Reference data type parameters, such as objects, 
+are also passed into methods <I>by value</I>. This means that when the method returns, the passed-in reference still
+ references the same object as before. <i>However</i>, the values of the object's fields <i>can</i> be changed in the 
+method, if they have the proper access level.
+<p>
+For example, consider a method in an arbitrary class that moves <code>Circle</code> objects:
+<div class="codeblock"><pre>
+public void moveCircle(Circle circle, int deltaX, int deltaY) {
+    // code to move origin of circle to x+deltaX, y+deltaY
+    circle.setX(circle.getX() + deltaX);
+    circle.setY(circle.getY() + deltaY);
+	
+    //code to assign a new reference to circle
+    circle = new Circle(0, 0);
+}
+</pre></div>
+Let the method be invoked with these arguments:
+<div class="codeblock"><pre>
+moveCircle(myCircle, 23, 56)
+</pre></div>
+Inside the method, <code>circle</code> initially refers to <code>myCircle</code>. The method changes the 
+x and y coordinates of the object that <code>circle</code> references (i.e., <code>myCircle</code>) 
+by 23 and 56, respectively. These changes will persist when the method returns. 
+Then <code>circle</code> is assigned a reference to a new <code>Circle</code> object with 
+<code>x = y = 0</code>. This reassignment has no permanence, however, because the 
+reference was passed in by value and cannot change. Within the method, the object pointed to by <code>circle</code> 
+has changed, but, when the method returns, <code>myCircle</code> still references the same 
+<code>Circle</code> object as before the method was called.
+
+ 
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=constructors.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=objects.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Providing Constructors for Your Classes
+        <br><b>Next page:</b> Objects
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

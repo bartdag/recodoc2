@@ -1,0 +1,622 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>A Swing Demo (The Java&trade; Tutorials &gt;        
+            Graphical User Interfaces &gt; A Brief Introduction to the Swing Package)
+</title>
+
+     <meta name="description" content="This Java Tutorial describes the Swing toolkit at a high level" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Graphical User Interfaces
+        <br><b>Lesson:</b> A Brief Introduction to the Swing Package
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">A Brief Introduction to the Swing Package</a></div>
+<div class="linkAHEAD"><a href="intro.html">What is Swing?</a></div>
+<div class="nolinkAHEAD">A Swing Demo</div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Graphical User Interfaces</a>
+                &gt;
+                <a href=index.html target=_top>A Brief Introduction to the Swing Package</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=intro.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../features/index.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>A Swing Demo</h1></div>
+            <div id=PageContent>
+<!-- A Swing Demo -->
+
+<p>Here is an example of an application, PasswordStore,
+that illustrates some of Swing's rich feature set.
+PasswordStore allows the user to manage login information
+for various hosts. It also generates passwords, evaluates
+the effectiveness of a password, and allows you to store notes
+about a particular host or assign an icon to represent the host.
+</p>
+<p>Click the launch button to run PasswordStore using Java Web
+Start.  [Requires release 6.0.]</p>
+
+<p><center>
+<a href="http://download.oracle.com/javase/tutorialJWS/ui/PasswordStore.jnlp">
+<img src="../../images/jws-launch-button.png" 
+width="88" height="23" align="bottom"
+alt="Launches the PasswordStore application"></a></center></p>
+
+<p>
+The following highlights some of the specific features
+of the PasswordStore application:</p>
+
+<dl>
+<dt><b>Host Info</b></dt>
+<dd>
+<p>
+At program launch, the list of hosts is displayed in a Swing list
+component. Using the View menu, the view can be toggled between the
+table and the list.</p>
+<p>
+In both views, the <b>Host/Account Filter</b> text field can be
+used to dynamically restrict the entries to those where the host or
+account name contains the typed string.
+</p>
+</dd>
+
+<dt><b>List View</b></dt>
+<dd>
+<p>
+The Swing list component can be customized to include visual data.
+As shown in the following figure, an optional miniature icon to
+the left of the host name represents the host.
+The graphic to the right uses color and proportional
+fill to reflect the strength of the password
+(Red = poor, yellow = fair, green = good).
+The bar changes dynamically as the user enters/modifies the
+password in the text field below.
+The user has typed the text "oo" in the filter text field,
+which matches two entries: Heirl<b>oo</b>m Seeds and
+Pacific Z<b>oo</b> Shop.
+</p>
+
+<p><center><IMG SRC="../../figures/ui/ui-FilteredPasswordStore.png" WIDTH="543" HEIGHT="473" ALIGN="BOTTOM" ALT="This is a picture of the PasswordStore demo."></center></p><p align=center>Host Info (List View) and Filter Text Field</p>
+</dd>
+
+<dt><b>Table View</b></dt>
+<dd>
+<p>
+The Swing table component allows the user to rearrange the columns
+by dragging the column header.  Also, a column can be sorted
+by clicking the column header.  If the column you click on isn't
+highlighted as the primary sorted column, it will become the
+primary sorted column in ascending order.  Clicking on the
+primary sorted column toggles the sort order.  For example, if
+column 1 isn't selected, clicking on it will make it the selected
+column and the data is sorted in ascending order.  Clicking column
+1 again will sort the data in descending order.  Clicking on column
+2 will make column 2 the primary column in ascending order.</p>
+
+<p><center><IMG SRC="../../figures/ui/ui-WindowsTableView.png" WIDTH="576" HEIGHT="473" ALIGN="BOTTOM" ALT="This is a picture of the PasswordStore demo in the table view."></center></p><p align=center>Host Info (Table View)</p>
+</dd>
+
+
+<dt><b>Details/Notes Tabbed  Pane</b></dt>
+<dd>
+
+<p>The tabbed pane below the host info 
+allows the user to choose between
+the Details panel and the Notes text pane, keeping the
+overall footprint of the window smaller and less overwhelming.</p>
+</dd>
+
+<dt><b>Details Panel</b></dt>
+<dd>
+
+<p>The icon area on the left can be assigned an image by either
+dragging an image (jpg, png, gif, or tif) to the area
+or by clicking the image well and bringing up a file browser.</p>
+<p>
+The text fields (used to enter or modify the host
+name, login, and password) support cut/copy, paste,
+drag, drop, undo, and redo.</p>
+<p>
+As the user enters or modifies the password, the 2D bar
+chart dynamically displays the distribution of the password.
+If the list view is currently displayed, the corresponding
+colored bar in the list also changes dynamically.</p>
+</dd>
+
+
+<dt><b>Notes Text Pane</b></dt>
+<dd>
+<p>
+This is the text component where the user can save notes about the
+selected host.  If the text pane contains a URI, 
+Swing's text component provides the ability to click on
+the URI and a browser window automatically opens to that
+location.</p>
+</dd>
+
+
+<dt><b>Wizzy 2D Graphics</b></dt>
+<dd>
+<p>
+PasswordStore uses customized graphics in several ways to enhance
+the UI:  In the list view, images are used to represent each host;
+a colored bar, the <em>Strength Visualizer</em>,
+represents the effectiveness of a password;
+and a dynamic bar chart, the <em>Password Visualizer</em>,
+displays the distribution of a password.
+When you add an image, whether by dragging and dropping it into the
+image well (in the Details panel) or by clicking the well and
+bringing up the file browser, a mini-icon is automatically generated
+for the list view.</p>
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;
+This demo is meant to be illustrative only and not meant to
+be used for real analysis of passwords.
+<hr></div>
+
+<p><center><IMG SRC="../../figures/ui/ui-WindowsPasswordStore2.png" WIDTH="618" HEIGHT="504" ALIGN="BOTTOM" ALT="This picture of PasswordStore shows the whizzy graphics used."></center></p>
+<p align=center>2D Graphics Used</p>
+
+</dd>
+
+<dt><b>Multiple Look and Feels</b></dt>
+
+<dd>
+<p>
+This provides the ability to switch between three look and feels using
+the View menu: Java (called Metal), Motif/CDE, and the native
+look and feel:  Windows on Microsoft Windows, Aqua on Mac OS X,
+and so on.</p></dd>
+
+
+<dt><b>Undo and Redo</b></dt>
+<dd>
+<p>
+Undo and redo works on text, as you would expect,
+but it also works on actions.  For example, you can generate
+a password using the Account > Generate Password menu, and
+if you don't like the new password you can undo it using
+Edit > Undo or the control-Z shortcut.  Similarly,
+you can redo the undo using Edit > Redo, or the control-Y shortcut.
+</p></dd>
+
+
+<!--
+<dt><b>TBD</b>
+<dd>
+
+<font color=red>
+Dnd, cut/copy/paste, localization, tooltips
+</font>
+
+-->
+
+</dl>
+
+<p>
+The PasswordStore demo has a reasonable level of complexity for
+a small Swing application and shows a sampling of Swing's capabilities.
+The
+<a class="SourceLink" target="_blank" href="PasswordStore-1.0-src.zip"><code>source code</code></a> is available for download, but it is outside the scope of this chapter to
+discuss the implementation in detail.  For more information on
+the architecture and implementation of this application, see the blog entries,
+<a class="OutsideLink" target="_blank" href="http://weblogs.java.net/blog/zixle/archive/2006/01/architecting_ap.html">Architecting Applications 1: the model</a> and
+<a class="OutsideLink" target="_blank" href="http://weblogs.java.net/blog/zixle/archive/2006/01/architecting_ap_1.html">Architecting Applications 2: the Application class</a>  on
+<a class="OutsideLink" target="_blank" href="http://java.net">java.net</a>.
+<p>
+<div class="note"><hr><strong>NOTE:</strong>&nbsp;If PasswordStore were a production application,
+it would most likely encrypt the password database; however,
+due to legal restrictions on distributing information of that
+nature, it is not included here.
+<hr></div>
+
+<p>
+<div class="note"><hr><strong>NOTE:</strong>&nbsp;The dice, flower, pill, and pocketwatch images used in the demo
+are courtesy of 
+<a class="OutsideLink" target="_blank" href="http://www.freeimages.co.uk">http://www.freeimages.co.uk</a>.
+The polar bear and cubs image by Steve Amstrup and the
+mountain image are courtesy of
+<a class="OutsideLink" target="_blank" href="http://www.fws.gov">http://www.fws.gov</a>.
+The spiral galaxy image is courtesy of
+<a class="OutsideLink" target="_blank" href="http://grin.hq.nasa.gov">http://grin.hq.nasa.gov</a>.
+<hr></div>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=intro.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=../features/index.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> What is Swing?
+        <br><b>Next page:</b> Swing Features
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

@@ -1,0 +1,537 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Lesson: Using the NetBeans GUI Builder (The Java&trade; Tutorials &gt; JavaBeans(TM))</title>
+     <meta name="description" content="This JavaBean Java tutorial describes using the JavaBeans API to develop JavaBean components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, javabean, bean persistence, java introspection, beancontext" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+    </head>
+<body>
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                    <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                        <br>
+                    </div> 
+                </div> </div> </div> </div> </div>
+
+    <div class=MainFlow_wide>
+        <div class=PrintHeaders>
+            <b>Trail:</b> JavaBeans(TM)
+        </div>
+        <div id=BreadCrumbs>
+            <a href=../../index.html target=_top>Home Page</a>
+        &gt;
+            <a href=../index.html target=_top>JavaBeans(TM)</a>
+        </div>
+        <div class=NavBit>
+                <a target=_top href=../whatis/index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../writingbean/index.html>Next&nbsp;&raquo;</a>
+        </div>
+        <div id=PageTitle><h1>Lesson: Using the NetBeans GUI Builder</h1></div>
+        <div id=PageContent>
+This lesson explains how to use the NetBeans IDE GUI Builder to work with 
+beans. In preparation for working with the GUI Builder, you should be first familiar with 
+the key NetBeans concepts which are explained in the 
+<a class="OutsideLink" target="_blank" href="http://www.netbeans.org/kb/docs/java/quickstart.html">NetBeans IDE Java Quick Start Tutorial</a>.
+<P>This lesson guides you through the process of creating a bean pattern in the 
+NetBeans projects, introduces the user interface of the GUI Builder, and explains 
+how to add your bean object to the palette.
+
+<h2>Creating a New Project</h2>
+
+<P>In the NetBeans IDE, you always work in a project where you store sources 
+and files. To create a new project, perform the following steps:
+<OL>
+	<LI>Select New Project from the File menu. You can also click the New 
+         Project button in the IDE toolbar.</LI>
+	<LI>In the Categories pane, select the General node. In the Projects pane, 
+          choose the Java Application type. Click the Next button.</LI>
+	<LI>Enter MyBean in the Project Name field and specify the project 
+location. Do not create a <CODE>Main</CODE> class here, because later you will
+	create a new <CODE>Java</CODE> class in this project.</LI>
+	<LI>Click the Finish button.</LI>
+</OL>
+<P>This figure represents the expanded MyBean node in the Projects list.
+<p><center><IMG SRC="../../figures/javabeans/nb-projects.gif" WIDTH="278" HEIGHT="155" ALIGN="BOTTOM" ALT="This figure represents the expanded MyBean node in the Projects list"></center></p>
+<h2>Creating a New Form</h2>
+
+<P>After creating a new project, the next step is to create a form within which 
+the JavaBeans components and other required GUI components, will be 
+placed.
+<P>
+To create a new form, perform the following sequence of actions:
+<OL>
+	<LI>In the Projects list, expand the MyBean node, right-click on the &lt;default package&gt; node
+	and choose New|JFrame Form from the pop-up menu.</LI>
+	<LI>Enter MyForm as the Class Name.</LI>
+	<LI>Click the Finish button.</LI>
+</OL>
+
+The IDE creates the MyForm form and the MyForm class within
+the MyBean application and opens the MyForm form in 
+the GUI Builder.
+<P>This figure represents the Projects list, where the MyForm class is located.
+<p><center><IMG SRC="../../figures/javabeans/nb-form.gif" WIDTH="793" HEIGHT="442" ALIGN="BOTTOM" ALT="This figure represents the Projects list, where the  MyForm class is "></center></p>
+
+<h2>The GUI Builder Interface</h2>
+
+<P>When the JFrame form is added to your application, the IDE opens the 
+newly-created form in an Editor tab with a toolbar containing the following 
+buttons:
+<UL>
+<LI>
+<IMG SRC="../../figures/javabeans/nb-toolbar1.gif" WIDTH="20" HEIGHT="20" ALT="The Selection Mode button">&ndash; Selection Mode enables you to select one or 
+more objects in the Design Area.
+</LI>
+<LI>
+<IMG SRC="../../figures/javabeans/nb-toolbar2.gif" WIDTH="20" HEIGHT="20" ALT="The Connection Mode command">&ndash; Connection Mode enables you to set a 
+connection between objects by specifying an event.
+</LI>
+<LI>
+<IMG SRC="../../figures/javabeans/nb-toolbar3.gif" WIDTH="20" HEIGHT="20" ALT="The Preview Design command">&ndash; Preview Design enables you to preview the form layout.
+</LI>
+<LI>
+<IMG SRC="../../figures/javabeans/nb-toolbar4.gif" WIDTH="20" HEIGHT="20" ALT="The Align Left in Column command"><IMG SRC="../../figures/javabeans/nb-toolbar5.gif" WIDTH="20" HEIGHT="20" ALT="The Align Right in Column command"><IMG SRC="../../figures/javabeans/nb-toolbar6.gif" WIDTH="20" HEIGHT="20" ALT="The Align Up in Row command"><IMG SRC="../../figures/javabeans/nb-toolbar7.gif" WIDTH="20" HEIGHT="20" ALT="The Align Down in Row command">&ndash; Align commands enable you to align selected objects.</td>
+</LI>
+<LI>
+<IMG SRC="../../figures/javabeans/nb-toolbar8.gif" WIDTH="20" HEIGHT="20" ALT="The Change Horizontal Resizability command"><IMG SRC="../../figures/javabeans/nb-toolbar9.gif" WIDTH="20" HEIGHT="20" ALT="The Change Vertical Resizability command">&ndash; Change Resizability enables you to set up vertical and horizontal 
+resizing.
+</LI>
+</UL>
+<P>When the MyForm form opens in the GUI Builder's Design view, three additional 
+windows appear, enabling you to navigate, organize, and edit GUI 
+forms. These windows include the following:
+<UL>
+    <LI><strong>Design Area</strong>. The primary window for creating and editing Java GUI 
+forms. Source and Design toggle buttons enable you to switch between view a 
+class's source code and a graphical view of the GUI components. Click on an 
+object to select it in the Design Area. For a multiple selection, hold down the 
+Ctrl key while clicking on objects.</LI>
+    <LI><strong>Inspector</strong>. Representation of a tree hierarchy of all the components in 
+your application. The Inspector highlights the component in the tree that is 
+currently being edited.</LI>
+    <LI><strong>Palette</strong>. A customizable list of available components containing groups 
+for Swing, AWT, Borders, and Beans components. This window enables you to 
+create, remove, and rearrange the categories displayed in the palette using the 
+customizer.</LI>
+    <LI><strong>Properties Window</strong>. A display of the properties of the component 
+currently selected in the GUI Builder, Inspector window, Projects window, or 
+Files window.</LI>
+</UL>
+<P>If you click the Source button, the IDE displays the application's Java 
+source code in the editor. Sections of code that are automatically generated by 
+the GUI Builder are indicated by blue areas. These blue areas are protected from 
+editing in the Source view. You can only edit code appearing in the white areas 
+of the editor when in Source view. When you make your changes in the Design 
+View, the IDE updates the file's sources. 
+
+<h2>Creating a Bean</h2>
+
+<P>To create your own bean object and add it to the palette for the bean group, 
+execute the following procedure:
+<OL>
+	<LI>Select the &lt;default package&gt; node in the MyBean project.</LI>
+	<LI>Choose New|Java Class from the pop-up menu.</LI>
+	<LI>Specify the name for the new class, for example, MyBean, then press the Finish button.</LI>
+        <li>Open the MyBean.java file.
+        <li>In the editor window, select inside the class.  Right-click and
+             choose Insert Code.  Then select Add Property.
+        <li>In the Name field of the Add Property dialog box, type
+            YourName and press OK.
+<p><center><IMG SRC="../../figures/javabeans/nb-add-bean.gif" WIDTH="1200" HEIGHT="689" ALIGN="BOTTOM" ALT="Adding a new property"></center></p>	<LI>Now you can analyze the automatically generated code. Notice that set
+	and <CODE>get</CODE> methods were included:<br />
+<div class="codeblock"><pre>
+public class MyBean {
+    
+    /** Creates a new instance of MyBean */
+    public MyBean() {
+    }
+
+    /**
+     * Holds value of property yourName.
+     */
+    private String yourName;
+
+    /**
+     * Getter for property yourName.
+     * @return Value of property yourName.
+     */
+    public String getYourName() {
+        return this.yourName;
+    }
+
+    /**
+     * Setter for property yourName.
+     * @param yourName New value of property yourName.
+     */
+    public void setYourName(String yourName) {
+        this.yourName = yourName;
+    }
+    
+}
+</pre></div>
+  </li>
+	<LI>Right-click the MyBean node in the MyBean project tree and choose 
+Tools |Add to Palette from the pop-up menu.</LI>
+	<LI>Select the Beans group in the Palette tree to add your bean.</LI>
+</OL>
+<P>Now you can switch to the Palette window by choosing Palette from the Windows menu and make sure that the MyBean 
+component was added to the Beans group. 
+<P>So far you have created a bean, set the YourName property, and added this 
+bean as a component to the palette.
+
+<h2>Adding Components to the Form</h2>
+
+Now you can use the Free Design of the GUI Builder and add the MyBean 
+component and other standard Swing components to MyForm.
+<OL>
+	<LI>Select the MyForm node in the project tree.</LI>
+	<LI>Drag the <CODE>JLabel</CODE> Swing component from the Palette window to the Design Area.
+	Double-click the component and change the text property to "Enter your name:".</LI>
+	<LI>Drag the <CODE>JTextField</CODE> component from the Palette window to the Design Area. 
+	Double-click the component and empty the text field.</LI>
+	<LI>Drag the <CODE>JButton</CODE> component from the Palette window to the Design Area.
+	Double-click the component and enter "OK" as the text property.</LI>
+	<LI>Add another button and enter "Cancel" as its text property.</LI>
+	<LI>Align components by using the appropriate align commands. 
+	<LI>Before you drag the MyBean component from the Pallete you must compile 
+your project because the MyBean component is non-visual and cannot be operated 
+as a visual component. When you Drag and Drop the MyBean component it will not 
+appear in the Design Area. However, you can view it in the Inspector window by 
+expanding the Other Components node, as shown in the following figure.<LI>
+<p><center><IMG SRC="../../figures/javabeans/nb-mybean.gif" WIDTH="837" HEIGHT="468" ALIGN="BOTTOM" ALT="Adding a new bean"></center></p></OL>
+To summarize, in the previous steps you created a project, developed a 
+JFrame form, added a bean object and included it in your project as a non-visual 
+component. Later in this trail you will learn how to change properties for the 
+bean component and handle events by using the NetBeans GUI Builder.
+
+
+        </div>
+    <div class=NavBit>
+        <a href=../whatis/index.html>&laquo; Previous</a>
+        &bull;
+        <a href=../TOC.html>Trail</a>
+        &bull;
+        <a href=../writingbean/index.html>Next &raquo;</a>
+    </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Previous Lesson
+        <br><b>Next page:</b> Writing a Simple Bean
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

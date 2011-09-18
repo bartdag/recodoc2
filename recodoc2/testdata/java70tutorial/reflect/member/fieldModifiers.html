@@ -1,0 +1,572 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Retrieving and Parsing Field Modifiers (The Java&trade; Tutorials &gt;        
+            The Reflection API &gt; Members)
+</title>
+
+     <meta name="description" content="This reflection Java tutorial describes using reflection for accessing and manipulating classes, fields, methods, and constructors" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java reflection" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> The Reflection API
+        <br><b>Lesson:</b> Members
+        <br><b>Section:</b> Fields
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Members</a></div>
+<div class="linkAHEAD"><a href="field.html">Fields</a></div>
+<div class="linkBHEAD"><a href="fieldTypes.html">Obtaining Field Types</a></div>
+<div class="nolinkBHEAD">Retrieving and Parsing Field Modifiers</div>
+<div class="linkBHEAD"><a href="fieldValues.html">Getting and Setting Field Values</a></div>
+<div class="linkBHEAD"><a href="fieldTrouble.html">Troubleshooting</a></div>
+<div class="linkAHEAD"><a href="method.html">Methods</a></div>
+<div class="linkBHEAD"><a href="methodType.html">Obtaining Method Type Information</a></div>
+<div class="linkBHEAD"><a href="methodModifiers.html">Retrieving and Parsing Method Modifiers</a></div>
+<div class="linkBHEAD"><a href="methodInvocation.html">Invoking Methods</a></div>
+<div class="linkBHEAD"><a href="methodTrouble.html">Troubleshooting</a></div>
+<div class="linkAHEAD"><a href="ctor.html">Constructors</a></div>
+<div class="linkBHEAD"><a href="ctorLocation.html">Finding Constructors</a></div>
+<div class="linkBHEAD"><a href="ctorModifiers.html">Retrieving and Parsing Constructor Modifiers</a></div>
+<div class="linkBHEAD"><a href="ctorInstance.html">Creating New Class Instances</a></div>
+<div class="linkBHEAD"><a href="ctorTrouble.html">Troubleshooting</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>The Reflection API</a>
+                &gt;
+                <a href=index.html target=_top>Members</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=fieldTypes.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=fieldValues.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Retrieving and Parsing Field Modifiers</h1></div>
+            <div id=PageContent>
+There are several modifiers that may be part of a field declaration:
+
+<ul>
+<li> Access modifiers:  <code>public</code>, <code>protected</code>, and
+     <code>private</code>
+<li> Field-specific modifiers governing runtime behavior:
+     <code>transient</code> and <code>volatile</code>
+<li> Modifier restricting to one instance: <code>static</code>
+<li> Modifier prohibiting value modification: <code>final</code>
+<li> Annotations
+</ul>
+
+<p> The method
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/reflect/Field.html#getModifiers()"><code>Field.getModifiers()</code></a>
+can be used to return the integer representing the set of declared modifiers
+for the field.  The bits representing the modifiers in this integer are defined
+in
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/reflect/Modifier.html"><code>java.lang.reflect.Modifier</code></a>.
+
+<p> The
+<a class="SourceLink" target="_blank" href="example/FieldModifierSpy.java"><code><code>FieldModifierSpy</code></code></a>
+example illustrates how to search for fields with a given modifier.  It also
+determines whether the located field is synthetic (compiler-generated) or is an
+enum constant by invoking
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/reflect/Field.html#isSynthetic()"><code>Field.isSynthetic()</code></a>
+and
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/reflect/Field.html#isEnumConstant()"><code>Field.isEnumCostant()</code></a>
+respectively.
+
+<div class="codeblock"><pre>
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import static java.lang.System.out;
+
+enum Spy { BLACK , WHITE }
+
+public class FieldModifierSpy {
+    volatile int share;
+    int instance;
+    class Inner {}
+
+    public static void main(String... args) {
+	try {
+	    Class&lt;?&gt; c = Class.forName(args[0]);
+	    int searchMods = 0x0;
+	    for (int i = 1; i &lt; args.length; i++) {
+		searchMods |= modifierFromString(args[i]);
+	    }
+
+	    Field[] flds = c.getDeclaredFields();
+	    out.format(&quot;Fields in Class '%s' containing modifiers:  %s%n&quot;,
+		       c.getName(),
+		       Modifier.toString(searchMods));
+	    boolean found = false;
+	    for (Field f : flds) {
+		int foundMods = f.getModifiers();
+		// Require all of the requested modifiers to be present
+		if ((foundMods &amp; searchMods) == searchMods) {
+		    out.format(&quot;%-8s [ synthetic=%-5b enum_constant=%-5b ]%n&quot;,
+			       f.getName(), f.isSynthetic(),
+			       f.isEnumConstant());
+		    found = true;
+		}
+	    }
+
+	    if (!found) {
+		out.format(&quot;No matching fields%n&quot;);
+	    }
+
+        // production code should handle this exception more gracefully
+	} catch (ClassNotFoundException x) {
+	    x.printStackTrace();
+	}
+    }
+
+    private static int modifierFromString(String s) {
+	int m = 0x0;
+	if (&quot;public&quot;.equals(s))           m |= Modifier.PUBLIC;
+	else if (&quot;protected&quot;.equals(s))   m |= Modifier.PROTECTED;
+	else if (&quot;private&quot;.equals(s))     m |= Modifier.PRIVATE;
+	else if (&quot;static&quot;.equals(s))      m |= Modifier.STATIC;
+	else if (&quot;final&quot;.equals(s))       m |= Modifier.FINAL;
+	else if (&quot;transient&quot;.equals(s))   m |= Modifier.TRANSIENT;
+	else if (&quot;volatile&quot;.equals(s))    m |= Modifier.VOLATILE;
+	return m;
+    }
+}
+</pre></div>
+
+<p> Sample output follows:
+
+<div class="codeblock"><pre>
+&#36; <em>java FieldModifierSpy FieldModifierSpy volatile</em>
+Fields in Class 'FieldModifierSpy' containing modifiers:  volatile
+share    [ synthetic=false enum_constant=false ]
+&#36; <em>java FieldModifierSpy Spy public</em>
+Fields in Class 'Spy' containing modifiers:  public
+BLACK    [ synthetic=false enum_constant=true  ]
+WHITE    [ synthetic=false enum_constant=true  ]
+&#36; <em>java FieldModifierSpy FieldModifierSpy&#92;&#36;Inner final</em>
+Fields in Class 'FieldModifierSpy&#36;Inner' containing modifiers:  final
+this&#36;0   [ synthetic=true  enum_constant=false ]
+&#36; <em>java FieldModifierSpy Spy private static final</em>
+Fields in Class 'Spy' containing modifiers:  private static final
+&#36;VALUES  [ synthetic=true  enum_constant=false ]
+</pre></div>
+
+<p> Notice that some fields are reported even though they are not declared in
+the original code.  This is because the compiler will generate some
+<em>synthetic fields</em> which are needed during runtime.  To test whether a
+field is synthetic, the example invokes
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/reflect/Field.html#isSynthetic()"><code>Field.isSynthetic()</code></a>.  The set of synthetic fields is compiler-dependent; however commonly used
+fields include <code>this&#36;0</code> for inner classes (i.e. nested classes
+that are not static member classes) to reference the outermost enclosing class
+and <code>&#36;VALUES</code> used by enums to implement the implicitly defined
+static method <code>values()</code>.  The names of synthetic class members are
+not specified and may not be the same in all compiler implementations or
+releases.  These and other synthetic fields will be included in the array
+returned by
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html#getDeclaredFields()"><code>Class.getDeclaredFields()</code></a>
+but not identified  by
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html#getField(java.lang.String)"><code>Class.getField()</code></a>
+since synthetic members are not typically <code>public</code>.
+
+<p> Because
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/reflect/Field.html"><code>Field</code></a>
+implements the interface
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/reflect/AnnotatedElement.html"><code>java.lang.reflect.AnnotatedElement</code></a>, it is possible to retrieve any runtime annotation with
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/annotation/RetentionPolicy.html#RUNTIME"><code>java.lang.annotation.RetentionPolicy.RUNTIME</code></a>.  For an example of obtaining annotations see the section <a
+href="../class/classModifiers.html">Examining Class Modifiers and
+Types</a>.
+        </div>
+        <div class=NavBit>
+            <a target=_top href=fieldTypes.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=fieldValues.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Obtaining Field Types
+        <br><b>Next page:</b> Getting and Setting Field Values
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

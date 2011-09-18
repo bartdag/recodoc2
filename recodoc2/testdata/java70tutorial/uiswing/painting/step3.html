@@ -1,0 +1,587 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Creating the Demo Application (Step 3) (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Performing Custom Painting)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Performing Custom Painting
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Performing Custom Painting</a></div>
+<div class="linkAHEAD"><a href="step1.html">Creating the Demo Application (Step 1)</a></div>
+<div class="linkAHEAD"><a href="step2.html">Creating the Demo Application (Step 2)</a></div>
+<div class="nolinkAHEAD">Creating the Demo Application (Step 3)</div>
+<div class="linkAHEAD"><a href="refining.html">Refining the Design</a></div>
+<div class="linkAHEAD"><a href="closer.html">A Closer Look at the Paint Mechanism</a></div>
+<div class="linkAHEAD"><a href="summary.html">Summary</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Painting Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Performing Custom Painting</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=step2.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=refining.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Creating the Demo Application (Step 3)</h1></div>
+            <div id=PageContent>
+Finally, we will add the event-handling code to programatically 
+ repaint the component whenever the user clicks or drags the mouse.  To 
+keep our custom painting as efficient as possible, we will track the mouse 
+coordinates and repaint only the areas of the screen that have changed. 
+This is a recommended best practice that will keep your application running as 
+ efficiently as possible.
+
+
+<P>
+<CENTER>
+<center><p><IMG SRC="../../figures/uiswing/painting/swing3.png" WIDTH="258" HEIGHT="234" ALIGN="BOTTOM" ALT="The completed application, showing a red square with black border"></p><p class="FigureCaption">The Completed Application</p></center>
+
+
+<FONT SIZE="-2">Figure 3: The Completed Application</FONT>
+</CENTER>
+
+</P>
+
+
+<P>
+Click the Launch button to run SwingPaintDemo3 using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+Alternatively, to compile and run the example yourself, consult the
+     <a href="../examples/painting/index.html#SwingPaintDemo3">example index</a>.
+
+<center> <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/painting/ex6/SwingPaintDemo3.jnlp"><img src="../../images/jws-launch-button.png " width="88" height="23" align="bottom" alt="Launches the SwingPaintDemo3 example"></a>
+</center>
+</P>
+
+<div class="codeblock"><pre>
+package painting;
+
+import javax.swing.SwingUtilities;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.BorderFactory;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+<b>import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseMotionAdapter;</b>
+
+public class SwingPaintDemo3 {
+    
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI(); 
+            }
+        });
+    }
+
+    private static void createAndShowGUI() {
+        System.out.println("Created GUI on EDT? "+
+        SwingUtilities.isEventDispatchThread());
+        JFrame f = new JFrame("Swing Paint Demo");
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        f.add(new MyPanel());
+        f.pack();
+        f.setVisible(true);
+    } 
+}
+
+class MyPanel extends JPanel {
+
+    <b>private int squareX = 50;
+    private int squareY = 50;
+    private int squareW = 20;
+    private int squareH = 20;</b>
+
+    public MyPanel() {
+
+        setBorder(BorderFactory.createLineBorder(Color.black));
+
+        <b>addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                moveSquare(e.getX(),e.getY());
+            }
+        });
+
+        addMouseMotionListener(new MouseAdapter() {
+            public void mouseDragged(MouseEvent e) {
+                moveSquare(e.getX(),e.getY());
+            }
+        });
+        </b>
+    }
+    <b>
+    private void moveSquare(int x, int y) {
+        int OFFSET = 1;
+        if ((squareX!=x) || (squareY!=y)) {
+            repaint(squareX,squareY,squareW+OFFSET,squareH+OFFSET);
+            squareX=x;
+            squareY=y;
+            repaint(squareX,squareY,squareW+OFFSET,squareH+OFFSET);
+        } 
+    }
+    </b>
+
+    public Dimension getPreferredSize() {
+        return new Dimension(250,200);
+    }
+    
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);       
+        g.drawString("This is my custom Panel!",10,20);
+        <b>g.setColor(Color.RED);
+        g.fillRect(squareX,squareY,squareW,squareH);
+        g.setColor(Color.BLACK);
+        g.drawRect(squareX,squareY,squareW,squareH);</b>
+    }  
+}
+</pre></div>
+<P>
+This change first imports the various mouse classes 
+from the <CODE>java.awt.event</CODE> package, making the application 
+capable of responding to the user's mouse activity.
+ The constructor has been updated to register 
+event listeners for 
+mouse presses and drags. Whenever a <CODE>MouseEvent</CODE> received, it 
+is forwarded to the <CODE>moveSquare</CODE> method, which updates
+the square's coordinates and repaints the component in an intelligent manner.
+Note that by default, any code that is placed within these event handlers will be 
+executed on the Event Dispatch Thread.
+
+</P>
+<P>
+But the most important change is the invocation of the <CODE>repaint</CODE> method. This method is defined by <CODE>java.awt.Component</CODE> and is the 
+mechanism that allows you to programatically repaint the surface of any 
+ given component. 
+It has a no-arg version (which repaints the entire component) and a multi-arg version (which repaints only the specified area.) This area 
+is also known as the <i>clip</i>. 
+ Invoking the multi-arg version 
+of <CODE>repaint</CODE> takes a little extra effort, 
+but guarantees that your painting code will not waste cycles repainting areas of the screen that have not changed.
+</P>
+
+Because we are manually setting the clip, our <CODE>moveSquare</CODE> method invokes the repaint method not once, but twice. The first invocation tells Swing to repaint the area of the component where the square <i>previously</i> was (the inherited behavior uses the UI Delegate  to fill that area with the current background color.) The second invocation paints the area of the component where the square <I>currently</I> is. An important point worth noting is that although we have invoked repaint twice in a row in the same event handler, Swing is smart enough to take that information and repaint those sections of the screen all in one single paint operation. In other words, Swing will not repaint the component twice in a row, even if that is what the code appears to be doing.
+<P>
+Exercises:
+</P>
+<OL>
+
+<LI> Comment out the first invocation of repaint and note what happens when you click or drag the mouse. Because that line is responsible for filling in the background, you should notice that all squares remain on screen after they are painted.
+<P>
+<LI> With multiple squares on screen, minimize and restore the application frame. What happens? You should notice that the act of maximizing the screen causes the system to entirely repaint the components surface, which will erase all squares except the current one.
+<P>
+<LI> Comment out both invocations of repaint, and add a line at the end of the paintComponent method to invoke the zero-arg version of repaint instead. The application will appear to be restored to its original behavior, but painting will now be less efficient since the entire surface area of the component is now being painted. You may notice slower performace, especially if the application is maximized.
+
+</OL>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=step2.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=refining.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Creating the Demo Application (Step 2)
+        <br><b>Next page:</b> Refining the Design
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

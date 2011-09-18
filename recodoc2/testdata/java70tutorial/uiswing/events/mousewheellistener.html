@@ -1,0 +1,725 @@
+
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>How to Write a Mouse-Wheel Listener (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Writing Event Listeners)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Writing Event Listeners
+        <br><b>Section:</b> Implementing Listeners for Commonly Handled Events
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Writing Event Listeners</a></div>
+<div class="linkAHEAD"><a href="intro.html">Introduction to Event Listeners</a></div>
+<div class="linkAHEAD"><a href="generalrules.html">General Information about Writing Event Listeners</a></div>
+<div class="linkAHEAD"><a href="eventsandcomponents.html">Listeners Supported by Swing Components</a></div>
+<div class="linkAHEAD"><a href="handling.html">Implementing Listeners for Commonly Handled Events</a></div>
+<div class="linkBHEAD"><a href="actionlistener.html">How to Write an Action Listener</a></div>
+<div class="linkBHEAD"><a href="caretlistener.html">How to Write a Caret Listener</a></div>
+<div class="linkBHEAD"><a href="changelistener.html">How to Write a Change Listener</a></div>
+<div class="linkBHEAD"><a href="componentlistener.html">How to Write a Component Listener</a></div>
+<div class="linkBHEAD"><a href="containerlistener.html">How to Write a Container Listener</a></div>
+<div class="linkBHEAD"><a href="documentlistener.html">How to Write a Document Listener</a></div>
+<div class="linkBHEAD"><a href="focuslistener.html">How to Write a Focus Listener</a></div>
+<div class="linkBHEAD"><a href="internalframelistener.html">How to Write an Internal Frame Listener</a></div>
+<div class="linkBHEAD"><a href="itemlistener.html">How to Write an Item Listener</a></div>
+<div class="linkBHEAD"><a href="keylistener.html">How to Write a Key Listener</a></div>
+<div class="linkBHEAD"><a href="listdatalistener.html">How to Write a List Data Listener</a></div>
+<div class="linkBHEAD"><a href="listselectionlistener.html">How to Write a List Selection Listener</a></div>
+<div class="linkBHEAD"><a href="mouselistener.html">How to Write a Mouse Listener</a></div>
+<div class="linkBHEAD"><a href="mousemotionlistener.html">How to Write a Mouse-Motion Listener</a></div>
+<div class="nolinkBHEAD">How to Write a Mouse-Wheel Listener</div>
+<div class="linkBHEAD"><a href="propertychangelistener.html">How to Write a Property Change Listener</a></div>
+<div class="linkBHEAD"><a href="tablemodellistener.html">How to Write a Table Model Listener</a></div>
+<div class="linkBHEAD"><a href="treeexpansionlistener.html">How to Write a Tree Expansion Listener</a></div>
+<div class="linkBHEAD"><a href="treemodellistener.html">How to Write a Tree Model Listener</a></div>
+<div class="linkBHEAD"><a href="treeselectionlistener.html">How to Write a Tree Selection Listener</a></div>
+<div class="linkBHEAD"><a href="treewillexpandlistener.html">How to Write a Tree-Will-Expand Listener</a></div>
+<div class="linkBHEAD"><a href="undoableeditlistener.html">How to Write an Undoable Edit Listener</a></div>
+<div class="linkBHEAD"><a href="windowlistener.html">How to Write Window Listeners</a></div>
+<div class="linkAHEAD"><a href="api.html">Listener API Table</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Event-Handling Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Writing Event Listeners</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=mousemotionlistener.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=propertychangelistener.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>How to Write a Mouse-Wheel Listener</h1></div>
+            <div id=PageContent>
+
+Mouse-wheel events notify when the wheel on the mouse rotates.
+For information on listening to other mouse
+events, such as clicks, see <a href=mouselistener.html>How
+to Write a Mouse Listener</a>.  For information on listening
+to mouse-dragged events, see
+<a href=mousemotionlistener.html>How to Write a Mouse-Motion
+Listener</a>.
+Not all mice have wheels and, in that case, mouse-wheel events are never generated.
+There is no way to programmatically detect whether the mouse
+is equipped with a mouse wheel.
+<P>Alternatively, use the corresponding
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/event/MouseAdapter.html"><code>MouseAdapter</code></a> AWT class, which implements the <code>MouseWheelListener</code> interface, to create a <code>MouseWheelEvent</code> and override the methods for the specific events. 
+
+<p>
+Usually it is not necessary to implement a mouse-wheel listener because
+the mouse wheel is used primarily for scrolling.
+Scroll panes automatically register mouse-wheel listeners
+that react to the mouse wheel appropriately.
+<p>
+However, to create a custom component to be used inside a
+scroll pane you may need to customize
+its scrolling behavior &#151; specifically you might
+need to set the unit and block increments.
+For a text area, for example, scrolling one
+unit means scrolling by one line of text.
+A block increment typically scrolls an entire "page",
+or the size of the viewport.
+For more information, see
+<a class="TutorialLink" target="_top" href="../components/scrollpane.html#scrollable">Implementing a Scrolling-Savvy Client</a> in the 
+<a class="TutorialLink" target="_top" href="../components/scrollpane.html">How to Use Scroll Panes</a> page.
+
+<p>
+To generate mouse-wheel events, the 
+cursor must be <em>over</em> the component registered to
+listen for mouse-wheel events. The type of scrolling that occurs,
+either <code>WHEEL_UNIT_SCROLL</code> or
+<code>WHEEL_BLOCK_SCROLL</code>,
+is platform dependent.  The amount that the mouse wheel scrolls
+is also platform dependent. Both the type and amount of scrolling
+can be set via the mouse control panel for the platform.
+
+<p>
+The following example demonstrates mouse-wheel events.
+
+<p><center><IMG SRC="../../figures/uiswing/events/MouseWheelEventDemo.png" WIDTH="413" HEIGHT="311" ALIGN="BOTTOM" ALT=""></center></p>
+<p>
+<div class="note"><hr><strong>Try this:</strong>&nbsp;
+<ol>
+<li>Click the Launch button
+to run MouseWheelEventDemo using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a>
+(<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+Alternatively, to compile and run the example yourself,
+consult the
+<a href="../examples/events/index.html#MouseWheelEventDemo">example index</a>.
+<p><center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/events/ex6/MouseWheelEventDemo.jnlp">
+<img src="../../images/jws-launch-button.png"
+width="88" heigth="23" align="bottom"
+alt="Launches the MouseWheelEventDemo application"></a></center>
+<li> Move the cursor over the text area.
+
+<li> Rotate the mouse wheel away from you. 
+     You will see one or more mouse-wheel events in
+     the <em>up</em> direction.
+
+<li> Rotate the mouse wheel in the opposite direction.
+     You will see mouse-wheel events in the <em>down</em>
+     direction.
+
+<li>Try changing your mouse wheel's scrolling
+    behavior your system's mouse control panel to see how 
+    the output changes.  You should not need to restart the demo
+    to see the changes take effect.
+</ol>
+<hr></div>
+
+<p>
+The output from MouseWheelEventDemo for a
+system that uses unit increments for its mouse wheel
+might look as follows:
+
+<div class="codeblock"><pre>
+javax.swing.JTextArea: Mouse wheel moved UP 1 notch(es)
+    Scroll type: WHEEL_UNIT_SCROLL
+    Scroll amount: 3 unit increments per notch
+    Units to scroll: -3 unit increments
+    Vertical unit increment: 16 pixels
+</pre></div>
+The scroll amount, returned by the <code>getScrollAmount</code> method,
+indicates how many units will be scrolled and always presents a positive
+number.  The units to scroll, returned by the <code>getUnitsToScroll</code> method,
+are positive when scrolling down and negative when scrolling up.
+The number of pixels for the vertical unit is obtained from the
+vertical scroll bar using the <code>getUnitIncrement</code> method.
+In the preceding example, rolling the mouse wheel one notch upward
+should result in the text area scrolling upward 48 pixels (3x16).
+
+<p>
+For a system that uses block increments for mouse-wheel scrolling, for
+the same movement of the mouse wheel the output might look as follows:
+
+<div class="codeblock"><pre>
+javax.swing.JTextArea: Mouse wheel moved UP 1 notch(es)
+    Scroll type: WHEEL_BLOCK_SCROLL
+    Vertical block increment: 307 pixels
+</pre></div>
+
+The vertical block increment is obtained from the vertical
+scroll bar using the <code>getBlockIncrement</code> method.
+In this case, rolling the mouse wheel upward one notch means
+that the text area should scroll upward 307 pixels.
+
+<p>
+Find the demo's code in the
+
+<a class="SourceLink" target="_blank" href="../examples/events/MouseWheelEventDemoProject/src/events/MouseWheelEventDemo.java"><code>MouseWheelEventDemo.java</code></a> file. The following code snippet is related to the mouse-wheel event
+handling:
+
+<div class="codeblock"><pre>
+public class MouseWheelEventDemo ... implements MouseWheelListener ... {
+    public MouseWheelEventDemo() {
+        <em>//where initialization occurs:</em>
+        //Register for mouse-wheel events on the text area.
+        textArea.addMouseWheelListener(this);
+        ...
+    }
+
+    public void mouseWheelMoved(MouseWheelEvent e) {
+       String message;
+       int notches = e.getWheelRotation();
+       if (notches < 0) {
+           message = "Mouse wheel moved UP "
+                        + -notches + " notch(es)" + newline;
+       } else {
+           message = "Mouse wheel moved DOWN "
+                        + notches + " notch(es)" + newline;
+       }
+       if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
+           message += "    Scroll type: WHEEL_UNIT_SCROLL" + newline;
+           message += "    Scroll amount: " + e.getScrollAmount()
+                   + " unit increments per notch" + newline;
+           message += "    Units to scroll: " + e.getUnitsToScroll()
+                   + " unit increments" + newline;
+           message += "    Vertical unit increment: "
+               + scrollPane.getVerticalScrollBar().getUnitIncrement(1)
+               + " pixels" + newline;
+       } else { //scroll type == MouseWheelEvent.WHEEL_BLOCK_SCROLL
+           message += "    Scroll type: WHEEL_BLOCK_SCROLL" + newline;
+           message += "    Vertical block increment: "
+               + scrollPane.getVerticalScrollBar().getBlockIncrement(1)
+               + " pixels" + newline;
+       }
+       saySomething(message, e);
+    }
+    ...
+}
+</pre></div>
+
+
+<h2>
+<a name="api">The Mouse Wheel Listener API</a>
+</h2>
+
+
+<p align=center><a name="mousewheellistener">The MouseWheelListener
+   Interface</a>
+<p><em>Although <code>MouseWheelListener</code> has only one method,
+   it has the corresponding adapter class &mdash; <code>MouseAdapter</code>.
+   This capability enables an application to have only one adapter class instance for the component to manage all types of events from the mouse pointer.
+   </em>
+<table border=1 summary="The MouseWheelListener Interface">
+<tr>
+<th id="h1" align=left>Method</th>
+<th id="h2" align=left>Purpose</th>
+</tr>
+
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/event/MouseWheelListener.html#mouseWheelMoved(java.awt.event.MouseWheelEvent)">mouseWheelMoved(MouseWheelEvent)</a></td>
+<td headers="h2">Called when the mouse wheel is rotated.
+</td>
+</tr>
+</table>
+
+<p align=center><a name="mousewheelevent">The MouseWheelEvent Class</a>
+
+<p>
+<table border=1 summary="The MouseWheelEvent Class">
+<tr>
+<th id="h101" align=left>Method</th>
+<th id="h102" align=left>Purpose</th>
+</tr>
+
+<tr>
+<td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/event/MouseWheelEvent.html#getScrollType()">int getScrollType()</a></td>
+<td headers="h102">Returns the type of scrolling to be used.  Possible values
+    are <code>WHEEL_BLOCK_SCROLL</code> and
+    <code>WHEEL_UNIT_SCROLL</code>, and are determined by the
+    native platform.
+</td>
+</tr>
+
+<tr>
+<td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/event/MouseWheelEvent.html#getWheelRotation()">int getWheelRotation()</a></td>
+<td headers="h102">Returns the number of notches the mouse wheel was rotated. If
+    the mouse wheel rotated towards the user (down) the value is
+    positive.  If the mouse wheel rotated away from the user (up)
+    the value is negative.
+</td>
+</tr>
+
+<tr>
+<td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/event/MouseWheelEvent.html#getScrollAmount()">int getScrollAmount()</a></td>
+<td headers="h102">Returns the number of units that should be scrolled per notch.
+    This is always a positive number and is only
+    valid if the scroll type is
+    <code>MouseWheelEvent.WHEEL_UNIT_SCROLL</code>.
+</td>
+</tr>
+
+<tr>
+<td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/event/MouseWheelEvent.html#getUnitsToScroll()">int getUnitsToScroll()</a></td>
+<td headers="h102">Returns the positive or negative units to scroll for the
+     current event. This is only valid when the scroll type is 
+    <code>MouseWheelEvent.WHEEL_UNIT_SCROLL</code>.
+</td>
+</tr>
+</table>
+
+
+<a name="eg">
+<h2>Examples That Use Mouse Wheel Listeners</h2>
+</a>
+
+The following table lists the
+examples that use mouse-wheel listeners.
+<p>
+
+<table summary="Examples That Use MouseWheelListener">
+<tr>
+<th id="h201" align=left> Example
+</th>
+<th id="h202" align=left> Where Described
+</th>
+<th id="h203" align=left> Notes
+
+</th>
+</tr>
+
+<tr valign=top>
+<td headers="h201"> <a href="../examples/events/index.html#MouseWheelEventDemo"><code>MouseWheelEventDemo</code></a>
+</td>
+<td headers="h202"> This section
+</td>
+<td headers="h203"> Reports all mouse wheel events that occur within a text area
+     to demonstrate the circumstances under which mouse wheel
+     events are fired.
+</td>
+</tr>
+</table>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=mousemotionlistener.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=propertychangelistener.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h301" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h301" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h302" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Write a Mouse-Motion Listener
+        <br><b>Next page:</b> How to Write a Property Change Listener
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

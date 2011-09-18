@@ -1,0 +1,571 @@
+
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Serializable Objects (The Java&trade; Tutorials &gt;        
+            Java Naming and Directory Interface(TM). &gt; Java Objects in the Directory)
+</title>
+
+     <meta name="description" content="This JNDI Java tutorial describes Java Naming and Directory Interface (JNDI) technology, naming and directory operations, and LDAP" />
+     <meta name="keywords" content="java programming, learn java, java sample code, jndi, ldap, jndi service provider" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Java Naming and Directory Interface(TM).
+        <br><b>Lesson:</b> Java Objects in the Directory
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Java Objects in the Directory</a></div>
+<div class="linkAHEAD"><a href="store.html">Storing and Reading Objects</a></div>
+<div class="nolinkAHEAD">Serializable Objects</div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Java Naming and Directory Interface(TM).</a>
+                &gt;
+                <a href=index.html target=_top>Java Objects in the Directory</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=store.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../newstuff/index.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Serializable Objects</h1></div>
+            <div id=PageContent>
+To <em>serialize</em> an object means to convert its state to a byte
+stream so that the byte stream can be reverted back into a
+copy of the object.  A Java object is <em>serializable</em> if its
+class or any of its superclasses implements either the <tt>java.io.Serializable</tt>
+interface or its subinterface, <tt>java.io.Externalizable</tt>.
+<em>Deserialization</em> is the process of converting the serialized
+form of an object back into a copy of the object.
+<p>
+For example, the <tt>java.awt.Button</tt> class implements the <tt>Serializable</tt>
+interface, so you can serialize a <tt>java.awt.Button</tt> object
+and store that serialized state in a file.
+Later, you can read back the serialized state and deserialize
+into a <tt>java.awt.Button</tt> object.
+<p>
+The Java platform specifies a default way by which serializable objects
+are serialized.
+A (Java) class can override this default
+serialization and define its own way of serializing objects of that
+class.  The
+<a class="OutsideLink" target="_blank" href="http://download.oracle.com/javase/7/docs/technotes/guides/serialization/index.html">Object Serialization Specification</a> describes object serialization in detail.
+<p>
+When an object is serialized, information that identifies its class is
+recorded in the serialized stream. However, the class's definition
+("class file") itself is not recorded. It is the responsibility of the
+system that is deserializing the object to determine how to locate and
+load the necessary class files.  For example, a Java application
+might include in its classpath a JAR file that contains the class files
+of the serialized object(s) or load the class definitions by using
+information stored in the directory, as explained later
+in this lesson.
+
+
+<a name="EXAMPLE"></a><h2>Binding a Serializable Object</h2>
+
+You can store a serializable object in the directory
+if the underlying service provider supports that action, as does
+Sun's LDAP service provider.
+<p>
+The following example invokes
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/Context.html#bind(javax.naming.Name, java.lang.Object)"><code>Context.bind</code></a>     to bind an AWT button to the name <tt>"cn=Button"</tt>.
+To associate attributes with the new binding, you use
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/directory/DirContext.html#bind(javax.naming.Name, java.lang.Object, javax.naming.directory.Attributes)"><code>DirContext.bind</code></a>.
+To overwrite an existing binding, use
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/Context.html#rebind(javax.naming.Name, java.lang.Object)"><code>Context.rebind</code></a>     and
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/directory/DirContext.html#rebind(javax.naming.Name, java.lang.Object, javax.naming.directory.Attributes)"><code>DirContext.rebind</code></a>.
+
+<div class="codeblock"><pre>
+// Create the object to be bound
+Button b = new Button("Push me");
+
+// Perform the bind
+ctx.bind("cn=Button", b);
+</pre></div>
+
+You can then read the object back using
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/Context.html#lookup(javax.naming.Name)"><code>Context.lookup</code></a>, as follows.
+
+<div class="codeblock"><pre>
+// Check that it is bound
+Button b2 = (Button)ctx.lookup("cn=Button");
+System.out.println(b2);
+</pre></div>
+
+Running <a href=examples/SerObj.java>this example</a> produces the following output.
+
+<div class="codeblock"><pre>
+# java SerObj
+java.awt.Button[button0,0,0,0x0,invalid,label=Push me]
+</pre></div>
+
+<a name="CODEBASE"></a><h2>Specifying a Codebase</h2>
+
+
+<hr>
+<strong>Note:</strong>
+The procedures described here are for binding a serializable 
+object in
+a directory service that follows the schema defined in
+<A HREF="http://ietf.org/rfc/rfc2713.txt">RFC 2713</A>.
+These procedures might not be generally applicable to other naming and
+directory services that support binding a serializable object with a 
+specified codebase.
+<hr>
+
+
+When a serialized object is bound in the directory as shown in the previous example,
+applications that read the serialized object from the directory must
+have access to the class definitions necessary to deserialize the object.
+<p>
+Alternatively, you can record a <em>codebase</em> with the serialized
+object in the directory, either when you bind the object or subsequently
+by adding an attribute by using 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/directory/DirContext.html#modifyAttributes(javax.naming.Name, int, javax.naming.directory.Attributes)"><code>DirContext.modifyAttributes</code></a>.
+You can use any attribute to record this codebase and have your application
+read that attribute from the directory and use it appropriately. 
+Or you can use the <tt>"javaCodebase"</tt>  attribute specified in .
+In the latter case, Sun's LDAP service provider will automatically
+use the attribute to load the class definitions as needed.
+<tt>"javaCodebase"</tt> should contain the URL of a codebase directory 
+or a JAR file.
+If the codebase contains more than one URL, 
+then each URL must be separated
+by a space character.
+<p>
+The following example resembles the one for binding a
+<tt>java.awt.Button</tt>. It differs in that
+it uses a user-defined <tt>Serializable</tt> class,
+<a href=examples/Flower.java><tt>Flower</tt></a>, and
+supplies a <tt>"javaCodebase"</tt> attribute 
+that contains the location
+of <tt>Flower</tt>'s class definition.
+Here's the code that does the binding.
+
+<div class="codeblock"><pre>
+String codebase = ...;
+
+// Create the object to be bound
+Flower f = new Flower("rose", "pink");
+
+// Perform the bind and specify the codebase
+ctx.bind("cn=Flower", f, new BasicAttributes("javaCodebase", codebase));
+</pre></div>
+
+When you run
+<a href=examples/SerObjWithCodebase.java>this example</a>, you must supply
+the URL of the location at which the class file <tt>Flower.class</tt> was installed.
+For example, if <tt>Flower.class</tt> was installed at the Web server
+<tt>web1</tt>, in the directory <tt>example/classes</tt>, 
+then you would run this example as follows.
+
+<div class="codeblock"><pre>
+# java SerObjWithCodebase http://web1/example/classes/
+pink rose
+</pre></div>
+
+Afterward, you may remove <tt>Flower.class</tt> from your classpath
+and run any program that looks up or lists this object without directly 
+referencing the <tt>Flower</tt> class.
+If your program references <tt>Flower</tt> directly, then
+you must make its class file available for compilation and execution.
+        </div>
+        <div class=NavBit>
+            <a target=_top href=store.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=../newstuff/index.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Storing and Reading Objects
+        <br><b>Next page:</b> New features in JDK 5.0 and JDK 6
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

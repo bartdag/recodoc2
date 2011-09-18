@@ -1,0 +1,929 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>How to Make Applets (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Using Swing Components)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Using Swing Components
+        <br><b>Section:</b> How to Use Various Components
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Using Swing Components</a></div>
+<div class="linkAHEAD"><a href="toplevel.html">Using Top-Level Containers</a></div>
+<div class="linkAHEAD"><a href="jcomponent.html">The JComponent Class</a></div>
+<div class="linkAHEAD"><a href="text.html">Using Text Components</a></div>
+<div class="linkBHEAD"><a href="generaltext.html">Text Component Features</a></div>
+<div class="linkBHEAD"><a href="textapi.html">The Text Component API</a></div>
+<div class="linkAHEAD"><a href="componentlist.html">How to Use Various Components</a></div>
+<div class="nolinkBHEAD">How to Make Applets</div>
+<div class="linkBHEAD"><a href="button.html">How to Use Buttons, Check Boxes, and Radio Buttons</a></div>
+<div class="linkBHEAD"><a href="buttongroup.html">How to Use the ButtonGroup Component</a></div>
+<div class="linkBHEAD"><a href="colorchooser.html">How to Use Color Choosers</a></div>
+<div class="linkBHEAD"><a href="combobox.html">How to Use Combo Boxes</a></div>
+<div class="linkBHEAD"><a href="dialog.html">How to Make Dialogs</a></div>
+<div class="linkBHEAD"><a href="editorpane.html">How to Use Editor Panes and Text Panes</a></div>
+<div class="linkBHEAD"><a href="filechooser.html">How to Use File Choosers</a></div>
+<div class="linkBHEAD"><a href="formattedtextfield.html">How to Use Formatted Text Fields</a></div>
+<div class="linkBHEAD"><a href="frame.html">How to Make Frames (Main Windows)</a></div>
+<div class="linkBHEAD"><a href="internalframe.html">How to Use Internal Frames</a></div>
+<div class="linkBHEAD"><a href="label.html">How to Use Labels</a></div>
+<div class="linkBHEAD"><a href="layeredpane.html">How to Use Layered Panes</a></div>
+<div class="linkBHEAD"><a href="list.html">How to Use Lists</a></div>
+<div class="linkBHEAD"><a href="menu.html">How to Use Menus</a></div>
+<div class="linkBHEAD"><a href="panel.html">How to Use Panels</a></div>
+<div class="linkBHEAD"><a href="passwordfield.html">How to Use Password Fields</a></div>
+<div class="linkBHEAD"><a href="progress.html">How to Use Progress Bars</a></div>
+<div class="linkBHEAD"><a href="rootpane.html">How to Use Root Panes</a></div>
+<div class="linkBHEAD"><a href="scrollpane.html">How to Use Scroll Panes</a></div>
+<div class="linkBHEAD"><a href="separator.html">How to Use Separators</a></div>
+<div class="linkBHEAD"><a href="slider.html">How to Use Sliders</a></div>
+<div class="linkBHEAD"><a href="spinner.html">How to Use Spinners</a></div>
+<div class="linkBHEAD"><a href="splitpane.html">How to Use Split Panes</a></div>
+<div class="linkBHEAD"><a href="tabbedpane.html">How to Use Tabbed Panes</a></div>
+<div class="linkBHEAD"><a href="table.html">How to Use Tables</a></div>
+<div class="linkBHEAD"><a href="textarea.html">How to Use Text Areas</a></div>
+<div class="linkBHEAD"><a href="textfield.html">How to Use Text Fields</a></div>
+<div class="linkBHEAD"><a href="toolbar.html">How to Use Tool Bars</a></div>
+<div class="linkBHEAD"><a href="tooltip.html">How to Use Tool Tips</a></div>
+<div class="linkBHEAD"><a href="tree.html">How to Use Trees</a></div>
+<div class="linkAHEAD"><a href="html.html">How to Use HTML in Swing Components</a></div>
+<div class="linkAHEAD"><a href="model.html">How to Use Models</a></div>
+<div class="linkAHEAD"><a href="icon.html">How to Use Icons</a></div>
+<div class="linkAHEAD"><a href="border.html">How to Use Borders</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Component Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Using Swing Components</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=componentlist.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=button.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>How to Make Applets</h1></div>
+            <div id=PageContent>
+
+This section covers <code>JApplet</code> &mdash;
+a class that enables applets to use Swing components.
+<code>JApplet</code> is a subclass of 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/applet/Applet.html"><code>java.applet.Applet</code></a>, which is covered in the 
+<a class="TutorialLink" target="_top" href="../../deployment/applet/index.html">Java Applets</a> trail. If you've never written a regular applet before,
+we urge you to read that trail
+before proceeding with this section.
+The information provided in that trail 
+applies to Swing applets,
+with a few exceptions that this section explains.
+
+<p>
+<a name="applet"></a>
+Any applet that contains Swing components must be
+implemented with a subclass of 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JApplet.html"><code>JApplet</code></a>.
+Here's a Swing version of one of the applets that helped make Java famous
+&mdash;
+an animation applet that (in its most well known configuration)
+shows our mascot Duke doing cartwheels:
+
+<applet code="components/TumbleItem.class" 
+	codebase="http://download.oracle.com/javase/tutorialJWS/uiswing/components/ex6"
+	archive="TumbleItem.jar" 
+	width="600" height="95"
+        alt="TumbleItem applet">
+    <param name="maxwidth" value="120">
+    <param name="nimgs" value="17">
+    <param name="offset" value="-57">
+    <param name="img" value="images/tumble">
+
+Your browser is completely ignoring the &lt;APPLET&gt; tag!
+
+</applet>
+
+
+<div class="note"><hr><strong>Note:</strong> If you don't see the applet running, you need to install <a href="http://java.sun.com/javase/downloads/index.jsp">release 6 of the Java SE Development Kit (JDK)</a>.<hr></div>
+You can find the main source code for this applet in
+<a class="SourceLink" target="_blank" href="../examples/components/TumbleItemProject/src/components/TumbleItem.java"><code>TumbleItem.java</code></a>.
+
+<p>
+
+This section discusses the following topics:
+
+<ul>
+<li> <a href="#features">Features Provided by JApplet</a>
+<li> <a href="#thread">Threads in Applets</a>
+<li> <a href="#images">Using Images in a Swing Applet</a>
+<li> <a href="#plugin">Embedding an Applet in an HTML Page</a>
+<li> <a href="#api">The JApplet API</a>
+<li> <a href="#eg">Applet Examples</a>
+</ul>
+
+
+<h2>
+<a name="features">Features Provided by JApplet</a>
+</h2>
+
+Because <code>JApplet</code> is a top-level Swing container,
+each Swing applet has a root pane.
+The most noticeable effects of the root pane's presence
+are support for adding a <a href="menu.html">menu bar</a>
+and the need to use a content pane.
+
+<p>
+
+As described in
+<a href="toplevel.html">Using Top-Level Containers</a>,
+each top-level container such as a <code>JApplet</code> 
+has a single content pane.
+The content pane makes Swing applets
+different from regular applets in the following ways:
+<ul>
+<li> You add components to a Swing applet's content pane,
+     not directly to the applet.
+     <a href="toplevel.html#contentpane">Adding Components to the Content Pane</a>
+     shows you how.
+<li> You set the layout manager on a Swing applet's content pane,
+     not directly on the applet.
+<li> The default layout manager for a Swing applet's content pane is
+     <code>BorderLayout</code>.
+     This differs from the default layout manager for
+     <code>Applet</code>, which is <code>FlowLayout</code>.
+<li> You should not put painting code directly in a <code>JApplet</code>
+     object.
+     See 
+<a class="TutorialLink" target="_top" href="../painting/index.html">Performing Custom Painting</a>     for examples of how to perform custom painting in applets.
+</ul>
+
+
+
+<h2>
+<a name="thread">Threads in Applets</a>
+</h2>
+
+Swing components should be created, queried, and manipulated
+on the event-dispatching thread,
+but browsers don't invoke applet "milestone" methods
+from that thread.
+For this reason,
+the milestone methods &mdash;
+<code>init</code>,
+<code>start</code>,
+<code>stop</code>,
+and <code>destroy</code> &mdash;
+should use the <code>SwingUtilities</code> method
+<code>invokeAndWait</code>
+(or, if appropriate, <code>invokeLater</code>)
+so that code that refers to the Swing components
+is executed on the event-dispatching thread.
+More information about these methods and the event-dispatching thread
+is in 
+<a class="TutorialLink" target="_top" href="../concurrency/index.html">Concurrency in Swing</a>.
+
+
+<p>
+Here is an example of an <code>init</code> method:
+
+<div class="codeblock"><pre>
+public void init() {
+    //Execute a job on the event-dispatching thread:
+    //creating this applet's GUI.
+    try {
+        javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+            public void run() {
+                createGUI();
+            }
+        });
+    } catch (Exception e) {
+        System.err.println("createGUI didn't successfully complete");
+    }
+}
+
+private void createGUI() {
+    JLabel label = new JLabel(
+                       "You are successfully running a Swing applet!");
+    label.setHorizontalAlignment(JLabel.CENTER);
+    label.setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.black));
+    getContentPane().add(label, BorderLayout.CENTER);
+}
+</pre></div>
+
+
+<p>
+The <code>invokeLater</code> method 
+is not appropriate for this implementation
+because it allows <code>init</code>
+to return before initialization is complete,
+which can cause applet problems
+that are difficult to debug.
+
+<p>
+The <code>init</code> method in <code>TumbleItem</code>
+is more complex, 
+as the
+following code shows.
+Like the first example, 
+this <code>init</code> method implementation
+uses <code>SwingUtilities.invokeAndWait</code>
+to execute the GUI creation code 
+on the event-dispatching thread.
+This <code>init</code> method
+sets up a
+<a class="TutorialLink" target="_top" href="../misc/timer.html">Swing timer</a> to fire action events the update the animation.
+Also, <code>init</code> uses
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SwingWorker.html"><code>javax.swing.SwingWorker</code></a> to create a background task
+that loads the animation image files,
+letting the applet present a GUI
+right away, without waiting for all resources to be loaded.
+
+<div class="codeblock"><pre>
+private void createGUI() {
+    ...
+    animator = new Animator();
+    animator.setOpaque(true);
+    animator.setBackground(Color.white);
+    setContentPane(animator);
+    ...
+}
+
+public void init() {
+    loadAppletParameters();
+
+    //Execute a job on the event-dispatching thread:
+    //creating this applet's GUI.
+    try {
+        <b>javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+            public void run() {
+                createGUI();
+            }
+        });</b>
+    } catch (Exception e) { 
+        System.err.println("createGUI didn't successfully complete");
+    }
+
+    //Set up the timer that will perform the animation.
+    timer = new javax.swing.Timer(speed, this);
+    timer.setInitialDelay(pause);
+    timer.setCoalesce(false);
+    timer.start(); //Start the animation.
+
+    //Background task for loading images.
+    SwingWorker worker = (new SwingWorker&lt;ImageIcon[], Object&gt;() {
+            public ImageIcon[] doInBackground() {
+                final ImageIcon[] innerImgs = new ImageIcon[nimgs];
+            <em>...//Load all the images...</em>
+            return imgs;
+        }
+        public void done() {
+            //Remove the "Loading images" label.
+            animator.removeAll();
+            loopslot = -1;
+            try {
+                imgs = get();
+            } <em>...//Handle possible exceptions</em>
+        }
+
+    }).execute();
+}
+</pre></div>
+
+<p>
+You can find the applet's source code in
+<a class="SourceLink" target="_blank" href="../examples/components/TumbleItemProject/src/components/TumbleItem.java"><code>TumbleItem.java</code></a>.
+To find all the files required for the applet,
+see the
+<a href="../examples/components/index.html#TumbleItem">example index</a>.
+
+
+
+<h2>
+<a name="images">Using Images in a Swing Applet</a>
+</h2>
+
+The <code>Applet</code> class provides the
+<code>getImage</code> method for
+loading images into an applet.
+The <code>getImage</code> method creates
+and returns an <code>Image</code> object
+that represents the loaded image.
+Because Swing components use <code>Icon</code>s
+rather than <code>Image</code>s to refer to pictures,
+Swing applets tend not to use <code>getImage</code>.
+Instead Swing applets create instances of
+<code>ImageIcon</code> &mdash; an icon loaded from an image file.
+<code>ImageIcon</code> comes with a code-saving benefit:
+it handles image tracking automatically.
+Refer to 
+<a class="TutorialLink" target="_top" href="../components/icon.html">How to Use Icons</a> for more information.
+
+<p>
+The animation of Duke doing cartwheels
+requires 17 different pictures.
+The applet uses one <code>ImageIcon</code> per picture
+and loads them in its <code>init</code> method.
+Because images can take a long time to load,
+the icons are loaded in a separate thread
+implemented by a <code>SwingWorker</code> object.
+Here's the code:
+
+<div class="codeblock"><pre>
+public void init() {
+    ...
+    imgs = new ImageIcon[nimgs];
+    (new SwingWorker&lt;ImageIcon[], Object&gt;() {
+        public ImageIcon[] doInBackground() {
+            //Images are numbered 1 to nimgs,
+            //but fill array from 0 to nimgs-1.
+            for (int i = 0; i &lt; nimgs; i++) {
+                imgs[i] = loadImage(i+1);
+            }
+            return imgs;
+        }
+        ...
+    }).execute();
+
+}
+...
+protected ImageIcon loadImage(int imageNum) {
+    String path = dir + "/T" + imageNum + ".gif";
+    int MAX_IMAGE_SIZE = 2400;  //Change this to the size of
+                                 //your biggest image, in bytes.
+    int count = 0;
+    BufferedInputStream imgStream = new BufferedInputStream(
+       this.getClass().getResourceAsStream(path));
+    if (imgStream != null) {
+        byte buf[] = new byte[MAX_IMAGE_SIZE];
+        try {
+            count = imgStream.read(buf);
+            imgStream.close();
+        } catch (java.io.IOException ioe) {
+            System.err.println("Couldn't read stream from file: " + path);
+            return null;
+        }
+        if (count &lt;= 0) {
+            System.err.println("Empty file: " + path);
+            return null;
+        }
+        return new ImageIcon(Toolkit.getDefaultToolkit().createImage(buf));
+    } else {
+        System.err.println("Couldn't find file: " + path);
+        return null;
+    }
+}
+</pre></div>
+
+The <code>loadImage</code> method
+loads the image for the specified frame of animation.
+It uses
+the <code>getResourceAsStream</code> method
+rather than the usual <code>getResource</code> method
+to get the images.
+The resulting code isn't pretty,
+but <code>getResourceAsStream</code>
+is more efficient than <code>getResource</code>
+for loading images from JAR files into applets that are executed
+using Java Plug-in&trade; software.  For further details, see
+<a class="TutorialLink" target="_top" href="../components/icon.html#applet">Loading Images Into Applets</a>.
+
+
+<h2>
+<a name="plugin">Embedding an Applet in an HTML Page</a>
+</h2>
+
+You can deploy a simple applet by using the <code>applet</code> 
+tag.
+Here's the  <code>applet</code> tag for the cartwheeling Duke applet:
+
+<div class="codeblock"><pre>
+&lt;applet code="TumbleItem.class" 
+        codebase="examples/"
+        archive="tumbleClasses.jar, tumbleImages.jar"
+        width="600" height="95"&gt;
+    &lt;param name="maxwidth" value="120"&gt;
+    &lt;param name="nimgs" value="17"&gt;
+    &lt;param name="offset" value="-57"&gt;
+    &lt;param name="img" value="images/tumble"&gt;
+
+Your browser is completely ignoring the &lt;applet&gt; tag!
+&lt;/applet>
+</pre></div>
+
+To deploy more sophisticated applets that will work seamlessly in multiple environments, 
+see 
+
+<a class="TutorialLink" target="_top" href="../../deployment/applet/deployingApplet.html">Deploying an Applet</a> in the  
+<a class="TutorialLink" target="_top" href="../../deployment/applet/index.html">Java Applets</a> lesson.
+
+
+
+<h2>
+<a name="api">The JApplet API</a>
+</h2>
+
+The next table lists the interesting methods
+that <code>JApplet</code> adds to the applet API.
+They give you access to features provided by the root pane.
+Other methods you might use are defined by the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html"><code>Component</code></a> and
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/applet/Applet.html"><code>Applet</code></a> classes.
+See <a href="jcomponent.html#complookapi">Component Methods</a>
+for a list of commonly used <code>Component</code> methods,
+and
+<a class="TutorialLink" target="_top" href="../../deployment/applet/index.html">Java Applets</a> for help in using <code>Applet</code> methods.
+
+<p>
+
+<table border=1 summary="JApplet methods">
+<tr>
+<th id="h1" align=left>Method
+</th>
+<th id="h2" align=left>Purpose
+
+</th>
+</tr>
+  <tr>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JApplet.html#setContentPane(java.awt.Container)">void setContentPane(Container)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JApplet.html#getContentPane()">Container getContentPane()</a>    </td>
+    <td headers="h2">Set or get the applet's content pane.
+        The content pane contains the applet's visible GUI components
+        and should be opaque.
+
+    </td>
+  </tr>
+  <tr>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JApplet.html#setRootPane(javax.swing.JRootPane)">void setRootPane(JRootPane)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JApplet.html#getRootPane()">JRootPane getRootPane()</a>    </td>
+    <td headers="h2">Create, set, or get the applet's root pane. The root pane
+        manages the interior of the applet including the content pane,
+        the glass pane, and so on.
+ 
+    </td>
+  </tr>
+  <tr>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JApplet.html#setJMenuBar(javax.swing.JMenuBar)">void setJMenuBar(JMenuBar)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JApplet.html#getJMenuBar()">JMenuBar getJMenuBar()</a>    </td>
+    <td headers="h2">Set or get the applet's menu bar
+        to manage a set of menus for the applet.
+ 
+    </td>
+  </tr>
+  <tr>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JApplet.html#setGlassPane(java.awt.Component)">void setGlassPane(Component)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JApplet.html#getGlassPane()">Component getGlassPane()</a>    </td>
+    <td headers="h2">Set or get the applet's glass pane.
+        You can use the glass pane to intercept mouse events.
+
+    </td>
+  </tr>
+  <tr>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JApplet.html#setLayeredPane(javax.swing.JLayeredPane)">void setLayeredPane(JLayeredPane)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JApplet.html#getLayeredPane()">JLayeredPane getLayeredPane()</a>    </td>
+    <td headers="h2">Set or get the applet's layered pane.
+        You can use the applet's layered pane to put components on top of
+        or behind other components.
+    </td>
+  </tr>
+</table>
+
+
+
+<h2>
+<a name="eg">Applet Example</a>
+</h2>
+
+This table shows examples of Swing applets
+and where those examples are described.
+
+<p>
+<table summary="Examples of Swing applets">
+<tr>
+<th id="h101" align=left> Example
+</th>
+<th id="h102" align=left> Where Described
+</th>
+<th id="h103" align=left> Notes
+</th>
+</tr>
+
+<tr>
+<td headers="h101"> <a href="../examples/components/index.html#TumbleItem">
+     <code>TumbleItem</code></a>
+</td>
+<td headers="h102"> This page
+</td>
+<td headers="h103"> An animation applet
+</td>
+</tr>
+
+</table>
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=componentlist.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=button.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h201" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h201" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h202" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Use Various Components
+        <br><b>Next page:</b> How to Use Buttons, Check Boxes, and Radio Buttons
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

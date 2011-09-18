@@ -1,0 +1,590 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>PATH and CLASSPATH (The Java&trade; Tutorials &gt;        
+            Essential Classes &gt; The Platform Environment)
+</title>
+
+     <meta name="description" content="This Java tutorial describes exceptions, basic input/output, concurrency, regular expressions, and the platform environment" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java exception, java input output, java threads, java regex, regular expressions, path, classpath, environment variable" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Essential Classes
+        <br><b>Lesson:</b> The Platform Environment
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">The Platform Environment</a></div>
+<div class="linkAHEAD"><a href="config.html">Configuration Utilities</a></div>
+<div class="linkBHEAD"><a href="properties.html">Properties</a></div>
+<div class="linkBHEAD"><a href="cmdLineArgs.html">Command-Line Arguments</a></div>
+<div class="linkBHEAD"><a href="env.html">Environment Variables</a></div>
+<div class="linkBHEAD"><a href="other.html">Other Configuration Utilities</a></div>
+<div class="linkAHEAD"><a href="system.html">System Utilities</a></div>
+<div class="linkBHEAD"><a href="cl.html">Command-Line I/O Objects</a></div>
+<div class="linkBHEAD"><a href="sysprop.html">System Properties</a></div>
+<div class="linkBHEAD"><a href="security.html">The Security Manager</a></div>
+<div class="linkBHEAD"><a href="sysmisc.html">Miscellaneous Methods in System</a></div>
+<div class="nolinkAHEAD">PATH and CLASSPATH</div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Essential Classes</a>
+                &gt;
+                <a href=index.html target=_top>The Platform Environment</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=sysmisc.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=QandE/questions.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>PATH and CLASSPATH</h1></div>
+            <div id=PageContent>
+This section explains how to use the
+<code>PATH</code> and <code>CLASSPATH</code> environment
+variables on Microsoft Windows, Solaris, and Linux.
+Consult the installation instructions
+included with your installation of the Java Development Kit (JDK)
+software bundle for current information.
+<p>
+After installing the software,
+the JDK directory will have the structure shown below.
+<p><center><IMG SRC="../../figures/essential/environment-directories.gif" WIDTH="384" HEIGHT="192" ALIGN="BOTTOM" ALT="JDK directory structure"></center></p>The <code>bin</code> directory contains both the compiler
+and the launcher.
+<h2>Update the PATH Variable (Microsoft Windows NT/2000/XP)</h2>
+You can run Java applications just fine without setting the
+<code>PATH</code> variable.  Or, you can optionally set it as a
+convenience.
+<p>
+Set the <code>PATH</code> variable if you want to be able to 
+conveniently run the executables (<code>javac.exe</code>,
+<code>java.exe</code>, <code>javadoc.exe</code>, and so on)
+from any directory without having to type the full path of the
+command. If you do not set the <code>PATH</code> variable,
+you need to specify the full path to the executable every time
+you run it, such as:
+
+<div class="codeblock"><pre>
+C:\Program Files\Java\jdk1.6.0\bin\javac MyClass.java
+</pre></div>
+<div class="note"><hr><strong>Note:</strong>&nbsp;It is useful to set the <code>PATH</code> permanently so it will
+persist after rebooting.  To set it permanently, add the full path of
+the <code>jdk1.6.0</code> bin directory to the <code>PATH</code>
+variable.  Set the <code>PATH</code> as follows.
+<hr></div>
+<p>
+To make a permanent change to the CLASSPATH variable, use the System
+icon in the Control Panel. The precise procedure varies depending on
+the version of Windows.
+<p>
+The <code>PATH</code> can be a series of directories separated by
+semicolons (;).  Microsoft Windows looks for programs in the
+<code>PATH</code> directories in order, from left to right.
+You should have only one <code>bin</code> directory for the JDK
+in the path at a time (those following the first are ignored),
+so if one is already present, you can update that particular entry.
+
+<p>
+<h2>Update the PATH Variable (Solaris and Linux)</h2>
+You can run the JDK just fine without setting the <code>PATH</code>
+variable, or you can optionally set it as a convenience.  However,
+you should set the path variable if you want to be able to run
+the executables (<code>javac</code>, <code>java</code>, 
+<code>javadoc</code>, and so on) from any directory without
+having to type the full path of the command.  If you do not set
+the <code>PATH</code> variable, you need to specify the full
+path to the executable every time you run it, such as:
+
+<div class="codeblock"><pre>
+% /usr/local/jdk1.6.0/bin/javac MyClass.java
+</pre></div>
+To find out if the path is properly set, execute:
+<div class="codeblock"><pre>
+% java -version
+</pre></div>
+This will print the version of the <code>java</code> tool,
+if it can find it.  If the version is old or you get the
+error <b>java: Command not found</b>, then the path is not properly set.
+
+<p>
+To set the path permanently, set the path in your startup file.
+<p>
+For C shell (<code>csh</code>), edit the startup file <code>(~/.cshrc</code>):
+<div class="codeblock"><pre>
+set path=(/usr/local/jdk1.6.0/bin )
+</pre></div>
+For <code>bash</code>, edit the startup file (<code>~/.bashrc</code>):
+
+<div class="codeblock"><pre>
+PATH=/usr/local/jdk1.6.0/bin:
+export PATH
+</pre></div>
+For <code>ksh</code>, the startup file is named by the
+environment variable, <code>ENV</code>.  To set the path:
+<div class="codeblock"><pre>
+PATH=/usr/local/jdk1.6.0/bin:
+export PATH
+</pre></div>
+For <code>sh</code>, edit the profile file (<code>~/.profile</code>):
+
+<div class="codeblock"><pre>
+PATH=/usr/local/jdk1.6.0/bin:
+export PATH
+</pre></div>
+
+Then load the startup file and verify that the path is set by repeating
+the <code>java</code> command:
+<p>
+For C shell (<code>csh</code>):
+<div class="codeblock"><pre>
+% source ~/.cshrc
+% java -version
+</pre></div>
+For <code>ksh</code>, <code>bash</code>, or <code>sh</code>:
+<div class="codeblock"><pre>
+% . /.profile
+% java -version
+</pre></div>
+
+
+<p>
+
+<h2><a name="classpath">Checking the CLASSPATH variable (All platforms)</a></h2>
+The <code>CLASSPATH</code> variable is one way to tell applications,
+including the JDK tools, where to look for user classes.
+(Classes that are part of the JRE, JDK platform, and extensions
+should be defined through other means, such as the bootstrap class path
+or the extensions directory.)
+<p>
+The preferred way to specify the class path is by using the
+<code>-cp</code> command line switch.  This allows the 
+<code>CLASSPATH</code> to be set individually for each application without
+affecting other applications.
+<em>Setting the <code>CLASSPATH</code> can be tricky and should be
+performed with care.</em>
+<p>
+The default value of the class path is ".", meaning that only the
+current directory is searched. Specifying either the CLASSPATH
+variable or the <code>-cp</code> command line switch overrides this
+value. 
+<p>
+To check whether <code>CLASSPATH</code> is set on Microsoft Windows
+NT/2000/XP, execute the following:
+<div class="codeblock"><pre>
+C:&gt; echo %CLASSPATH%       
+</pre></div>
+On Solaris or Linux, execute the following:
+<div class="codeblock"><pre>
+% echo &#36;CLASSPATH
+</pre></div>
+If <code>CLASSPATH</code> is not set you will get a
+
+<b>CLASSPATH: Undefined variable</b> error (Solaris or Linux)
+or simply <b>%CLASSPATH%</b> (Microsoft Windows NT/2000/XP).
+<p>
+To modify the <code>CLASSPATH</code>, use the same procedure you used
+for the <code>PATH</code> variable.
+<p>
+Class path wildcards
+allow you  to include an entire directory of <code>.jar</code>
+files in the class path without explicitly naming them individually.
+For more information, including an explanation of class path wildcards,
+and a detailed description on how to clean up the <code>CLASSPATH</code>
+environment variable, see the 
+<a class="OutsideLink" target="_blank" href="http://download.oracle.com/javase/7/docs/technotes/tools/windows/classpath.html">Setting the Class Path</a>
+technical note.
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=sysmisc.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=QandE/questions.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Miscellaneous Methods in System
+        <br><b>Next page:</b> Questions and Exercises: The Platform Environment
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

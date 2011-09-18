@@ -1,0 +1,628 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Using Objects (The Java&trade; Tutorials &gt;        
+            Learning the Java Language &gt; Classes and Objects)
+</title>
+
+     <meta name="description" content="This beginner Java tutorial describes fundamentals of programming in the Java programming language" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java objects, java classes, java inheritance, interfaces, variables, arrays, data types, operators, control flow, number, string" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Learning the Java Language
+        <br><b>Lesson:</b> Classes and Objects
+        <br><b>Section:</b> Objects
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Classes and Objects</a></div>
+<div class="linkAHEAD"><a href="classes.html">Classes</a></div>
+<div class="linkBHEAD"><a href="classdecl.html">Declaring Classes</a></div>
+<div class="linkBHEAD"><a href="variables.html">Declaring Member Variables</a></div>
+<div class="linkBHEAD"><a href="methods.html">Defining Methods</a></div>
+<div class="linkBHEAD"><a href="constructors.html">Providing Constructors for Your Classes</a></div>
+<div class="linkBHEAD"><a href="arguments.html">Passing Information to a Method or a Constructor</a></div>
+<div class="linkAHEAD"><a href="objects.html">Objects</a></div>
+<div class="linkBHEAD"><a href="objectcreation.html">Creating Objects</a></div>
+<div class="nolinkBHEAD">Using Objects</div>
+<div class="linkAHEAD"><a href="more.html">More on Classes</a></div>
+<div class="linkBHEAD"><a href="returnvalue.html">Returning a Value from a Method</a></div>
+<div class="linkBHEAD"><a href="thiskey.html">Using the this Keyword</a></div>
+<div class="linkBHEAD"><a href="accesscontrol.html">Controlling Access to Members of a Class</a></div>
+<div class="linkBHEAD"><a href="classvars.html">Understanding Instance and Class Members</a></div>
+<div class="linkBHEAD"><a href="initial.html">Initializing Fields</a></div>
+<div class="linkBHEAD"><a href="summaryclasses.html">Summary of Creating and Using Classes and Objects</a></div>
+<div class="linkQUESTIONS"><a href="QandE/creating-questions.html">Questions and Exercises</a></div>
+<div class="linkQUESTIONS"><a href="QandE/objects-questions.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="nested.html">Nested Classes</a></div>
+<div class="linkBHEAD"><a href="innerclasses.html">Inner Class Example</a></div>
+<div class="linkBHEAD"><a href="summarynested.html">Summary of Nested Classes</a></div>
+<div class="linkQUESTIONS"><a href="QandE/nested-questions.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="enum.html">Enum Types</a></div>
+<div class="linkQUESTIONS"><a href="QandE/enum-questions.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="annotations.html">Annotations</a></div>
+<div class="linkQUESTIONS"><a href="QandE/annotations-questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Learning the Java Language</a>
+                &gt;
+                <a href=index.html target=_top>Classes and Objects</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=objectcreation.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=more.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Using Objects</h1></div>
+            <div id=PageContent>
+<!-- Using Objects -->
+
+Once you've created an object,
+you probably want to use it for something.
+You may need to use the value of one of its fields, change one of its fields,
+ or call one of its methods to perform an action.
+
+<p>
+<a name=fields></a>
+
+<h2>Referencing an Object's Fields</h2>
+
+ 
+Object fields are accessed by their name. You must use a name that is unambiguous. 
+<p>
+You may use a simple name for a field within its own class. For example, we can add a statement 
+<i>within</i> the <code>Rectangle</code> class that prints the <code>width</code> and <code>height</code>:
+<div class="codeblock"><pre>
+System.out.println("Width and height are: " + width + ", " + height);
+</pre></div>
+In this case, <code>width</code> and <code>height</code> are simple names.
+<p>
+Code that is outside the object's class must use an object reference or expression,
+followed by the dot (.) operator, followed by a simple field name, 
+as in: 
+<div class="codeblock"><pre>
+objectReference.fieldName
+</pre></div>
+
+<p>
+
+For example, the code in
+the <tt>CreateObjectDemo</tt> class is outside the code for the
+<tt>Rectangle</tt> class. So to refer to the <tt>origin</tt>,
+<tt>width</tt>, and <tt>height</tt> fields within the <tt>Rectangle</tt>
+object named <tt>rectOne</tt>, the <tt>CreateObjectDemo</tt>
+class must use the names <tt>rectOne.origin</tt>,
+<tt>rectOne.width</tt>, and <tt>rectOne.height</tt>, respectively.
+The program uses two of these names to display the <tt>width</tt>
+and the <tt>height</tt> of <tt>rectOne</tt>:
+
+<div class="codeblock"><pre>
+System.out.println("Width of rectOne: " + rectOne.width);
+System.out.println("Height of rectOne: " + rectOne.height);
+</pre></div>
+
+Attempting to use the simple names <tt>width</tt> and <tt>height</tt>
+from the code in the <tt>CreateObjectDemo</tt> class doesn't make
+sense &mdash; those fields exist only within an object &mdash;
+and results in a compiler error.
+
+<p>
+
+Later, the program uses similar code to display information about
+<tt>rectTwo</tt>. Objects of the same type have their own copy of
+the same instance fields. Thus, each <tt>Rectangle</tt> object
+has fields named <tt>origin</tt>, <tt>width</tt>, and <tt>height</tt>.
+When you access an instance field through an object reference,
+you reference that particular object's field. The two objects
+<tt>rectOne</tt> and <tt>rectTwo</tt> in the <tt>CreateObjectDemo</tt>
+program have different <tt>origin</tt>, <tt>width</tt>,
+and <tt>height</tt> fields.
+
+<p>
+
+To access a field, you can use a named reference to an object, 
+as in the previous examples, or you can use any expression that returns
+an object reference. Recall that the <tt>new</tt> operator returns
+a reference to an object. So you could use the value returned from new
+to access a new object's fields:
+
+<div class="codeblock"><pre>
+int height = new Rectangle().height;
+</pre></div>
+
+This statement creates a new <tt>Rectangle</tt> object and immediately gets
+its height. In essence, the statement calculates the default height of a
+<tt>Rectangle</tt>. Note that after this statement has been executed,
+the program no longer has a reference to the created <tt>Rectangle</tt>,
+because the program never stored the reference anywhere.
+The object is unreferenced, and its resources are free to be recycled by
+the Java Virtual Machine.
+
+ 
+
+<a name=methods></a>
+<h2>Calling an Object's Methods</h2>
+
+ 
+
+You also use an object reference to invoke an object's method. You append the method's simple name to the object reference,
+with an intervening dot operator (.). Also, you provide, within enclosing parentheses,
+any arguments to the method. If the method does not require any
+arguments, use empty parentheses. 
+
+<div class="codeblock"><pre>
+objectReference.methodName(argumentList);
+   or
+objectReference.methodName();
+</pre></div>
+
+The <tt>Rectangle</tt> class has two methods: <tt>getArea()</tt> to compute the
+rectangle's area and <tt>move()</tt> to change the rectangle's origin.
+Here's the <tt>CreateObjectDemo</tt> code that invokes these two methods: 
+
+
+<div class="codeblock"><pre>
+System.out.println("Area of rectOne: " + rectOne.getArea());
+...
+rectTwo.move(40, 72);
+</pre></div>
+
+The first statement invokes <tt>rectOne</tt>'s <code>getArea()</code> method and displays
+the results. The second line moves <tt>rectTwo</tt> because the
+<tt>move()</tt> method assigns new values to the object's <tt>origin.x</tt>
+and <tt>origin.y</tt>.
+
+<P>
+
+As with instance fields, <em>objectReference</em> must be a reference to an
+object. You can use a variable name, but you also can use any expression
+that returns an object reference. The <tt>new</tt> operator returns an
+object reference, so you can use the value returned from new to invoke a
+new object's methods: 
+
+<div class="codeblock"><pre>
+new Rectangle(100, 50).getArea()
+</pre></div>
+
+The expression <tt>new Rectangle(100, 50)</tt> returns an object
+reference that refers to a <tt>Rectangle</tt> object.
+As shown, you can use the dot notation to invoke the new
+<tt>Rectangle</tt>'s <tt>getArea()</tt> method to compute the area
+of the new rectangle.
+
+<p>
+
+Some methods, such as <tt>getArea()</tt>, return a value.
+For methods that return a value, you can use the method invocation
+in expressions. You can assign the return value to a variable,
+use it to make decisions, or control a loop. This code assigns
+the value returned by <tt>getArea()</tt> to the variable <code>areaOfRectangle</code>: 
+
+<div class="codeblock"><pre>
+int areaOfRectangle = new Rectangle(100, 50).getArea();
+</pre></div>
+
+Remember, invoking a method on a particular object is the same as sending a
+message to that object. In this case, the object that <tt>getArea()</tt>
+is invoked on is the rectangle returned by the constructor.
+
+ 
+
+<h2>The Garbage Collector</h2>
+
+ 
+Some object-oriented languages require that you keep track of all the objects
+you create and that you explicitly destroy them when they are no longer
+needed. Managing memory explicitly is tedious and error-prone. The Java
+platform allows you to create as many objects as you want (limited, of
+course, by what your system can handle), and you don't have to worry about
+destroying them. The Java runtime environment deletes objects when it
+determines that they are no longer being used. This process is called <em>garbage collection</em>.
+
+<p>
+
+An object is eligible for garbage collection when there are no more references
+to that object. References that are held in a variable are usually
+dropped when the variable goes out of scope. Or, you can explicitly drop an
+object reference by setting the variable to the special value <tt>null</tt>. Remember that a program can have multiple references to the same object; all references to an object must be dropped before the object is eligible for garbage collection.
+
+<p>
+
+The Java runtime environment has a garbage collector that periodically frees
+the memory used by objects that are no longer referenced. The garbage collector
+does its job automatically when it determines that the time is right.
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=objectcreation.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=more.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Creating Objects
+        <br><b>Next page:</b> More on Classes
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

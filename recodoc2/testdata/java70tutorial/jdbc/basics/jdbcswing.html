@@ -1,0 +1,772 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Using JDBC with GUI API (The Java&trade; Tutorials &gt;        
+            JDBC(TM) Database Access &gt; JDBC Basics)
+</title>
+
+     <meta name="description" content="This JDBC Java tutorial describes how to use JDBC API to create, insert into, update, and query tables. You will also learn how to use simple and prepared statements, stored procedures and perform transactions" />
+     <meta name="keywords" content="java programming, learn java, java sample code, jdbc, prepared statement, result set" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> JDBC(TM) Database Access
+        <br><b>Lesson:</b> JDBC Basics
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">JDBC Basics</a></div>
+<div class="linkAHEAD"><a href="gettingstarted.html">Getting Started</a></div>
+<div class="linkAHEAD"><a href="processingsqlstatements.html">Processing SQL Statements with JDBC</a></div>
+<div class="linkAHEAD"><a href="connecting.html">Establishing a Connection</a></div>
+<div class="linkAHEAD"><a href="sqldatasources.html">Connecting with DataSource Objects</a></div>
+<div class="linkAHEAD"><a href="sqlexception.html">Handling SQLExceptions</a></div>
+<div class="linkAHEAD"><a href="tables.html">Setting Up Tables</a></div>
+<div class="linkAHEAD"><a href="retrieving.html">Retrieving and Modifying Values from Result Sets</a></div>
+<div class="linkAHEAD"><a href="prepared.html">Using Prepared Statements</a></div>
+<div class="linkAHEAD"><a href="transactions.html">Using Transactions</a></div>
+<div class="linkAHEAD"><a href="rowset.html">Using RowSet Objects</a></div>
+<div class="linkAHEAD"><a href="jdbcrowset.html">Using JdbcRowSet Objects</a></div>
+<div class="linkAHEAD"><a href="cachedrowset.html">Using CachedRowSetObjects</a></div>
+<div class="linkAHEAD"><a href="joinrowset.html">Using JoinRowSet Objects</a></div>
+<div class="linkAHEAD"><a href="filteredrowset.html">Using FilteredRowSet Objects</a></div>
+<div class="linkAHEAD"><a href="webrowset.html">Using WebRowSet Objects</a></div>
+<div class="linkAHEAD"><a href="sqltypes.html">Using Advanced Data Types</a></div>
+<div class="linkAHEAD"><a href="blob.html">Using Large Objects</a></div>
+<div class="linkAHEAD"><a href="sqlxml.html">Using SQLXML Objects</a></div>
+<div class="linkAHEAD"><a href="array.html">Using Array Objects</a></div>
+<div class="linkAHEAD"><a href="distinct.html">Using DISTINCT Data Type</a></div>
+<div class="linkAHEAD"><a href="sqlstructured.html">Using Structured Objects</a></div>
+<div class="linkAHEAD"><a href="sqlcustommapping.html">Using Customized Type Mappings</a></div>
+<div class="linkAHEAD"><a href="sqldatalink.html">Using Datalink Objects</a></div>
+<div class="linkAHEAD"><a href="sqlrowid.html">Using RowId Objects</a></div>
+<div class="linkAHEAD"><a href="storedprocedures.html">Using Stored Procedures</a></div>
+<div class="nolinkAHEAD">Using JDBC with GUI API</div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>JDBC(TM) Database Access</a>
+                &gt;
+                <a href=index.html target=_top>JDBC Basics</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=storedprocedures.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../end.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Using JDBC with GUI API</h1></div>
+            <div id=PageContent>
+<!-- Using JDBC with GUI API -->
+
+<p>The sample <code><a href="gettingstarted.html">CoffeesFrame.java</a></code> demonstrates how to integrate JDBC with a GUI API, in particular, the Swing API. It displays the contents of the <code>COFFEES</code> database table in a table and contains fields and buttons that enable you to add rows to the table. The following is a screenshot of this sample:</p>
+
+
+<p><center><IMG SRC="../../figures/jdbc/coffeesframe.gif" WIDTH="" HEIGHT="" ALIGN="BOTTOM" ALT="Screenshot of Sample CoffeeFrames.java"></center></p>
+<p>The sample contains five text fields that correspond to each of the columns in the <code>COFFEES</code> table. It also contains three buttons:</p>
+
+<ul>
+  <li><strong>Add row to table</strong>: Adds a row to the sample's table based on the data entered in the text fields.</li>
+  <li><strong>Update database</strong>: Updates the table <code>COFFEES</code> based on the data in the sample's table.</li>
+  <li><strong>Discard changes</strong>: Retrieves the contents of the <code>COFFEES</code> table, replacing the existing data in the sample's table.</li>
+</ul>
+
+<p>This sample (which requires <code>CoffeesTableModel</code>) demonstrates the following general steps to integrate JDBC with the Swing API:</p>
+
+<ol>
+  <li><a href="#implementing_tablemodel">Implementing the <code>TableModel</code> interface</a></li>
+  <li><a href="#implemeting_rowsetlistener">Implementing the <code>RowSetListener</code> interface</a></li>
+  <li><a href="#laying_out_swing">Laying out the Swing components</a></li>
+  <li><a href="#adding_listeners">Adding listeners for the buttons in the sample</a></li>
+</ol>
+
+<!-- ***************************** -->
+
+<h2><a name="implementing_tablemodel">Implementing javax.swing.event.TableModel</a></h2>
+
+<p>The <code>TableModel</code> interface enables a Java Swing application to manage data in a <code>JTable</code> object. The sample, <a href="gettingstarted.html"><code>CoffeesTableModel.java</code></a>, implements this interface. It specifies how a <code>JTable</code> object should retrieve data from a <code>RowSet</code> object and display it in a table.</p>
+
+<p><strong>Note</strong>: Although this sample displays the contents of the <code>COFFEES</code> table in a Swing application, the class <code>CoffeesTableModel</code> should work for any SQL table provided that its data can be represented with <code>String</code> objects. (However, the fields that enable users to add rows to <code>COFFEES</code>, which are specified in the class <code>CoffeesFrame</code>, would have to be modified for other SQL tables.)</p>
+
+<p>Before implementing the methods of the interface <code>TableModel</code>, the constructor of the class <code>CoffeeTableModel</code> initializes various member variables required for these implemented methods as follows:</p>
+
+<div class="codeblock"><pre>
+  public CoffeesTableModel(CachedRowSet rowSetArg) throws SQLException {
+
+    this.coffeesRowSet = rowSetArg;
+    this.metadata = this.coffeesRowSet.getMetaData();
+    numcols = metadata.getColumnCount();
+
+    // Retrieve the number of rows.
+    this.coffeesRowSet.beforeFirst();
+    this.numrows = 0;
+    while (this.coffeesRowSet.next()) {
+      this.numrows++;
+    }
+    this.coffeesRowSet.beforeFirst();
+  }
+</pre></div>
+
+<p>The following describes the member variables initialized in this constructor:</p>
+
+<ul>
+  <li><p><code>CachedRowSet coffeesRowSet</code>: Stores the contents of the table <code>COFFEES</code>.</p>
+
+  <p>This sample uses a <code>RowSet</code> object, in particular, a <code>CachedRowSet</code> object, rather than a <code>ResultSet</code> object for two reasons. A <code>CachedRowSet</code> object enables the user of the application to make changes to the data contained in it without being connected to the database. In addition, because a <code>CachedRowSet</code> object is a JavaBeans component, it can notify other components when certain things happen to it. In this sample, when a new row is added to the <code>CachedRowSet</code> object, it notifies the Swing component that is rendering its data in a table to refresh itself and display the new row.</p>
+
+</li>
+
+  <li><p><code>ResultSetMetaData metadata</code>: Retrieves the number of columns in the table <code>COFFEES</code> as well as the names of each of them.</p></li>
+
+  <li><p><code>int numcols, numrows</code>: Stores the number of columns and rows, respectively, in the table <code>COFFEES</code>.</p></li>
+</ul>
+
+<p>The <code>CoffeesTableModel.java</code> sample implements the following methods from <code>TableModel</code> interface:
+
+<ul>
+
+  <li><code>Class&lt;?&gt; getColumnClass(int columnIndex)</code>: Returns the most specific superclass for all the cell values in the column.</li>
+
+  <li><code>int getColumnCount()</code>: Returns the number of columns in the model.</li>
+
+  <li><code>String getColumnName(int columnIndex)</code>: Returns the name of the column specified by the parameter <code>columnIndex</code>.</li>
+
+  <li><code>int getRowCount()</code>: Returns the number of rows in the model.</li>
+
+  <li><code>Object getValueAt(int rowIndex, int columnIndex)</code>: Returns the value for the cell at intersection of the column <code>columnIndex</code> and the row <code>rowIndex</code>.</li>
+
+  <li><code>boolean isCellEditable(int rowIndex, int columnIndex)</code>: Returns true if the cell at the intersection of the column <code>rowIndex</code> and the row <code>columnIndex</code> can be edited.</li>
+
+</ul>
+
+<p>The following methods have not been implemented because this sample does not allow users to directly edit the contents of the table:</p>
+
+<ul>
+  <li><code>void addTableModelListener(TableModelListener l)</code>: Adds a listener to the list that is notified each time a change to the data model occurs.</li>
+
+  <li><code>void removeTableModelListener(TableModelListener l)</code>:  Removes a listener from the list that is notified each time a change to the data model occurs.</li>
+
+  <li><code>void setValueAt(Object aValue, int rowIndex, int columnIndex)</code>: Sets the value in the cell at the intersection of the column <code>columnIndex</code> and the row <code>rowIndex</code> to the object <code>aValue</code>.</li>
+</ul>
+
+<h3>Implementing getColumnCount and getRowCount</h3>
+
+<p>The methods <code>getColumnCount</code> and <code>getRowCount</code> return the value of the member variables <code>numcols</code> and <code>numrows</code>, respectively:</p>
+
+<div class="codeblock"><pre>
+  public int getColumnCount() {
+    return numcols;
+  }
+
+  public int getRowCount() {
+    return numrows;
+  }
+</pre></div>
+
+<h3>Implementing getColumnClass</h3>
+
+<p>The <code>getColumnClass</code> method returns the data type of the specified column. To keep things simple, this method returns the <code>String</code> class, thereby converting all data in the table into <code>String</code> objects. The <code>JTable</code> class uses this method to determine how to render data in the GUI application.</p>
+
+<div class="codeblock"><pre>
+  public Class getColumnClass(int column) {
+    return String.class;
+  }
+</pre></div>
+
+<h3>Implementing getColumnName</h3>
+
+<p>The <code>getColumnName</code> method returns the name of the specified column. The <code>JTable</code> class uses this method to label each of its columns.</p>
+
+<div class="codeblock"><pre>
+  public String getColumnName(int column) {
+    try {
+      return this.metadata.getColumnLabel(column + 1);
+    } catch (SQLException e) {
+      return e.toString();
+    }
+  }
+
+</pre></div>
+
+<h3>Implementing getColumnAt</h3>
+
+<p>The <code>getColumnAt</code> method retrieves the value at the specified row and column in the row set <code>coffeesRowSet</code>. The <code>JTable</code> class uses this method to populate its table. Note that SQL starts numbering its rows and columns at 1, but the <code>TableModel</code> interface starts at 0; this is the reason why the <code>rowIndex</code> and <code>columnIndex</code> values are incremented by 1.</p>
+
+<div class="codeblock"><pre>
+  public Object getValueAt(int rowIndex, int columnIndex) {
+
+    try {
+      this.coffeesRowSet.absolute(rowIndex + 1);
+      Object o = this.coffeesRowSet.getObject(columnIndex + 1);
+      if (o == null)
+        return null;
+      else
+        return o.toString();
+    } catch (SQLException e) {
+      return e.toString();
+    }
+  }
+</pre></div>
+
+<h3>Implementing isCellEditable</h3>
+
+<p>Because this sample does not allow users to directly edit the contents of the table (rows are added by another window control), this method returns <code>false</code> regardless of the values of <code>rowIndex</code> and <code>columnIndex</code>:</p>
+
+<div class="codeblock"><pre>
+  public boolean isCellEditable(int rowIndex, int columnIndex) {
+    return false;
+  }
+</pre></div>
+
+
+<!-- ************************************** -->
+
+<h2><a name="implemeting_rowsetlistener">Implementing javax.sql.RowSetListener</a></h2>
+
+<p>The class <code>CoffeesFrame</code> implements only one method from the interface <code>RowSetListener</code>, <code>rowChanged</code>. This method is called when a user adds a row to the table.</p>
+
+<div class="codeblock"><pre>
+  public void rowChanged(RowSetEvent event) {
+
+    CachedRowSet currentRowSet = this.myCoffeesTableModel.coffeesRowSet;
+
+    try {
+      currentRowSet.moveToCurrentRow();
+      myCoffeesTableModel =
+        new CoffeesTableModel(myCoffeesTableModel.getCoffeesRowSet());
+      table.setModel(myCoffeesTableModel);
+
+    } catch (SQLException ex) {
+
+      JDBCTutorialUtilities.printSQLException(ex);
+
+      // Display the error in a dialog box.
+
+      JOptionPane.showMessageDialog(
+        CoffeesFrame.this,
+        new String[] { // Display a 2-line message
+          ex.getClass().getName() + ": ",
+          ex.getMessage()
+        }
+      );
+    }
+  }
+</pre></div>
+
+<p>This method updates the table in the GUI application.</p>
+
+<!-- ******************************** -->
+
+<h2><a name="laying_out_swing">Laying Out Swing Components</a></h2>
+
+<p>The constructor of the class <code>CoffeesFrame</code> initializes and lays out the Swing components. The following statement retrieves the contents of the <code>COFFEES</code> table, stores the contents in the <code>CachedRowSet</code> object <code>myCachedRowSet</code>, and initializes the <code>JTable</code> Swing component:</p>
+
+<div class="codeblock"><pre>
+    CachedRowSet myCachedRowSet = getContentsOfCoffeesTable();
+    myCoffeesTableModel = new CoffeesTableModel(myCachedRowSet);
+    myCoffeesTableModel.addEventHandlersToRowSet(this);
+
+    table = new JTable(); // Displays the table
+    table.setModel(myCoffeesTableModel);
+</pre></div>
+
+<p>As mentioned previously, instead of a <code>ResultSet</code> object to represent the contents of the <code>COFFEES</code> table, this sample uses a <code>RowSet</code> object, notably a <code>CachedRowSet</code> object.
+
+
+<p>The method <code>CoffeesFrame.getContentsOfCoffeesTable</code> retrieves the contents of the table <code>COFFEES</code>.</p>
+
+<p>The method <code>CoffeesTableModel.addEventHandlersToRowSet</code> adds the event handler defined in the <code>CoffeesFrame</code> class, which is the method <code>rowChanged</code>, to the row set member variable <code>CoffeesTableModel.coffeesRowSet</code>. This enables the class <code>CoffeesFrame</code> to notify the row set <code>coffeesRowSet</code> of any events, in particular, when a user clicks the button <strong>Add row to table</strong>, <strong>Update database</strong>, or <strong>Discard changes</strong>. When the row set <code>coffeesRowSet</code> is notified of one of these changes, the method <code>CoffeesFrame.rowChanged</code> is called.</p>
+
+<p>The statement <code>table.setModel(myCoffeesTableModel)</code> specifies that it use the <code>CoffeesTableModel</code> object <code>myCoffeesTableModel</code> to populate the <code>JTable</code> Swing component <code>table</code>.</p>
+
+<p>The following statements specify that the <code>CoffeesFrame</code> class use the layout <code>GridBagLayout</code> to lay out its Swing components:</p>
+
+<div class="codeblock"><pre>
+    Container contentPane = getContentPane();
+    contentPane.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+    contentPane.setLayout(new GridBagLayout());
+    GridBagConstraints c = new GridBagConstraints();
+</pre></div>
+
+<p>See
+<a class="TutorialLink" target="_top" href="../../uiswing/layout/gridbag.html">How to Use GridBagLayout</a> for more information about using the layout <code>GridBagLayout</code>.</p>
+
+<p>See the source code for <code><a href="gettingstarted.html">CoffeesFrame.java</a></code> to see how the Swing components of this sample are added to the layout <code>GridBagLayout</code>.</p>
+
+<!-- ********************************* -->
+
+<h2><a name="adding_listeners">Adding Listeners for Buttons</a></h2>
+
+<p>The following statement adds a listener to the button <strong>Add row to table</strong>:</p>
+
+<div class="codeblock"><pre>
+    button_ADD_ROW.addActionListener(new ActionListener() {
+
+        public void actionPerformed(ActionEvent e) {
+
+          JOptionPane.showMessageDialog(CoffeesFrame.this,
+                                        new String[] {
+                "Adding the following row:",
+                "Coffee name: [" + textField_COF_NAME.getText() + "]",
+                "Supplier ID: [" + textField_SUP_ID.getText() + "]",
+                "Price: [" + textField_PRICE.getText() + "]",
+                "Sales: [" + textField_SALES.getText() + "]",
+                "Total: [" + textField_TOTAL.getText() + "]" });
+
+
+          try {
+
+            myCoffeesTableModel.insertRow(textField_COF_NAME.getText(),
+                                          Integer.parseInt(textField_SUP_ID.getText().trim()),
+                                          Float.parseFloat(textField_PRICE.getText().trim()),
+                                          Integer.parseInt(textField_SALES.getText().trim()),
+                                          Integer.parseInt(textField_TOTAL.getText().trim()));
+          } catch (SQLException sqle) {
+            displaySQLExceptionDialog(sqle);
+          }
+        }
+      });
+</pre></div>
+
+<p>When a user clicks this button, it performs the following:</p>
+
+<ul>
+  <li>Creates a message dialog box that displays the row to be added to the table.</li>
+  <li>Calls the method <code>CoffeesTableModel.insertRow</code>, which adds the row to the member variable <code>CoffeesTableModel.coffeesRowSet</code>.</li>
+</ul>
+
+<p>If an <code>SQLException</code> is thrown, then the method <code>CoffeesFrame.displaySQLExceptionDialog</code> creates a message dialog box that displays the content of the <code>SQLException</code>.</p>
+
+<p>The following statement adds a listener to the button <strong>Update database</strong>:</p>
+
+<div class="codeblock"><pre>
+    button_UPDATE_DATABASE.addActionListener(new ActionListener() {
+
+        public void actionPerformed(ActionEvent e) {
+          try {
+            myCoffeesTableModel.coffeesRowSet.acceptChanges();
+            msgline.setText("Updated database");
+          } catch (SQLException sqle) {
+            displaySQLExceptionDialog(sqle);
+            // Now revert back changes
+            try {
+              createNewTableModel();
+              msgline.setText("Discarded changes");
+            } catch (SQLException sqle2) {
+              displaySQLExceptionDialog(sqle2);
+            }
+          }
+        }
+      });
+</pre></div>
+
+<p>When a user clicks this button, the table <code>COFFEES</code> is updated with the contents of the row set <code>myCoffeesTableModel.coffeesRowSet</code>.</p>
+
+<p>The following statement adds a listener to the button <strong>Discard changes</strong>:</p>
+
+<div class="codeblock"><pre>
+    button_DISCARD_CHANGES.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          try {
+            createNewTableModel();
+          } catch (SQLException sqle) {
+            displaySQLExceptionDialog(sqle);
+          }
+        }
+      });
+</pre></div>
+
+<p>When a user clicks this button, the method <code>CoffeesFrame.createNewTableModel</code> is called, which repopulates the <code>JTable</code> component with the contents of the <code>COFFEES</code> table.</p>
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=storedprocedures.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=../end.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Using Stored Procedures
+        <br><b>Next page:</b> End of Trail
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

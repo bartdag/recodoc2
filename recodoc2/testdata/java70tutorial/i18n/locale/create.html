@@ -1,0 +1,746 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Creating a Locale (The Java&trade; Tutorials &gt;        
+            Internationalization &gt; Setting the Locale)
+</title>
+
+     <meta name="description" content="This internationalization Java tutorial describes setting locale, isolating locale-specific data, formatting data, internationalized domain name and resource identifier" />
+     <meta name="keywords" content="java programming, learn java, java sample code, i18n, internationalization, locale, text formatting" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Internationalization
+        <br><b>Lesson:</b> Setting the Locale
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Setting the Locale</a></div>
+<div class="nolinkAHEAD">Creating a Locale</div>
+<div class="linkAHEAD"><a href="extensions.html">BCP 47 Extensions</a></div>
+<div class="linkAHEAD"><a href="identify.html">Identifying Available Locales</a></div>
+<div class="linkAHEAD"><a href="scope.html">The Scope of a Locale</a></div>
+<div class="linkAHEAD"><a href="services.html">Locale-Sensitive Services SPI</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Internationalization</a>
+                &gt;
+                <a href=index.html target=_top>Setting the Locale</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=extensions.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Creating a Locale</h1></div>
+            <div id=PageContent>
+<!-- Creating a Locale -->
+<p>
+There are several ways to create a <code>Locale</code> object.
+Regardless of the technique used,
+creation can be as simple as specifying the language code. However,
+you can further distinguish the locale by setting the region
+(also referred to as "country") and variant codes.
+If you are using the JDK 7 release or later,
+you can also specify the script code and Unicode locale extensions.</p>
+<p>
+The four ways to create a <code>Locale</code> object are:
+<ul>
+<li><a href="#builder"><code>Locale.Builder</code> Class</a>
+<li><a href="#constructors"><code>Locale</code> Constructors</a>
+<li><a href="#factory"><code>Locale.forLanguageTag</code> Factory Method</a>
+<li><a href="#constants"><code>Locale</code> Constants</a>
+</ul>
+
+<div class="note"><hr><strong>Version Note:</strong>&nbsp;The <code>Locale.Builder</code> class and the <code>forLanguageTag</code>
+method were added in the Java SE 7 release.
+<hr></div>
+
+<a name="builder"><h2><code>LocaleBuilder</code> Class</h2></a>
+<p>
+The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Locale.Builder.html"><code>Locale.Builder</code></a> utility class can be used to construct a <code>Locale</code> object that
+conforms to the IETF BCP 47 syntax.
+For example, to specify the French language and the country of Canada,
+you could invoke the <code>Locale.Builder</code> constructor and then chain
+the setter methods as follows:
+<div class="codeblock"><pre>
+Locale aLocale = new Locale.Builder().setLanguage("fr").setRegion("CA").build();
+</pre></div>
+
+<p>
+The next example creates <CODE>Locale</CODE>
+objects for the English language in the United States and Great Britain: 
+<div class="codeblock"><pre>
+Locale bLocale = new Locale.Builder().setLanguage("en").setRegion("US").build();
+Locale cLocale = new Locale.Builder().setLanguage("en").setRegion("GB").build();
+</pre></div>
+
+<p>
+The final example creates a <code>Locale</code> object
+for the Russian language:
+<div class="codeblock"><pre>
+Locale dLocale = new Locale.Builder().setLanguage("ru").setScript("Cyrl").build();
+</pre></div>
+
+<a name="constructors"><h2><code>Locale</code> Constructors</h2></a>
+<p>
+There are three constructors available in the <code>Locale</code>
+class for creating a <code>Locale</code> object:
+<ul>
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Locale.html#Locale(java.lang.String)"><code>Locale(String language)</code></a><li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Locale.html#Locale(java.lang.String, java.lang.String)"><code>Locale(String language, String country)</code></a><li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Locale.html#Locale(java.lang.String, java.lang.String, java.lang.String)"><code>Locale(String language, String country, String variant)</code></a></ul>
+
+The following examples create <code>Locale</code> objects for the French
+language in Canada, the English language in the U.S. and Great Britain, and
+the Russian language.
+<div class="codeblock"><pre>
+aLocale = new Locale("fr", "CA");
+bLocale = new Locale("en", "US");
+cLocale = new Locale("en", "GB");
+dLocale = new Locale("ru");
+</pre></div>
+It is not possible to set a script code on a <code>Locale</code>
+object in a release earlier than JDK 7.
+
+<a name="factory"><h2><code>forLanguageTag</code> Factory Method</h2></a>
+<p>
+If you have a language tag string that conforms to the IETF BCP 47
+standard, you can use the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Locale.html#forLanguageTag(java.lang.String)"><code>forLanguageTag(String)</code></a> factory method, which was introduced in the Java SE 7 release. For example:
+<div class="codeblock"><pre>
+Locale aLocale = Locale.forLanguageTag("en-US");
+Locale bLocale = Locale.forLanguageTag("ja-JP-u-ca-japanese");
+</pre></div>
+
+<a name="constants"><h2><code>Locale</code> Constants</h2></a>
+For your convenience the <CODE>Locale</CODE> class provides
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Locale.html#field_summary">constants</a> for some languages and countries. For example:
+<div class="codeblock"><pre>
+cLocale = Locale.JAPAN;
+dLocale = Locale.CANADA_FRENCH;
+</pre></div>
+When you specify a language constant, the region portion of the
+<CODE>Locale</CODE> is undefined. The next three statements create
+equivalent <CODE>Locale</CODE> objects:
+<div class="codeblock"><pre>
+j1Locale = Locale.JAPANESE;
+j2Locale = new Locale.Builder().setLanguage("ja").build();
+j3Locale = new Locale("ja");
+</pre></div>
+The <CODE>Locale</CODE> objects created
+by the following three statements are also equivalent:
+<div class="codeblock"><pre>
+j4Locale = Locale.JAPAN;
+j5Locale = new Locale.Builder().setLanguage("ja").setRegion("JP").build();
+j6Locale = new Locale("ja", "JP");
+</pre></div>
+
+<h2>Codes</h2>
+<p>
+The following sections discuss the language code and the optional
+script, region, and variant codes.
+
+<h3>Language Code</h3>
+The language code is either two or three lowercase letters that
+conform to the ISO 639 standard.
+You can find a full list of the ISO 639 codes at
+
+<a class="OutsideLink" target="_blank" href="http://www.loc.gov/standards/iso639-2/php/code_list.php">http://www.loc.gov/standards/iso639-2/php/code_list.php</a>.
+<P>
+The following table lists a few of the language codes.
+<p>
+
+<TABLE BORDER="1" summary="This table lists some sample language codes">
+<caption>Sample Language Codes</caption>
+<thead>
+<TR>
+<th id="h1">Language Code</TH>
+<th id="h2">Description</TH>
+</TR>
+</thead>
+<TR>
+<td headers="h1"><CODE>de</CODE></TD>
+<td headers="h2">German</TD>
+</TR>
+<TR>
+<td headers="h1"><CODE>en</CODE></TD>
+<td headers="h2">English</TD>
+</TR>
+<TR>
+<td headers="h1"><CODE>fr</CODE></TD>
+<td headers="h2">French</TD>
+</TR>
+<TR>
+<td headers="h1"><CODE>ru</CODE></TD>
+<td headers="h2">Russian</TD>
+</TR>
+<TR>
+<td headers="h1"><CODE>ja</CODE></TD>
+<td headers="h2">Japanese</TD>
+</TR>
+<TR>
+<td headers="h1"><CODE>jv</CODE></TD>
+<td headers="h2">Javanese</TD>
+</TR>
+<TR>
+<td headers="h1"><CODE>ko</CODE></TD>
+<td headers="h2">Korean</TD>
+</TR>
+<TR>
+<td headers="h1"><CODE>zh</CODE></TD>
+<td headers="h2">Chinese</TD>
+</TR>
+</TABLE>
+
+<p>
+<h3>Script Code</h3>
+The script code begins with an uppercase letter followed by three
+lowercase letters and conforms to the ISO 15924 standard.
+You can find a full list of the ISO 15924 codes at
+
+<a class="OutsideLink" target="_blank" href="http://unicode.org/iso15924/iso15924-codes.html">http://unicode.org/iso15924/iso15924-codes.html</a>.
+<P>
+The following table lists a few of the script codes.
+<p>
+
+<TABLE BORDER="1" summary="This table lists some sample script codes">
+<caption>Sample Script Codes</caption>
+<thead>
+<TR>
+<th id="h101">Script Code</TH>
+<th id="h102">Description</TH>
+</TR>
+</thead>
+<TR>
+<td headers="h101"><CODE>Arab</CODE></TD>
+<td headers="h102">Arabic</TD>
+</TR>
+<TR>
+<td headers="h101"><CODE>Cyrl</CODE></TD>
+<td headers="h102">Cyrillic</TD>
+</TR>
+<TR>
+<td headers="h101"><CODE>Kana</CODE></TD>
+<td headers="h102">Katakana</TD>
+</TR>
+<TR>
+<td headers="h101"><CODE>Latn</CODE></TD>
+<td headers="h102">Latin</TD>
+</TR>
+</table>
+
+
+<p>
+There are three methods for retrieving the script information for a
+<code>Locale</code>.
+<ul>
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Locale.html#getScript()"><code>getScript()</code></a> &ndash; returns the 4-letter script code for a <code>Locale</code> object.
+If no script is defined for the locale, an empty string is returned.
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Locale.html#getDisplayScript()"><code>getDisplayScript()</code></a> &ndash; returns a name for the locale's script that is appropriate
+for display to the user.  If possible, the name will be localized for
+the default locale.  So, for example, if the script code is "Latn," the
+diplay script name returned would be the string "Latin" for an English
+language locale.
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Locale.html#getDisplayScript(java.util.Locale)"><code>getDisplayScript(Locale)</code></a> &ndash; returns the display name of the specified <code>Locale</code>
+localized, if possible, for the locale.
+</ul>
+
+<P>
+<h3>Region Code</h3>
+The region (country) code consists of either two or three uppercase
+letters that conform to the ISO 3166 standard,
+or three numbers that conform to the UN M.49 standard.
+A copy of the codes can be found at
+<a class="OutsideLink" target="_blank" href="http://www.chemie.fu-berlin.de/diverse/doc/ISO_3166.html">http://www.chemie.fu-berlin.de/diverse/doc/ISO_3166.html</a>.
+<P>
+The following table
+contains several sample country and region codes.
+<p>
+
+<TABLE BORDER="1" summary="This table lists some sample country codes">
+<caption>Sample Region Codes</caption>
+<TR>
+<th id="h201">A-2 Code</TH>
+<th id="h202">A-3 Code</TH>
+<th id="h203">Numeric Code</TH>
+<th id="h204">Description</TH>
+</TR>
+<TR>
+<td headers="h201"><CODE>AU</CODE></TD>
+<td headers="h202"><CODE>AUS</CODE></TD>
+<td headers="h203"><CODE>036</CODE></TD>
+<td headers="h204">Australia</TD>
+</TR>
+<TR>
+<td headers="h201"><CODE>BR</CODE></TD>
+<td headers="h202"><CODE>BRA</CODE></TD>
+<td headers="h203"><CODE>076</CODE></TD>
+<td headers="h204">Brazil</TD>
+</TR>
+<TR>
+<td headers="h201"><CODE>CA</CODE></TD>
+<td headers="h202"><CODE>CAN</CODE></TD>
+<td headers="h203"><CODE>124</CODE></TD>
+<td headers="h204">Canada</TD>
+</TR>
+<TR>
+<td headers="h201"><CODE>CN</CODE></TD>
+<td headers="h202"><CODE>CHN</CODE></TD>
+<td headers="h203"><CODE>156</CODE></TD>
+<td headers="h204">China</TD>
+</TR>
+<TR>
+<td headers="h201"><CODE>DE</CODE></TD>
+<td headers="h202"><CODE>DEU</CODE></TD>
+<td headers="h203"><CODE>276</CODE></TD>
+<td headers="h204">Germany</TD>
+</TR>
+<TR>
+<td headers="h201"><CODE>FR</CODE></TD>
+<td headers="h202"><CODE>FRA</CODE></TD>
+<td headers="h203"><CODE>250</CODE></TD>
+<td headers="h204">France</TD>
+</TR>
+<TR>
+<td headers="h201"><CODE>IN</CODE></TD>
+<td headers="h202"><CODE>IND</CODE></TD>
+<td headers="h203"><CODE>356</CODE></TD>
+<td headers="h204">India</TD>
+</TR>
+<TR>
+<td headers="h201"><CODE>RU</CODE></TD>
+<td headers="h202"><CODE>RUS</CODE></TD>
+<td headers="h203"><CODE>643</CODE></TD>
+<td headers="h204">Russian Federation</TD>
+</TR>
+<TR>
+<td headers="h201"><CODE>US</CODE></TD>
+<td headers="h202"><CODE>USA</CODE></TD>
+<td headers="h203"><CODE>840</CODE></TD>
+<td headers="h204">United States</TD>
+</TR>
+</TABLE>
+
+<P>
+<h3>Variant Code</h3>
+The optional <code>variant</code> code can be used to further distinguish your
+<code>Locale</code>.  For example, the variant code can be used to
+indicate dialectical differences that are not covered by the region code.
+
+<div class="note"><hr><strong>Version Note:</strong>&nbsp;Prior to the Java SE 7 release, the variant code was sometimes used
+to identify differences that were not specific to the language
+or region.
+For example, it might have been used to identify differences between
+computing platforms, such as Windows or UNIX.
+Under the IETF BCP 47 standard, this use is discouraged.
+<p>
+To define non-language-specific variations relevant to your environment,
+use the extensions mechanism, as explained in
+<a class="TutorialLink" target="_top" href="extensions.html">BCP 47 Extensions</a>.
+<hr></div>
+<p>
+As of the Java SE 7 release, which conforms to the IETF BCP 47 standard,
+the variant code is used specifically to indicate additional variations
+that define a language or its dialects. The IETF BCP 47 standard imposes
+syntactic restrictions on the variant subtag.  You can see a list of
+variant codes (search for <em>variant</em>) at
+<a class="OutsideLink" target="_blank" href="http://www.iana.org/assignments/language-subtag-registry">http://www.iana.org/assignments/language-subtag-registry</a>.
+        </div>
+        <div class=NavBit>
+            <a target=_top href=index.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=extensions.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h301" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h301" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h302" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Setting the Locale
+        <br><b>Next page:</b> BCP 47 Extensions
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

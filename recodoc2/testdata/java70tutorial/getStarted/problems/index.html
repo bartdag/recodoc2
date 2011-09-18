@@ -1,0 +1,363 @@
+
+
+<a name="compiler">
+<h2>Compiler Problems</h2>
+</a>
+
+
+<strong>Common Error Messages on Microsoft Windows Systems</strong>
+
+                <p><code><strong>'javac' is not recognized as an internal or external command,
+                operable program or batch file</strong></code>  
+    
+                <p>If you receive this error,
+                Windows
+                cannot find the compiler (<code>javac</code>).
+                <p>Here's one way to tell
+                Windows
+                where to find <code>javac</code>.
+                Suppose you installed the JDK in
+                <code>C:\jdk6</code>.
+                At the prompt you would type the following command and press
+                 Enter:
+
+C:\jdk6\bin\javac HelloWorldApp.java
+
+                If you choose this option, 
+                 you'll have to precede your <code>javac</code>
+                and <code>java</code> commands with
+                <code>C:\jdk6\bin\</code> each time you compile or run a program.
+                To avoid this extra typing, consult
+                the section
+ in the JDK 6 installation instructions.
+
+<P>
+<code><strong>Class names, 'HelloWorldApp', are only accepted if annotation processing is explicitly requested
+</strong></code>
+<P>
+
+If you receive this error, you forgot to include the <code>.java</code> suffix when 
+compiling the program. Remember, the command is <code>javac HelloWorldApp.java</code> not <code>javac HelloWorldApp</code>.
+
+
+
+
+
+<strong>Common Error Messages on UNIX Systems</strong>
+
+<p><b><code>javac: Command not found</code></b>
+                <p>If you receive this error,
+                UNIX
+                cannot find the compiler, <code>javac</code>.
+                <p>Here's one way to tell
+                UNIX
+                where to find <code>javac</code>.
+                Suppose you installed the JDK in
+                <code>/usr/local/jdk6</code>.
+                At the prompt you would type the following command and press
+                 Return:
+
+/usr/local/jdk6/javac HelloWorldApp.java
+
+                <b>Note: </b>If you choose this option, each time you compile
+                or run a program, you'll have to precede your <code>javac</code>
+                and <code>java</code> commands with
+                <code>/usr/local/jdk6/</code>.
+                To avoid this extra typing, you could add this information
+to your PATH variable. The steps for doing so will vary depending on
+which shell you are currently running.
+
+<P>
+<code><strong>Class names, 'HelloWorldApp', are only accepted if annotation processing is explicitly requested
+</strong></code>
+<P>
+
+If you receive this error, you forgot to include the <code>.java</code> suffix when
+compiling the program. Remember, the command is <code>javac HelloWorldApp.java</code> not <code>javac HelloWorldApp</code>.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>
+<strong>Syntax Errors (All Platforms)</strong>
+<p>
+
+If you mistype part of a program,
+the compiler may issue a <em>syntax</em> error.
+The message usually displays the type of the error,
+the line number where the error was detected,
+the code on that line,
+and the position of the error within the code.
+Here's an error caused by omitting a semicolon (<code>;</code>)
+at the end of a statement:
+
+
+testing.java:14: `;' expected.
+System.out.println("Input has " + count + " chars.")
+                                                     ^
+1 error
+
+
+Sometimes the compiler can't guess your intent
+and prints a confusing error message
+or multiple error messages if the error cascades over several lines.
+For example, the following code snippet omits a semicolon (<code>;</code>)
+from the bold line:
+
+
+while (System.in.read() != -1)
+    <b>count++</b>
+System.out.println("Input has " + count + " chars."); 
+
+
+When processing this code, the compiler issues two error messages:
+
+
+testing.java:13: Invalid type expression.
+        count++
+                 ^
+testing.java:14: Invalid declaration.
+    System.out.println("Input has " + count + " chars.");
+                      ^
+2 errors
+
+
+The compiler issues two error messages
+because after it processes <code>count++</code>,
+the compiler's state indicates
+that it's in the middle of an expression.
+Without the semicolon,
+the compiler has no way of knowing
+that the statement is complete. 
+<p>
+If you see any compiler errors,
+then your program did not successfully compile,
+and the compiler did not create a <code>.class</code> file.
+Carefully verify the program,
+fix any errors that you detect,
+and try again. 
+
+<p>
+
+<strong>Semantic Errors</strong>
+<p>
+
+In addition to verifying that your program is syntactically correct,
+the compiler checks for other basic correctness.
+For example, the compiler warns you each time you use a variable
+that has not been initialized:
+
+
+testing.java:13: Variable count may not have been initialized.
+        count++
+        ^
+testing.java:14: Variable count may not have been initialized.
+    System.out.println("Input has " + count + " chars.");
+                                       ^
+2 errors
+
+
+Again, your program did not successfully compile,
+and the compiler did not create a <code>.class</code> file.
+Fix the error and try again.
+
+
+
+<a name="interpreter">
+<h2>Runtime Problems</h2>
+</a>
+
+
+<P><B>Error Messages on Microsoft Windows Systems</B></P>
+
+<p><b><code>Exception in thread "main" java.lang.NoClassDefFoundError:
+                    HelloWorldApp</code></b>
+                    </p>
+                  <p>If you receive this error, <code>java</code> cannot find
+                    your bytecode file, <code>HelloWorldApp.class</code>.
+                    </p>
+                  <p>One of the places <code>java</code> tries to find your <CODE>.class</CODE>
+                    file is your current directory.
+                    So if your <CODE>.class</CODE> file is in
+                    <code>C:\java</code>,
+                    you should change
+                    your current directory to that. To change your directory,
+                    type the following command at the prompt and press
+                     Enter:
+                    </p>
+
+cd c:\java
+
+
+<p>The prompt should change to <code>C:\java></code>.
+                    If you enter <code>dir</code>
+                    at the prompt, you should see your <code>.java</code> and
+                    <code>.class</code> files. Now enter <code>java HelloWorldApp</code>
+                    again. </p>
+                  <p>If you still have problems, you might have to change your
+                    CLASSPATH variable. To see if this is necessary, try clobbering
+                    the classpath with the following command.
+                    </p>
+
+set CLASSPATH=
+
+                  <p>
+                  Now enter <code>java HelloWorldApp</code> again. If the program
+                  works now, you'll have to change your CLASSPATH variable. To set this variable, consult the
+
+
+section
+ in the JDK 6 installation instructions. The CLASSPATH variable is set in the same manner.</p>
+
+
+
+
+<P>
+
+<CODE><STRONG>
+Exception in thread "main" java.lang.NoClassDefFoundError: HelloWorldApp/class
+</STRONG></CODE>
+
+<p>
+A common mistake made by beginner programmers
+is to try and run the <code>java</code> launcher on the <code>.class</code> file
+that was created by the compiler.
+For example, you'll get this error if you try to run your program with
+ <code>java HelloWorldApp.class</code>
+ instead of <code>java HelloWorldApp</code>.
+Remember, the argument is
+the <em>name of the class</em>
+that you want to use,
+<em>not</em> the filename.
+
+<P>
+
+<strong><code>Exception in thread "main" java.lang.NoSuchMethodError: main</code></strong>
+<p>
+The Java VM requires
+that the class you execute with it
+have a <code>main</code> method
+at which
+to begin execution of your application.
+
+discusses the <code>main</code> method in detail.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<P>
+<strong>Error Messages on UNIX Systems</strong>
+
+
+ <p><b><code>Exception in thread "main" java.lang.NoClassDefFoundError:
+                    HelloWorldApp</code></b>
+                    </p>
+                  <p>If you receive this error, <code>java</code> cannot find
+                    your bytecode file, <code>HelloWorldApp.class</code>.
+                    </p>
+                  <p>One of the places <code>java</code> tries to find your bytecode
+                    file is your current directory.
+                    So, for example, if your bytecode file is in
+                    <code>/home/jdoe/java</code>,
+                    you should change
+                    your current directory to that. To change your directory,
+                    type the following command at the prompt and press
+                     Return:
+                    </p> 
+
+cd /home/jdoe/java
+
+
+<p>If you enter <code>pwd</code> at the prompt, you should see
+                    <code>/home/jdoe/java</code>.
+                    If you enter <code>ls</code>
+                    at the prompt, you should see your <code>.java</code> and
+                    <code>.class</code> files. Now enter <code>java HelloWorldApp</code>
+                    again. </p>
+                  <p>If you still have problems, you might have to change your
+                    CLASSPATH environment variable. To see if this is necessary, try clobbering
+                    the classpath with the following command.
+                    </p>
+
+unset CLASSPATH
+
+                  <p>
+                  Now enter <code>java HelloWorldApp</code> again. If the program
+                  works now, you'll have to change your CLASSPATH variable in
+the same manner as the PATH variable above.
+
+
+
+
+
+
+
+<P>
+
+<CODE><STRONG>
+Exception in thread "main" java.lang.NoClassDefFoundError: HelloWorldApp/class
+</STRONG></CODE>
+
+<p>
+A common mistake made by beginner programmers
+is to try and run the <code>java</code> launcher on the <code>.class</code> file
+that was created by the compiler.
+For example, you'll get this error if you try to run your program with
+ <code>java HelloWorldApp.class</code>
+ instead of <code>java HelloWorldApp</code>.
+Remember, the argument is
+the <em>name of the class</em>
+that you want to use,
+<em>not</em> the filename.
+
+<p>
+
+
+<strong><code>Exception in thread "main" java.lang.NoSuchMethodError: main</code></strong>
+<p>
+The Java VM requires
+that the class you execute with it
+have a <code>main</code> method
+at which 
+to begin execution of your application.
+
+discusses the <code>main</code> method in detail. 
+<p>
+
+
+
+

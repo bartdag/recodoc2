@@ -1,0 +1,575 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Creating the Demo Application (Step 2) (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Performing Custom Painting)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Performing Custom Painting
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Performing Custom Painting</a></div>
+<div class="linkAHEAD"><a href="step1.html">Creating the Demo Application (Step 1)</a></div>
+<div class="nolinkAHEAD">Creating the Demo Application (Step 2)</div>
+<div class="linkAHEAD"><a href="step3.html">Creating the Demo Application (Step 3)</a></div>
+<div class="linkAHEAD"><a href="refining.html">Refining the Design</a></div>
+<div class="linkAHEAD"><a href="closer.html">A Closer Look at the Paint Mechanism</a></div>
+<div class="linkAHEAD"><a href="summary.html">Summary</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Painting Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Performing Custom Painting</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=step1.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=step3.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Creating the Demo Application (Step 2)</h1></div>
+            <div id=PageContent>
+Next, we will add a custom drawing surface to the frame. 
+For this we will 
+ create a subclass of <CODE>javax.swing.JPanel</CODE> 
+ (a generic lightweight container</A>) which will supply 
+ the code for rendering our custom painting. 
+
+<center><p><IMG SRC="../../figures/uiswing/painting/swing2.png" WIDTH="258" HEIGHT="234" ALIGN="BOTTOM" ALT="Creating a New Project within the GUI"></p><p class="FigureCaption">A javax.swing.JPanel Subclass</p></center>
+<P>
+Click the Launch button to run SwingPaintDemo2 using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+Alternatively, to compile and run the example yourself, consult the
+     <a href="../examples/painting/index.html#SwingPaintDemo2">example index</a>.
+
+<center> <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/painting/ex6/SwingPaintDemo2.jnlp"><img src="../../images/jws-launch-button.png " width="88" height="23" align="bottom" alt="Launches the SwingPaintDemo2 example"></a>
+</center>
+</P>
+
+<div class="codeblock"><pre>
+package painting;
+
+import javax.swing.SwingUtilities;
+import javax.swing.JFrame;
+<b>import javax.swing.JPanel;
+import javax.swing.BorderFactory;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+</b>
+public class SwingPaintDemo2 {
+   
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI(); 
+            }
+        });
+    }
+
+    private static void createAndShowGUI() {
+        System.out.println("Created GUI on EDT? "+
+        SwingUtilities.isEventDispatchThread());
+        JFrame f = new JFrame("Swing Paint Demo");
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        <b>f.add(new MyPanel());
+        f.pack();</b>
+        f.setVisible(true);
+    }
+}
+
+<b>class MyPanel extends JPanel {
+
+    public MyPanel() {
+        setBorder(BorderFactory.createLineBorder(Color.black));
+    }
+
+    public Dimension getPreferredSize() {
+        return new Dimension(250,200);
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);       
+
+        // Draw Text
+        g.drawString("This is my custom Panel!",10,20);
+    }  
+}
+</b>
+</pre></div>
+<P>
+The first change you will notice is that we are now 
+importing 
+a number of additional classes, such as <CODE>JPanel</CODE>, 
+<CODE>Color</CODE>, and <CODE>Graphics</CODE>. Since some of the older 
+AWT classes are still used in modern Swing applications, it is normal to 
+see the <CODE>java.awt</CODE> package 
+ in a few of the import statements.
+ We have also defined a custom <CODE>JPanel</CODE> subclass, called <CODE>MyPanel</CODE>, which comprises the majority of the new code.
+
+
+<P>
+The <CODE>MyPanel</CODE> class definition has a constructor that sets a 
+black border around its edges. This is a subtle detail that might 
+be difficult to see at first (if it is, just comment out the invocation of 
+<CODE>setBorder</CODE> and then recompile.) 
+
+
+
+<CODE>MyPanel</CODE> also overrides <CODE>getPreferredSize</CODE>, 
+ which returns the desired width and height of the panel 
+(in this case 250 is the width, 200 is the height.) Because of this, the 
+ <CODE>SwingPaintDemo</CODE> class no longer needs to specify the size of 
+the frame in pixels. It simply adds the panel to the frame and 
+  then invokes <CODE>pack</CODE>.
+
+</P>
+
+<P>
+The <CODE>paintComponent</CODE> method 
+ is where all of your custom painting takes place. 
+This method is  
+defined by <CODE>javax.swing.JComponent</CODE> and then overridden 
+by your subclasses to provide their custom behavior. 
+
+Its sole parameter, a 
+ APILINK (
+    LINKTEXT <code>java.awt.Graphics</code>
+    LINKFILE http://download.oracle.com/javase/7/docs/api/java/awt/Graphics.html
+)
+ object, exposes a number of methods for drawing 2D shapes and obtaining
+information about the application's graphics environment.
+In most cases the object that is actually received by this method
+will be an instance of
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Graphics2D.html"><code>java.awt.Graphics2D</code></a> (a <code>Graphics</code> subclass), which provides support for
+sophisticated 2D graphics rendering. 
+
+<P>
+Most of the standard Swing components have their 
+look and feel implemented by separate "UI Delegate" objects. 
+The invocation of <CODE>super.paintComponent(g)</CODE>   
+ passes the graphics context off to the component's UI delegate, which 
+ paints the panel's background. 
+ For a closer look at this process, see the section 
+entitled &quot;Painting and the UI Delegate&quot; in the aforementioned SDN article. 
+
+</P>
+
+
+<P>
+Exercises:
+</P>
+
+<OL>
+<LI>Now that you have drawn some custom text to the screen, 
+try minimizing and restoring the application as you did before.
+
+<LI>Obscure a part of the text with another window, then move that 
+window out of the way to re-expose the custom text. 
+In both cases, the painting subsystem will determine that the 
+ component is damaged and will ensure that your <CODE>paintComponent</CODE> method is invoked.
+</OL>
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=step1.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=step3.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Creating the Demo Application (Step 1)
+        <br><b>Next page:</b> Creating the Demo Application (Step 3)
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

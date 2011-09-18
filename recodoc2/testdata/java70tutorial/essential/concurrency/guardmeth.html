@@ -1,0 +1,668 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Guarded Blocks (The Java&trade; Tutorials &gt;        
+            Essential Classes &gt; Concurrency)
+</title>
+
+     <meta name="description" content="This Java tutorial describes exceptions, basic input/output, concurrency, regular expressions, and the platform environment" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java exception, java input output, java threads, java regex, regular expressions, path, classpath, environment variable" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Essential Classes
+        <br><b>Lesson:</b> Concurrency
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Concurrency</a></div>
+<div class="linkAHEAD"><a href="procthread.html">Processes and Threads</a></div>
+<div class="linkAHEAD"><a href="threads.html">Thread Objects</a></div>
+<div class="linkBHEAD"><a href="runthread.html">Defining and Starting a Thread</a></div>
+<div class="linkBHEAD"><a href="sleep.html">Pausing Execution with Sleep</a></div>
+<div class="linkBHEAD"><a href="interrupt.html">Interrupts</a></div>
+<div class="linkBHEAD"><a href="join.html">Joins</a></div>
+<div class="linkBHEAD"><a href="simple.html">The SimpleThreads Example</a></div>
+<div class="linkAHEAD"><a href="sync.html">Synchronization</a></div>
+<div class="linkBHEAD"><a href="interfere.html">Thread Interference</a></div>
+<div class="linkBHEAD"><a href="memconsist.html">Memory Consistency Errors</a></div>
+<div class="linkBHEAD"><a href="syncmeth.html">Synchronized Methods</a></div>
+<div class="linkBHEAD"><a href="locksync.html">Intrinsic Locks and Synchronization</a></div>
+<div class="linkBHEAD"><a href="atomic.html">Atomic Access</a></div>
+<div class="linkAHEAD"><a href="liveness.html">Liveness</a></div>
+<div class="linkBHEAD"><a href="deadlock.html">Deadlock</a></div>
+<div class="linkBHEAD"><a href="starvelive.html">Starvation and Livelock</a></div>
+<div class="nolinkAHEAD">Guarded Blocks</div>
+<div class="linkAHEAD"><a href="immutable.html">Immutable Objects</a></div>
+<div class="linkBHEAD"><a href="syncrgb.html">A Synchronized Class Example</a></div>
+<div class="linkBHEAD"><a href="imstrat.html">A Strategy for Defining Immutable Objects</a></div>
+<div class="linkAHEAD"><a href="highlevel.html">High Level Concurrency Objects</a></div>
+<div class="linkBHEAD"><a href="newlocks.html">Lock Objects</a></div>
+<div class="linkBHEAD"><a href="executors.html">Executors</a></div>
+<div class="linkCHEAD"><a href="exinter.html">Executor Interfaces</a></div>
+<div class="linkCHEAD"><a href="pools.html">Thread Pools</a></div>
+<div class="linkCHEAD"><a href="forkjoin.html">Fork/Join</a></div>
+<div class="linkBHEAD"><a href="collections.html">Concurrent Collections</a></div>
+<div class="linkBHEAD"><a href="atomicvars.html">Atomic Variables</a></div>
+<div class="linkBHEAD"><a href="threadlocalrandom.html">Concurrent Random Numbers</a></div>
+<div class="linkAHEAD"><a href="further.html">For Further Reading</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Essential Classes</a>
+                &gt;
+                <a href=index.html target=_top>Concurrency</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=starvelive.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=immutable.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Guarded Blocks</h1></div>
+            <div id=PageContent>
+Threads often have to coordinate their actions. The most common
+coordination idiom is the <i>guarded block</i>. Such a block begins
+by polling a condition that must be true before the block can
+proceed. There are a number of steps to follow in order to do this
+correctly.
+<p>
+Suppose, for example <code>guardedJoy</code> is a method that must not
+proceed until a shared variable <code>joy</code> has been set by
+another thread. Such a method could, in theory, simply loop until the
+condition is satisfied, but that loop is wasteful, since it executes
+continuously while waiting.
+<div class="codeblock"><pre>
+public void guardedJoy() {
+    //Simple loop guard. Wastes processor time. Don't do this!
+    while(!joy) {}
+    System.out.println("Joy has been achieved!");
+}
+</pre></div>
+A more efficient guard invokes 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Object.html#wait()"><code>Object.wait</code></a>
+to suspend the current thread. The invocation of <code>wait</code>
+does not return until another thread has issued a notification that
+some special event may have occurred &mdash; though not necessarily
+the event this thread is waiting for:
+<div class="codeblock"><pre>
+public synchronized guardedJoy() {
+    //This guard only loops once for each special event, which may not
+    //be the event we're waiting for.
+    while(!joy) {
+        try {
+            wait();
+        } catch (InterruptedException e) {}
+    }
+    System.out.println("Joy and efficiency have been achieved!");
+}
+</pre></div>
+<div class="note"><hr><strong>Note:</strong>&nbsp;Always invoke <code>wait</code> inside a loop that tests for the
+condition being waited for. Don't assume that the interrupt was for
+the particular condition you were waiting for, or that the condition
+is still true.
+<hr></div>
+Like many methods that suspend execution, <code>wait</code> can throw
+<code>InterruptedException</code>. In this example, we can just ignore
+that exception &mdash; we only care about the value of
+<code>joy</code>.
+<p>
+Why is this version of <code>guardedJoy</code> synchronized? Suppose
+<code>d</code> is the object we're using to invoke <code>wait</code>.
+When a thread invokes <code>d.wait</code>, it must own the intrinsic
+lock for <code>d</code> &mdash; otherwise an error is thrown. Invoking
+<code>wait</code> inside a synchronized method is a simple way to
+acquire the intrinsic lock.
+<p>
+When <code>wait</code> is invoked, the thread releases the lock and
+suspends execution. At some future time, another thread will acquire
+the same lock and invoke
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Object.html#notifyAll()"><code>Object.notifyAll</code></a>, informing all threads waiting on that lock that something important
+has happened:
+<div class="codeblock"><pre>
+public synchronized notifyJoy() {
+    joy = true;
+    notifyAll();
+}
+</pre></div>
+Some time after the second thread has released the lock, the first
+thread reacquires the lock and resumes by returning from the
+invocation of <code>wait</code>.
+<div class="note"><hr><strong>Note:</strong>&nbsp;There is a second notification method, <code>notify</code>, which
+wakes up a single thread. Because <code>notify</code> doesn't allow
+you to specify the thread that is woken up, it is useful only in
+massively parallel applications &mdash; that is, programs with a large
+number of threads, all doing similar chores. In such an application,
+you don't care which thread gets woken up.
+<hr></div>
+<p>
+Let's use guarded blocks to create a <i>Producer-Consumer</i>
+application.  This kind of application shares data between two
+threads: the <i>producer</i>, that creates the data, and the
+<i>consumer</i>, that does something with it. The two threads
+communicate using a shared object.  Coordination is essential: the
+consumer thread must not attempt to retrieve the data before the
+producer thread has delivered it, and the producer thread must not
+attempt to deliver new data if the consumer hasn't retrieved the old
+data.
+<p>
+In this example, the data is a series of text messages, which are
+shared through an object of type
+<a class="SourceLink" target="_blank" href="examples/Drop.java"><code><code>Drop</code></code></a>:
+<div class="codeblock"><pre>
+
+public class Drop {
+    //Message sent from producer to consumer.
+    private String message;
+    //True if consumer should wait for producer to send message, false
+    //if producer should wait for consumer to retrieve message.
+    private boolean empty = true;
+
+    public synchronized String take() {
+        //Wait until message is available.
+        while (empty) {
+            try {
+                wait();
+            } catch (InterruptedException e) {}
+        }
+        //Toggle status.
+        empty = true;
+        //Notify producer that status has changed.
+        notifyAll();
+        return message;
+    }
+
+    public synchronized void put(String message) {
+        //Wait until message has been retrieved.
+        while (!empty) {
+            try { 
+                wait();
+            } catch (InterruptedException e) {}
+        }
+        //Toggle status.
+        empty = false;
+        //Store message.
+        this.message = message;
+        //Notify consumer that status has changed.
+        notifyAll();
+    }
+}
+</pre></div>
+The producer thread, defined in 
+<a class="SourceLink" target="_blank" href="examples/Producer.java"><code><code>Producer</code></code></a>, sends a series of familiar messages. The string "DONE" indicates
+that all messages have been sent. To simulate the unpredictable nature
+of real-world applications, the producer thread pauses for random
+intervals between messages.
+<div class="codeblock"><pre>
+
+import java.util.Random;
+
+public class Producer implements Runnable {
+    private Drop drop;
+
+    public Producer(Drop drop) {
+        this.drop = drop;
+    }
+
+    public void run() {
+        String importantInfo[] = {
+            &quot;Mares eat oats&quot;,
+            &quot;Does eat oats&quot;,
+            &quot;Little lambs eat ivy&quot;,
+            &quot;A kid will eat ivy too&quot;
+        };
+        Random random = new Random();
+
+        for (int i = 0; i &lt; importantInfo.length; i++) {
+            drop.put(importantInfo[i]);
+            try {
+                Thread.sleep(random.nextInt(5000));
+            } catch (InterruptedException e) {}
+        }
+        drop.put(&quot;DONE&quot;);
+    }
+}
+
+</pre></div>
+The consumer thread, defined in 
+<a class="SourceLink" target="_blank" href="examples/Consumer.java"><code><code>Consumer</code></code></a>,
+simply retrieves the messages and prints them out, until it retrieves
+the "DONE" string. This thread also pauses for random intervals.
+<div class="codeblock"><pre>
+
+import java.util.Random;
+
+public class Consumer implements Runnable {
+    private Drop drop;
+
+    public Consumer(Drop drop) {
+        this.drop = drop;
+    }
+
+    public void run() {
+        Random random = new Random();
+        for (String message = drop.take(); ! message.equals(&quot;DONE&quot;);
+                message = drop.take()) {
+            System.out.format(&quot;MESSAGE RECEIVED: %s%n&quot;, message);
+            try {
+                Thread.sleep(random.nextInt(5000));
+            } catch (InterruptedException e) {}
+        }
+    }
+}
+                
+
+</pre></div>
+Finally, here is the main thread, defined in 
+<a class="SourceLink" target="_blank" href="examples/ProducerConsumerExample.java"><code><code>ProducerConsumerExample</code></code></a>,
+that launches the producer and consumer threads.
+<div class="codeblock"><pre>
+
+public class ProducerConsumerExample {
+    public static void main(String[] args) {
+        Drop drop = new Drop();
+        (new Thread(new Producer(drop))).start();
+        (new Thread(new Consumer(drop))).start();
+    }
+}
+</pre></div>
+<div class="note"><hr><strong>Note:</strong>&nbsp;The <code>Drop</code> class was written in order to demonstrate
+guarded blocks. To avoid re-inventing the wheel, examine the existing
+data structures in the
+<a class="TutorialLink" target="_top" href="../../collections/index.html">Java Collections Framework</a>
+before trying to code your own data-sharing objects. For more
+information, refer to the <a href=QandE/questions.html>Questions and
+    Exercises</a> section.
+<hr></div>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=starvelive.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=immutable.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Starvation and Livelock
+        <br><b>Next page:</b> Immutable Objects
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

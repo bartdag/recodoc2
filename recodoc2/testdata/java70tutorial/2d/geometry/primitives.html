@@ -1,0 +1,635 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Drawing Geometric Primitives (The Java&trade; Tutorials &gt;        
+            2D Graphics &gt; Working with Geometry)
+</title>
+
+    <meta name="description" content="Java Tutorials lesson shows how to use the Graphics2D class to draw graphic primitives, arbitrary shapes, and to display graphics with outline and fill styles" />
+    <meta name="keywords" content="java programming, learn java, java sample code, java 2d, 2d geometry" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> 2D Graphics
+        <br><b>Lesson:</b> Working with Geometry
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Working with Geometry</a></div>
+<div class="nolinkAHEAD">Drawing Geometric Primitives</div>
+<div class="linkAHEAD"><a href="arbitrary.html">Drawing Arbitrary Shapes</a></div>
+<div class="linkAHEAD"><a href="strokeandfill.html">Stroking and Filling Graphics Primitives</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>2D Graphics</a>
+                &gt;
+                <a href=index.html target=_top>Working with Geometry</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=arbitrary.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Drawing Geometric Primitives</h1></div>
+            <div id=PageContent>
+The Java 2D&trade; API provides several classes that define common geometric objects such as points,
+lines, curves, and rectangles. These geometry classes are part of the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/geom/package-frame.html"><code>java.awt.geom</code></a> package.<BR>
+The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/geom/PathIterator.html"><code>PathIterator</code></a> interface defines methods for retrieving elements from a path.<BR>
+The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Shape.html"><CODE>Shape</CODE></a> interface provides a set of methods for describing and inspecting
+geometric path objects. This interface is implemented by the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/geom/GeneralPath.html"><CODE>GeneralPath</CODE></a> class and other geometry classes.
+<P>
+All examples represented in this section create geometries by using <CODE>java.awt.geom</CODE> and then render them
+by using the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Graphics2D.html"><CODE>Graphics2D</CODE></a> class.
+To begin you obtain a <CODE>Graphics2D</CODE> object, for example
+by casting the <CODE>Graphics</CODE> parameter of the <CODE>paint()</CODE> method.
+<div class="codeblock"><pre>
+public void paint (Graphics g) {
+    Graphics2D g2 = (Graphics2D) g;
+    ...
+}
+</pre></div>
+
+<h2>Point</h2>
+The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Point.html"><CODE>Point</CODE></a> class creates a point representing a location in (x,y)
+<a href="../overview/coordinate.html">coordinate space</a>.
+The subclasses <CODE>Point2D.Float</CODE> and <CODE>Point2D.Double</CODE> provide correspondingly float and double precision
+for storing the coordinates of the point.
+<div class="codeblock"><pre>
+//Create Point2D.Double
+Point2D.Double point = new Point2D.Double(x, y);
+</pre></div>
+To create a point with the coordinates 0,0 you use the default constructor, <CODE>Point2D.Double()</CODE>.<BR>
+You can use the <CODE>setLocation</CODE> method to set the position of the point as follows:
+<UL>
+<LI><CODE>setLocation(double x, double y)</CODE> &ndash; To set the location of the point-
+defining coordinates as double values</LI>
+<LI><CODE>setLocation(Point2D p)</CODE> &ndash; To set the location of the point using the coordinates of another point.</LI>
+</UL>
+Also, the <CODE>Point2D</CODE> class has methods to calculate the distance between the current point and a point with
+given coordinates, or the distance between two points.
+
+<h2>Line</h2>
+The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/geom/Line2D.html"><CODE>Line2D</CODE></a> class represents a line segment in (x, y) coordinate space.
+The <CODE>Line2D.Float</CODE> and <CODE>Line2D.Double</CODE> subclasses specify lines in float and double precision.
+For example:
+<P>
+
+<div class="codeblock"><pre>
+// draw Line2D.Double
+g2.draw(new Line2D.Double(x1, y1, x2, y2));
+</pre></div>
+
+<IMG SRC="../../figures/2d/2D-16.gif" WIDTH="134" HEIGHT="49" ALT="Line">
+<P>
+This class includes several <CODE>setLine()</CODE> methods to define the endpoints of the line.<BR>
+Aternatively, the endpoints of the line could be specified by using the constructor for the <CODE>Line2D.Float</CODE> class as follows:
+<UL>
+<LI><CODE>Line2D.Float(float X1, float Y1, float X2, float Y2)</CODE></LI>
+<LI><CODE>Line2D.Float(Point2D p1, Point2D p2)</CODE></LI>
+</UL>
+Use the <a href="strokeandfill.html"><CODE>Stroke</CODE></a> object in the
+<CODE>Graphics2D</CODE> class to define the stroke for the line path.
+
+<h2>Curves</h2>
+The <CODE>java.awt.geom</CODE> package enables you to create a quadratic or cubic curve segment.
+<h3>Quadratic Curve Segment</h3>
+The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/geom/QuadCurve2D.html"><CODE>QuadCurve2D</CODE></a> class implements the <CODE>Shape</CODE> interface.
+This class represents a quadratic parametric curve segment in (x, y) coordinate space.
+The <CODE>QuadCurve2D.Float</CODE> and <CODE>QuadCurve2D.Double</CODE> subclasses specify a quadratic curve
+in float and double precision.
+<P>
+Several <CODE>setCurve</CODE> methods are used to specify two endpoints and a control point of the curve,
+whose coordinates can be defined directly, by the coordinates of other points and by using a given array.<BR>
+A very useful method, <CODE> setCurve(QuadCurve2D c)</CODE>, sets the quadratic curve with
+the same endpoints and the control point as a supplied curve. For example:
+<P>
+
+<div class="codeblock"><pre>
+// create new QuadCurve2D.Float
+QuadCurve2D q = new QuadCurve2D.Float();
+// draw QuadCurve2D.Float with set coordinates
+q.setCurve(x1, y1, ctrlx, ctrly, x2, y2);
+g2.draw(q);
+</pre></div>
+
+<IMG SRC="../../figures/2d/quadCurve.gif" WIDTH="134" HEIGHT="80" ALT="Quadratic parametric curve segment">
+<P>
+<h3>Cubic Curve Segment</h3>
+The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/geom/CubicCurve2D.html"><CODE>CubicCurve2D</CODE></a> class also implements the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Shape.html"><CODE>Shape</CODE></a> interface.
+This class represents a cubic parametric curve segment in (x, y) coordinate space.
+<CODE>CubicCurve2D.Float</CODE> and <CODE>CubicCurve2D.Double</CODE> subclasses specify a cubic curve
+in float and double precision.
+<P>
+The <CODE>CubicCurve2D</CODE> class has similar methods for setting the curve as the
+<CODE>QuadraticCurve2D</CODE>class, except with a second control point. For example:
+<P>
+<div class="codeblock"><pre>
+// create new CubicCurve2D.Double
+CubicCurve2D c = new CubicCurve2D.Double();
+// draw CubicCurve2D.Double with set coordinates
+c.setCurve(x1, y1, ctrlx1,
+		  ctrly1, ctrlx2, ctrly2, x2, y2);
+g2.draw(c);
+<div class="codeblock"><pre>
+<IMG SRC="../../figures/2d/cubicCurve.gif" WIDTH="134" HEIGHT="80" ALT="Cubic Curve Segment"><P>
+<h2>Rectangle</h2>
+<P>Classes that specify primitives represented in the following example extend the <CODE>RectangularShape</CODE> class, which
+implements the <CODE>Shape</CODE> interface and adds a few methods of its own.
+<P>
+These methods enables you to get information about a shape&rsquo;s location and size, to examine the center point of a rectangle,
+and to set the bounds of the shape.
+<P>
+The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/geom/Rectangle2D.html"><CODE>Rectangle2D</CODE></a> class represents a rectangle defined by a location (x, y) and dimension (w x h).
+The <CODE>Rectangle2D.Float</CODE> and <CODE>Rectangle2D.Double</CODE> subclasses specify a rectangle
+in float and double precision. For example:
+<P>
+<div class="codeblock"><pre>
+// draw Rectangle2D.Double
+g2.draw(new Rectangle2D.Double(x, y,
+                               rectwidth,
+                               rectheight));
+</pre></div>
+<IMG SRC="../../figures/2d/2D-17.gif" WIDTH="135" HEIGHT="49" ALT="Rectangle"><P>
+The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/geom/RoundRectangle2D.html"><code>RoundRectangle2D</code></a> class represents a rectangle with rounded
+corners defined by a location (x, y), a dimension (w x h), and the width
+and height of the corner arc. The <CODE>RoundRectangle2D.Float</CODE> and <CODE>RoundRectangle2D.Double</CODE> subclasses
+specify a round rectangle in float and double precision.
+<P>
+The rounded rectangle is specified with following parameters:
+<UL>
+<LI>Location</LI>
+<LI>Width</LI>
+<LI>Height</LI>
+<LI>Width of the corner arc</LI>
+<LI>Height of the corner arc</LI>
+</UL>
+To set the location, size, and arcs of a <CODE>RoundRectangle2D</CODE> object, use the method <CODE>
+setRoundRect(double a, double y, double w, double h, double arcWidth, double arcHeight)</CODE>. For example:
+<P>
+<div class="codeblock"><pre>
+// draw RoundRectangle2D.Double
+g2.draw(new RoundRectangle2D.Double(x, y,
+                                   rectwidth,
+                                   rectheight,
+                                   10, 10));
+</pre></div>
+<IMG SRC="../../figures/2d/2D-18.gif" WIDTH="135" HEIGHT="49" ALT="Rounded Rectangle"><P>
+
+<h2>Ellipse</h2>
+The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/geom/Ellipse2D.html"><code>Ellipse2D</code></a> class represents an ellipse defined by a bounding rectangle.
+The <CODE>Ellipse2D.Float</CODE> and <CODE>Ellipse2D.Double</CODE> subclasses
+specify an ellipse in float and double precision.
+<P>
+Ellipse is fully defined by a location, a width and a height. For example:
+<P>
+<div class="codeblock"><pre>
+// draw Ellipse2D.Double
+g2.draw(new Ellipse2D.Double(x, y,
+                             rectwidth,
+                             rectheight));
+</pre></div>
+<IMG SRC="../../figures/2d/2D-20.gif" WIDTH="136" HEIGHT="49" ALT="Ellipse"><P>
+<h2>Arc</h2>
+To draw a piece of an ellipse, you use the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/geom/Arc2D.html"><code>Arc2D</code></a> class. This class represents an arc defined
+by a bounding rectangle, a start angle, an angular extent, and a closure type.
+The <CODE>Arc2D.Float</CODE> and <CODE>Arc2D.Double</CODE> subclasses
+specify an ellipse in float and double precision.
+<P>
+The <CODE>Arc2D</CODE> class defines the following three types of arcs,
+represented by corresponding constants in this class: OPEN, PIE and CHORD.
+
+<p><center><IMG SRC="../../figures/2d/2D-19.gif" WIDTH="71" HEIGHT="51" ALIGN="BOTTOM" ALT="Arc"></center></p>
+<P>Several methods set the size and parameters of the arc:
+<UL>
+<LI>Directly, by coordinates</LI>
+<LI>By supplied <CODE>Point2D</CODE> and <CODE>Dimension2D</CODE></LI>
+<LI>By copying an existing <CODE>Arc2D</CODE></LI>
+</UL>
+Also, you can use the <CODE>setArcByCenter</CODE> method to specify an arc from a center point,
+given by its coordinates and a radius.
+<P>
+<div class="codeblock"><pre>
+// draw Arc2D.Double
+g2.draw(new Arc2D.Double(x, y,
+                         rectwidth,
+                         rectheight,
+                         90, 135,
+                         Arc2D.OPEN));
+</pre></div>
+<IMG SRC="../../figures/2d/2D-19.gif" WIDTH="71" HEIGHT="51" ALT="Arc"><P>
+The
+<a class="SourceLink" target="_blank" href="examples/ShapesDemo2D.java"><code>ShapesDemo2D.java</code></a> code example contains implementations off all described
+geometric primitives.
+For more information about classes and methods represented in this section see the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/geom/package-summary.html"><CODE>java.awt.geom</CODE></a> specification.
+
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=index.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=arbitrary.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Working with Geometry
+        <br><b>Next page:</b> Drawing Arbitrary Shapes
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

@@ -1,0 +1,516 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Answers: Performing Custom Painting (The Java&trade; Tutorials &gt; Creating a GUI With JFC/Swing &gt;
+            )</title>
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+    </head>
+<body>
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                        </div>
+                            <div class=PrintHeaders>
+                                <b>Trail:</b> Creating a GUI With JFC/Swing
+                            </div>
+                    </div> </div> </div> </div> </div>
+
+    <div class=MainFlow_wide>
+        <span id=BreadCrumbs>
+            <a href=../../index.html target=_top>Home Page</a>
+            &gt;
+            <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+        </span>
+        <div class=NavBit>
+            <a href=../TOC.html>&laquo; Previous</a>&nbsp;&bull;&nbsp;<a href=../TOC.html>TOC</a>
+        </div>
+        <div id=PageTitle><h1>Answers: Performing Custom Painting</h1></div>
+        <div id=PageContent>
+<h2>Questions</h2>
+
+ 
+  <P><b>Question 1.</b> What method defined by <CODE>JComponent</CODE> 
+    paints the inside of a component?<BR>
+    <b>Answer 1:</b> The <code>paintComponent</code>
+    method paints a component's innards (with the exception of any children it 
+    contains). <BR>
+  </P>
+  <P><b>Question 2.</b> Which of the following code snippets 
+    paint a rectangle (filled or not) that is 100x100 pixels?</P>
+   
+    <P>a. <CODE>g.fillRect(x, y, 100, 100)</CODE><BR>
+      b. <CODE>g.fillRect(x, y, 99, 99)</CODE><BR>
+      c. <CODE>g.drawRect(x, y, 100, 100)</CODE><BR>
+      d. b and c<BR>
+      e. a and c</P>
+  
+  <P><b>Answer 2: </b>a.
+    The  <code>drawRect</code> methods paint lines just below 
+    the specified rectangle. So to get a 100x100 rectangle, you need to specify 
+    a width and height of 99, 99 to <code>drawRect</code>. For <code>fill<em>Xxx</em></code> 
+    methods, on the other hand, you specify exactly the desired width and height, 
+    so <code>g.fillRect(x, y, 100, 100)</code> results in a 100x100 rectangle.</P>
+  <BR>
+  <P><b>Question 3.</b> What code would you use to make 
+    a component perform the next painting operation using the background color 
+    at 50% transparency?<BR>
+    <b>Answer 3:</b>
+  
+<div class="codeblock"><pre>
+g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+</pre></div>
+
+<h2>Exercises</h2>
+
+ 
+  <P><b>Exercise 1.</b> Using a standard border and custom 
+    component painting, implement a component that has a preferred size of 250x100, 
+    is opaque by default, has a 5-pixel black border, and paints an &#147;X&#148; 
+    (using 5-pixel-thick lines) in the foreground color, as shown in the following 
+    figure. 
+   <IMG SRC="../../figures/uiswing/QandE/ComponentDisplayer-1.png" WIDTH="258" HEIGHT="134"
+      ALIGN="BOTTOM" NATURALSIZEFLAG="3" ALT="ComponentDisplayer-1.png"> 
+  <p><b>Answer 1:</b> See <code><a href="../examples/QandE/ComponentDisplayerProject/src/QandE/XMarksTheSpot.java">XMarksTheSpot.java</a></code>, 
+    which you can run using <code><a href="../examples/QandE/ComponentDisplayerProject/src/QandE/ComponentDisplayer.java">ComponentDisplayer.java</a></code>. 
+        </p>
+        
+        
+  <p>Here's the code that sets the border of the <code>XMarksTheSpot</code> component: 
+  </P>
+  
+   
+<div class="codeblock"><pre>
+setBorder(BorderFactory.createMatteBorder(5,5,5,5, Color.BLACK));
+</pre></div>
+    
+        <p>
+        Here's the X-drawing code from the <code>paintComponent</code> method of <code>XMarksTheSpot</code>:</p>
+   
+<div class="codeblock"><pre>
+Graphics2D g2 = (Graphics2D)g;
+Insets insets = getInsets();
+g2.setStroke(new BasicStroke(5.0f));
+g2.draw(new Line2D.Double(insets.left,
+                          insets.top,
+                          getWidth() - insets.right,
+                          getHeight() - insets.bottom));
+g2.draw(new Line2D.Double(insets.left,
+                          getHeight() - insets.bottom,
+                          getWidth() - insets.right,
+                          insets.top));
+</pre></div>
+  
+  <br>
+  <P><b>Exercise 2.</b> Implement an icon that&#146;s 10x10 
+    pixels and paints a solid rectangle that fills the 10x10 area. If the icon&#146;s 
+    component is enabled, the rectangle should be red; if disabled, gray. Make 
+    a copy of <CODE>ButtonDemo.java</CODE> that uses your custom <CODE>Icon</CODE> 
+    for the middle button, instead of displaying <CODE>middle.gif</CODE>. The 
+    following pictures show what the icon should look like. 
+   
+    <TABLE WIDTH="450" BORDER="0" CELLSPACING="2" CELLPADDING="0">
+      <TR> 
+        <td headers="h1" WIDTH="50%"> <IMG SRC="../../figures/uiswing/QandE/SquareIcon-1.png" WIDTH="111" HEIGHT="44"
+      ALIGN="BOTTOM" NATURALSIZEFLAG="3" ALT="SquareIcon-1.png"> </TD>
+        <td headers="h2" WIDTH="50%"> <IMG SRC="../../figures/uiswing/QandE/SquareIcon-2.png" WIDTH="111" HEIGHT="44"
+      ALIGN="BOTTOM" NATURALSIZEFLAG="3" ALT="SquareIcon-2.png"> </TD>
+      </TR>
+    </TABLE>
+  
+  <p><b>Answer 2: </b>See <code><a href="../examples/QandE/ButtonDemoProject/src/QandE/SquareIcon.java">SquareIcon.java</a></code>, 
+    which you can run using this <a href="../examples/QandE/ButtonDemoProject/src/QandE/ButtonDemo.java">modified <code>ButtonDemo.java</code></a>. 
+  </p>
+  <p>Here's the code that sets the icon:</p>
+  
+  
+<div class="codeblock"><pre>
+Icon middleButtonIcon = new SquareIcon();
+...
+b2 = new JButton("Middle button", middleButtonIcon);
+</pre></div>
+  
+  <p>Here is <code>SquareIcon</code>'s implementation of the three methods required 
+    by the <code>Icon</code> 
+    interface: </p>
+<div class="codeblock"><pre>
+public void paintIcon(Component c, Graphics g,
+                      int x, int y) {
+    if (c.isEnabled()) {
+        g.setColor(Color.RED);
+    } else {
+        g.setColor(Color.GRAY);
+    }
+        
+    g.fillRect(x, y, SIZE, SIZE);
+}
+
+public int getIconWidth() {
+    return SIZE;
+}
+
+public int getIconHeight() {
+    return SIZE;
+}
+</pre></div>
+  <BR>
+  <P><b>Exercise 3.</b> Implement a border that paints a 
+    red 15-pixel-tall stripe all the way across the top of its component. Test 
+    this border by substituting it for the border on the component you created 
+    in exercise&nbsp;1. The result should look like the following figure. 
+   <IMG SRC="../../figures/uiswing/QandE/ComponentDisplayer-2.png" WIDTH="258" HEIGHT="134"
+      ALIGN="BOTTOM" NATURALSIZEFLAG="3" ALT="ComponentDisplayer-2.png"> 
+  <b>Answer 3: </b>See <code><a href="../examples/QandE/ComponentDisplayerProject/src/QandE/StripeBorder.java">StripeBorder.java</a></code>, 
+  which you can run using <code><a href="../examples/QandE/ComponentDisplayerProject/src/QandE/ComponentDisplayer.java">ComponentDisplayer.java</a></code> 
+  and <code><a href="../examples/QandE/ComponentDisplayerProject/src/QandE/XMarksTheSpot.java">XMarksTheSpot.java</a></code> (be sure 
+  to uncomment the line that sets the border to <code>StripeBorder</code>). Here 
+  is <code>StripeBorder</code>'s implementation of the three methods required 
+  by the <code>Border</code> 
+  interface: 
+<div class="codeblock"><pre>
+public void paintBorder(Component c, Graphics g,
+                        int x, int y,
+                        int width, int height) {
+    g.setColor(Color.RED);
+    g.fillRect(x, y, c.getWidth(), HEIGHT);
+}
+
+public Insets getBorderInsets(Component c) {
+    return new Insets(HEIGHT, 0, 0, 0);
+}
+
+public boolean isBorderOpaque() {
+    return true;
+}
+</pre></div>
+  <BR>
+
+
+        </div>
+    </div>
+    <div id=Footer2>
+        <span class=NavBit>
+            <a href=../TOC.html>&laquo; Previous</a>
+            &bull;
+            <a href=../TOC.html>TOC</a>
+        </span>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h101" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h101" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h102" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Questions and Exercises: Performing Custom Painting
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

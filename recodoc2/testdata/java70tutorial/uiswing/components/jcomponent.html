@@ -1,0 +1,1342 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>The JComponent Class (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Using Swing Components)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Using Swing Components
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Using Swing Components</a></div>
+<div class="linkAHEAD"><a href="toplevel.html">Using Top-Level Containers</a></div>
+<div class="nolinkAHEAD">The JComponent Class</div>
+<div class="linkAHEAD"><a href="text.html">Using Text Components</a></div>
+<div class="linkBHEAD"><a href="generaltext.html">Text Component Features</a></div>
+<div class="linkBHEAD"><a href="textapi.html">The Text Component API</a></div>
+<div class="linkAHEAD"><a href="componentlist.html">How to Use Various Components</a></div>
+<div class="linkBHEAD"><a href="applet.html">How to Make Applets</a></div>
+<div class="linkBHEAD"><a href="button.html">How to Use Buttons, Check Boxes, and Radio Buttons</a></div>
+<div class="linkBHEAD"><a href="buttongroup.html">How to Use the ButtonGroup Component</a></div>
+<div class="linkBHEAD"><a href="colorchooser.html">How to Use Color Choosers</a></div>
+<div class="linkBHEAD"><a href="combobox.html">How to Use Combo Boxes</a></div>
+<div class="linkBHEAD"><a href="dialog.html">How to Make Dialogs</a></div>
+<div class="linkBHEAD"><a href="editorpane.html">How to Use Editor Panes and Text Panes</a></div>
+<div class="linkBHEAD"><a href="filechooser.html">How to Use File Choosers</a></div>
+<div class="linkBHEAD"><a href="formattedtextfield.html">How to Use Formatted Text Fields</a></div>
+<div class="linkBHEAD"><a href="frame.html">How to Make Frames (Main Windows)</a></div>
+<div class="linkBHEAD"><a href="internalframe.html">How to Use Internal Frames</a></div>
+<div class="linkBHEAD"><a href="label.html">How to Use Labels</a></div>
+<div class="linkBHEAD"><a href="layeredpane.html">How to Use Layered Panes</a></div>
+<div class="linkBHEAD"><a href="list.html">How to Use Lists</a></div>
+<div class="linkBHEAD"><a href="menu.html">How to Use Menus</a></div>
+<div class="linkBHEAD"><a href="panel.html">How to Use Panels</a></div>
+<div class="linkBHEAD"><a href="passwordfield.html">How to Use Password Fields</a></div>
+<div class="linkBHEAD"><a href="progress.html">How to Use Progress Bars</a></div>
+<div class="linkBHEAD"><a href="rootpane.html">How to Use Root Panes</a></div>
+<div class="linkBHEAD"><a href="scrollpane.html">How to Use Scroll Panes</a></div>
+<div class="linkBHEAD"><a href="separator.html">How to Use Separators</a></div>
+<div class="linkBHEAD"><a href="slider.html">How to Use Sliders</a></div>
+<div class="linkBHEAD"><a href="spinner.html">How to Use Spinners</a></div>
+<div class="linkBHEAD"><a href="splitpane.html">How to Use Split Panes</a></div>
+<div class="linkBHEAD"><a href="tabbedpane.html">How to Use Tabbed Panes</a></div>
+<div class="linkBHEAD"><a href="table.html">How to Use Tables</a></div>
+<div class="linkBHEAD"><a href="textarea.html">How to Use Text Areas</a></div>
+<div class="linkBHEAD"><a href="textfield.html">How to Use Text Fields</a></div>
+<div class="linkBHEAD"><a href="toolbar.html">How to Use Tool Bars</a></div>
+<div class="linkBHEAD"><a href="tooltip.html">How to Use Tool Tips</a></div>
+<div class="linkBHEAD"><a href="tree.html">How to Use Trees</a></div>
+<div class="linkAHEAD"><a href="html.html">How to Use HTML in Swing Components</a></div>
+<div class="linkAHEAD"><a href="model.html">How to Use Models</a></div>
+<div class="linkAHEAD"><a href="icon.html">How to Use Icons</a></div>
+<div class="linkAHEAD"><a href="border.html">How to Use Borders</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Component Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Using Swing Components</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=toplevel.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=text.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>The JComponent Class</h1></div>
+            <div id=PageContent>
+
+<style type="text/css">
+td {text-align: left; 
+    vertical-align: top;
+    }
+</style>    
+    
+With the exception of top-level containers,
+all Swing components whose names begin with "J"
+descend from the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html"><code>JComponent</code></a> class.
+For example,
+<code>JPanel</code>,
+<code>JScrollPane</code>,
+<code>JButton</code>, and
+<code>JTable</code>
+all inherit from <code>JComponent</code>.
+However, <code>JFrame</code> and <code>JDialog</code> don't
+because they implement top-level containers.
+
+<p>
+
+The <code>JComponent</code> class
+extends the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html"><code>Container</code></a> class,
+which itself extends
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html"><code>Component</code></a>.
+The <code>Component</code> class includes everything from
+providing layout hints
+to supporting painting and events.
+The <code>Container</code> class has support
+for adding components to the container and
+laying them out.
+This section's
+<a href="#api">API tables</a> summarize the most often used
+methods of <code>Component</code> and <code>Container</code>,
+as well as of <code>JComponent</code>.
+
+<a name="jcomponent">
+
+<h2>
+JComponent Features
+</h2>
+</a>
+
+
+The <code>JComponent</code> class provides
+the following functionality to its descendants:
+
+<ul>
+<li> <a href="#tooltips">Tool tips</a>
+<li> <a href="#borders">Painting and borders</a>
+<li> <a href="#plug">Application-wide pluggable look and feel</a>
+<li> <a href="#properties">Custom properties</a>
+<li> <a href="#layout">Support for layout</a>
+<li> <a href="#access">Support for accessibility</a>
+<li> <a href="#dnd">Support for drag and drop</a>
+<li> <a href="#buffer">Double buffering</a>
+<li> <a href="#keyboardAction">Key bindings</a>
+</ul>
+
+<dl>
+<dt> <a name="tooltips"><strong>Tool tips</strong></a>
+<dd> By specifying a string
+     with the <code>setToolTipText</code> method,
+     you can provide help to users of a component.
+     When the cursor pauses over the component,
+     the specified string is displayed in a small window
+     that appears near the component.
+     See <a href="tooltip.html">How to Use Tool Tips</a>
+     for more information.
+<p>
+<dt> <a name="borders"><strong>Painting and borders</strong></a>
+<dd> The <code>setBorder</code> method allows you
+     to specify the border
+     that a component displays around its edges.
+     To paint the inside of a component,
+     override the <code>paintComponent</code> method.
+    See
+<a class="TutorialLink" target="_top" href="../components/border.html">How to Use Borders</a>    and
+<a class="TutorialLink" target="_top" href="../painting/index.html">Performing Custom Painting</a>    for details.
+</dd>
+
+
+<p>
+<dt> <a name="plug"><strong>Application-wide pluggable look and feel</strong></a>
+<dd> Behind the scenes, each <code>JComponent</code> object
+     has a corresponding <code>ComponentUI</code> object
+     that performs all the drawing, event handling, size determination,
+     and so on for that <code>JComponent</code>.
+     Exactly which <code>ComponentUI</code> object is used
+     depends on the current look and feel,
+     which you can set using the <code>UIManager.setLookAndFeel</code>
+     method.  See
+<a class="TutorialLink" target="_top" href="../lookandfeel/plaf.html">How to Set the Look and Feel</a>     for details.
+<p>
+<dt> <a name="properties"><strong>Custom properties</strong></a>
+<dd> You can associate one or more properties
+     (name/object pairs)
+     with any <code>JComponent</code>.
+     For example,
+     a layout manager might use properties
+     to associate a constraints object
+     with each <code>JComponent</code> it manages.
+     You put and get properties using the
+     <code>putClientProperty</code> and
+     <code>getClientProperty</code> methods.
+     For general information about properties, see
+<a class="TutorialLink" target="_top" href="../../essential/environment/properties.html">Properties</a>.
+
+     <p>
+<dt> <a name="layout"><strong>Support for layout</strong></a>
+<dd> Although the <code>Component</code> class
+     provides layout hint methods such as
+     <code>getPreferredSize</code> and <code>getAlignmentX</code>,
+     it doesn't provide any way to set these layout hints,
+     short of creating a subclass and overriding the methods.
+     To give you another way to set layout hints,
+     the <code>JComponent</code> class adds
+     setter methods &mdash;
+     <!-- <code>setPreferredSize</code>, -->
+     <code>setMinimumSize</code>,
+     <code>setMaximumSize</code>,
+     <code>setAlignmentX</code>, and
+     <code>setAlignmentY</code>.
+     See
+<a class="TutorialLink" target="_top" href="../layout/index.html">Laying Out Components Within a Container</a>     for more information.
+
+<p>
+<dt> <a name="access"><strong>Support for accessibility</strong></a>
+<dd> The <code>JComponent</code> class provides
+     API and basic functionality
+     to help assistive technologies
+     such as screen readers
+     get information from Swing components,
+     For more information about accessibility, see
+<a class="TutorialLink" target="_top" href="../misc/access.html">How to Support Assistive Technologies</a>.
+</dd>
+
+<p>
+<dt> <a name="dnd"><strong>Support for drag and drop</strong></a>
+<dd>
+The <code>JComponent</code> class provides API
+to set a component's transfer handler,
+which is the basis for Swing's
+drag and drop support.
+See
+<a class="TutorialLink" target="_top" href="../dnd/intro.html">Introduction to DnD</a> for details.
+</dd>
+</dt>
+
+<p>
+<dt> <a name="buffer"><strong>Double buffering</strong></a>
+<dd> Double buffering smooths on-screen painting.
+     For details, see
+<a class="TutorialLink" target="_top" href="../painting/index.html">Performing Custom Painting</a>.
+</dd>
+
+
+
+<p>
+<dt> <a name="keyboardAction"><strong>Key bindings</strong></a>
+<dd>
+
+This feature makes components react
+when the user presses a key on the keyboard.
+For example,
+in many look and feels when a button has the focus,
+typing the Space key is equivalent to
+a mouse click on the button.
+The look and feel automatically sets up
+the bindings between pressing and releasing the Space key
+and the resulting effects on the button.
+For more information about key bindings, see
+<a class="TutorialLink" target="_top" href="../misc/keybinding.html">How to Use Key Bindings</a>.
+</dl>
+
+<p>
+
+
+<a name="api">
+<h2>
+The JComponent API
+</h2>
+</a>
+
+The <code>JComponent</code> class provides many new methods
+and inherits many methods
+from <code>Component</code> and <code>Container</code>.
+The following tables summarize the methods
+we use the most.
+
+<UL>
+  <LI><A HREF="#complookapi">Customizing Component Appearance</A>
+  <LI><A HREF="#stateapi">Setting and Getting Component State</A>
+  <LI><A HREF="#eventapi">Handling Events</A>
+  <LI><A HREF="#custompaintingapi">Painting Components</A>
+  <LI><A HREF="#containmentapi">Dealing with the Containment Hierarchy</A>
+  <LI><A HREF="#layoutapi">Laying Out Components</A>
+  <LI><A HREF="#sizeapi">Getting Size and Position Information</A>
+  <LI><A HREF="#absoluteapi">Specifying Absolute Size and Position</A>
+</UL>
+
+<div class="tdstyle">
+<p>
+
+<TABLE BORDER="1">
+<caption><A NAME="complookapi">
+<b>Customizing Component Appearance</b>
+</A></caption>
+<TR> <th id="h1"> Method </th><th id="h2"> Purpose</th>
+  <TR>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setBorder(javax.swing.border.Border)">void setBorder(Border)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#getBorder()">Border getBorder()</a>    </TD>
+    <td headers="h2">
+    Set or get the border of the component.
+    See
+<a class="TutorialLink" target="_top" href="../components/border.html">How to Use Borders</a>    for details.
+</TD>
+  </TR>
+  <TR>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setForegroundColor(java.awt.Color)">void setForeground(Color)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setBackground(java.awt.Color)">void setBackground(Color)</a>    <td headers="h2">
+    Set the foreground or background color for the component.
+    The foreground is generally the color used
+    to draw the text in a component.
+    The background is (not surprisingly)
+    the color of the background
+    areas of the component,
+    assuming that the component is opaque.
+    </td>
+    </tr>
+
+    <tr>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getForeground()">Color getForeground()</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getBackground()">Color getBackground()</a>    <td headers="h2">
+    Get the foreground or background color for the component.
+    </TD>
+  </TR>
+  <TR>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setOpaque(boolean)">void setOpaque(boolean)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#isOpaque()">boolean isOpaque()</a>    </td>
+    <td headers="h2">
+    Set or get whether the component is opaque.
+    An opaque component fills its background with its background color.
+  </TR>
+  <TR>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#setFont(java.awt.Font)">void setFont(Font)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getFont()">Font getFont()</a>    <td headers="h2">
+    Set or get the component's font.
+    If a font has not been set for the component,
+    the font of its parent is returned.
+  </TR>
+ <!--  <TR>
+   <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getFontMetrics(java.awt.Font)">FontMetrics getFontMetrics(Font)</a>    <td headers="h2">
+    Get the font metrics for the specified font.</TD>
+  </TR> -->
+  <TR>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#setCursor(java.awt.Cursor)">void setCursor(Cursor)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getCursor()">Cursor getCursor()</a>    <td headers="h2">
+    Set or get the cursor displayed over the component
+    and all components it contains
+    (except for children that have their own cursor set).
+    Example: 
+<code>aPanel.setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR));</code>
+    </TD>
+  </TR>
+</TABLE>
+
+
+<p>
+
+<TABLE BORDER="1">
+<caption><A NAME="stateapi">
+<b>Setting and Getting Component State</b>
+</A></caption>
+<TR> <th id="h101"> Method </th> <th id="h102"> Purpose</th>
+
+
+  <TR>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setComponentPopupMenu(javax.swing.JPopupMenu)">void setComponentPopupMenu(JPopupMenu)</a>    <td headers="h102">
+    Sets the <code>JPopupMenu</code> for this <code>JComponent</code>. The UI is responsible for registering bindings and adding the necessary listeners such that the <code>JPopupMenu</code> will be shown at the appropriate time. When the <code>JPopupMenu</code> is shown depends upon the look and feel: some may show it on a mouse event, some may enable a key binding.<br><br>
+
+If <code>popup</code> is null, and <code>getInheritsPopupMenu</code> returns <code>true</code>, then <code>getComponentPopupMenu</code> will be delegated to the parent. This provides for a way to make all child components inherit the <code>popupmenu</code> of the parent. </TD>
+  </TR>
+
+
+  
+    <tr>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setTransferHandler(javax.swing.TransferHandler)">void setTransferHandler(TransferHandler)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#getTransferHandler()">TransferHandler getTransferHandler()</a>    </td>
+    <td headers="h102">Set or remove the <code>transferHandler</code> property.
+        The <code>TransferHandler</code> supports exchanging data
+        via cut, copy, or paste to/from a clipboard as well a
+        drag and drop. See
+<a class="TutorialLink" target="_top" href="../dnd/intro.html">Introduction to DnD</a>        for more details.
+    </td>
+  </tr>
+
+
+
+  <TR>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setToolTipText(java.lang.String)">void setToolTipText(String)</a>    <td headers="h102">
+    Set the text to display in a tool tip.
+    See <a href="tooltip.html">How to Use Tool Tips</a>
+    for more information.</TD>
+  </TR>
+  <TR>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#setName(java.lang.String)">void setName(String)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getName()">String getName()</a>    <td headers="h102">
+    Set or get the name of the component.
+    This can be useful when you need to associate text
+    with a component that does not display text.
+   </TD>
+  </TR>
+  <TR>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#isShowing()">boolean isShowing()</a>    <td headers="h102">
+    Determine whether the component is showing on screen.
+    This means that the component must be visible,
+    and it must be in a container that is visible and showing.</TD>
+  </TR>
+  <TR>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#setEnabled(boolean)">void setEnabled(boolean)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#isEnabled()">boolean isEnabled()</a>    </TD>
+    <td headers="h102">
+    Set or get whether the component is enabled.
+    An enabled component can respond
+    to user input and generate events.</TD>
+  </TR>
+  <TR>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setVisible(boolean)">void setVisible(boolean)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#isVisible()">boolean isVisible()</a>    </TD>
+    <td headers="h102">
+    Set or get whether the component is visible.
+    Components are initially visible,
+    with the exception of top-level components.
+  </TR>
+</TABLE>
+
+<p>
+
+<TABLE BORDER="1">
+<caption><A NAME="eventapi">
+<b>Handling Events</b>
+<br>
+(see
+<a class="TutorialLink" target="_top" href="../events/index.html">Writing Event Listeners</a> for details)
+</A></caption>
+<TR> <th id="h201"> Method </th> <th id="h202"> Purpose</th>
+
+
+
+  <TR>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#addHierarchyListener(java.awt.event.HierarchyListener)">void addHierarchyListener(hierarchyListener l)</a>    <br>
+   
+    
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#removeHierarchyListener(java.awt.event.HierarchyListener)">void removeHierarchyListener(hierarchyListener l)</a>
+
+<br>
+
+    </TD>
+    <td headers="h202">
+    Adds or removes the specified hierarchy listener
+    to receive hierarchy changed events from this component when the hierarchy to
+    which this container belongs changes. If listener l is null, no exception is
+    thrown and no action is performed.</TD>
+  </TR> 
+
+
+  <TR>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#addMouseListener(java.awt.event.MouseListener)">void addMouseListener(MouseListener)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#removeMouseListener(java.awt.event.MouseListener)">void removeMouseListener(MouseListener)</a>    </TD>
+    <td headers="h202">
+    Add or remove a
+<a class="TutorialLink" target="_top" href="../events/mouselistener.html">mouse listener</a>    to or from the component.
+    Mouse listeners are notified
+    when the user uses the mouse to interact with
+    the listened-to component.</TD>
+  </TR>
+  <TR>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#addMouseMotionListener(java.awt.event.MouseMotionListener)">void addMouseMotionListener(MouseMotionListener)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#removeMouseMotionListener(java.awt.event.MouseMotionListener)">void removeMouseMotionListener(MouseMotionListener)</a>    </TD>
+    <td headers="h202">
+    Add or remove a
+<a class="TutorialLink" target="_top" href="../events/mousemotionlistener.html">mouse motion listener</a>    to or from the component.
+    Mouse motion listeners are notified
+    when the user moves the mouse within
+    the listened-to component's bounds.</TD>
+
+  </TR>
+  <TR>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#addKeyListener(java.awt.event.KeyListener)">void addKeyListener(KeyListener)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#removeKeyListener(java.awt.event.KeyListener)">void removeKeyListener(KeyListener)</a>    <td headers="h202">
+    Add or remove a
+<a class="TutorialLink" target="_top" href="../events/keylistener.html">key listener</a>    to or from the component.
+    Key listeners are notified
+    when the user types at the keyboard
+    and the listened-to component has the keyboard focus.</TD>
+  </TR>
+  <TR>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#addComponentListener(java.awt.event.ComponentListener)">void addComponentListener(ComponentListener)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#removeComponentListener(java.awt.event.ComponentListener)">void removeComponentListener(ComponentListener)</a>    </font></code>
+    <td headers="h202">
+    Add or remove a
+<a class="TutorialLink" target="_top" href="../events/componentlistener.html">component listener</a>    to or from the component.
+    Component listeners are notified
+    when the listened-to component is hidden, shown, moved, or resized.</TD>
+  </TR>
+<!--   <tr>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setTransferHandler(javax.swing.TransferHandler)">void setTransferHandler(TransferHandler)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#getTransferHandler()">TransferHandler getTransferHandler()</a>    </td>
+    <td headers="h202">Set or remove the <code>transferHandler</code> property.
+        The <code>TransferHandler</code> supports exchanging data
+        via cut, copy, or paste to/from a clipboard as well a
+        drag and drop. See
+<a class="TutorialLink" target="_top" href="../dnd/intro.html">Introduction to DnD</a>        for more details.
+    </td>
+  </tr> -->
+  
+  
+  
+  <TR>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#contains(int, int)">boolean contains(int, int)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#contains(java.awt.Point)">boolean contains(Point)</a>    </TD>
+    <td headers="h202">
+    Determine whether the specified point is within the component.
+    The argument should be specified
+    in terms of the component's coordinate system.
+    The two <code>int</code> arguments specify <em>x</em> and <em>y</em> coordinates,
+    respectively.</TD>
+  </TR>
+  <TR>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#getComponentAt(int, int)">Component getComponentAt(int, int)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#getComponentAt(java.awt.Point)">Component getComponentAt(Point)</a>    </TD>
+    <td headers="h202">
+    Return the component that contains the specified <em>x, y</em> position.
+    The top-most child component is returned
+    in the case where components overlap.
+    This is determined by finding the component closest to the index 0
+    that claims to contain the given point via
+    <code>Component.contains()</code>.</TD>
+  </TR>
+  
+ <!-- *********** ZOrder ******************** --> 
+  
+  
+   <TR>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#getComponentZOrder(java.awt.Component, int)">Component setComponentZOrder(component comp, int index)</a><br>
+
+</TD>
+    <td headers="h202">
+    Moves the specified component to the specified z-order index in the container. <br><br>
+
+If the component is a child of some other container, it is removed from that container before being added to this container. The important difference between this method and <code> java.awt.Container.add(Component, int)</code> is that this method doesn't call <code>removeNotify</code> on the component while removing it from its previous container unless necessary and when allowed by the underlying native windowing system. This way, if the component has the keyboard focus, it maintains the focus when moved to the new position.<br><br>
+
+<b>Note:</b>&nbsp;&nbsp;The z-order determines the order that components are painted. The component with the highest z-order paints first and the component with the lowest z-order paints last. Where components overlap, the component with the lower z-order paints over the component with the higher z-order.
+
+</TD>
+  </TR>
+  
+  
+  
+  
+    <TR>
+    <td headers="h201">
+
+<br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#getComponentZOrder(comp)">Component getComponentZOrder(component comp)</a>    </TD>
+    <td headers="h202">
+    Returns the z-order index of the component inside the container. The higher a component is in the z-order hierarchy, the lower its index. The component with the lowest z-order index is painted last, above all other child components.</TD>
+  </TR>
+  
+  
+   <!-- *********** ZOrder ******************** --> 
+  
+  
+</TABLE>
+
+<p>
+
+<TABLE BORDER="1">
+<caption><A NAME="custompaintingapi">
+<b>Painting Components</b>
+<br>
+(see
+<a class="TutorialLink" target="_top" href="../painting/index.html">Performing Custom Painting</a> for details)
+</A></caption>
+<TR> <th id="h301"> Method </th> <th id="h302"> Purpose</th>
+  <TR>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#repaint()">void repaint()</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#repaint(int, int, int, int)">void repaint(int, int, int, int)</a>    </TD>
+    <td headers="h302">
+    Request that all or part of the component be repainted.
+    The four <code>int</code> arguments specify
+    the bounds (<em>x</em>, <em>y</em>, width, height, in that order)
+    of the rectangle to be painted.
+    </TD>
+  </TR>
+  <TR>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#repaint(java.awt.Rectangle)">void repaint(Rectangle)</a>    </TD>
+    <td headers="h302">
+    Request that the specified area within the component be repainted.
+    </TD>
+  </TR>
+  <TR>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#revalidate()">void revalidate()</a>    </TD>
+    <td headers="h302">
+    Request that the component and its affected containers
+    be laid out again.
+    You should not generally need to invoke this method
+    unless you explicitly change a component's size/alignment hints
+    after it's visible
+    or
+    change a containment hierarchy after it is visible.
+    Always invoke <code>repaint</code>
+    after <code>revalidate</code>.
+    </TD>
+  <TR>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#paintComponent(java.awt.Graphics)">void paintComponent(Graphics)</a>    </TD>
+    <td headers="h302">
+    Paint the component.
+    Override this method to implement painting
+    for custom components.</TD>
+  </TR>
+</TABLE>
+
+<P>
+<TABLE BORDER="1">
+<caption><A NAME="containmentapi">
+<b>Dealing with the Containment Hierarchy</b>
+<br>
+      (see
+<a class="TutorialLink" target="_top" href="toplevel.html">Using Top-Level Containers</a> for more information)
+</A></caption>
+<TR> <th id="h401"> Method </th> <th id="h402"> Purpose</th>
+  <TR>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#add(java.awt.Component)">Component add(Component)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#add(java.awt.Component, int)">Component add(Component, int)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#add(java.awt.Component, java.lang.Object)">void add(Component, Object)</a>    </TD>
+    <td headers="h402">
+    Add the specified component to this container.
+    The one-argument version of this method adds
+    the component to the end of the container.
+    When present, the <code>int</code> argument indicates the
+    new component's position within the container.
+    When present, the <code>Object</code> argument
+    provides layout constraints to the current layout manager.</TD>
+  </TR>
+  <TR>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#remove(int)">void remove(int)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#remove(java.awt.Component)">void remove(Component)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#removeAll()">void removeAll()</a>    </TD>
+    <td headers="h402">
+    Remove one of or all of the components from this container.
+    When present, the <code>int</code> argument indicates the
+    position within the container of the component to remove.
+  </TR>
+  <TR>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#getRootPane()">JRootPane getRootPane()</a>    </TD>
+    <td headers="h402">
+    Get the root pane that contains the component.</TD>
+  </TR>
+  <TR>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#getTopLevelAncestor()">Container getTopLevelAncestor()</a>    </TD>
+    <td headers="h402">
+    Get the topmost container for the component &mdash;
+    a <code>Window</code>, <code>Applet</code>, or null
+    if the component has not been added to any container.</TD>
+  </TR>
+  <TR>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getParent()">Container getParent()</a>    </TD>
+    <td headers="h402">
+    Get the component's immediate container.</TD>
+  </TR>
+  <TR>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#getComponentCount()">int getComponentCount()</a>    </TD>
+    <td headers="h402">
+    Get the number of components in this container.</TD>
+  </TR>
+  <TR>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#getComponent(int)">Component getComponent(int)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#getComponents()">Component[] getComponents()</a>    </TD>
+    <td headers="h402">
+    Get the one of or all of the components in this container.
+    The <code>int</code> argument indicates
+    the position of the component to get.
+    </TD>
+  </TR>
+  
+  
+ 
+    <TR>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#getComponentZOrder(int)">Component getComponentZOrder(int)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#getComponents()">Component[] getComponentZOrder()</a>    </TD>
+    <td headers="h402">
+    Returns the z-order index of the component inside the container. The higher a component is in the z-order hierarchy, the lower its index. The component with the lowest z-order index is painted last, above all other child components.
+    </TD>
+  </TR>  
+  
+ 
+</TABLE>
+</div>
+
+<p>
+
+<TABLE BORDER="1">
+<caption><a NAME="layoutapi">
+<b>Laying Out Components</b>
+<br>
+      (see
+<a class="TutorialLink" target="_top" href="../layout/index.html">Laying Out Components Within a Container</a> for more information)
+</a></caption>
+
+<TR> <th id="h501"> Method </th> <th id="h502"> Purpose</th>
+  <TR>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setPreferredSize(java.awt.Dimension)">void setPreferredSize(Dimension)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setMaximumSize(java.awt.Dimension)">void setMaximumSize(Dimension)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setMinimumSize(java.awt.Dimension)">void setMinimumSize(Dimension)</a>    </TD>
+    <td headers="h502">
+    Set the component's preferred, maximum, or minimum size,
+    measured in pixels.
+    The preferred size indicates the best size for the component.
+    The component should be no larger than its maximum size
+    and no smaller than its minimum size.
+    Be aware that these are hints only
+    and might be ignored by certain layout managers.
+    </TD>
+  </TR>
+  <TR>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getPreferredSize()">Dimension getPreferredSize()</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getMaximumSize()">Dimension getMaximumSize()</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getMinimumSize()">Dimension getMinimumSize()</a>    </TD>
+    <td headers="h502">
+    Get the preferred, maximum, or minimum size of the component,
+    measured in pixels. Many JComponent classes have setter and getter methods. 
+    For those non-<code>JComponent</code> subclasses,
+    which do not have the corresponding setter methods,
+    you can set a component's preferred, maximum, or minimum size
+    by creating a subclass and overriding these methods.
+    </TD>
+  </TR>
+  <TR>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setAlignmentX(float)">void setAlignmentX(float)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#setAlignmentY(float)">void setAlignmentY(float)</a>    </TD>
+    <td headers="h502">
+    Set the alignment along the
+    <em>x-</em> or
+    <em>y-</em> axis.
+    These values indicate how the component would like to be aligned
+    relative to other components.
+    The value should be a number between 0 and 1 where 0 represents
+    alignment along the origin, 1 is aligned the furthest away from
+    the origin, and 0.5 is centered, and so on.
+    Be aware that these are hints only
+    and might be ignored by certain layout managers.
+    </TD>
+  </TR>
+  <TR>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getAlignmentX()">float getAlignmentX()</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getAlignmentY()">float getAlignmentY()</a>    </TD>
+    <td headers="h502">
+    Get the alignment of the component along the
+    <em>x-</em> or
+    <em>y-</em> axis.
+    For non-<code>JComponent</code> subclasses,
+    which do not have the corresponding setter methods,
+    you can set a component's alignment
+    by creating a subclass and overriding these methods.
+    </TD>
+  </TR>
+  <TR>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#setLayout(java.awt.LayoutManager)">void setLayout(LayoutManager)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#getLayout()">LayoutManager getLayout()</a>    </TD>
+    <td headers="h502">
+    Set or get the component's layout manager.
+    The layout manager is responsible for sizing and positioning
+    the components within a container.
+    </TD>
+  </TR>
+  <tr>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#applyComponentOrientation(java.awt.ComponentOrientation)">void applyComponentOrientation(ComponentOrientation)</a>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#setComponentOrientation(java.awt.ComponentOrientation)">void setComponentOrientation(ComponentOrientation)</a>
+
+
+    </td>
+    <td headers="h502">Set the <code>ComponentOrientation</code> property of this container
+        and all the components contained within it.
+	See 
+<a class="TutorialLink" target="_top" href="../layout/using.html#orientation">Setting the Container's Orientation</a>        for more information.
+    </td>
+  </tr>
+</TABLE>
+
+<p>
+
+<TABLE BORDER="1">
+<caption><A NAME="sizeapi">
+<b>Getting Size and Position Information</b>
+<br>
+</A></caption>
+<TR> <th id="h601"> Method </th> <th id="h602"> Purpose</th>
+  <TR>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getWidth()">int getWidth()</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getHeight()">int getHeight()</a>    </TD>
+    <td headers="h602">
+    Get the current width or height of the component
+    measured in pixels.</TD>
+  </TR>
+  <TR>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getSize()">Dimension getSize()</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getSize(java.awt.Dimension)">Dimension getSize(Dimension)</a>    </TD>
+    <td headers="h602">
+    Get the component's current size measured in pixels.
+    When using the one-argument version of this method,
+    the caller is responsible for creating the <code>Dimension</code>
+    instance in which the result is returned.
+    </TD>
+  </TR>
+  <TR>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getX()">int getX()</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getY()">int getY()</a>    </TD>
+    <td headers="h602">
+    Get the current <em>x</em> or y coordinate of the component's origin
+    relative to the parent's upper left corner
+    measured in pixels.
+    </TD>
+  </TR>
+  <TR>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getBounds()">Rectangle getBounds()</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getBounds(java.awt.Rectangle)">Rectangle getBounds(Rectangle)</a>    </TD>
+    <td headers="h602">
+    Get the bounds of the component measured in pixels.
+    The bounds specify the component's width, height,
+    and origin relative to its parent.
+    When using the one-argument version of this method,
+    the caller is responsible for creating the <code>Rectangle</code>
+    instance in which the result is returned.</TD>
+  </TR>
+
+  <TR>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getLocation()">Point getLocation()</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getLocation(java.awt.Point)">Point getLocation(Point)</a>    <br>
+
+    </td>
+    <td headers="h602">
+    Gets the current location of the component
+    relative to the parent's upper left corner
+    measured in pixels.
+    When using the one-argument version of <code>getLocation</code> method,
+    the caller is responsible for creating the <code>Point</code>
+    instance in which the result is returned.
+    </TD>
+    
+ </tr>
+ 
+   <TR>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getLocationOnScreen()">Point getLocationOnScreen()</a>    </TD>
+    <td headers="h602">
+    Returns the position
+    relative to the upper left corner of the screen.</TD>
+  </TR>
+    
+    
+    
+    
+  <TR>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#getInsets()">Insets getInsets()</a>    </TD>
+    <td headers="h602">
+    Get the size of the component's border.</TD>
+  </TR>
+
+</TABLE>
+
+<p>
+
+<TABLE BORDER="1">
+<caption><A NAME="absoluteapi">
+<b>Specifying Absolute Size and Position</b>
+<br>
+      (see
+<a class="TutorialLink" target="_top" href="../layout/none.html">Doing Without a Layout Manager (Absolute Positioning)</a> for more information)
+</A></caption>
+<TR> <th id="h701"> Method </th> <th id="h702"> Purpose</th>
+  <TR>
+    <td headers="h701">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#setLocation(int, int)">void setLocation(int, int)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#setLocation(java.awt.Point)">void setLocation(Point)</a>    </TD>
+    <td headers="h702">
+    Set the location of the component, in pixels,
+    relative to the parent's upper left corner.
+    The two <code>int</code> arguments specify <em>x</em> and <em>y</em>,
+    in that order.
+    Use these methods to position a component
+    when you are not using a layout manager.</TD>
+  </TR>
+  <TR>
+    <td headers="h701">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#setSize(int, int)">void setSize(int, int)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#setSize(java.awt.Dimension)">void setSize(Dimension)</a>    </TD>
+    <td headers="h702">
+    Set the size of the component measured in pixels.
+    The two <code>int</code> arguments specify width and height,
+    in that order.
+    Use these methods to size a component
+    when you are not using a layout manager.</TD>
+  </TR>
+  <TR>
+    <td headers="h701">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#setBounds(int, int, int, int)">void setBounds(int, int, int, int)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#setBounds(java.awt.Rectangle)">void setBounds(Rectangle)</a>    </TD>
+    <td headers="h702">
+    Set the size and location
+    relative to the parent's upper left corner,
+    in pixels,
+    of the component.
+    The four <code>int</code> arguments specify <em>x</em>, <em>y</em>, width, and height,
+    in that order.
+    Use these methods to position and size a component
+    when you are not using a layout manager.</TD>
+  </TR>
+</TABLE>
+
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=toplevel.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=text.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h801" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h801" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h802" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Using Top-Level Containers
+        <br><b>Next page:</b> Using Text Components
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

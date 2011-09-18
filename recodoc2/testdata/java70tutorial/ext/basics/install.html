@@ -1,0 +1,577 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Installed Extensions (The Java&trade; Tutorials &gt;        
+            The Extension Mechanism &gt; Creating and Using Extensions)
+</title>
+
+     <meta name="description" content="This Java tutorial describes how to create and use extensions or optional packages and make them secure" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java extensions, java optional packages" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> The Extension Mechanism
+        <br><b>Lesson:</b> Creating and Using Extensions
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Creating and Using Extensions</a></div>
+<div class="nolinkAHEAD">Installed Extensions</div>
+<div class="linkAHEAD"><a href="download.html">Download Extensions</a></div>
+<div class="linkAHEAD"><a href="load.html">Understanding Extension Class Loading</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>The Extension Mechanism</a>
+                &gt;
+                <a href=index.html target=_top>Creating and Using Extensions</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=download.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Installed Extensions</h1></div>
+            <div id=PageContent>
+Installed extensions are JAR files in the <tt>lib/ext</tt> 
+directory of the Java Runtime Environment (JRE&trade;) software.
+As its name 
+implies, the JRE is the runtime portion of the Java Development Kit 
+containing the platform's core API but without development tools such 
+as compilers and debuggers. The JRE is available either by itself or 
+as part of the Java Development Kit.
+<p>
+The JRE is a strict subset of the 
+JDK&trade software.  A subset of the JDK
+software directory tree looks like this:
+
+<p><center><IMG SRC="../../figures/ext/extb1.gif" WIDTH="392" HEIGHT="234" ALIGN="BOTTOM" ALT="JDK software directory tree"></center></p><p>
+The JRE consists of those directories within the highlighted box in  
+the diagram. Whether your JRE is stand-alone or part of the 
+JDK software, any JAR file in the <tt>lib/ext</tt> of the JRE
+directory is automatically treated by the runtime environment 
+as an extension.
+<p>
+
+Since installed extensions extend the platform's core API, use them
+judiciously.  They are rarely appropriate for interfaces used by a single, or
+small set of applications.
+
+<p>
+
+Furthermore, since the symbols defined by installed extensions will be visible
+in all Java processes, care should be taken to ensure that all visible symbols
+follow the appropriate "reverse domain name" and "class hierarchy"
+conventions.  For example, <tt>com.mycompany.MyClass</tt>.
+<p>
+
+As of Java 6, extension JAR files may also be placed in a location that is
+independent of any particular JRE,
+so that extensions can be shared by all JREs that are installed on a system.
+
+Prior to Java 6, the value of <tt>java.ext.dirs</tt> referred to
+a single directory, but as of Java 6 it is a list of directories (like
+<tt>CLASSPATH</tt>) that specifies the locations in which extensions are
+searched for.
+
+The first element of the path is always the <tt>lib/ext</tt> directory of the
+JRE.
+
+The second element is a directory outside of the JRE.
+
+This other location allows extension JAR files to be installed once and used
+by several JREs installed on that system.
+
+The location varies depending on the operating system:
+<ul>
+<li>Solaris&trade; Operating System: <tt>/usr/jdk/packages/lib/ext</tt></li>
+<li>Linux: <tt>/usr/java/packages/lib/ext</tt></li>
+<li>Microsoft Windows: <tt>%SystemRoot%\Sun\Java\lib\ext</tt></li>
+</ul>
+<p>
+
+Note that an installed extension placed in one of the above directories
+extends the platform of <em>each</em> of the JREs (Java 6 or later) on
+that system.
+
+<p>
+
+<h2>A Simple Example</h2>
+Let's create a simple installed extension. Our extension consists 
+of one class, <tt>RectangleArea</tt>, that computes the areas of rectangles:
+<div class="codeblock"><pre>
+public final class RectangleArea {
+    public static int area(java.awt.Rectangle r) {
+        return r.width * r.height;
+    }
+}
+</pre></div>
+This class has a single method, <tt>area</tt>, that takes an instance of 
+<tt>java.awt.Rectangle</tt> and returns the rectangle's area.
+<p>
+Suppose that you want to test <tt>RectangleArea</tt> with an application 
+called <code>AreaApp</code>:
+<div class="codeblock"><pre>
+import java.awt.*;
+
+public class AreaApp {
+    public static void main(String[] args) {
+        int width = 10;
+        int height = 5;
+
+        Rectangle r = new Rectangle(width, height);
+        System.out.println("The rectangle's area is " 
+                           + RectangleArea.area(r));
+    }
+}
+</pre></div>
+This application instantiates a 10 <var>x</var> 5 rectangle, and then 
+prints out the rectangle's area using the 
+<tt>RectangleArea.area</tt> method. 
+<p>
+<h2>Running AreaApp Without the Extension Mechanism</h2>
+Let's first review how you would run the <code>AreaApp</code> application 
+without using the extension mechanism. We'll assume that the 
+<tt>RectangleArea</tt> class is bundled in a JAR file named <tt>area.jar</tt>.
+<p>
+The <tt>RectangleArea</tt> class is not part of the Java platform, of 
+course, so you would need to place the <tt>area.jar</tt> file on the 
+class path in order to run <code>AreaApp</code> without getting a runtime 
+exception.  If <tt>area.jar</tt> was in the directory <tt>/home/user</tt>, 
+for example, you could use this command:
+<div class="codeblock"><pre>
+java -classpath .:/home/user/area.jar AreaApp 
+</pre></div>
+The class path specified in this command contains both the current 
+directory, containing <tt>AreaApp.class</tt>, and the path to 
+the JAR file containing the <tt>RectangleArea</tt> package. You would 
+get the desired output by running this command:
+<div class="codeblock"><pre>
+The rectangle's area is 50
+</pre></div>
+<p>
+<h2>Running AreaApp by Using the Extension Mechanism</h2>
+Now let's look at how you would run <code>AreaApp</code> by using the 
+<tt>RectangleArea</tt> class as an extension.
+<p>
+To make the <tt>RectangleArea</tt> class into an extension, you place the 
+file <tt>area.jar</tt> in the <tt>lib/ext</tt> directory of the JRE. 
+Doing so automatically gives the <tt>RectangleArea</tt> the status of being 
+an installed extension.
+<p>
+With <tt>area.jar</tt> installed as an extension, you can run 
+<code>AreaApp</code> without needing to specify the class path:
+<div class="codeblock"><pre>
+java AreaApp 
+</pre></div>
+<p>
+Because you're using <tt>area.jar</tt> as an installed extension, the 
+runtime environment will be able to find and to load the 
+<code>RectangleArea</code> class even though you haven't specified it on 
+the class path.  Similarly, any applet or application being run by any user 
+on your system would be able to find and use the <tt>RectangleArea</tt> class. 
+<p>
+
+If there are multiple JREs (Java 6 or later) installed on a system and want the
+<tt>RectangleArea</tt> class to be available as an extension to all of them,
+instead of installing it in the <tt>lib/ext</tt> directory of a particular
+JRE, install it in the system-wide location.
+
+For example, on system running Linux, install <tt>area.jar</tt> in the
+directory <tt>/usr/java/packages/lib/ext</tt>.
+
+Then <tt>AreaApp</tt> can run using different JREs that are installed on that
+system, for example if different browsers are configured to use different
+JREs.
+        </div>
+        <div class=NavBit>
+            <a target=_top href=index.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=download.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Creating and Using Extensions
+        <br><b>Next page:</b> Download Extensions
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

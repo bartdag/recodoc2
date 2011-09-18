@@ -1,0 +1,628 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>The SortedSet Interface (The Java&trade; Tutorials &gt;        
+            Collections &gt; Interfaces)
+</title>
+
+     <meta name="description" content="This collections Java tutorial describes interfaces, implementations, and algorithms in the Java Collections framework" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java collections, set, list, queue, map, array, arraylist" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Collections
+        <br><b>Lesson:</b> Interfaces
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Interfaces</a></div>
+<div class="linkAHEAD"><a href="collection.html">The Collection Interface</a></div>
+<div class="linkAHEAD"><a href="set.html">The Set Interface</a></div>
+<div class="linkAHEAD"><a href="list.html">The List Interface</a></div>
+<div class="linkAHEAD"><a href="queue.html">The Queue Interface</a></div>
+<div class="linkAHEAD"><a href="map.html">The Map Interface</a></div>
+<div class="linkAHEAD"><a href="order.html">Object Ordering</a></div>
+<div class="nolinkAHEAD">The SortedSet Interface</div>
+<div class="linkAHEAD"><a href="sorted-map.html">The SortedMap Interface</a></div>
+<div class="linkAHEAD"><a href="summary.html">Summary of Interfaces</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Collections</a>
+                &gt;
+                <a href=index.html target=_top>Interfaces</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=order.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=sorted-map.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>The SortedSet Interface</h1></div>
+            <div id=PageContent>
+A
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/SortedSet.html"><code>SortedSet</code></a> is a
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Set.html"><code>Set</code></a> that maintains its elements in ascending order, sorted according to the
+elements' natural ordering or according to a <code>Comparator</code>
+provided at <code>SortedSet</code> creation time.  In addition to the normal
+<code>Set</code> operations, the <code>SortedSet</code> interface provides
+operations for the following:
+<ul>
+<li>
+<code>Range view</code> &mdash; allows arbitrary range operations on the sorted
+set
+<li>
+<code>Endpoints</code> &mdash; returns the first or last element in the sorted set
+<li>
+<code>Comparator access</code> &mdash; returns the <code>Comparator</code>, if any, used to sort the set
+</ul>
+The code for the <code>SortedSet</code> interface follows.
+<div class="codeblock"><pre>
+public interface SortedSet&lt;E&gt; extends Set&lt;E&gt; {
+    // Range-view
+    SortedSet&lt;E&gt; subSet(E fromElement, E toElement);
+    SortedSet&lt;E&gt; headSet(E toElement);
+    SortedSet&lt;E&gt; tailSet(E fromElement);
+
+    // Endpoints
+    E first();
+    E last();
+
+    // Comparator access
+    Comparator&lt;? super E&gt; comparator();
+}
+</pre></div>
+
+
+<h2>Set Operations</h2>
+
+The operations that <code>SortedSet</code> inherits from <code>Set</code>
+behave identically on sorted sets and normal sets with two exceptions:
+<ul>
+<li>
+The <code>Iterator</code> returned by the <code>iterator</code> operation
+traverses the sorted set in order.
+<li>The array returned by <code>toArray</code> contains the sorted set's
+elements in order.
+</ul>
+Although the interface doesn't guarantee it, the <code>toString</code>
+method of the Java platform's <code>SortedSet</code> implementations returns a
+string containing all the elements of the sorted set, in order.
+
+
+<a name=constructor><h2>Standard Constructors</h2></a>
+
+By convention, all general-purpose <code>Collection</code> implementations
+provide a standard conversion
+constructor that takes a <code>Collection</code>; <code>SortedSet</code>
+implementations are no exception.  In <code>TreeSet</code>, this
+constructor creates an instance that sorts its elements according to their
+natural ordering. This was probably a mistake. It would have been better to
+check dynamically to see whether the specified collection was a <code>SortedSet</code>
+instance and, if so, to sort the new <code>TreeSet</code> according to the
+same criterion (comparator or natural ordering). Because <code>TreeSet</code>
+took the approach that it did, it also provides a constructor that takes a
+<code>SortedSet</code> and returns a new <code>TreeSet</code> containing
+the same elements sorted according to the same criterion. Note that it is
+the compile-time type of the argument, not its runtime type, that determines
+which of these two constructors is invoked (and whether the sorting criterion
+is preserved).
+<P>
+<code>SortedSet</code> implementations also provide, by convention, a constructor
+that takes a <code>Comparator</code> and returns an empty set sorted according
+to the specified <code>Comparator</code>. If <code>null</code> is passed to
+this constructor, it returns a set that sorts its elements according to their
+natural ordering.
+
+
+
+<h2>Range-view Operations</h2>
+
+The <code>range-view</code> operations are somewhat analogous to those provided by the
+<code>List</code> interface, but there is one big difference. Range views
+of a sorted set remain valid even if the backing sorted set is modified
+directly. This is feasible because the endpoints of a range view of a
+sorted set are absolute points in the element space rather than specific
+elements in the backing collection, as is the case for lists. A <code>range-view</code>
+of a sorted set is really just a window onto whatever portion of the set
+lies in the designated part of the element space. Changes to the <code>range-view</code>
+write back to the backing sorted set and vice versa. Thus, it's okay to use
+<code>range-view</code>s on sorted sets for long periods of time, unlike <code>range-view</code>s on lists.
+<P>
+Sorted sets provide three <code>range-view</code> operations. The first, <code>subSet</code>,
+takes two endpoints, like <code>subList</code>. Rather than indices, the endpoints
+are objects and must be comparable to the elements in the sorted set, using the
+<code>Set</code>'s <code>Comparator</code> or the natural ordering of its elements, whichever
+the <code>Set</code> uses to order itself. Like <code>subList</code>, the range is half open,
+including its low endpoint but excluding the high one.
+<P>
+Thus, the following line of code tells you how many words between <code>"doorbell"</code>
+and <code>"pickle"</code>, including <code>"doorbell"</code> but excluding <code>"pickle"</code>, are contained in a
+<code>SortedSet</code> of strings called <code>dictionary</code>:
+<div class="codeblock"><pre>
+int count = dictionary.subSet("doorbell", "pickle").size();
+</pre></div>
+
+In like manner, the following one-liner removes all the elements beginning with
+the letter <code>f</code>.
+<div class="codeblock"><pre>
+dictionary.subSet("f", "g").clear();
+</pre></div>
+
+A similar trick can be used to print a table telling you how many words begin
+with each letter.
+
+<div class="codeblock"><pre>
+for (char ch = 'a'; ch &lt;= 'z'; ) {
+    String from = String.valueOf(ch++);
+    String to = String.valueOf(ch);
+    System.out.println(from + ": " +
+        dictionary.subSet(from, to).size());
+}
+</pre></div>
+
+Suppose you want to view a <I>closed interval</I>, which contains both of its
+endpoints, instead of an open interval. If the element type allows for the
+calculation of the successor of a given value in the element space, merely
+request the <code>subSet</code> from <code>lowEndpoint</code> to
+<code>successor(highEndpoint)</code>. Although it isn't entirely obvious,
+the successor of a string <code>s</code> in <code>String</code>'s natural
+ordering is <code>s + "\0"</code> &mdash; that is, <code>s</code> with a <code>null</code> character appended.
+
+<P>
+
+Thus, the following one-liner tells you how many words between <code>"doorbell"</code> and
+<code>"pickle"</code>, including doorbell <I>and</I> pickle, are contained in the
+dictionary.
+<div class="codeblock"><pre>
+count = dictionary.subSet("doorbell", "pickle\0").size();
+</pre></div>
+
+A similar technique can be used to view an <I>open interval</I>, which contains
+neither endpoint. The open-interval view from <code>lowEndpoint</code> to
+<code>highEndpoint</code> is the half-open interval from
+<code>successor(lowEndpoint)</code> to <code>highEndpoint</code>. Use the following to calculate
+the number of words between <code>"doorbell"</code> and <code>"pickle"</code>, excluding both.
+<div class="codeblock"><pre>
+count = dictionary.subSet("doorbell\0", "pickle").size();
+</pre></div>
+
+The <code>SortedSet</code> interface contains two more <code>range-view</code> operations &mdash;
+<code>headSet</code> and <code>tailSet</code>, both of which take a single
+<code>Object</code> argument. The former returns a view of the initial portion
+of the backing <code>SortedSet</code>, up to but not including the specified
+object. The latter returns a view of the final portion of the backing
+<code>SortedSet</code>, beginning with the specified object and continuing
+to the end of the backing <code>SortedSet</code>. Thus, the following code
+allows you to view the dictionary as two disjoint <code>volumes</code>
+(<code>a-m</code> and <code>n-z</code>).
+
+<div class="codeblock"><pre>
+SortedSet&lt;String&gt; volume1 = dictionary.headSet("n");
+SortedSet&lt;String&gt; volume2 = dictionary.tailSet("n");
+</pre></div>
+
+
+<h2>Endpoint Operations</h2>
+
+The <code>SortedSet</code> interface contains operations to return the first
+and last elements in the sorted set, not surprisingly called
+<code>first</code> and <code>last</code>.  In addition to their obvious uses,
+<code>last</code> allows a workaround for a deficiency in the
+<code>SortedSet</code> interface.  One thing you'd like to
+ do with a <code>SortedSet</code> is to go into the interior of the <code>Set</code>
+and iterate forward or backward.  It's easy enough to go forward from the
+interior: Just get a <code>tailSet</code> and iterate over it.  Unfortunately,
+there's no easy way to go backward.
+<p>
+The following idiom obtains the first element that is
+less than a specified object <code>o</code> in the element space.
+<div class="codeblock"><pre>
+Object predecessor = ss.headSet(o).last();
+</pre></div>
+This is a fine way to go one element backward from a point in the interior of
+a sorted set.  It could be applied repeatedly to iterate backward, but
+this is very inefficient, requiring a lookup for each element
+returned.
+
+<h2>Comparator Accessor</h2>
+
+The <code>SortedSet</code> interface contains an accessor method
+called <code>comparator</code> that returns the <code>Comparator</code>
+used to sort the set, or <code>null</code> if the set is sorted according to
+the <i>natural ordering</i> of its elements.  This method is provided
+so that sorted sets can be copied into new sorted sets with the same
+ordering.  It is used by the <code>SortedSet</code> constructor described <a href=#constructor>previously</a>.
+        </div>
+        <div class=NavBit>
+            <a target=_top href=order.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=sorted-map.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Object Ordering
+        <br><b>Next page:</b> The SortedMap Interface
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

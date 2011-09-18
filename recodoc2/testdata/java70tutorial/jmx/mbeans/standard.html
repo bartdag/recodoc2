@@ -1,0 +1,694 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Standard MBeans (The Java&trade; Tutorials &gt;        
+            Java Management Extensions (JMX) &gt; Introducing MBeans)
+</title>
+
+     <meta name="description" content="This JMX Java tutorial describes the Java Management Extensions (JMX) technology - mbeans, notifications, and remote management " />
+     <meta name="keywords" content="java programming, learn java, java sample code, jmx, java management extension, mbeans, mxbeans" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Java Management Extensions (JMX)
+        <br><b>Lesson:</b> Introducing MBeans
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Introducing MBeans</a></div>
+<div class="nolinkAHEAD">Standard MBeans</div>
+<div class="linkAHEAD"><a href="mxbeans.html">MXBeans</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Java Management Extensions (JMX)</a>
+                &gt;
+                <a href=index.html target=_top>Introducing MBeans</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=mxbeans.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Standard MBeans</h1></div>
+            <div id=PageContent>
+<p>This section presents an example of a straightforward, standard MBean.
+
+<p>A standard MBean is defined by writing a Java interface called <code>SomethingMBean</code> and a Java class called <code>Something</code> that implements that interface. Every method in the interface defines either an attribute or an operation in the MBean. By default, every method defines an operation. Attributes and operations are methods that follow certain design patterns. A standard MBean is composed of an MBean interface and a class. The MBean interface lists the methods for all exposed attributes and operations. The class implements this interface and provides the functionality of the instrumented resource.
+
+<p>The following sections examine an example of a standard MBean and a simple JMX technology-enabled agent (JMX agent) that manages the MBean.
+
+<h2>MBean Interface</h2>
+
+<p>An example of a basic MBean interface, 
+
+<a class="SourceLink" target="_blank" href="../examples/HelloMBean.java"><code>HelloMBean</code></a>, follows:
+
+<div class="codeblock"><pre>
+
+package com.example; 
+ 
+public interface HelloMBean { 
+ 
+    public void sayHello(); 
+    public int add(int x, int y); 
+ 
+    public String getName(); 
+ 
+    public int getCacheSize(); 
+    public void setCacheSize(int size); 
+} 
+
+</pre></div>
+
+<p>By convention, an MBean interface takes the name of the Java class that implements it, with the suffix <i><code>MBean</code></i> added. In this case, the interface is called <code>HelloMBean</code>. The <code>Hello</code> class that implements this interface is described in the next section.
+
+<p>According to the JMX specification, an MBean interface consists of named and typed attributes that are readable and possibly writable, in addition to the named and typed operations that can be invoked by the applications that are managed by the MBean. The <code>HelloMBean</code> interface declares two operations: the Java methods <code>add()</code> and <code>sayHello()</code>.
+
+<p><code>HelloMBean</code> declares two attributes: <code>Name</code> is a read-only string, and <code>CacheSize</code> is an integer that can be both read and written. Getter and setter methods are declared to allow the managed application to access and possibly change the attribute values. As defined by the JMX specification, a <i>getter</i> is any public method that does not return void and whose name begins with <code>get</code>. A getter enables a manager to read the value of the attribute, whose type is that of the returned object. A <i>setter</i> is any public method that takes a single parameter and whose name begins with <code>set</code>. A setter enables a manager to write a new value in the attribute, whose type is the same as that of the parameter.
+
+<p>The implementation of these operations and attributes is shown in the following section. 
+
+
+<h2>MBean Implementation</h2>
+
+<p>The 
+
+<a class="SourceLink" target="_blank" href="../examples/Hello.java"><code>Hello</code></a>
+ Java class that follows implements the <code>HelloMBean</code> MBean interface:
+
+<div class="codeblock"><pre>
+
+package com.example; 
+ 
+public class Hello [...] implements HelloMBean { 
+    public void sayHello() { 
+	System.out.println("hello, world"); 
+    } 
+ 
+    public int add(int x, int y) { 
+	return x + y; 
+    } 
+ 
+    public String getName() { 
+	return this.name; 
+    } 
+ 
+ 
+    public int getCacheSize() { 
+	return this.cacheSize; 
+    } 
+ 
+    public synchronized void setCacheSize(int size) {
+	[...]
+	this.cacheSize = size; 
+ 
+	System.out.println("Cache size now " + this.cacheSize); 
+    } 
+    
+    [...]
+ 
+    private final String name = "Reginald"; 
+    private int cacheSize = DEFAULT_CACHE_SIZE; 
+    private static final int DEFAULT_CACHE_SIZE = 200; 
+}
+
+</pre></div>
+
+
+<p>The straightforward <code>Hello</code> class provides the definitions of the operations and attributes that are declared by <code>HelloMBean</code>. The <code>sayHello()</code> and <code>add()</code> operations are extremely simple, but real-life operations can be as simple or as sophisticated as needed.
+
+<p>The methods to get the <code>Name</code> attribute and to get and set the <code>CacheSize</code> attribute are also defined. In this example, the <code>Name</code> attribute value never changes. However, in a real scenario this attribute might change as the managed resource runs. For example, the attribute might represent statistics such as uptime or memory usage. Here, the attribute is merely the name <code>Reginald</code>.
+
+<p>Calling the <code>setCacheSize</code> method enables you to alter the <code>CacheSize</code> attribute from its declared default value of 200. In a real scenario, changing the <code>CacheSize</code> attribute could require other operations to be performed, such as discarding entries or allocating new entries. This example merely prints a message to confirm that the cache size has changed. However, more sophisticated operations could be defined instead of the simple call to <code>println()</code>.
+
+<p>With the <code>Hello</code> MBean and its interface thus defined, they can now be used to manage the resource they represent, as shown in the following section. 
+
+
+<h2>Creating a JMX Agent to Manage a Resource</h2>
+
+<p>Once a resource has been instrumented by MBeans, the management of that resource is performed by a JMX agent.
+
+<p>The core component of a JMX agent is the MBean server. An MBean server is a managed object server in which MBeans are registered. A JMX agent also includes a set of services to manage MBeans. See the API documentation for the 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/MBeanServer.html"><code>MBeanServer</code></a> interface for details of the MBean server implementation.
+
+<p>The 
+
+<a class="SourceLink" target="_blank" href="../examples/Main.java"><code>Main</code></a> class that follows represents a basic JMX agent:
+
+<div class="codeblock"><pre>
+
+package com.example; 
+ 
+import java.lang.management.*; 
+import javax.management.*; 
+ 
+public class Main { 
+ 
+   public static void main(String[] args) throws Exception { 
+ 
+      MBeanServer mbs = ManagementFactory.getPlatformMBeanServer(); 
+      ObjectName name = new ObjectName("com.example:type=Hello"); 
+      Hello mbean = new Hello(); 
+      mbs.registerMBean(mbean, name); 
+      
+      [...]
+ 
+      System.out.println("Waiting forever..."); 
+      Thread.sleep(Long.MAX_VALUE); 
+   } 
+} 
+
+</pre></div>
+
+<p>The JMX agent <code>Main</code> begins by obtaining an MBean server that has been created and initialized by the platform, by calling the <code>getPlatformMBeanServer()</code> method of the 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/management/ManagementFactory.html"><code>java.lang.management.ManagementFactory</code></a> class. If no MBean server has been created by the platform already, then <code>getPlatformMBeanServer()</code> creates an MBean server automatically by calling the JMX method 
+ 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/MBeanServerFactory.html#createMBeanServer()"><code>MBeanServerFactory.createMBeanServer()</code></a>. The <code>MBeanServer</code> instance obtained by <code>Main</code> is named <code>mbs</code>.
+
+<p>Next, <code>Main</code> defines an object name for the MBean instance that it will create. Every JMX MBean must have an object name. The object name is an instance of the JMX class 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/ObjectName.html"><code>ObjectName</code></a> and must conform to the syntax defined by the JMX specification. Namely, the object name must contain a domain and a list of key-properties. In the object name defined by <code>Main</code>, the domain is <code>com.example</code> (the package in which the example MBean is contained). In addition, the key-property declares that this object is of the type <code>Hello</code>.
+
+<p>An instance of a <code>Hello</code> object, named <code>mbean</code>, is created. The <code>Hello</code> object named <code>mbean</code> is then registered as an MBean in the MBean server <code>mbs</code> with the object name <code>name</code>, by passing the object and the object name into a call to the JMX method 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/MBeanServer.html#registerMBean(java.lang.Object,%20javax.management.ObjectName)"><code>MBeanServer.registerMBean()</code></a>.
+
+<p>With the <code>Hello</code> MBean registered in the MBean server, <code>Main</code> simply waits for management operations to be performed on <code>Hello</code>. In this example, these management operations are invoking <code>sayHello()</code> and <code>add()</code>, and getting and setting the attribute values.
+
+
+
+<h2>Running the Standard MBean Example</h2>
+
+<p>Having examined the example classes, you can now run the example. In this example, JConsole is used to interact with the MBean.  
+
+<p>To run the example, follow these steps: 
+
+
+<ol>
+
+<li>Save the bundle of JMX API sample classes, 
+
+<a class="SourceLink" target="_blank" href="../examples/jmx_examples.zip"><code>jmx_examples.zip</code></a>, to your working directory, <code><i>work_dir</i></code>.
+<p>  
+
+</li>
+
+<li>Unzip the bundle of sample classes by using the following command in a terminal window.
+
+<div class="codeblock"><pre>
+unzip jmx_examples.zip
+</pre></div>
+</li>
+<li>Compile the example Java classes from within the <code><i>work_dir</i></code> directory.
+
+<div class="codeblock"><pre>
+javac com/example/*.java
+</pre></div>
+
+</li>
+
+
+<li>If you are running the Java Development Kit (JDK) version 6, start the <code>Main</code> application with the following command.
+<div class="codeblock"><pre>
+java com.example.Main
+</pre></div>
+<p>If you are running a JDK version that is older than version 6, you will need to start the <code>Main</code> application with the following option specified, to expose the application for monitoring and management. 
+<div class="codeblock"><pre>
+java -Dcom.sun.management.jmxremote example.Main
+</pre></div>
+<p>A confirmation that <code>Main</code> is waiting for something to happen is displayed. 
+</li>
+
+<li>Start JConsole in a different terminal window on the same machine.
+<div class="codeblock"><pre>
+jconsole
+</pre></div>
+<p>The New Connection dialog box is displayed, presenting a list of running JMX agents that you can connect to.
+</li>
+
+<li>In the New Connection dialog box, select <code>com.example.Main</code> from the list and click Connect.
+<p>A summary of your platform's current activity is displayed.</li>
+
+<li>Click the MBeans tab.
+<p>This panel shows all the MBeans that are currently registered in the MBean server.
+</li>
+
+<li>In the left frame, expand the <code>com.example</code> node in the MBean tree.
+<p>You see the example MBean <code>Hello</code> that was created and registered by <code>Main</code>. If you click <code>Hello</code>, you see its associated Attributes and Operations nodes in the MBean tree.
+</li>
+
+<li>Expand the Attributes node of the <code>Hello</code> MBean in the MBean tree.
+<p>The MBean attributes that were defined by the <code>Hello</code> class are displayed.
+</li>
+
+<li>Change the value of the <code>CacheSize</code> attribute to 150.
+<p>In the terminal window in which you started <code>Main</code>, a confirmation of this attribute change is generated.
+</li>
+
+<li>Expand the Operations node of the <code>Hello</code> MBean in the MBean tree.
+<p>The two operations declared by the <code>Hello</code> MBean, <code>sayHello()</code> and <code>add()</code>, are visible.
+</li>
+
+<li>Invoke the <code>sayHello()</code> operation by clicking the <code>sayHello</code> button.
+<p>A JConsole dialog box informs you that the method was invoked successfully. The message <i>"hello, world"</i> is generated in the terminal window in which <code>Main</code> is running.
+</li>
+
+<li>Provide two integers for the <code>add()</code> operation to add and click the <code>add</code> button.
+<p>The answer is displayed in a JConsole dialog box.
+</li>
+
+<li>To close JConsole, select Connection -> Exit.
+</li>
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=index.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=mxbeans.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Introducing MBeans
+        <br><b>Next page:</b> MXBeans
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

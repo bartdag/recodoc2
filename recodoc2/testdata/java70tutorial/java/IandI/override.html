@@ -1,0 +1,580 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Overriding and Hiding Methods (The Java&trade; Tutorials &gt;        
+            Learning the Java Language &gt; Interfaces and Inheritance)
+</title>
+
+     <meta name="description" content="This beginner Java tutorial describes fundamentals of programming in the Java programming language" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java objects, java classes, java inheritance, interfaces, variables, arrays, data types, operators, control flow, number, string" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Learning the Java Language
+        <br><b>Lesson:</b> Interfaces and Inheritance
+        <br><b>Section:</b> Inheritance
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Interfaces and Inheritance</a></div>
+<div class="linkAHEAD"><a href="createinterface.html">Interfaces</a></div>
+<div class="linkBHEAD"><a href="interfaceDef.html">Defining an Interface</a></div>
+<div class="linkBHEAD"><a href="usinginterface.html">Implementing an Interface</a></div>
+<div class="linkBHEAD"><a href="interfaceAsType.html">Using an Interface as a Type</a></div>
+<div class="linkBHEAD"><a href="nogrow.html">Rewriting Interfaces</a></div>
+<div class="linkBHEAD"><a href="summary-interface.html">Summary of Interfaces</a></div>
+<div class="linkQUESTIONS"><a href="QandE/interfaces-questions.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="subclasses.html">Inheritance</a></div>
+<div class="nolinkBHEAD">Overriding and Hiding Methods</div>
+<div class="linkBHEAD"><a href="polymorphism.html">Polymorphism</a></div>
+<div class="linkBHEAD"><a href="hidevariables.html">Hiding Fields</a></div>
+<div class="linkBHEAD"><a href="super.html">Using the Keyword super</a></div>
+<div class="linkBHEAD"><a href="objectclass.html">Object as a Superclass</a></div>
+<div class="linkBHEAD"><a href="final.html">Writing Final Classes and Methods</a></div>
+<div class="linkBHEAD"><a href="abstract.html">Abstract Methods and Classes</a></div>
+<div class="linkBHEAD"><a href="summaryinherit.html">Summary of Inheritance</a></div>
+<div class="linkQUESTIONS"><a href="QandE/inherit-questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Learning the Java Language</a>
+                &gt;
+                <a href=index.html target=_top>Interfaces and Inheritance</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=subclasses.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=polymorphism.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Overriding and Hiding Methods</h1></div>
+            <div id=PageContent>
+<!-- Overriding and Hiding Methods -->
+
+
+<h2>Instance Methods</h2>
+ 
+An instance method in a subclass with the same signature (name, plus the number
+and the type of its parameters) and return type as an instance method in 
+the superclass <i>overrides</i> the superclass's method.
+<p>
+The ability of a subclass to override a 
+method allows a class to inherit from a superclass whose 
+behavior is "close enough" and then to modify behavior as 
+needed. 
+
+The overriding method has the same name, number and type 
+of parameters, and return type as the method it overrides. An overriding 
+method can also return a subtype of the type returned by the overridden 
+method. This is called a <i>covariant return type</i>.
+<p>
+
+When overriding a method, you might want to use
+the <code>@Override</code> annotation that instructs the
+compiler that you intend to override a method in the superclass.
+If, for some reason, the compiler detects that the method does
+not exist in one of the superclasses, it will generate an
+error. For more information on <code>@Override</code>, see
+<a class="TutorialLink" target="_top" href="../javaOO/annotations.html"><code>Annotations</code></a>.
+<P>
+ 
+<h2>Class Methods</h2>
+ 
+If a subclass defines a class method with the same signature 
+as a class method in the superclass, the method in the 
+subclass <i>hides</I> the one in the superclass. 
+<p>
+The distinction between hiding and overriding has important 
+implications. The version of the overridden 
+method that gets invoked is the one in the subclass. The version of the 
+hidden method that gets invoked depends on whether it is invoked from the superclass 
+or the subclass.
+
+Let's look at an example that contains two classes. The first is <code>Animal</code>, 
+which contains one instance method and one class method:
+
+<div class="codeblock"><pre>
+public class Animal {
+    public static void testClassMethod() {
+        System.out.println("The class method in Animal.");
+    }
+    public void testInstanceMethod() {
+        System.out.println("The instance method in Animal.");
+    }
+}
+</pre></div>
+
+The second class, a subclass of <code>Animal</code>,
+is called <code>Cat</code>:
+
+<div class="codeblock"><pre>
+public class Cat extends Animal {
+    public static void testClassMethod() {
+        System.out.println("The class method in Cat.");
+    }
+    public void testInstanceMethod() {
+        System.out.println("The instance method in Cat.");
+    }
+
+    public static void main(String[] args) {
+        Cat myCat = new Cat();
+        Animal myAnimal = myCat;
+        Animal.testClassMethod();
+        myAnimal.testInstanceMethod();
+    }
+}
+</pre></div>
+
+The <code>Cat</code> class overrides the instance method 
+in <code>Animal</code> and 
+hides the class method in <code>Animal</code>. 
+The <code>main</code> method in this 
+class creates an instance of <code>Cat</code> and calls 
+<code>testClassMethod()</code> on the class and <code>testInstanceMethod()</code> 
+on the instance.
+<p>
+The output from this program is as follows:
+<div class="codeblock"><pre>
+The class method in Animal.
+The instance method in Cat.
+</pre></div>
+As promised, the version of the hidden method that gets invoked is the 
+one in the superclass, and the version of the overridden 
+method that gets invoked is the one in the subclass.
+
+ 
+
+<h2>Modifiers</h2>
+ 
+The access specifier for an 
+overriding method can allow more, but not less, access than 
+the overridden method. For example, a protected instance method in 
+the superclass can be made public, but not private, in the subclass.
+<p>
+You will get a compile-time error if you attempt to change an instance method in the superclass 
+to a class method in the subclass, and vice versa.
+ 
+
+<h2>Summary</h2>
+ 
+<span id="table:override-method">The following table</span> summarizes what happens when you define a method with the same
+signature as a method in a superclass.
+
+<p> 
+<table border=1
+ summary="This table summarizes what happens when you define a method with the same signature as a method in a superclass">
+<caption id="override-method"><b>Defining a Method with the Same Signature as a Superclass's Method</b></caption>
+<tr>
+ <th id="h1">&nbsp;</th>
+ <th id="h2">Superclass Instance Method</th>
+ <th id="h3">Superclass Static Method</th>
+</tr>
+<tr>
+ <th id="row2">Subclass Instance Method</th>
+ <td headers="row2 h2">Overrides</td>
+ <td headers="row2 h3">Generates a compile-time error</td>
+</tr>
+<tr>
+ <th id="row3">Subclass Static Method</th>
+ <td headers="row3 h2">Generates a compile-time error</td>
+ <td headers="row3 h3">Hides</td>
+</tr>
+</table>
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;In a subclass, you can overload the methods inherited from the superclass. Such overloaded 
+methods neither hide nor override the superclass methods&mdash;they are new methods, unique to the 
+subclass.
+<hr></div>
+ 
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=subclasses.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=polymorphism.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h101" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h101" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h102" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Inheritance
+        <br><b>Next page:</b> Polymorphism
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

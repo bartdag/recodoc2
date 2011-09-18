@@ -1,0 +1,648 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Understanding Signing and Verification (The Java&trade; Tutorials &gt;        
+            Deployment &gt; Packaging Programs in JAR Files)
+</title>
+
+     <meta name="description" content="This deployment Java tutorial describes development and deployment of applets, Java Web Start applications, rich Internet applications, and JAR related tools" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java applet, java web start, rich internet application, RIA, jar, plugin, plug-in" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Deployment
+        <br><b>Lesson:</b> Packaging Programs in JAR Files
+        <br><b>Section:</b> Signing and Verifying JAR Files
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Packaging Programs in JAR Files</a></div>
+<div class="linkAHEAD"><a href="basicsindex.html">Using JAR Files: The Basics</a></div>
+<div class="linkBHEAD"><a href="build.html">Creating a JAR File</a></div>
+<div class="linkBHEAD"><a href="view.html">Viewing the Contents of a JAR File</a></div>
+<div class="linkBHEAD"><a href="unpack.html">Extracting the Contents of a JAR File</a></div>
+<div class="linkBHEAD"><a href="update.html">Updating a JAR File</a></div>
+<div class="linkBHEAD"><a href="run.html">Running JAR-Packaged Software</a></div>
+<div class="linkAHEAD"><a href="manifestindex.html">Working with Manifest Files: The Basics</a></div>
+<div class="linkBHEAD"><a href="defman.html">Understanding the Default Manifest</a></div>
+<div class="linkBHEAD"><a href="modman.html">Modifying a Manifest File</a></div>
+<div class="linkBHEAD"><a href="appman.html">Setting an Application's Entry Point</a></div>
+<div class="linkBHEAD"><a href="downman.html">Adding Classes to the JAR File's Classpath</a></div>
+<div class="linkBHEAD"><a href="packageman.html">Setting Package Version Information</a></div>
+<div class="linkBHEAD"><a href="sealman.html">Sealing Packages within a JAR File</a></div>
+<div class="linkAHEAD"><a href="signindex.html">Signing and Verifying JAR Files</a></div>
+<div class="nolinkBHEAD">Understanding Signing and Verification</div>
+<div class="linkBHEAD"><a href="signing.html">Signing JAR Files</a></div>
+<div class="linkBHEAD"><a href="verify.html">Verifying Signed JAR Files</a></div>
+<div class="linkAHEAD"><a href="apiindex.html">Using JAR-related APIs</a></div>
+<div class="linkBHEAD"><a href="jarclassloader.html">The JarClassLoader Class</a></div>
+<div class="linkBHEAD"><a href="jarrunner.html">The JarRunner Class</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Deployment</a>
+                &gt;
+                <a href=index.html target=_top>Packaging Programs in JAR Files</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=signindex.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=signing.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Understanding Signing and Verification</h1></div>
+            <div id=PageContent>
+The Java&trade; platform enables you to digitally sign JAR files.  
+
+You digitally sign a file for the same reason you might sign a 
+paper document with pen and ink -- to let readers  
+know that you wrote the document, or at least that the document 
+has your approval. 
+
+<p>
+
+When you sign a letter, for example, everyone who recognizes your 
+signature can confirm that you wrote the letter.  
+Similarly when you digitally sign a file, anyone who "recognizes" 
+your digital signature knows that the file came from you.  
+The process of "recognizing" electronic signatures 
+is called <em>verification</em>.
+
+<p>
+
+The ability to sign and verify files is an important part of 
+the Java platform's security architecture. Security is controlled by the security 
+<em>policy</em> that's in force at runtime.  You can configure 
+the policy to grant security privileges to applets and to 
+applications.  
+
+For example, you could grant permission to an applet to perform 
+normally forbidden operations such as reading and writing local 
+files or running local executable programs. If you have 
+downloaded some code that's signed by a trusted entity, you can 
+use that fact as a criterion in deciding which security permissions 
+to assign to the code.
+
+<p>
+
+Once you (or your browser) have verified that an applet is from a 
+trusted source, you can have the platform relax security restrictions 
+to let the applet perform operations that would ordinarily be forbidden. 
+A trusted applet can have freedoms as specified by the <em>policy file</em> in force.
+
+<p>
+
+The Java platform enables signing and verification by using 
+special numbers called public and private <em>keys</em>.  Public 
+keys and private keys come in pairs, and they play complementary 
+roles. 
+
+<p>
+The private key is the electronic "pen" with which you 
+can sign a file.  As its name implies, your private key is known 
+only to you so that no one else can "forge" your signature.
+A file signed with your private key can be verified only by 
+the corresponding public key. 
+
+<p>
+
+Public and private keys alone, however, aren't enough to truly verify 
+a signature.  Even if you've verified that a signed file contains a 
+matching key pair, you still need some way to confirm that the public 
+key actually comes from the signer that it purports to come from.
+
+<p>
+
+One more element, therefore, is required to make signing and verification 
+work. That additional element is the <em>certificate</em> that the 
+signer includes in a signed JAR file.  A certificate is a 
+digitally signed statement from a recognized <em>certification authority</em> 
+that indicates who owns a particular public key.  A certification 
+authority are entities (typically firms specializing in digital 
+security) that are trusted throughout the industry to sign and issue 
+certificates for keys and their owners. In the case of 
+signed JAR files, the certificate indicates who owns the public key 
+contained in the JAR file.
+
+<p>
+
+When you sign a JAR file your public key is placed inside the archive 
+along with an associated certificate so that it's easily 
+available for use by anyone wanting to verify your signature.
+
+<p>
+
+To summarize digital signing:
+<ul>
+<li> The signer signs the JAR file using a private key.
+<li> The corresponding public key is placed in the JAR file, together 
+with its certificate, so that 
+it is available for use by anyone who wants to verify the signature. 
+</ul>
+
+
+<a name="digest"></a>
+<h2>Digests and the Signature File</h2>
+
+When you sign a JAR file, each file in the archive is given a 
+digest entry in the archive's <a href="manifestindex.html">manifest</a>. 
+Here's an example of what such an entry might look like:
+
+<div class="codeblock"><pre>
+Name: test/classes/ClassOne.class
+SHA1-Digest: TD1GZt8G11dXY2p4olSZPc5Rj64=
+</pre></div>
+
+The digest values are hashes or encoded representations of the 
+contents of the files as they were at the time of signing.  
+A file's digest will change if and only if the file itself changes. 
+
+<p>
+
+When a JAR file is signed, a <em>signature</em> file is automatically 
+generated and placed in the JAR file's <tt>META-INF</tt> directory, the same 
+directory that contains the archive's manifest</a>. 
+Signature files have filenames with an <tt>.SF</tt> extension. 
+
+Here is an example of the contents of a signature file:
+
+<div class="codeblock"><pre>
+Signature-Version: 1.0
+SHA1-Digest-Manifest: h1yS+K9T7DyHtZrtI+LxvgqaMYM=
+Created-By: 1.6.0 (Sun Microsystems Inc.)
+
+Name: test/classes/ClassOne.class
+SHA1-Digest: fcav7ShIG6i86xPepmitOVo4vWY=
+
+Name: test/classes/ClassTwo.class
+SHA1-Digest: xrQem9snnPhLySDiZyclMlsFdtM=
+
+Name: test/images/ImageOne.gif
+SHA1-Digest: kdHbE7kL9ZHLgK7akHttYV4XIa0=
+
+Name: test/images/ImageTwo.gif
+SHA1-Digest: mF0D5zpk68R4oaxEqoS9Q7nhm60=
+</pre></div>
+
+<p>
+
+As you can see, the signature file contains digest entries for 
+the archive's files that look similar to the digest-value entries 
+in the manifest. However, while the digest values in the manifest 
+are computed from the files themselves, the digest values in the signature 
+file are computed from the corresponding entries in the manifest.
+ 
+Signature files also contain a digest value for the entire manifest (see the 
+<tt>SHA1-Digest-Manifest</tt> header in the above example).
+
+<p>
+
+When a signed JAR file is being verified, the digests of each of its 
+files are re-computed and compared with the digests recorded in the 
+manifest to ensure that the contents of the JAR file 
+haven't changed since it was signed. As an additional check, digest 
+values for the manifest file itself are re-computed and compared 
+against the values recorded in the signature file.
+
+<p>
+
+You can read additional information about signature files on the 
+
+<a class="OutsideLink" target="_blank" href="http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#JAR%20Manifest">Manifest Format</a>  page of the JDK&trade; documentation.
+
+<h2>The Signature Block File</h2>
+
+In addition to the signature file, a <em>signature block</em> file 
+is automatically placed in the <tt>META-INF</tt> directory when a JAR file 
+is signed. Unlike the manifest file or the signature file, 
+signature block files are not human-readable.
+
+<p>
+
+The signature block file contains two elements essential for 
+verification:
+<ul>
+<li>The digital signature for the JAR file that was generated 
+with the signer's private key
+<li>The certificate containing the signer's public key, to be used 
+by anyone wanting to verify the signed JAR file
+</ul>
+<p>
+Signature block filenames typically will have a <tt>.DSA</tt> 
+extension indicating that they were created by the default 
+Digital Signature Algorithm. Other filename extensions 
+are possible if keys associated with some other standard algorithm 
+are used for signing.
+
+<hr>
+<h2>Related Documentation</h2>
+For additional information about keys, certificates, and certification 
+authorities, see 
+<ul>
+<li>
+<a class="OutsideLink" target="_blank" href="http://java.sun.com/javase/6/docs/technotes/tools/index.html#security">The JDK Security Tools</a> <li>
+<a class="OutsideLink" target="_blank" href="http://java.sun.com/javase/6/docs/technotes/guides/security/cert3.html">X.509 Certificates</a> </ul>
+<p>
+For more information about the Java platform's 
+security architecture, see this related documentation:
+<ul>
+<li>
+<a class="TutorialLink" target="_top" href="../../security/index.html">Security Features in Java SE</a>
+<li>
+<a class="OutsideLink" target="_blank" href="http://java.sun.com/products/jce/index.jsp">The Java Cryptography Extension web site</a> <li>
+<a class="OutsideLink" target="_blank" href="http://java.sun.com/javase/6/docs/technotes/tools/index.html#security">JDK Security Documentation</a> </ul>
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=signindex.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=signing.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Signing and Verifying JAR Files
+        <br><b>Next page:</b> Signing JAR Files
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

@@ -1,0 +1,708 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>The Set Interface (The Java&trade; Tutorials &gt;        
+            Collections &gt; Interfaces)
+</title>
+
+     <meta name="description" content="This collections Java tutorial describes interfaces, implementations, and algorithms in the Java Collections framework" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java collections, set, list, queue, map, array, arraylist" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Collections
+        <br><b>Lesson:</b> Interfaces
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Interfaces</a></div>
+<div class="linkAHEAD"><a href="collection.html">The Collection Interface</a></div>
+<div class="nolinkAHEAD">The Set Interface</div>
+<div class="linkAHEAD"><a href="list.html">The List Interface</a></div>
+<div class="linkAHEAD"><a href="queue.html">The Queue Interface</a></div>
+<div class="linkAHEAD"><a href="map.html">The Map Interface</a></div>
+<div class="linkAHEAD"><a href="order.html">Object Ordering</a></div>
+<div class="linkAHEAD"><a href="sorted-set.html">The SortedSet Interface</a></div>
+<div class="linkAHEAD"><a href="sorted-map.html">The SortedMap Interface</a></div>
+<div class="linkAHEAD"><a href="summary.html">Summary of Interfaces</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Collections</a>
+                &gt;
+                <a href=index.html target=_top>Interfaces</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=collection.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=list.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>The Set Interface</h1></div>
+            <div id=PageContent>
+A
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Set.html"><CODE>Set</CODE></a> is a
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Collection.html"><CODE>Collection</CODE></a> that cannot contain duplicate elements. It models the mathematical set
+abstraction.  The <code>Set</code> interface contains <i>only</I> methods
+inherited from <code>Collection</code> and adds the restriction that
+duplicate elements are prohibited. <code>Set</code> also adds a stronger
+contract on the behavior of the <code>equals</code> and <code>hashCode</code>
+operations, allowing <code>Set</code> instances to be compared meaningfully
+even if their implementation types differ. Two <code>Set</code> instances are
+equal if they contain the same elements.
+<p>
+The following is the <code>Set</code> interface.
+<div class="codeblock"><pre>
+public interface Set&lt;E&gt; extends Collection&lt;E&gt; {
+    // Basic operations
+    int size();
+    boolean isEmpty();
+    boolean contains(Object element);
+    boolean add(E element);         //optional
+    boolean remove(Object element); //optional
+    Iterator&lt;E&gt; iterator();
+
+    // Bulk operations
+    boolean containsAll(Collection&lt;?&gt; c);
+    boolean addAll(Collection&lt;? extends E&gt; c); //optional
+    boolean removeAll(Collection&lt;?&gt; c);        //optional
+    boolean retainAll(Collection&lt;?&gt; c);        //optional
+    void clear();                              //optional
+
+    // Array Operations
+    Object[] toArray();
+    &lt;T&gt; T[] toArray(T[] a);
+}
+</pre></div>
+The Java platform contains three general-purpose <code>Set</code> implementations:
+<code>HashSet</code>, <code>TreeSet</code>, and <code>LinkedHashSet</code>.
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/HashSet.html"><code>HashSet</code></a>, which stores its elements in a hash table, is the best-performing
+implementation; however it makes no guarantees concerning the order of iteration.
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/TreeSet.html"><code>TreeSet</code></a>, which stores its elements in a red-black tree,
+orders its elements based on their values; it is substantially slower than
+<code>HashSet</code>.
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/LinkedHashSet.html"><code>LinkedHashSet</code></a>, which is implemented as
+a hash table with a linked list running through it, orders its elements based
+on the order in which they were inserted into the set (insertion-order).
+<code>LinkedHashSet</code> spares its clients from the unspecified, generally
+chaotic ordering provided by <code>HashSet</code> at a cost that is only
+slightly higher.
+
+<p>
+Here's a simple but useful <code>Set</code> idiom. Suppose you have a
+<code>Collection</code>, <code>c</code>, and you want to create another
+<code>Collection</code> containing the same elements but with all
+duplicates eliminated. The following one-liner does the trick.
+
+<div class="codeblock"><pre>
+Collection&lt;Type&gt; noDups = new HashSet&lt;Type&gt;(c);
+</pre></div>
+It works by creating a <code>Set</code> (which, by definition, cannot contain a
+duplicate), initially containing all the elements in <code>c</code>.  It uses
+the standard conversion constructor described in the
+<a class="TutorialLink" target="_top" href="collection.html">The Collection Interface</a> section.
+
+<P>
+Here is a minor variant of this idiom that preserves the order of the original
+collection while removing duplicate element.
+
+<div class="codeblock"><pre>
+Collection&lt;Type&gt; noDups = new LinkedHashSet&lt;Type&gt;(c);
+</pre></div>
+</P>
+
+<P>
+The following is a generic method that encapsulates the preceding idiom, returning a <code>Set</code>
+of the same generic type as the one passed.
+
+<div class="codeblock"><pre>
+public static &lt;E&gt; Set&lt;E&gt; removeDups(Collection&lt;E&gt; c) {
+    return new LinkedHashSet&lt;E&gt;(c);
+}
+</pre></div>
+
+<h2>Set Interface Basic Operations</h2>
+
+
+
+The <code>size</code> operation returns the number of elements in the
+<code>Set</code> (its <i>cardinality</i>).  The <code>isEmpty</code> method
+does exactly what you think it would.  The <code>add</code> method adds the
+specified element to the <code>Set</code> if it's not already present and
+returns a boolean indicating whether the element was added.
+Similarly, the <code>remove</code> method removes the specified element from
+the <code>Set</code> if it's present and returns a boolean indicating whether
+the element was present.  The <code>iterator</code> method returns an
+<CODE>Iterator</CODE></a> over the <CODE>Set</CODE>.
+<p>
+The following
+<a class="SourceLink" target="_blank" href="examples/FindDups.java"><code>program</code></a> takes the
+words in its argument list and prints out any duplicate words, the number of
+distinct words, and a list of the words with duplicates eliminated.
+
+<div class="codeblock"><pre>
+
+import java.util.*;
+
+public class FindDups {
+    public static void main(String[] args) {
+        Set&lt;String&gt; s = new HashSet&lt;String&gt;();
+        for (String a : args)
+            if (!s.add(a))
+                System.out.println(&quot;Duplicate detected: &quot; + a);
+
+        System.out.println(s.size() + &quot; distinct words: &quot; + s);
+    }
+}
+</pre></div>
+
+Now run the program.
+
+<div class="codeblock"><pre>
+java FindDups i came i saw i left
+</pre></div>
+
+The following output is produced.
+
+<div class="codeblock"><pre>
+Duplicate detected: i
+Duplicate detected: i
+4 distinct words: [i, left, saw, came]
+</pre></div>
+
+Note that the code always refers to the <code>Collection</code> by its interface
+type (<code>Set</code>) rather than by its implementation type
+(<code>HashSet</code>).  This is a <i>strongly</i> recommended programming
+practice because it gives you the flexibility to change implementations merely by
+changing the constructor.  If either of the variables used
+to store a collection or the parameters used to pass it around are declared
+to be of the <code>Collection</code>'s implementation type rather than its interface type, <i>all</i> such variables and parameters must be changed in order to change its implementation type.
+
+<p>
+
+Furthermore, there's no guarantee that the resulting program will work. If the program uses any nonstandard operations present in the original implementation type but not in the new one, the program will fail.  Referring to collections only by their interface prevents you from
+using any nonstandard operations.
+
+<p>
+
+The implementation type of the <code>Set</code> in the preceding example is
+<code>HashSet</code>, which makes no guarantees as to the order of the elements
+in the <code>Set</code>.  If you want the program to print the word list in
+alphabetical order, merely change the <code>Set</code>'s implementation
+type from <code>HashSet</code> to <code>TreeSet</code>.  Making this trivial
+one-line change causes the command line in the previous example to
+generate the following output.
+
+<div class="codeblock"><pre>
+java FindDups i came i saw i left
+Duplicate detected: i
+Duplicate detected: i
+4 distinct words: [came, i, left, saw]
+</pre></div>
+
+
+<h2>Set Interface Bulk Operations</h2>
+
+Bulk operations are particularly well suited to <code>Set</code>s;
+when applied, they perform standard set-algebraic operations.  Suppose
+<code>s1</code> and <code>s2</code> are sets.  Here's what bulk
+operations do:
+<ul>
+<li>
+<code>s1.containsAll(s2)</code> &mdash; returns <code>true</code> if
+<code>s2</code> is a <b>subset</b> of <code>s1</code>.
+(<Code>s2</Code> is a subset
+of <code>s1</code> if set <code>s1</code> contains all of the elements in
+<code>s2</code>.)
+
+<li>
+<code>s1.addAll(s2)</code> &mdash; transforms <code>s1</code> into the
+<b>union</b> of <code>s1</code> and <code>s2</code>.  (The union of two sets
+is the set containing all of the elements contained in either set.)
+
+<li>
+<code>s1.retainAll(s2)</code> &mdash; transforms <code>s1</code> into the
+intersection of <code>s1</code> and <code>s2</code>.  (The intersection
+of two sets is the set containing only the elements common to both
+sets.)
+
+<li>
+<code>s1.removeAll(s2)</code> &mdash; transforms <code>s1</code> into the
+(asymmetric) set difference of <code>s1</code> and <code>s2</code>.
+(For example, the set difference of <code>s1</code> minus <code>s2</code> is the set containing
+all of the elements found in <code>s1</code> but not in <code>s2</code>.)
+</ul>
+
+To calculate the union, intersection, or set difference
+of two sets <i>nondestructively</i> (without modifying either set),
+the caller must copy one set before calling the appropriate bulk operation.
+The following are the resulting idioms.
+
+<div class="codeblock"><pre>
+Set&lt;Type&gt; union = new HashSet&lt;Type&gt;(s1);
+union.addAll(s2);
+
+Set&lt;Type&gt; intersection = new HashSet&lt;Type&gt;(s1);
+intersection.retainAll(s2);
+
+Set&lt;Type&gt; difference = new HashSet&lt;Type&gt;(s1);
+difference.removeAll(s2);
+</pre></div>
+
+The implementation type of the result <code>Set</code> in the preceding
+idioms is <code>HashSet</code>, which is, as already mentioned,
+the best all-around <code>Set</code> implementation in the Java platform.
+However, any general-purpose
+<code>Set</code> implementation could be substituted.
+<p>
+Let's revisit the <code>FindDups</code> program.  Suppose you
+want to know which words in the argument list occur only once and which
+occur more than once, but you do not want any duplicates printed out
+repeatedly.  This effect can be achieved by generating two sets &mdash;
+one containing every word in the argument list and the other containing only
+the duplicates.  The words that occur only once are the set
+difference of these two sets, which we know how to compute.  Here's how
+
+<a class="SourceLink" target="_blank" href="examples/FindDups2.java"><code>the resulting program</code></a> looks.
+<div class="codeblock"><pre>
+
+import java.util.*;
+
+public class FindDups2 {
+    public static void main(String[] args) {
+        Set&lt;String&gt; uniques = new HashSet&lt;String&gt;();
+        Set&lt;String&gt; dups    = new HashSet&lt;String&gt;();
+
+        for (String a : args)
+            if (!uniques.add(a))
+                dups.add(a);
+
+	// Destructive set-difference
+        uniques.removeAll(dups);
+
+        System.out.println(&quot;Unique words:    &quot; + uniques);
+        System.out.println(&quot;Duplicate words: &quot; + dups);
+    }
+}
+</pre></div>
+
+When run with the same argument list used earlier (<code>i came i saw i left</code>),
+the program yields the following output.
+<div class="codeblock"><pre>
+Unique words:    [left, saw, came]
+Duplicate words: [i]
+</pre></div>
+
+A less common set-algebraic operation is the <i>symmetric set difference</i> &mdash; the set of elements contained in either of two specified sets but not in both.  The following code calculates the symmetric set difference of two
+sets nondestructively.
+<div class="codeblock"><pre>
+Set&lt;Type&gt; symmetricDiff = new HashSet&lt;Type&gt;(s1);
+symmetricDiff.addAll(s2);
+Set&lt;Type&gt; tmp = new HashSet&lt;Type&gt;(s1);
+tmp.retainAll(s2));
+symmetricDiff.removeAll(tmp);
+</pre></div>
+
+
+<h2>Set Interface Array Operations</h2>
+
+The array operations don't do anything special for <code>Set</code>s
+beyond what they do for any other <code>Collection</code>.
+These operations are described in
+<a class="TutorialLink" target="_top" href="collection.html">The Collection Interface</a> section.
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=collection.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=list.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> The Collection Interface
+        <br><b>Next page:</b> The List Interface
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

@@ -1,0 +1,918 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>The Map Interface (The Java&trade; Tutorials &gt;        
+            Collections &gt; Interfaces)
+</title>
+
+     <meta name="description" content="This collections Java tutorial describes interfaces, implementations, and algorithms in the Java Collections framework" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java collections, set, list, queue, map, array, arraylist" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Collections
+        <br><b>Lesson:</b> Interfaces
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Interfaces</a></div>
+<div class="linkAHEAD"><a href="collection.html">The Collection Interface</a></div>
+<div class="linkAHEAD"><a href="set.html">The Set Interface</a></div>
+<div class="linkAHEAD"><a href="list.html">The List Interface</a></div>
+<div class="linkAHEAD"><a href="queue.html">The Queue Interface</a></div>
+<div class="nolinkAHEAD">The Map Interface</div>
+<div class="linkAHEAD"><a href="order.html">Object Ordering</a></div>
+<div class="linkAHEAD"><a href="sorted-set.html">The SortedSet Interface</a></div>
+<div class="linkAHEAD"><a href="sorted-map.html">The SortedMap Interface</a></div>
+<div class="linkAHEAD"><a href="summary.html">Summary of Interfaces</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Collections</a>
+                &gt;
+                <a href=index.html target=_top>Interfaces</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=queue.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=order.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>The Map Interface</h1></div>
+            <div id=PageContent>
+A
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Map.html"><code>Map</code></a> is an object that maps keys to values.  A map cannot contain duplicate keys:
+Each key can map to at most one value.  It models the mathematical
+<i>function</i> abstraction.  The <code>Map</code> interface follows.
+<div class="codeblock"><pre>
+public interface Map&lt;K,V&gt; {
+
+    // Basic operations
+    V put(K key, V value);
+    V get(Object key);
+    V remove(Object key);
+    boolean containsKey(Object key);
+    boolean containsValue(Object value);
+    int size();
+    boolean isEmpty();
+
+    // Bulk operations
+    void putAll(Map&lt;? extends K, ? extends V&gt; m);
+    void clear();
+
+    // Collection Views
+    public Set&lt;K&gt; keySet();
+    public Collection&lt;V&gt; values();
+    public Set&lt;Map.Entry&lt;K,V&gt;&gt; entrySet();
+
+    // Interface for entrySet elements
+    public interface Entry {
+        K getKey();
+        V getValue();
+        V setValue(V value);
+    }
+}
+</pre></div>
+The Java platform contains three general-purpose <code>Map</code> implementations:
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/HashMap.html"><code>HashMap</code></a>,
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/TreeMap.html"><code>TreeMap</code></a>, and
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/LinkedHashMap.html"><code>LinkedHashMap</code></a>. Their behavior and performance are precisely analogous to
+<code>HashSet</code>, <code>TreeSet</code>, and <code>LinkedHashSet</code>, as
+described in
+<a class="TutorialLink" target="_top" href="set.html">The Set Interface</a> section. Also, <code>Hashtable</code> was retrofitted to implement <code>Map</code>.
+
+
+
+<h2>Comparison to Hashtable</h2>
+
+
+If you've used <code>Hashtable</code>, you're already familiar with the
+general basics of <code>Map</code>.  (Of course, <code>Map</code> is an
+interface, while <code>Hashtable</code> is a concrete implementation.)
+The following are the major differences:
+<ul>
+<li>
+<code>Map</code> provides <code>Collection</code> views instead of direct
+support for iteration via <code>Enumeration</code> objects.
+<code>Collection</code> views greatly enhance the expressiveness of the
+interface, as discussed later in this section.
+<li>
+<code>Map</code> allows you to iterate over keys, values, or key-value pairs;
+<code>Hashtable</code> does not provide the third option.
+<li>
+<code>Map</code> provides a safe way to remove entries in the midst of
+iteration; <code>Hashtable</code> did not.
+</ul>
+
+Finally, <code>Map</code> fixes a minor deficiency in the
+<code>Hashtable</code> interface.  <code>Hashtable</code> has a method called
+<code>contains</code>, which returns <code>true</code> if the
+<code>Hashtable</code> contains a given <i>value</i>.  Given its name, you'd
+expect this method to return <code>true</code> if the <code>Hashtable</code>
+contained a given <i>key</i>, because the key is the primary access mechanism for a
+<code>Hashtable</code>.  The <code>Map</code> interface eliminates this source of confusion by renaming the method <code>containsValue</code>.  Also, this
+improves the interface's consistency &mdash; <code>containsValue</code>
+parallels <code>containsKey</code>.
+
+
+
+<h2>Map Interface Basic Operations</h2>
+
+The basic operations of <code>Map</code> (<code>put</code>, <code>get</code>,
+<code>containsKey</code>, <code>containsValue</code>, <code>size</code>, and <code>isEmpty</code>) behave exactly like their counterparts in <code>Hashtable</code>.  The
+<a class="SourceLink" target="_blank" href="examples/Freq.java"><code>following program</code></a> generates a frequency table of the words found in its argument list. The frequency table maps
+each word to the number of times it occurs in the argument list.
+<div class="codeblock"><pre>
+
+import java.util.*;
+
+public class Freq {
+    public static void main(String[] args) {
+        Map&lt;String, Integer&gt; m = new HashMap&lt;String, Integer&gt;();
+
+        // Initialize frequency table from command line
+        for (String a : args) {
+            Integer freq = m.get(a);
+            m.put(a, (freq == null) ? 1 : freq + 1);
+        }
+
+        System.out.println(m.size() + &quot; distinct words:&quot;);
+        System.out.println(m);
+    }
+}
+</pre></div>
+The only tricky thing about this program is the second argument
+of the <code>put</code> statement.  That argument is a conditional expression that has the
+effect of setting the frequency to one if the word has never been seen before
+or one more than its current value if the word has already been seen.
+Try running this program with the command:
+
+<div class="codeblock"><pre>
+java Freq if it is to be it is up to me to delegate
+</pre></div>
+
+The program yields the following output.
+
+<div class="codeblock"><pre>
+8 distinct words:
+{to=3, delegate=1, be=1, it=2, up=1, if=1, me=1, is=2}
+</pre></div>
+
+Suppose you'd prefer to see the frequency table in alphabetical order.  All you
+have to do is change the implementation type of the <code>Map</code> from
+<code>HashMap</code> to <code>TreeMap</code>.  Making this four-character
+change causes the program to generate the following output from the same
+command line.
+<div class="codeblock"><pre>
+8 distinct words:
+{be=1, delegate=1, if=1, is=2, it=2, me=1, to=3, up=1}
+</pre></div>
+Similarly, you could make the program print the frequency table in the order
+the words first appear on the command line simply by changing the
+implementation type of the map to <code>LinkedHashMap</code>. Doing so results
+in the following output.
+<div class="codeblock"><pre>
+8 distinct words:
+{if=1, it=2, is=2, to=3, be=1, up=1, me=1, delegate=1}
+</pre></div>
+This flexibility provides a potent illustration of the power of an
+interface-based framework.
+<P>
+Like the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Set.html"><code>Set</code></a>and
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/List.html"><code>List</code></a>interfaces, <code>Map</code> strengthens the requirements on the
+<code>equals</code> and <code>hashCode</code> methods so that two
+<code>Map</code> objects can be compared for logical equality without regard
+to their implementation types.  Two <code>Map</code> instances are equal if they
+represent the same key-value mappings.
+<P>
+By convention, all general-purpose <code>Map</code> implementations provide constructors that
+take a <code>Map</code> object and initialize the new <code>Map</code> to
+contain all the key-value mappings in the specified <code>Map</code>.  This
+standard <code>Map</code> conversion constructor is entirely analogous to the standard
+<code>Collection</code> constructor: It
+allows the caller to create a <code>Map</code> of a desired implementation
+type that initially contains all of the mappings in another <code>Map</code>,
+regardless of the other <code>Map</code>'s implementation type.  For example,
+suppose you have a <code>Map</code>, named <code>m</code>.  The following one-liner
+creates a new <code>HashMap</code> initially containing all of the same
+key-value mappings as <code>m</code>.
+<div class="codeblock"><pre>
+Map&lt;K, V&gt; copy = new HashMap&lt;K, V&gt;(m);
+</pre></div>
+
+<p>
+<h2>Map Interface Bulk Operations</h2>
+
+
+The <code>clear</code> operation does exactly what you would think it
+could do: It removes all the mappings from the <code>Map</code>.  The
+<code>putAll</code> operation is the <code>Map</code> analogue of the
+<code>Collection</code> interface's <code>addAll</code> operation.  In
+addition to its obvious use of dumping one <code>Map</code> into another, it
+has a second, more subtle use.  Suppose a <code>Map</code> is used to
+represent a collection of attribute-value pairs; the <code>putAll</code>
+operation, in combination with the <code>Map</code> conversion constructor,
+provides a neat way to implement attribute map creation with default values.
+The following is a static factory method that demonstrates this technique.
+
+<div class="codeblock"><pre>
+static &lt;K, V&gt; Map&lt;K, V&gt; newAttributeMap(
+        Map&lt;K, V&gt;defaults, Map&lt;K, V&gt; overrides) {
+    Map&lt;K, V&gt; result = new HashMap&lt;K, V&gt;(defaults);
+    result.putAll(overrides);
+    return result;
+}
+</pre></div>
+
+
+<h2>Collection Views</h2>
+
+The <code>Collection</code> view methods allow a <code>Map</code> to be
+viewed as a <code>Collection</code> in these three ways:
+<ul>
+<li>
+<code>keySet</code> &mdash; the <code>Set</code> of keys contained in the
+<code>Map</code>.
+<li>
+<code>values</code> &mdash; The <code>Collection</code> of values contained in
+the <code>Map</code>.  This <code>Collection</code> is not a <code>Set</code>,
+because multiple keys can map to the same value.
+<li>
+<code>entrySet</code> &mdash; the <code>Set</code> of key-value pairs
+contained in the <code>Map</code>.  The <code>Map</code> interface provides a
+small nested interface called <code>Map.Entry</code>, the type
+of the elements in this <code>Set</code>.
+</ul>
+The <code>Collection</code> views provide the <i>only</i> means to iterate over
+a <code>Map</code>.  This example illustrates the standard idiom for
+iterating over the keys in a <code>Map</code> with a <code>for-each</code> construct:
+
+<div class="codeblock"><pre>
+for (KeyType key : m.keySet())
+    System.out.println(key);
+</pre></div>
+
+and with an <code>iterator</code>:
+
+<div class="codeblock"><pre>
+// Filter a map based on some property of its keys.
+for (Iterator&lt;Type&gt; it = m.keySet().iterator(); it.hasNext(); )
+    if (it.next().isBogus())
+        it.remove();
+</pre></div>
+
+The idiom for iterating over values is analogous.  Following is the idiom for
+iterating over key-value pairs.
+<div class="codeblock"><pre>
+for (Map.Entry&lt;KeyType, ValType&gt; e : m.entrySet())
+    System.out.println(e.getKey() + ": " + e.getValue());
+</pre></div>
+<p>
+At first, many people worry that these idioms may be
+slow because the <code>Map</code> has to create a new <code>Collection</code>
+instance each time a <code>Collection</code> view operation is called.  Rest
+easy: There's no reason that a <code>Map</code> cannot
+always return the same object each time it is asked for a given
+<code>Collection</code> view.  This is precisely what all the
+<code>Map</code> implementations in <code>java.util</code> do.
+<p>
+With all three <code>Collection</code> views, calling an
+<code>Iterator</code>'s <CODE>remove</CODE> operation removes the associated entry from
+the backing <code>Map</code>, assuming that the backing <code>Map</code> supports element
+removal to begin with. This is illustrated by the preceding filtering idiom.
+<P>
+With the <code>entrySet</code> view, it is also
+possible to change the value associated with a key by calling a
+<code>Map.Entry</code>'s <code>setValue</code> method during iteration
+(again, assuming the <code>Map</code> supports value modification to begin
+with).  Note that these are the <i>only</i> safe ways to modify a
+<code>Map</code> during iteration; the behavior is unspecified if the
+underlying <code>Map</code> is modified in any other way while the iteration
+is in progress.
+<p>
+The <code>Collection</code> views support element removal in all its many
+forms &mdash; <code>remove</code>, <code>removeAll</code>,
+<code>retainAll</code>, and <code>clear</code> operations, as well as the
+<code>Iterator.remove</code> operation.  (Yet again, this assumes that the
+backing <code>Map</code> supports element removal.)
+<p>
+The <code>Collection</code> views <i>do not</i> support element addition under
+any circumstances.  It would make no sense for the <code>keySet</code> and
+<code>values</code> views, and it's unnecessary for the <code>entrySet</code>
+view, because the backing <code>Map</code>'s <code>put</code> and
+<code>putAll</code> methods provide the same functionality.
+
+
+<h2>Fancy Uses of Collection Views: Map Algebra</h2>
+
+
+When applied to the <code>Collection</code> views, bulk operations (<code>containsAll</code>, <code>removeAll</code>, and <code>retainAll</code>) are surprisingly potent tools.  For starters, suppose
+you want to know whether one <code>Map</code> is a submap of another &mdash; that is, whether the first <code>Map</code> contains all the key-value mappings in the second.  The following idiom does the trick.
+
+<div class="codeblock"><pre>
+if (m1.entrySet().containsAll(m2.entrySet())) {
+	...
+}
+</pre></div>
+Along similar lines, suppose you want to know whether two <code>Map</code>
+objects contain mappings for all of the same keys.
+
+<div class="codeblock"><pre>
+if (m1.keySet().equals(m2.keySet())) {
+	...
+}
+</pre></div>
+
+Suppose you have a <code>Map</code> that represents a collection of attribute-value pairs, and two <code>Set</code>s representing required attributes and permissible attributes. (The permissible attributes include the required attributes.)  The following snippet determines whether the attribute map conforms to these constraints and prints a detailed error message if it doesn't.
+
+<div class="codeblock"><pre>
+static &lt;K, V&gt; boolean validate(Map&lt;K, V&gt; attrMap,
+        Set&lt;K&gt; requiredAttrs, Set&lt;K&gt;permittedAttrs) {
+    boolean valid = true;
+    Set&lt;K&gt; attrs = attrMap.keySet();
+    if(!attrs.containsAll(requiredAttrs)) {
+        Set&lt;K&gt; missing = new HashSet&lt;K&gt;(requiredAttrs);
+        missing.removeAll(attrs);
+        System.out.println("Missing attributes: " + missing);
+        valid = false;
+    }
+    if (!permittedAttrs.containsAll(attrs)) {
+        Set&lt;K&gt; illegal = new HashSet&lt;K&gt;(attrs);
+        illegal.removeAll(permittedAttrs);
+        System.out.println("Illegal attributes: " + illegal);
+        valid = false;
+    }
+    return valid;
+}
+</pre></div>
+
+Suppose you want to know all the keys common to two <code>Map</code>
+objects.
+
+<div class="codeblock"><pre>
+Set&lt;KeyType&gt;commonKeys = new HashSet&lt;KeyType&gt;(m1.keySet());
+commonKeys.retainAll(m2.keySet());
+</pre></div>
+
+A similar idiom gets you the common values.
+<p>
+All the idioms presented thus far have been nondestructive; that is, they don't
+modify the backing <code>Map</code>.  Here are a few that do.  Suppose you
+want to remove all of the key-value pairs that one <code>Map</code> has in
+common with another.
+
+<div class="codeblock"><pre>
+m1.entrySet().removeAll(m2.entrySet());
+</pre></div>
+
+Suppose you want to remove from one <code>Map</code> all of the keys that
+have mappings in another.
+<div class="codeblock"><pre>
+m1.keySet().removeAll(m2.keySet());
+</pre></div>
+
+What happens when you start mixing keys and values in the same bulk
+operation?  Suppose you have a <code>Map</code>, <code>managers</code>,
+that maps each employee in a company to the employee's manager.  We'll be
+deliberately vague about the types of the key and the value objects.  It doesn't
+matter, as long as they're the same.  Now suppose you want to know who all
+the "individual contributors" (or nonmanagers) are.
+The following snippet tells you exactly what you want to
+know.
+
+<div class="codeblock"><pre>
+Set&lt;Employee&gt; individualContributors =
+    new HashSet&lt;Employee&gt;(managers.keySet());
+individualContributors.removeAll(managers.values());
+</pre></div>
+
+Suppose you want to fire all the employees who report directly to some
+manager, Simon.
+
+<div class="codeblock"><pre>
+Employee simon = ... ;
+managers.values().removeAll(Collections.singleton(simon));
+</pre></div>
+
+Note that this idiom makes use of <code>Collections.singleton</code>, a static
+factory method that returns an immutable <code>Set</code> with the single,
+specified element.
+<p>
+Once you've done this, you may have a bunch of employees whose managers
+no longer work for the company (if any of Simon's direct-reports were
+themselves managers).  The following code will tell you which employees
+have managers who no longer works for the company.
+
+<div class="codeblock"><pre>
+Map&lt;Employee, Employee&gt; m =
+    new HashMap&lt;Employee, Employee&gt;(managers);
+m.values().removeAll(managers.keySet());
+Set&lt;Employee&gt; slackers = m.keySet();
+</pre></div>
+
+This example is a bit tricky.  First, it makes a temporary copy of the
+<code>Map</code>, and it removes from the temporary copy all entries
+whose (manager) value is a key in the original <code>Map</code>.  Remember
+that the original <code>Map</code> has an entry for each employee.
+Thus, the remaining entries in the temporary <code>Map</code> comprise all the
+entries from the original <code>Map</code> whose (manager) values are no
+longer employees.  The keys in the temporary copy, then, represent precisely
+the employees that we're looking for.
+<p>
+There are many more idioms like the ones contained in this section, but
+it would be impractical and tedious to list them all.  Once you get the hang
+of it, it's not that difficult to come up with the right one when you need it.
+
+
+<h2>Multimaps</h2>
+
+A <i>multimap</i> is like a <code>Map</code> but it can map each key to multiple
+values.  The Java Collections Framework doesn't include an interface for multimaps because they aren't used all that commonly.  It's a fairly simple matter to use a <code>Map</code> whose values are <code>List</code> instances as a multimap.  This technique is demonstrated in the next code example, which
+reads a word list containing one word per line (all lowercase) and prints out all the anagram groups that meet a size criterion. An <i>anagram group</i> is a bunch of words, all of which contain exactly the same letters but in a different order. The program takes two arguments on the command line: (1) the name of the dictionary file and (2) the minimum size of anagram group to print out. Anagram groups containing fewer words than the specified minimum are not printed.
+
+<p>
+
+There is a standard trick for finding anagram groups: For each word in the
+dictionary, alphabetize the letters in the word (that is, reorder the word's
+letters into alphabetical order) and put an entry into a multimap, mapping the
+alphabetized word to the original word.  For example, the word <em>bad</em> causes an entry mapping <em>abd</em> into <em>bad</em> to be put into the multimap.  A moment's
+reflection will show that all the words to which any given key maps form an
+anagram group.  It's a simple matter to iterate over the keys in the
+multimap, printing out each anagram group that meets the size constraint.
+<p>
+
+<a class="SourceLink" target="_blank" href="examples/Anagrams.java"><code>The following program</code></a>
+ is a straightforward implementation of this technique.
+
+<div class="codeblock"><pre>
+
+import java.util.*;
+import java.io.*;
+
+public class Anagrams {
+    public static void main(String[] args) {
+        int minGroupSize = Integer.parseInt(args[1]);
+
+        // Read words from file and put into a simulated multimap
+        Map&lt;String, List&lt;String&gt;&gt; m
+	    = new HashMap&lt;String, List&lt;String&gt;&gt;();
+        try {
+	    Scanner s = new Scanner(new File(args[0]));
+            while (s.hasNext()) {
+		String word = s.next();
+                String alpha = alphabetize(word);
+                List&lt;String&gt; l = m.get(alpha);
+                if (l == null)
+                    m.put(alpha, l=new ArrayList&lt;String&gt;());
+                l.add(word);
+            }
+        } catch (IOException e) {
+            System.err.println(e);
+            System.exit(1);
+        }
+
+        // Print all permutation groups above size threshold
+        for (List&lt;String&gt; l : m.values())
+            if (l.size() &gt;= minGroupSize)
+                System.out.println(l.size() + &quot;: &quot; + l);
+    }
+
+    private static String alphabetize(String s) {
+	char[] a = s.toCharArray();
+	Arrays.sort(a);
+	return new String(a);
+    }
+}
+</pre></div>
+
+Running this program on a 173,000-word dictionary file with a minimum
+anagram group size of eight produces the following output.
+<div class="codeblock"><pre>
+9: [estrin, inerts, insert, inters, niters, nitres, sinter,
+     triens, trines]
+8: [lapse, leaps, pales, peals, pleas, salep, sepal, spale]
+8: [aspers, parses, passer, prases, repass, spares, sparse,
+     spears]
+10: [least, setal, slate, stale, steal, stela, taels, tales,
+      teals, tesla]
+8: [enters, nester, renest, rentes, resent, tenser, ternes,
+     treens]
+8: [arles, earls, lares, laser, lears, rales, reals, seral]
+8: [earings, erasing, gainers, reagins, regains, reginas,
+     searing, seringa]
+8: [peris, piers, pries, prise, ripes, speir, spier, spire]
+12: [apers, apres, asper, pares, parse, pears, prase, presa,
+      rapes, reaps, spare, spear]
+11: [alerts, alters, artels, estral, laster, ratels, salter,
+      slater, staler, stelar, talers]
+9: [capers, crapes, escarp, pacers, parsec, recaps, scrape,
+     secpar, spacer]
+9: [palest, palets, pastel, petals, plates, pleats, septal,
+     staple, tepals]
+9: [anestri, antsier, nastier, ratines, retains, retinas,
+     retsina, stainer, stearin]
+8: [ates, east, eats, etas, sate, seat, seta, teas]
+8: [carets, cartes, caster, caters, crates, reacts, recast,
+     traces]
+
+</pre></div>
+Many of these words seem a bit bogus, but that's not the program's fault;
+they're in the dictionary file.
+
+Here's the
+<a class="SourceLink" target="_blank" href="examples/dictionary.txt"><code>dictionary file</code></a> we used.
+It was derived from the Public Domain ENABLE benchmark reference word list.
+        </div>
+        <div class=NavBit>
+            <a target=_top href=queue.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=order.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> The Queue Interface
+        <br><b>Next page:</b> Object Ordering
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

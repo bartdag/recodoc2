@@ -1,0 +1,1035 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>The Text Component API (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Using Swing Components)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Using Swing Components
+        <br><b>Section:</b> Using Text Components
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Using Swing Components</a></div>
+<div class="linkAHEAD"><a href="toplevel.html">Using Top-Level Containers</a></div>
+<div class="linkAHEAD"><a href="jcomponent.html">The JComponent Class</a></div>
+<div class="linkAHEAD"><a href="text.html">Using Text Components</a></div>
+<div class="linkBHEAD"><a href="generaltext.html">Text Component Features</a></div>
+<div class="nolinkBHEAD">The Text Component API</div>
+<div class="linkAHEAD"><a href="componentlist.html">How to Use Various Components</a></div>
+<div class="linkBHEAD"><a href="applet.html">How to Make Applets</a></div>
+<div class="linkBHEAD"><a href="button.html">How to Use Buttons, Check Boxes, and Radio Buttons</a></div>
+<div class="linkBHEAD"><a href="buttongroup.html">How to Use the ButtonGroup Component</a></div>
+<div class="linkBHEAD"><a href="colorchooser.html">How to Use Color Choosers</a></div>
+<div class="linkBHEAD"><a href="combobox.html">How to Use Combo Boxes</a></div>
+<div class="linkBHEAD"><a href="dialog.html">How to Make Dialogs</a></div>
+<div class="linkBHEAD"><a href="editorpane.html">How to Use Editor Panes and Text Panes</a></div>
+<div class="linkBHEAD"><a href="filechooser.html">How to Use File Choosers</a></div>
+<div class="linkBHEAD"><a href="formattedtextfield.html">How to Use Formatted Text Fields</a></div>
+<div class="linkBHEAD"><a href="frame.html">How to Make Frames (Main Windows)</a></div>
+<div class="linkBHEAD"><a href="internalframe.html">How to Use Internal Frames</a></div>
+<div class="linkBHEAD"><a href="label.html">How to Use Labels</a></div>
+<div class="linkBHEAD"><a href="layeredpane.html">How to Use Layered Panes</a></div>
+<div class="linkBHEAD"><a href="list.html">How to Use Lists</a></div>
+<div class="linkBHEAD"><a href="menu.html">How to Use Menus</a></div>
+<div class="linkBHEAD"><a href="panel.html">How to Use Panels</a></div>
+<div class="linkBHEAD"><a href="passwordfield.html">How to Use Password Fields</a></div>
+<div class="linkBHEAD"><a href="progress.html">How to Use Progress Bars</a></div>
+<div class="linkBHEAD"><a href="rootpane.html">How to Use Root Panes</a></div>
+<div class="linkBHEAD"><a href="scrollpane.html">How to Use Scroll Panes</a></div>
+<div class="linkBHEAD"><a href="separator.html">How to Use Separators</a></div>
+<div class="linkBHEAD"><a href="slider.html">How to Use Sliders</a></div>
+<div class="linkBHEAD"><a href="spinner.html">How to Use Spinners</a></div>
+<div class="linkBHEAD"><a href="splitpane.html">How to Use Split Panes</a></div>
+<div class="linkBHEAD"><a href="tabbedpane.html">How to Use Tabbed Panes</a></div>
+<div class="linkBHEAD"><a href="table.html">How to Use Tables</a></div>
+<div class="linkBHEAD"><a href="textarea.html">How to Use Text Areas</a></div>
+<div class="linkBHEAD"><a href="textfield.html">How to Use Text Fields</a></div>
+<div class="linkBHEAD"><a href="toolbar.html">How to Use Tool Bars</a></div>
+<div class="linkBHEAD"><a href="tooltip.html">How to Use Tool Tips</a></div>
+<div class="linkBHEAD"><a href="tree.html">How to Use Trees</a></div>
+<div class="linkAHEAD"><a href="html.html">How to Use HTML in Swing Components</a></div>
+<div class="linkAHEAD"><a href="model.html">How to Use Models</a></div>
+<div class="linkAHEAD"><a href="icon.html">How to Use Icons</a></div>
+<div class="linkAHEAD"><a href="border.html">How to Use Borders</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Component Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Using Swing Components</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=generaltext.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=componentlist.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>The Text Component API</h1></div>
+            <div id=PageContent>
+<a name="api"> </a>
+This section lists commonly used parts
+of the API that are shared by text components.
+Much of this API is defined by the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html"><code>JTextComponent</code></a> class.
+<a href="generaltext.html">Text Component Features</a>
+discusses how to use some of this API.
+
+<p>
+
+<a href="jcomponent.html">The JComponent Class</a>
+describes the API that text components
+inherit from <code>JComponent</code>.
+For information about the API 
+related to specific text components,
+see the how-to page for that component:
+<a href="textfield.html">text field</a>,
+<a href="passwordfield.html">password field</a>,
+<a href="formattedtextfield.html">formatted text field</a>,
+<a href="textarea.html">text area</a>, or
+<a href="editorpane.html">editor pane and text pane</a>.
+
+<p>
+For complete details about the text API,
+see the API documentation for
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html"><code>JTextComponent</code></a> and for the various classes and
+interfaces in the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/package-summary.html">text package</a>.
+
+<p>
+The API listed in this section includes the following categories:
+
+<ul>
+<li> <a href="#appearance">Setting Attributes</a>
+<li> <a href="#selection">Manipulating the Selection</a>
+<li> <a href="#conversions">Converting Positions Between the Model and the View</a>
+<li> <a href="#apiforcommands">Text Editing Commands</a>
+<li> <a href="#docclasses">Classes and Interfaces That Represent Documents</a>
+<li> <a href="#docmethods">Working With Documents</a>
+<li> <a href="#carrots">Manipulating Carets and Selection Highlighters</a>
+<li> <a href="#io">Reading and Writing Text</a>
+</ul>
+
+<p>
+<table border=1 summary="methods in the text API for setting attributes"> 
+<caption><a name="appearance"><b>Setting Attributes</b><br />
+<em>These methods are defined in the <code>JTextComponent</code> class.</em>
+</a></caption>
+<tr>
+<th id="h1">Method</th>
+<th id="h2">Description</th>
+</tr>
+
+<tr>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setEditable(boolean)">void setEditable(boolean)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#isEditable()">boolean isEditable()</a>    </td>
+    <td headers="h2">Sets or indicates whether the user can edit the text in the text component.
+    </td>
+</tr>
+<tr>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setDragEnabled(boolean)">void setDragEnabled(boolean)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getDragEnabled()">boolean getDragEnabled()</a>    </td>
+    <td headers="h2">Sets or gets the <code>dragEnabled</code> property, which must be true
+        to enable drag handling on this component.  The default value is false.
+        See
+<a class="TutorialLink" target="_top" href="../dnd/index.html">Drag and Drop and Data Transfer</a>        for more details.</td>
+</tr>
+<tr>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setDisabledTextColor(java.awt.Color)">void setDisabledTextColor(Color)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getDisabledTextColor()">Color getDisabledTextColor()</code></font></a>    </td>
+    <td headers="h2">Sets or gets the color used to display text when the text
+        component is disabled.
+    </td>
+</tr>
+
+<tr>
+    <td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setMargin(java.awt.Insets)">void setMargin(Insets)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getMargin()">Insets getMargin()</a>    </td>
+    <td headers="h2">Sets or gets the margin between the text and the text component's border.
+
+    </td>
+</tr>
+
+</table>
+
+<p>
+<table border=1 summary="methods in the text API for selecting text">
+<caption><a name="selection"><b>Manipulating the Selection</b></a><br />
+<em>These methods are defined in the <code>JTextComponent</code> class.</em>
+</caption>
+<tr>
+<th id="h101">Method</th>
+<th id="h102">Description</th>
+</tr>
+
+  <tr>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getSelectedText()">String getSelectedText()</a>    </td>
+    <td headers="h102">Gets the currently selected text.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#selectAll()">void selectAll()</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#select(int, int)">void select(int, int)</a>    </td>
+    <td headers="h102">Selects all text or selects text within a start and end range.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setSelectionStart(int)">void setSelectionStart(int)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setSelectionEnd(int)">void setSelectionEnd(int)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getSelectionStart()">int getSelectionStart()</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getSelectionEnd()">int getSelectionEnd()</a>    </td>
+    <td headers="h102">Sets or gets the extent of the current selection by index.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setSelectedTextColor(java.awt.Color)">void setSelectedTextColor(Color)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getSelectedTextColor()">Color getSelectedTextColor()</a>    </td>
+    <td headers="h102">Sets or gets the color of selected text.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setSelectionColor(java.awt.Color)">void setSelectionColor(Color)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getSelectionColor()">Color getSelectionColor()</a>    </td>
+    <td headers="h102">Sets or gets the background color of selected text.
+    </td>
+  </tr>
+</table>
+
+<p>
+<table border=1 summary="methods for converting between the text model and
+       the text view">
+<caption><a name="conversions"><b>Converting Positions Between the Model
+and the View</b></a><br />
+<em>These methods are defined in the <code>JTextComponent</code> class.</em>
+</caption>
+
+<tr>
+<th id="h201">Method</th>
+<th id="h202">Description</th>
+</tr>
+
+  <tr>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#viewToModel(java.awt.Point)">int viewToModel(Point)</a>    </td>
+    <td headers="h202">Converts the specified point in the view coordinate system
+        to a position within the text.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#modelToView(int)">Rectangle modelToView(int)</a>    </td>
+    <td headers="h202">Converts the specified position within the text
+        to a rectangle in the view coordinate system.
+    </td>
+  </tr>
+</table>
+
+<p>
+<table border=1 summary="methods for editing text">
+<caption><a name="apiforcommands"><b>Text Editing Commands</b>
+</a></caption>
+ 
+<tr>
+<th id="h301">Class or Method</th>
+<th id="h302">Description</th>
+</tr>
+
+  <tr>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#cut()">void cut()</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#copy()">void copy()</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#paste()">void paste()</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#replaceSelection(java.lang.String)">void replaceSelection(String)</a>    <br /><em>(in <code>JTextComponent</code>)</em>
+    </td>
+    <td headers="h302">Cuts, copies, and pastes text using the system clipboard, 
+    or replaces the selected text with the string specified by an argument, respectively.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/EditorKit.html">EditorKit</a>    </td>
+    <td headers="h302">
+    Provides a text component's view factory, document, caret, and actions,
+    as well as reading and writing
+    documents of a particular format.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultEditorKit.html">DefaultEditorKit</a>    </td>
+    <td headers="h302">A concrete subclass of <code>EditorKit</code> that
+        provides the basic text editing capabilities.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/StyledEditorKit.html">StyledEditorKit</a>    </td>
+    <td headers="h302">A subclass of <code>Default EditorKit</code> that
+        provides additional editing capabilities for styled text.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultEditorKit.html#field_summary">String <em>xxxx</em>Action</a>    <br /><em>(in <code>DefaultEditorKit</code>)</em>
+    </td>
+    <td headers="h302">The names of all the actions supported by the default editor kit.
+	See <a href="generaltext.html#commands">Associating Text Actions with
+	Menus and Buttons</a>.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultEditorKit.BeepAction.html">BeepAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultEditorKit.CopyAction.html">CopyAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultEditorKit.CutAction.html">CutAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultEditorKit.DefaultKeyTypedAction.html">DefaultKeyTypedAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultEditorKit.InsertBreakAction.html">InsertBreakAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultEditorKit.InsertContentAction.html">InsertContentAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultEditorKit.InsertTabAction.html">InsertTabAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultEditorKit.PasteAction.html">PasteAction</a>    <br /><em>(in <code>DefaultEditorKit</code>)</em>
+    </td>
+    <td headers="h302">Inner classes that implement various text editing commands.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/StyledEditorKit.AlignmentAction.html">AlignmentAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/StyledEditorKit.BoldAction.html">BoldAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/StyledEditorKit.FontFamilyAction.html">FontFamilyAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/StyledEditorKit.FontSizeAction.html">FontSizeAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/StyledEditorKit.ForegroundAction.html">ForegroundAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/StyledEditorKit.ItalicAction.html">ItalicAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/StyledEditorKit.StyledTextAction.html">StyledTextAction</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/StyledEditorKit.UnderlineAction.html">UnderlineAction</a>    <br /><em>(in <code>StyledEditorKit</code>)</em>
+  </td>
+    <td headers="h302">Inner classes that implement various editing commands
+        for styled text.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getActions()">Action[] getActions()</a>    <br /><em>(in <code>JTextComponent</code>)</em>
+    </td>
+    <td headers="h302">Gets the actions supported by this component.
+        This method gets the array of actions from the editor kit
+        if one is used by the component.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#getInputMap()">InputMap getInputMap()</a>    <br /><em>(in <code>JComponent</code>)</em>
+    </td>
+    <td headers="h302">Gets the input map that binds key strokes to actions.
+	See
+	<a href="generaltext.html#bindingkeystrokes">Associating
+	Text Actions with Key Strokes</a>.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/InputMap.html#put(javax.swing.KeyStroke, java.lang.Object)">void put(KeyStroke, Object)</a>    <br /><em>(in <code>InputMap</code>)</em>
+    </td>
+    <td headers="h302">Binds the specified key to the specified action.
+	You generally specify the action by its name, 
+	which for standard editing actions is
+	represented by a string constant such as 
+	<code>DefaultEditorKit.backwardAction</code>.
+    </td>
+  </tr>
+</table>
+
+<p>
+<table border=1 summary="Classes and intefaces that represent documents"> 
+<caption><a name="docclasses">  
+<b>Classes and Interfaces That Represent Documents</b></a></caption>
+<tr>
+<th id="h401">Interface or Class</th>
+<th id="h402">Description</th>
+</tr>
+
+  <tr>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Document.html">Document</a>    </td>
+    <td headers="h402">An interface that defines the API that must be implemented
+        by all documents.
+
+    </td>
+  </tr>
+  <tr>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/AbstractDocument.html">AbstractDocument</a>    </td>
+    <td headers="h402">An abstract superclass implementation
+        of the <code>Document</code> interface.
+        This is the superclass for all documents
+        provided by the Swing text package.
+  </tr>
+  <tr>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/PlainDocument.html">PlainDocument</a>    </td>
+    <td headers="h402">A class that implements the <code>Document</code> interface.
+        This is the default document for the plain text components
+        (text field, password field, and text area).
+        Additionally, this class is used by the editor panes and text panes
+        when loading plain text or text of an unknown format.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/StyledDocument.html">StyledDocument</a>    </td>
+    <td headers="h402">A <code>Document</code> subinterface.
+        Defines the API that must be implemented by documents that
+        support styled text.
+        <code>JTextPane</code> requires that its document be of this type.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h401">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultStyledDocument.html">DefaultStyledDocument</a>    </td>
+    <td headers="h402">A class that implements the <code>StyledDocument</code> interface.
+        The default document for <code>JTextPane</code>.
+    </td>
+  </tr>
+</table>
+
+<p>
+<table border=1 summary="methods for working with documents">
+<caption><a name="docmethods"><b>Working With Documents</b></a></caption>
+<tr>
+<th id="h501">Class or Method</th>
+<th id="h502">Description</th>
+</tr>
+
+  <tr>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DocumentFilter.html">DocumentFilter</a>    </td>
+    <td headers="h502">The superclass of all document filters.
+	You can use a document filter to change
+	what gets inserted or removed from a document,
+	without having to implement a document yourself.
+	See <a href="generaltext.html#filter">
+	Implementing a Document Filter</a>.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/AbstractDocument.html#setDocumentFilter(javax.swing.text.DocumentFilter)">void setDocumentFilter(DocumentFilter)</a>    <br /><em>(in <code>AbstractDocument</code>)</em>
+    </td>
+    <td headers="h502">Sets the document filter.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setDocument(javax.swing.text.Document)">void setDocument(Document)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getDocument()">Document getDocument()</a>    <br /><em>(in <code>JTextComponent</code>)</em>
+    </td>
+    <td headers="h502">Sets or gets the document for a text component.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html#createDefaultModel()">Document createDefaultModel()</a>    <br /><em>(in <code>JTextField</code>)</em>
+    </td>
+    <td headers="h502">Creates a default PlainDocument model. Override this method to
+        create a custom document instead of the default
+        <code>PlainDocument</code>.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Document.html#addDocumentListener(javax.swing.event.DocumentListener)">void addDocumentListener(DocumentListener)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Document.html#removeDocumentListener(javax.swing.event.DocumentListener)">void removeDocumentListener(DocumentListener)</a>    <br /><em>(in <code>Document</code>)</em>
+    </td>
+    <td headers="h502">Adds or removes a document listener.
+    See
+    <a href="generaltext.html#doclisteners">
+    Listening for Changes on a Document</a>.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Document.html#addUndoableEditListener(javax.swing.event.UndoableEditListener)">void addUndoableEditListener(UndoableEditListener)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Document.html#removeUndoableEditListener(javax.swing.event.UndoableEditListener)">void removeUndoableEditListener(UndoableEditlistener)</a>    <br /><em>(in <code>Document</code>)</em>
+    </td>
+    <td headers="h502">Adds or removes an undoable edit listener.
+        Undoable edit listeners are used in
+        <a href="generaltext.html#undo">Implementing Undo and Redo</a>.
+
+    </td>
+  </tr>
+  <tr>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Document.html#getLength()">int getLength()</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Document.html#getStartPosition()">Position getStartPosition()</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Document.html#getEndPosition()">Position getEndPosition()</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Document.html#getText(int, int)">String getText(int, int)</a>    <br /><em>(in <code>Document</code>)</em>
+    </td>
+    <td headers="h502"><code>Document</code> methods that return various descriptive
+        information about the document.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h501">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Document.html#getProperty(java.lang.Object)">Object getProperty(Object)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Document.html#putProperty(java.lang.Object, java.lang.Object)">void putProperty(Object, Object)</a>    <br /><em>(in <code>Document</code>)</em>
+    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/AbstractDocument.html#setDocumentProperties(java.util.Dictionary)">void setDocumentProperties(Dictionary)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/AbstractDocument.html#getDocumentProperties()">Dictionary getDocumentProperties()</a>    <br /><em>(in <code>AbstractDocument</code>)</em>
+    </td>
+    <td headers="h502">A <code>Document</code> maintains a set of
+        properties that you can manipulate with these
+        methods.
+    </td>
+  </tr>
+</table>
+
+<p>
+<table border=1 summary="methods for manipulating carets and selection">
+<caption><a name="carrots"><b>Manipulating Carets and Selection Highlighters</b>
+</a>
+<br />
+<em>These methods are defined in the <code>JTextComponent</code> class.</em>
+</caption>
+<tr>
+<th id="h601">Interface, Class, or Method</th>
+<th id="h602">Description</th>
+</tr>
+
+  <tr>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Caret.html">Caret</a>    </td>
+    <td headers="h602">An interface that defines the API for objects that
+        represent an insertion point within documents.
+
+    </td>
+  </tr>
+  <tr>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultCaret.html">DefaultCaret</a>    </td>
+    <td headers="h602">The default caret used by all text components.
+
+    </td>
+  </tr>
+  <tr>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setCaret(javax.swing.text.Caret)">void setCaret(Caret)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getCaret()">Caret getCaret()</a>    </td>
+    <td headers="h602">Sets or gets the caret object used by a text component.
+
+    </td>
+  </tr>
+  <tr>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setCaretColor(java.awt.Color)">void setCaretColor(Color)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getCaretColor()">Color getCaretColor()</a>    </td>
+    <td headers="h602">Sets or gets the color of the caret.
+
+    </td>
+  </tr>
+  <tr>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setCaretPosition(int)">void setCaretPosition(int)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#moveCaretPosition(int)">void moveCaretPosition(int)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getCaretPosition()">int getCaretPosition()</a>    </td>
+    <td headers="h602">Sets or gets the current position of the caret within the document.
+    </td>
+  </tr>
+
+  <tr>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#addCaretListener(javax.swing.event.CaretListener)">void addCaretListener(CaretListener)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#removeCaretListener(javax.swing.event.CaretListener)">void removeCaretListener(CaretListener)</a>    </td>
+    <td headers="h602">Adds or removes a caret listener from a text component.
+    </td>
+  </tr>
+
+  <tr>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/NavigationFilter.html">NavigationFilter</a>    </td>
+    <td headers="h602">The superclass for all navigation filters.
+	A navigation filter lets you modify caret 
+	changes that are about to occur
+	for a text component.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setNavigationFilter(javax.swing.text.NavigationFilter)">void setNavigationFilter(NavigationFilter)</a>    </td>
+    <td headers="h602">Attaches a navigation filter to a text component.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/Highlighter.html">Highlighter</a>    </td>
+    <td headers="h602">An interface that defines the API for objects used
+        to highlight the current selection.
+
+    </td>
+  </tr>
+  <tr>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/DefaultHighlighter.html">DefaultHighlighter</a>    </td>
+    <td headers="h602">The default highlighter used by all text components.
+
+    </td>
+  </tr>
+  <tr>
+    <td headers="h601">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setHighlighter(javax.swing.text.Highlighter)">void setHighlighter(Highlighter)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getHighlighter()">Highlighter getHighlighter()</a>    </td>
+    <td headers="h602">Sets or gets the highlighter used by a text component.
+
+    </td>
+  </tr>
+</table>
+
+<p>
+<table border=1 summary="methods for reading and writing text">
+<caption><a name="io"><b>Reading and Writing Text</b></a></caption>
+
+<tr>
+<th id="h701">Method</th>
+<th id="h702">Description</th>
+</tr>
+
+  <tr>
+    <td headers="h701">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#read(java.io.Reader, java.lang.Object)">void read(Reader, Object)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#write(java.io.Writer)">void write(Writer)</a>    <br /><em>(in <code>JTextComponent</code>)</em>
+    </td>
+    <td headers="h702">Reads or writes text.
+
+    </td>
+  </tr>
+  <tr>
+    <td headers="h701">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/EditorKit.html#read(java.io.Reader, javax.swing.text.Document, int)">void read(Reader, Document, int)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/EditorKit.html#read(java.io.InputStream, javax.swing.text.Document, int)">void read(InputStream, Document, int)</a>    <br /><em>(in <code>EditorKit</code>)</em>
+    </td>
+    <td headers="h702">Reads text from a stream into a document.
+
+    </td>
+  </tr>
+  <tr>
+    <td headers="h701">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/EditorKit.html#write(java.io.Writer, javax.swing.text.Document, int, int)">void write(Writer, Document, int, int)</a>    <br />
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/EditorKit.html#write(java.io.OutputStream, javax.swing.text.Document, int, int)">void write(OutputStream, Document, int, int)</a>    <br /><em>(in <code>EditorKit</code>)</em>
+    </td>
+    <td headers="h702">Writes text from a document to a stream.
+
+    </td>
+  </tr>
+</table>
+
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=generaltext.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=componentlist.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h801" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h801" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h802" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Text Component Features
+        <br><b>Next page:</b> How to Use Various Components
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

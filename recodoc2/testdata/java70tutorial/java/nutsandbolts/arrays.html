@@ -1,0 +1,697 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Arrays (The Java&trade; Tutorials &gt;        
+            Learning the Java Language &gt; Language Basics)
+</title>
+
+     <meta name="description" content="This beginner Java tutorial describes fundamentals of programming in the Java programming language" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java objects, java classes, java inheritance, interfaces, variables, arrays, data types, operators, control flow, number, string" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Learning the Java Language
+        <br><b>Lesson:</b> Language Basics
+        <br><b>Section:</b> Variables
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Language Basics</a></div>
+<div class="linkAHEAD"><a href="variables.html">Variables</a></div>
+<div class="linkBHEAD"><a href="datatypes.html">Primitive Data Types</a></div>
+<div class="nolinkBHEAD">Arrays</div>
+<div class="linkBHEAD"><a href="variablesummary.html">Summary of Variables</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions_variables.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="operators.html">Operators</a></div>
+<div class="linkBHEAD"><a href="op1.html">Assignment, Arithmetic, and Unary Operators</a></div>
+<div class="linkBHEAD"><a href="op2.html">Equality, Relational, and Conditional Operators </a></div>
+<div class="linkBHEAD"><a href="op3.html">Bitwise and Bit Shift Operators</a></div>
+<div class="linkBHEAD"><a href="opsummary.html">Summary of Operators</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions_operators.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="expressions.html">Expressions, Statements, and Blocks</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions_expressions.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="flow.html">Control Flow Statements</a></div>
+<div class="linkBHEAD"><a href="if.html">The if-then and if-then-else Statements</a></div>
+<div class="linkBHEAD"><a href="switch.html">The switch Statement</a></div>
+<div class="linkBHEAD"><a href="while.html">The while and do-while Statements</a></div>
+<div class="linkBHEAD"><a href="for.html">The for Statement</a></div>
+<div class="linkBHEAD"><a href="branch.html">Branching Statements</a></div>
+<div class="linkBHEAD"><a href="flowsummary.html">Summary of Control Flow Statements</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions_flow.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Learning the Java Language</a>
+                &gt;
+                <a href=index.html target=_top>Language Basics</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=datatypes.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=variablesummary.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Arrays</h1></div>
+            <div id=PageContent>
+An <i>array</i> is a container object that holds a fixed number of values
+of a single type. 
+The length of an array is established when the array is created. After creation, its length is fixed.
+You've seen an example of arrays already, in the <code>main</code> method
+of the "Hello World!" application. This section discusses arrays in greater detail.
+<P>
+<center>
+
+<center><p><IMG SRC="../../figures/java/objects-tenElementArray.gif" WIDTH="400" HEIGHT="145" ALIGN="BOTTOM" ALT="Illustration of an array as 10 boxes numbered 0 through 9; an index of 0 indicates the first element in the array"></p><p class="FigureCaption">An array of ten elements</p></center>
+</center>
+<P>
+Each item in an array is called an 
+ <i>element</i>, and each element is 
+ accessed by its 
+numerical <i>index</i>. As shown in the above illustration, numbering begins
+with 0. The 9th element, for example, would therefore be accessed at index 8.
+
+<P>
+The following program, 
+
+<a class="SourceLink" target="_blank" href="examples/ArrayDemo.java"><code>ArrayDemo</code></a>, 
+creates an array of integers,
+puts some values in it,
+and prints each value to standard output.
+
+<div class="codeblock"><pre>
+
+class ArrayDemo {
+     public static void main(String[] args) {
+          int[] anArray;              // declares an array of integers
+
+          anArray = new int[10];      // allocates memory for 10 integers
+            
+          anArray[0] = 100; // initialize first element
+          anArray[1] = 200; // initialize second element
+          anArray[2] = 300; // etc.
+          anArray[3] = 400;
+          anArray[4] = 500;
+          anArray[5] = 600;
+          anArray[6] = 700;
+          anArray[7] = 800;
+          anArray[8] = 900;
+          anArray[9] = 1000;
+
+          System.out.println(&quot;Element at index 0: &quot; + anArray[0]);
+          System.out.println(&quot;Element at index 1: &quot; + anArray[1]);
+          System.out.println(&quot;Element at index 2: &quot; + anArray[2]);
+          System.out.println(&quot;Element at index 3: &quot; + anArray[3]);
+          System.out.println(&quot;Element at index 4: &quot; + anArray[4]);
+          System.out.println(&quot;Element at index 5: &quot; + anArray[5]);
+          System.out.println(&quot;Element at index 6: &quot; + anArray[6]);
+          System.out.println(&quot;Element at index 7: &quot; + anArray[7]);
+          System.out.println(&quot;Element at index 8: &quot; + anArray[8]);
+          System.out.println(&quot;Element at index 9: &quot; + anArray[9]);
+     }
+} 
+</pre></div>
+
+
+
+
+
+The output from this program is:
+
+<div class="codeblock"><pre>
+Element at index 0: 100
+Element at index 1: 200
+Element at index 2: 300
+Element at index 3: 400
+Element at index 4: 500
+Element at index 5: 600
+Element at index 6: 700
+Element at index 7: 800
+Element at index 8: 900
+Element at index 9: 1000
+</pre></div>
+<p>
+In a real-world programming situation, you'd probably use one of 
+the supported <i>looping constructs</i> to iterate through each 
+element of the array, rather than write each line individually 
+as shown above. However, this example clearly illustrates the array syntax.
+You'll learn about the various looping constructs (<code>for</code>, <code>while</code>, and <code>do-while</code>) in the 
+
+<a class="TutorialLink" target="_top" href="flow.html">Control Flow</a>
+section.
+
+
+
+<h2>Declaring a Variable to Refer to an Array</h2>
+
+The above program declares <code>anArray</code> with the following line of code:
+<div class="codeblock"><pre>
+int[] anArray;          // declares an array of integers
+</pre></div>
+<P>
+Like declarations for variables of other types,
+an array declaration has two components:
+the array's type and the array's name.
+An array's type is written as <code><em>type</em>[]</code>,
+where <code><em>type</em></code> is the data type
+of the contained elements; the square brackets are special symbols
+indicating that this variable holds an array. The size of the array is
+not part of its type (which is why the brackets are empty). 
+An array's name can be anything you want, provided that it follows the
+rules and conventions as previously discussed in 
+ the 
+<a class="TutorialLink" target="_top" href="variables.html#naming">naming</a> section. 
+As with variables of other types, the declaration does not actually create an array &mdash; 
+it simply tells the compiler that this variable will hold an array of the specified type.
+
+<P>
+Similarly, you can declare arrays of other types:
+<div class="codeblock"><pre>
+byte[] anArrayOfBytes;
+short[] anArrayOfShorts;
+long[] anArrayOfLongs;
+float[] anArrayOfFloats;
+double[] anArrayOfDoubles;
+boolean[] anArrayOfBooleans;
+char[] anArrayOfChars;
+String[] anArrayOfStrings;
+</pre></div>
+<P>
+You can also place
+the square brackets after the array's name:
+<div class="codeblock"><pre>
+float anArrayOfFloats[]; // this form is discouraged
+</pre></div>
+
+However, convention discourages this form; the brackets identify the
+array type and should appear with the type designation.
+
+<p>
+
+
+
+
+<h2>Creating, Initializing, and Accessing an Array</h2>
+
+One way to create an array is with the <code>new</code> operator.
+The next statement in the <code>ArrayDemo</code> program allocates
+an array with enough memory for ten integer elements
+and assigns the array to the <code>anArray</code>
+variable.
+<div class="codeblock"><pre>
+anArray = new int[10];  // create an array of integers
+</pre></div>
+
+If this statement were missing,
+the compiler would print an error like the following, and compilation
+would fail:
+<div class="codeblock"><pre>
+ArrayDemo.java:4: Variable anArray may not have been initialized.
+</pre></div>
+The next few lines assign values to each element of the array:
+
+<div class="codeblock"><pre>
+anArray[0] = 100; // initialize first element
+anArray[1] = 200; // initialize second element
+anArray[2] = 300; // etc.
+</pre></div>
+
+Each array element is accessed by its numerical index:
+<div class="codeblock"><pre>
+System.out.println("Element 1 at index 0: " + anArray[0]);
+System.out.println("Element 2 at index 1: " + anArray[1]);
+System.out.println("Element 3 at index 2: " + anArray[2]);
+</pre></div>
+
+Alternatively, you can use the shortcut syntax to create and initialize an array:
+<div class="codeblock"><pre>
+int[] anArray = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+</pre></div>
+
+Here the length of the array is determined by the number of values provided
+between <em>{</em> and <em>}</em>.
+<P>
+You can also declare an array of arrays (also known as a
+<em>multidimensional</em> array) by using two or more sets of
+square brackets, such as <code>String[][] names</code>.
+Each element, therefore, must be accessed by a corresponding
+number of index values.
+<p>
+In the Java programming language, a multidimensional array is
+simply an array whose components are themselves arrays.
+This is unlike arrays in C or Fortran.  A consequence of
+this is that the rows are allowed to vary in length, as shown
+in the following 
+
+<a class="TutorialLink" target="_top" href="examples/MultiDimArrayDemo.java">MultiDimArrayDemo</a> program:
+
+<div class="codeblock"><pre>
+class MultiDimArrayDemo {
+    public static void main(String[] args) {
+        String[][] names = {{"Mr. ", "Mrs. ", "Ms. "},
+                            {"Smith", "Jones"}};
+        System.out.println(names[0][0] + names[1][0]); //Mr. Smith
+        System.out.println(names[0][2] + names[1][1]); //Ms. Jones
+    }
+}
+</pre></div>
+
+The output from this program is:
+<div class="codeblock"><pre>
+    Mr. Smith
+    Ms. Jones
+</pre></div>
+
+<p>
+Finally, you can use the built-in <code>length</code> property to 
+determine the size of any array. 
+The code
+<div class="codeblock"><pre>
+ System.out.println(anArray.length);
+</pre></div>
+will print the array's size to standard output.
+
+<h2>Copying Arrays</h2>
+The <code>System</code> class has an <code>arraycopy</code> method that you can use to efficiently copy data from one array into another: 
+<div class="codeblock"><pre>
+public static void arraycopy(Object src,
+                             int srcPos,
+                             Object dest,
+                             int destPos,
+                             int length)
+</pre></div>
+
+The two <CODE>Object</CODE> arguments specify the array to copy <i>from</i> and the array to copy <i>to</i>. The three <CODE>int</CODE> arguments specify the starting position in the source array, the starting position in the destination array, and the number of array elements to copy. <P>The following program, 
+
+<a class="SourceLink" target="_blank" href="examples/ArrayCopyDemo.java"><code>ArrayCopyDemo</code></a>,
+declares an array of <code>char</code> elements, spelling the word "decaffeinated". It uses <code>arraycopy</code> to copy a subsequence of array components into a second array:
+<div class="codeblock"><pre>
+
+class ArrayCopyDemo {
+    public static void main(String[] args) {
+        char[] copyFrom = { 'd', 'e', 'c', 'a', 'f', 'f', 'e',
+			    'i', 'n', 'a', 't', 'e', 'd' };
+        char[] copyTo = new char[7];
+
+        System.arraycopy(copyFrom, 2, copyTo, 0, 7);
+        System.out.println(new String(copyTo));
+    }
+}
+</pre></div>
+
+
+<P>
+The output from this program is:
+<div class="codeblock"><pre>
+caffein
+</pre></div>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=datatypes.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=variablesummary.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Primitive Data Types
+        <br><b>Next page:</b> Summary of Variables
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

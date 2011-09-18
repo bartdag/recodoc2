@@ -1,0 +1,835 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Using Other Swing Features: Examples (The Java&trade; Tutorials &gt;        
+            Creating a GUI with JFC/Swing &gt; Using Other Swing Features)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI with JFC/Swing
+        <br><b>Lesson:</b> Using Other Swing Features
+    </div>
+
+    <div class=MainFlow_wide>
+            <span id=BreadCrumbs>
+                <a href=../../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../../index.html target=_top>Creating a GUI with JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Using Other Swing Features</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=../../examples/components/index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../../examples/layout/index.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Using Other Swing Features: Examples</h1></div>
+            <div id=PageContent>
+
+
+
+The <a href=#table>table</a> that follows
+lists every example in the Using Other Swing Features lesson,
+with links to required files and to where each example is discussed.
+The first column of the table has links 
+to JNLP files
+that let you run the examples using Java&trade; Web Start.
+<p>
+<div class="note"><hr><strong>NOTE:</strong>&nbsp;Release 6.0 is required to run all applets and 
+Java Web Start examples.  Most examples will run on an earlier
+release but you must compile and run them locally.
+<hr></div>
+
+
+<p>
+To run an example using Java Web Start,
+click the <em>[Launch]</em> link in the first column of the
+<a href="#table">table</a>.
+The first time you run an example,
+there will be a delay
+while Java Web Start downloads the JAR file 
+containing the class files for this lesson's examples.
+Afterward, the examples should execute more quickly.
+
+
+
+
+<h2>Compiling and Running the Examples Locally</h2>
+
+
+The second column in the table below has links to zip files for each
+demo that you can open and run in the NetBeans IDE. Refer to
+<a class="TutorialLink" target="_top" href="../../../information/examples.html">Running Tutorial Examples in NetBeans IDE</a> for more information.
+<p>
+
+
+If you download an individual example,
+take care to have all the necessary files 
+in the proper hierarchy when you compile and run it.
+All of the examples in the Swing tutorial are placed in
+a package.  For example, the components examples are placed
+in a <code>components</code> package.
+See the following image for the complete structure.
+Note that any examples using images expect their image files
+to be in a directory named <code>images</code>
+that is in the same directory as the example's src files.
+
+<p>
+You can find out which files each example needs by consulting the
+following table or by looking at the comments at the beginning of
+each source file.
+
+
+<a name=table><h2>Table of Examples</h2></a>
+
+<table border="1" summary="Information about examples">
+
+<tr>
+<th id="h1">Example</th>
+<th id="h2">Zip File
+<br>
+<em>(contains all files necessary for the example plus NetBeans IDE
+project metadata)</em></td>
+<th id="h3">Source Files
+    <em>(first file has the main method, except
+        for examples that run only as applets)</em></th>
+<th id="h4">Image & Other Files</th>
+<th id="h5">Where Described</th>
+</tr>
+
+<tr>
+<td headers="h1"><a name="AccessibleScrollDemo">
+AccessibleScrollDemo <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/AccessibleScrollDemo.jnlp"><em>[Launch]</em></a>
+<td headers="h2"><a href="../zipfiles/misc-AccessibleScrollDemoProject.zip">Accessible Scroll Demo Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="AccessibleScrollDemoProject/src/misc/AccessibleScrollDemo.java"><code>AccessibleScrollDemo.java</code></a>
+    <br>&nbsp;&nbsp;
+<a class="SourceLink" target="_blank" href="AccessibleScrollDemoProject/src/misc/Rule.java"><code>Rule.java</code></a>
+    <br>&nbsp;&nbsp;
+<a class="SourceLink" target="_blank" href="AccessibleScrollDemoProject/src/misc/Corner.java"><code>Corner.java</code></a>
+    <br>&nbsp;&nbsp;
+<a class="SourceLink" target="_blank" href="AccessibleScrollDemoProject/src/misc/ScrollablePicture.java"><code>ScrollablePicture.java</code></a>
+    </a></td>
+<td headers="h4"><a href="AccessibleScrollDemoProject/src/misc/images/youngdad.jpeg"><code>youngdad.jpeg</code></a></td>
+<td headers="h5"><a href="../../misc/access.html">
+    How to Support Assistive Technologies</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="ActionDemo">
+ActionDemo <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/ActionDemo.jnlp"><em>[Launch]</em></a>
+<td headers="h2"><a href="../zipfiles/misc-ActionDemoProject.zip">Action Demo Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="ActionDemoProject/src/misc/ActionDemo.java"><code>ActionDemo.java</code></a>
+    </a></td>
+<td headers="h4"><a href="http://developer.java.sun.com/developer/techDocs/hi/repository/"><code>jlfgr-1_0.jar</code></a>
+</td>
+<td headers="h5"><a href="../../misc/action.html">
+    How to Use Actions</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="DesktopDemo">
+DesktopDemo
+<a href="#security">*</a>
+
+<td headers="h2"><a href="../zipfiles/misc-DesktopDemoProject.zip">Desktop Demo Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="DesktopDemoProject/src/misc/DesktopDemo.java"><code>DesktopDemo.java</code></a>
+    </a></td>
+<td headers="h4"><a href="DesktopDemoProject/src/misc/images/desk32.gif">desk32.gif</a></td>
+<td headers="h5"><a href="../../misc/desktop.html">
+    How to Integrate with the Desktop Class</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="Diva">
+Diva <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/Diva.jnlp"><em>[Launch]</em></a></a></td>
+<td headers="h2"><a href="../zipfiles/misc-DivaProject.zip">Diva Project</a></td>
+<td headers="h3">
+<a class="SourceLink" target="_blank" href="DivaProject/src/Diva.java"><code>Diva.java</code></a></td>
+<td headers="h4">&nbsp;</td>
+<td headers="h5"><a href="../../misc/jlayer.html#events">How to Decorate Components
+with JLayer</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="FieldValidator">
+FieldValidator <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/FieldValidator.jnlp"><em>[Launch]</em></a></a></td>
+<td headers="h2"><a href="../zipfiles/misc-FieldValidatorProject.zip">FieldValidator Project</a></td>
+<td headers="h3">
+<a class="SourceLink" target="_blank" href="FieldValidatorProject/src/FieldValidator.java"><code>FieldValidator.java</code></a></td>
+<td headers="h4">&nbsp;</td>
+<td headers="h5"><a href="../../misc/jlayer.html#validation">How to Decorate Components
+with JLayer</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="FocusConceptsDemo">
+FocusConceptsDemo <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/FocusConceptsDemo.jnlp"><em>[Launch]</em></a>
+<td headers="h2"><a href="../zipfiles/misc-FocusConceptsDemoProject.zip">Focus Concepts Demo Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="FocusConceptsDemoProject/src/misc/FocusConceptsDemo.java"><code>FocusConceptsDemo.java</code></a>    </a></td>
+<td headers="h4">&nbsp;&nbsp;</td>
+<td headers="h5"><a href="../../misc/focus.html">
+    How to Use the Focus Subsystem</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="FocusTraversalDemo">
+FocusTraversalDemo <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/FocusTraversalDemo.jnlp"><em>[Launch]</em></a>
+<td headers="h2"><a href="../zipfiles/misc-FocusTraversalDemoProject.zip">Focus Traversal Demo Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="FocusTraversalDemoProject/src/misc/FocusTraversalDemo.java"><code>FocusTraversalDemo.java</code></a>    </a></td>
+<td headers="h4">&nbsp;&nbsp;</td>
+<td headers="h5"><a href="../../misc/focus.html">
+    How to Use the Focus Subsystem</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="InputVerificationDemo">
+InputVerificationDemo <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/InputVerificationDemo.jnlp"><em>[Launch]</em></a>
+<td headers="h2"><a href="../zipfiles/misc-InputVerificationDemoProject.zip">Input Verification Demo Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="InputVerificationDemoProject/src/misc/InputVerificationDemo.java"><code>InputVerificationDemo.java</code></a>    </a></td>
+<td headers="h4">&nbsp;&nbsp;</td>
+<td headers="h5"><a href="../../misc/focus.html">
+    How to Use the Focus Subsystem</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="InputVerificationDialogDemo">
+InputVerificationDialogDemo <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/InputVerificationDialogDemo.jnlp"><em>[Launch]</em></a>
+<td headers="h2"><a href="../zipfiles/misc-InputVerificationDialogDemoProject.zip">Input Verification Dialog Demo Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="InputVerificationDialogDemoProject/src/misc/InputVerificationDialogDemo.java"><code>InputVerificationDialogDemo.java</code></a>    </a></td>
+<td headers="h4">&nbsp;&nbsp;</td>
+<td headers="h5"><a href="../../misc/focus.html">
+    How to Use the Focus Subsystem</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="ModalityDemo">
+ModalityDemo <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/ModalityDemo.jnlp"><em>[Launch]</em></a>
+<td headers="h2"><a href="../zipfiles/misc-ModalityDemoProject.zip">Modality Demo Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="ModalityDemoProject/src/misc/ModalityDemo.java"><code>ModalityDemo.java</code></a>    </a></td>
+<td headers="h4">&nbsp;&nbsp;</td>
+<td headers="h5"><a href="../../misc/modality.html">
+    How to Use Modality in Dialogs</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="Myopia">
+Myopia <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/Myopia.jnlp"><em>[Launch]</em></a></a></td>
+<td headers="h2"><a href="../zipfiles/misc-MyopiaProject.zip">Myopia Project</a></td>
+<td headers="h3">
+<a class="SourceLink" target="_blank" href="MyopiaProject/src/Myopia.java"><code>Myopia.java</code></a></td>
+<td headers="h4">&nbsp;</td>
+<td headers="h5"><a href="../../misc/jlayer.html#drawing">How to Decorate Components
+with JLayer</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="SplashDemo">
+SplashDemo
+
+</td>
+
+<td headers="h2"><a href="../zipfiles/misc-SplashDemoProject.zip">Splash Demo Project</a></td>
+
+<td headers="h3">    
+<a class="SourceLink" target="_blank" href="SplashDemoProject/src/misc/SplashDemo.java"><code>SplashDemo.java</code></a>    </a></td>
+<td headers="h4"><a href="SplashDemoProject/src/misc/images/splash.gif"><code>splash.gif</code></a></td>
+<td headers="h5"><a href="../../misc/splashscreen.html">
+    How to Create a Splash Screen</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="TablePrintDemo1">
+TablePrintDemo1 <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/TablePrintDemo1.jnlp"><em>[Launch]</em></a>
+<td headers="h2"><a href="../zipfiles/misc-TablePrintDemo1Project.zip">Table Print Demo1 Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="TablePrintDemo1Project/src/misc/TablePrintDemo1.java"><code>TablePrintDemo1.java</code></a>
+    </a></td>
+<td headers="h4"><a href="TablePrintDemo1Project/src/misc/images/failed.png"><code>failed.png</code></a>,
+    <a href="TablePrintDemo1Project/src/misc/images/passed.png"><code>passed.png</code></a>.
+</td>
+<td headers="h5"><a href="../../misc/printtable.html">
+    How to Print Tables</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="TablePrintDemo2">
+TablePrintDemo2 <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/TablePrintDemo2.jnlp"><em>[Launch]</em></a>
+<td headers="h2"><a href="../zipfiles/misc-TablePrintDemo2Project.zip">Table Print Demo2 Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="TablePrintDemo2Project/src/misc/TablePrintDemo2.java"><code>TablePrintDemo2.java</code></a><br>&nbsp;&nbsp;
+<a class="SourceLink" target="_blank" href="TablePrintDemo2Project/src/misc/TablePrintDemo1.java"><code>TablePrintDemo1.java</code></a>    </a></td>
+<td headers="h4"><a href="TablePrintDemo2Project/src/misc/images/failed.png"><code>failed.png</code></a>,
+    <a href="TablePrintDemo2Project/src/misc/images/passed.png"><code>passed.png</code></a>
+    <a href="TablePrintDemo2Project/src/misc/images/failed-BW.png"><code>failed-BW.png</code></a>,
+    <a href="TablePrintDemo2Project/src/misc/images/passed-BW.png"><code>passed-BW.png</code></a>.
+</td>
+<td headers="h5"><a href="../../misc/printtable.html">
+    How to Print Tables</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="TablePrintDemo3">
+TablePrintDemo3 <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/TablePrintDemo3.jnlp"><em>[Launch]</em></a>
+<td headers="h2"><a href="../zipfiles/misc-TablePrintDemo3Project.zip">Table Print Demo3 Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="TablePrintDemo3Project/src/misc/TablePrintDemo3.java"><code>TablePrintDemo3.java</code></a><br>&nbsp;&nbsp;
+<a class="SourceLink" target="_blank" href="TablePrintDemo3Project/src/misc/TablePrintDemo2.java"><code>TablePrintDemo2.java</code></a><br>&nbsp;&nbsp;
+<a class="SourceLink" target="_blank" href="TablePrintDemo3Project/src/misc/TablePrintDemo1.java"><code>TablePrintDemo1.java</code></a>    </a></td>
+<td headers="h4"><a href="TablePrintDemo3Project/src/misc/images/failed.png"><code>failed.png</code></a>,
+    <a href="TablePrintDemo3Project/src/misc/images/passed.png"><code>passed.png</code></a>
+    <a href="TablePrintDemo3Project/src/misc/images/failed-BW.png"><code>failed-BW.png</code></a>,
+    <a href="TablePrintDemo3Project/src/misc/images/passed-BW.png"><code>passed-BW.png</code></a>
+    <a href="TablePrintDemo3Project/src/misc/images/clipBottom.png"><code>clipBottom.png</code></a>,
+    <a href="TablePrintDemo3Project/src/misc/images/clipBottomLeft.png"><code>clipBottomLeft.png</code></a>
+    <a href="TablePrintDemo3Project/src/misc/images/clipBottomRight.png"><code>clipBottomRight.png</code></a>,
+    <a href="TablePrintDemo3Project/src/misc/images/clipLeft.png"><code>clipLeft.png</code></a>,
+    <a href="TablePrintDemo3Project/src/misc/images/clipRight.png"><code>clipRight.png</code></a>,
+    <a href="TablePrintDemo3Project/src/misc/images/clipTop.png"><code>clipTop.png</code></a>,
+    <a href="TablePrintDemo3Project/src/misc/images/clipTopCenter.png"><code>clipTopCenter.png</code></a>, 
+    <a href="TablePrintDemo3Project/src/misc/images/clipTopLeft.png"><code>clipTopLeft.png</code></a>,
+    <a href="TablePrintDemo3Project/src/misc/images/clipTopRight.png"><code>clipTopRight.png</code></a>,
+    <a href="TablePrintDemo3Project/src/misc/images/finalGrades.png"><code>finalGrades.png</code></a>.
+</td>
+<td headers="h5"><a href="../../misc/printtable.html">
+    How to Print Tables</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="TapTapTap">
+TapTapTap <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/TapTapTap.jnlp"><em>[Launch]</em></a></a></td>
+<td headers="h2"><a href="../zipfiles/misc-TapTapTapProject.zip">TapTapTap Project</a></td>
+<td headers="h3">
+<a class="SourceLink" target="_blank" href="TapTapTapProject/src/TapTapTap.java"><code>TapTapTap.java</code></a></td>
+<td headers="h4">&nbsp;</td>
+<td headers="h5"><a href="../../misc/jlayer.html#animating">How to Decorate Components
+with JLayer</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="TextAreaPrintingDemo">
+TextAreaPrintingDemo <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/TextAreaPrintingDemo.jnlp"><em>[Launch]</em></a>
+<td headers="h2"><a href="../zipfiles/misc-TextAreaPrintingDemoProject.zip">Text Area Printing Demo Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="TextAreaPrintingDemoProject/src/misc/TextAreaPrintingDemo.java"><code>TextAreaPrintingDemo.java</code></a>
+    </a></td>
+<td headers="h4"><a href="TextAreaPrintingDemoProject/src/misc/images/print.png"><code>print.png</code></a>,
+    <a href="TextAreaPrintingDemoProject/src/misc/toprint.txt"><code>toprint.txt</code></a>,
+    <a href="TextAreaPrintingDemoProject/src/misc/guide.txt"><code>guide.txt</code></a>.
+</td>
+<td headers="h5"><a href="../../misc/printtext.html">
+    How to Print Text</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="TextBatchPrintingDemo">
+TextBatchPrintingDemo <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/TextBatchPrintingDemo.jnlp"><em>[Launch]</em></a>
+<td headers="h2"><a href="../zipfiles/misc-TextBatchPrintingDemoProject.zip">Text Batch Printing Demo Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="TextBatchPrintingDemoProject/src/misc/TextBatchPrintingDemo.java"><code>TextBatchPrintingDemo.java</code></a>
+    </a></td>
+<td headers="h4"><a href="TextBatchPrintingDemoProject/src/misc/index.html"><code>index.html</code></a>,
+    <a href="TextBatchPrintingDemoProject/src/misc/chapter1.html"><code>chapter1.html</code></a>,
+    <a href="TextBatchPrintingDemoProject/src/misc/chapter2.html"><code>chapter2.html</code></a>,
+    <a href="TextBatchPrintingDemoProject/src/misc/chapter3.html"><code>chapter3.html</code></a>,
+    <a href="TextBatchPrintingDemoProject/src/misc/chapter4.html"><code>chapter4.html</code></a>,
+    <a href="TextBatchPrintingDemoProject/src/misc/chapter5.html"><code>chapter5.html</code></a>,
+    <a href="TextBatchPrintingDemoProject/src/misc/chapter6.html"><code>chapter6.html</code></a>,
+    <a href="TextBatchPrintingDemoProject/src/misc/chapter7.html"><code>chapter7.html</code></a>,
+    <a href="TextBatchPrintingDemoProject/src/misc/chapter8.html"><code>chapter8.html</code></a>,
+    <a href="TextBatchPrintingDemoProject/src/misc/chapter9.html"><code>chapter9.html</code></a>,
+    <a href="TextBatchPrintingDemoProject/src/misc/chapter10.html"><code>chapter10.html</code></a>,
+    <a href="TextBatchPrintingDemoProject/src/misc/chapter11.html"><code>chapter11.html</code></a>.
+</td>
+<td headers="h5"><a href="../../misc/printtext.html">
+    How to Print Text</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="TrackFocusDemo">
+TrackFocusDemo <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/TrackFocusDemo.jnlp"><em>[Launch]</em></a>
+
+<td headers="h2"><a href="../zipfiles/misc-TrackFocusDemoProject.zip">Track Focus Demo Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="TrackFocusDemoProject/src/misc/TrackFocusDemo.java"><code>TrackFocusDemo.java</code></a><br>&nbsp;&nbsp;
+<a class="SourceLink" target="_blank" href="TrackFocusDemoProject/src/misc/Picture.java"><code>Picture.java</code></a>    </a></td>
+<td headers="h4"><a href="TrackFocusDemoProject/src/misc/images/Maya.jpg"><code>Maya.jpg</code></a>,
+    <a href="TrackFocusDemoProject/src/misc/images/Anya.jpg"><code>Anya.jpg</code></a>,
+    <a href="TrackFocusDemoProject/src/misc/images/Laine.jpg"><code>Laine.jpg</code></a>,
+    <a href="TrackFocusDemoProject/src/misc/images/Cosmo.jpg"><code>Cosmo.jpg</code></a>,
+    <a href="TrackFocusDemoProject/src/misc/images/Adele.jpg"><code>Adele.jpg</code></a>,
+    <a href="TrackFocusDemoProject/src/misc/images/Alexi.jpg"><code>Alexi.jpg</code></a>.
+</td>
+<td headers="h5"><a href="../../misc/focus.html">
+    How to Use the Focus Subsystem</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="TrayIconDemo">
+TrayIconDemo
+<a href="#security">*</a>
+</td>
+
+<td headers="h2"><a href="../zipfiles/misc-TrayIconDemoProject.zip">Tray Icon Demo Project</a></td>
+
+<td headers="h3">
+    
+<a class="SourceLink" target="_blank" href="TrayIconDemoProject/src/misc/TrayIconDemo.java"><code>TrayIconDemo.java</code></a>    </a></td>
+<td headers="h4"><a href="TrayIconDemoProject/src/misc/images/bulb.gif"><code>bulb.gif</code></a></td>
+<td headers="h5"><a href="../../misc/systemtray.html">
+    How to Use the System Tray</a></td>
+</tr>
+
+<tr>
+<td headers="h1"><a name="Wallpaper">
+Wallpaper <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/Wallpaper.jnlp"><em>[Launch]</em></a></a></td>
+<td headers="h2"><a href="../zipfiles/misc-WallpaperProject.zip">Wallpaper Project</a></td>
+<td headers="h3">
+<a class="SourceLink" target="_blank" href="WallpaperProject/src/Wallpaper.java"><code>Wallpaper.java</code></a></td>
+<td headers="h4">&nbsp;</td>
+<td headers="h5"><a href="../../misc/jlayer.html#drawing">How to Decorate Components
+with JLayer</a></td>
+</tr>
+
+</table>
+<br>
+<a name="security">*
+This application is not currently available
+with Java Web Start 
+because we distribute only unsigned JAR files.
+To run it, download and compile it,
+and then run it as an application.
+</a>
+
+</font>
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=../../examples/components/index.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=../../examples/layout/index.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h101" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h101" align="center"><img id=duke src=../../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h102" align="left" valign="middle"><img id=oracle src=../../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> 
+        <br><b>Next page:</b> 
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

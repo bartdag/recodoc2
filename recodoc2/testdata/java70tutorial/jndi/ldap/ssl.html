@@ -1,0 +1,752 @@
+
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>SSL and Custom Sockets (The Java&trade; Tutorials &gt;        
+            Java Naming and Directory Interface(TM). &gt; Advanced Topics for LDAP Users)
+</title>
+
+     <meta name="description" content="This JNDI Java tutorial describes Java Naming and Directory Interface (JNDI) technology, naming and directory operations, and LDAP" />
+     <meta name="keywords" content="java programming, learn java, java sample code, jndi, ldap, jndi service provider" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Java Naming and Directory Interface(TM).
+        <br><b>Lesson:</b> Advanced Topics for LDAP Users
+        <br><b>Section:</b> Security
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Advanced Topics for LDAP Users</a></div>
+<div class="linkAHEAD"><a href="ldap.html">LDAP v3</a></div>
+<div class="linkAHEAD"><a href="jndi.html">JNDI as an LDAP API</a></div>
+<div class="linkBHEAD"><a href="operations.html">How LDAP Operations Map to JNDI APIs</a></div>
+<div class="linkBHEAD"><a href="exceptions.html">How LDAP Error Codes Map to JNDI Exceptions</a></div>
+<div class="linkAHEAD"><a href="security.html">Security</a></div>
+<div class="linkBHEAD"><a href="authentication.html">Modes of Authenticating to LDAP</a></div>
+<div class="linkBHEAD"><a href="auth_mechs.html">Authentication Mechanisms</a></div>
+<div class="linkBHEAD"><a href="anonymous.html">Anonymous</a></div>
+<div class="linkBHEAD"><a href="simple.html">Simple</a></div>
+<div class="linkBHEAD"><a href="sasl.html">SASL</a></div>
+<div class="linkBHEAD"><a href="digest.html">Digest-MD5</a></div>
+<div class="nolinkBHEAD">SSL and Custom Sockets</div>
+<div class="linkAHEAD"><a href="rename.html">More LDAP Operations</a></div>
+<div class="linkBHEAD"><a href="compare.html">LDAP Compare</a></div>
+<div class="linkBHEAD"><a href="result.html">Search Results</a></div>
+<div class="linkBHEAD"><a href="unsol.html"> LDAP Unsolicited Notifications</a></div>
+<div class="linkAHEAD"><a href="connect.html">Connection Management</a></div>
+<div class="linkBHEAD"><a href="create.html">Creation</a></div>
+<div class="linkBHEAD"><a href="close.html"> Closing</a></div>
+<div class="linkBHEAD"><a href="pool.html">Pooling</a></div>
+<div class="linkBHEAD"><a href="config.html">Configuration</a></div>
+<div class="linkAHEAD"><a href="faq.html">Frequently Asked Questions</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Java Naming and Directory Interface(TM).</a>
+                &gt;
+                <a href=index.html target=_top>Advanced Topics for LDAP Users</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=digest.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=rename.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>SSL and Custom Sockets</h1></div>
+            <div id=PageContent>
+In addition to SASL authentication,
+most LDAP servers allow their services to be accessed through SSL. 
+SSL is especially useful for LDAP v2 servers because the v2 protocol
+does not support SASL authentication.
+<p>
+An SSL-enabled server often supports SSL in two ways.
+In the most basic way, 
+the server supports SSL ports in addition to normal (unprotected) ports.
+<!--
+To use this service, the client needs to specify the port number of the SSL port
+in the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/Context.html#PROVIDER_URL"><tt>Context.PROVIDER_URL</tt></a>   property and use SSL sockets when communicating with the server.
+-->
+The other way in which a server supports SSL is via the use of the
+Start TLS Extension (<a href="http://ietf.org/rfc/rfc2830.txt">RFC 2830</a>).
+This option is available only to LDAP v3 servers and is described in
+detail in the
+
+    section.
+
+
+<a name="SSLPROP"></a><h2>Using the SSL Socket Property</h2>
+<p>
+By default, Sun's LDAP service provider uses plain sockets when communicating
+with the LDAP server. To request that SSL sockets be use, set the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/Context.html#SECURITY_PROTOCOL"><tt>Context.SECURITY_PROTOCOL</tt></a>     property to <tt>"ssl"</tt>.
+<p>
+In the <a href=examples/Ssl.java>following example</a>, 
+the LDAP server is offering SSL at port 636. To run this program,
+you must enable SSL on port 636 on your LDAP server. This procedure is
+typically carried out by the directory's administrator.
+
+
+<hr>
+<a name=SERVER></a>
+<strong>Server Requirements: </strong>
+The LDAP server must be set up with an X.509 SSL server certificate
+and have SSL enabled.
+Typically, you must first obtain a signed
+certificate for the server from a certificate authority (CA).
+Then, follow the instructions from your directory vendor on how to enable SSL.
+Different vendors have different tools for doing this.
+<p>
+For the
+<a href="http://www.sun.com/">Sun Java Directory Server, v5.2</a>,
+use the Manage Certificates tool in the 
+Administration Console to generate a Certificate Signing Request (CSR).
+Submit the CSR to a CA to obtain an X.509 SSL server certificate.
+Using the Administration Console, add the certificate 
+to the server's list of certificates.
+Also install the CA's certificate if it is not already in the server's list
+of trusted CAs.
+Enable SSL by using the Configuration tab in the Administration
+Console. Select the server in the left pane. Select the Encryption tab
+in the right pane. Click the checkboxes for "Enable SSL for this server"
+and "Use this cipher family: RSA", ensuring that the server certificate
+you have added is in the list of certificates.
+<p>
+
+<a name=CLIENT></a>
+<strong>Client Requirements: </strong>
+
+You need to ensure that the client trusts the LDAP server that you'll be using.
+You must install the server's certificate (or its CA's certificate)
+in your JRE's database of trusted certificates.
+Here is an example. 
+
+<div class="codeblock"><pre>
+# cd <em>JAVA_HOME</em>/lib/security
+# keytool -import -file server_cert.cer -keystore jssecacerts
+</pre></div>
+
+For information on how to use the security tools, see
+the <a href=../../security/index.html> Security</a> trail.
+For information on the JSSE, see the 
+<a class="OutsideLink" target="_blank" href="http://download.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html">Java Secure Socket Extension (JSSE) Reference Guide</a>.
+<hr>
+
+<div class="codeblock"><pre>
+// Set up the environment for creating the initial context
+Hashtable&lt;String, Object&gt; env = new Hashtable&lt;String, Object&gt;();
+env.put(Context.INITIAL_CONTEXT_FACTORY, 
+    "com.sun.jndi.ldap.LdapCtxFactory");
+env.put(Context.PROVIDER_URL, "ldap://localhost:636/o=JNDITutorial");
+
+// Specify SSL
+env.put(Context.SECURITY_PROTOCOL, "ssl");
+
+// Authenticate as S. User and password "mysecret"
+env.put(Context.SECURITY_AUTHENTICATION, "simple");
+env.put(Context.SECURITY_PRINCIPAL, "cn=S. User, ou=NewHires, o=JNDITutorial");
+env.put(Context.SECURITY_CREDENTIALS, "mysecret");
+
+// Create the initial context
+DirContext ctx = new InitialDirContext(env);
+
+// ... do something useful with ctx
+</pre></div>
+
+
+<hr>
+<strong>Note:</strong> If you use SSL to connect to a server on a port that is 
+<em>not</em> using SSL, then your program will hang. Similarly, if you use a plain 
+socket to connect to a server's SSL socket, then your application will hang.
+This is a characteristic of the SSL protocol.
+<hr>
+
+
+<a name="LDAPS"></a><h2>Using the LDAPS URL</h2>
+
+Instead of requesting the use of SSL via the use of the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/Context.html#SECURITY_PROTOCOL"><tt>Context.SECURITY_PROTOCOL</tt></a>     property, you can also request the use of SSL via the use of
+LDAPS URLs. An LDAPS URL is similar to an LDAP URL except that the 
+URL scheme is "ldaps" instead of "ldap". It specifies the use of SSL 
+when communicating with the LDAP server.
+<p>
+In the <a href=examples/Ldaps.java>following example</a>, 
+the LDAP server is offering SSL at port 636. To run this program,
+you must enable SSL on port 636 on your LDAP server.
+
+<div class="codeblock"><pre>
+// Set up the environment for creating the initial context
+Hashtable&lt;String, Object&gt; env = new Hashtable&lt;String, Object&gt;();
+env.put(Context.INITIAL_CONTEXT_FACTORY, 
+    "com.sun.jndi.ldap.LdapCtxFactory");
+
+// Specify LDAPS URL
+env.put(Context.PROVIDER_URL, "ldaps://localhost:636/o=JNDITutorial");
+
+// Authenticate as S. User and password "mysecret"
+env.put(Context.SECURITY_AUTHENTICATION, "simple");
+env.put(Context.SECURITY_PRINCIPAL, "cn=S. User, ou=NewHires, o=JNDITutorial");
+env.put(Context.SECURITY_CREDENTIALS, "mysecret");
+
+// Create the initial context
+DirContext ctx = new InitialDirContext(env);
+
+// ... do something useful with ctx
+</pre></div>
+
+LDAPS URLs are accepted anywhere LDAP URLs are accepted. Check out the 
+<a target="_top" href="http://java.sun.com/products/jndi/tutorial/ldap/misc/url.html">JNDI Tutorial</a> <a target="_top" href="http://java.sun.com/products/jndi/tutorial/ldap/misc/url.html"></a> for details on LDAP and LDAPS URLs.
+
+<a name="EXTERNAL"></a><h2>Client Authentication: Using SSL with the External SASL Mechanism</h2>
+
+SSL provides authentication and other security services at a lower layer
+than the LDAP. If authentication has already been done at the SSL,
+the LDAP layer can use that authentication information from SSL by using the
+<A HREF="http://ietf.org/rfc/rfc2222.txt">External</a>
+SASL mechanism.
+<p>
+The <a href=examples/External.java>following example</a> is like 
+the <a href=examples/Ssl.java>previous SSL example</a>,
+except that instead of using simple authentication, it uses the External SASL
+authentication. By using External, you do not need to supply any
+principal or password information, because they get picked up from the
+SSL.
+
+
+<hr>
+<a name=SERVER2></a>
+<strong>Server Requirements: </strong>
+
+This example requires the LDAP server to allow
+certificate-based client authentication.  In addition, the LDAP server must
+trust (the CAs of) the client certificates that it receives, and must
+be able to map the owner distinguished names in the client certificates
+to principals that it knows about.  Follow the instructions from
+your directory vendor on how to perform these tasks.
+
+<p>
+<a name=CLIENT2></a>
+<strong>Client Requirements: </strong>
+
+This example requires the client to have an X.509 SSL client
+certificate.  Moreover, the certificate must be stored as the first
+key entry in a keystore file. If this entry is password-protected, it
+must have the same password as the keystore. For more information
+about JSSE keystores, see the 
+<a class="OutsideLink" target="_blank" href="http://download.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html">Java Secure Socket Extension (JSSE) Reference Guide</a>.
+<hr>
+
+
+<div class="codeblock"><pre>
+// Set up the environment for creating the initial context
+Hashtable&lt;String, Object&gt; env = new Hashtable&lt;String, Object&gt;(11);
+env.put(Context.INITIAL_CONTEXT_FACTORY, 
+    "com.sun.jndi.ldap.LdapCtxFactory");
+env.put(Context.PROVIDER_URL, "ldap://localhost:636/o=JNDITutorial");
+
+// Principal and credentials will be obtained from the connection
+env.put(Context.SECURITY_AUTHENTICATION, "EXTERNAL");
+
+// Specify SSL
+env.put(Context.SECURITY_PROTOCOL, "ssl");
+
+// Create the initial context
+DirContext ctx = new InitialDirContext(env);
+
+...
+</pre></div>
+
+To run this program so that the client's certificate is used for
+authentication, you must provide (as system properties)
+the location and password of the keystore containing
+the client's certificate. Here is an example of how to run the program.
+<div class="codeblock"><pre>
+java -Djavax.net.ssl.keyStore=MyKeystoreFile \
+    -Djavax.net.ssl.keyStorePassword=mysecret \
+    External
+</pre></div>
+
+<p> If you do not supply a keystore, the
+program will run using anonymous authentication because no client
+credential exists at the SSL.
+
+<p> 
+
+This example shows the most basic way to accomplish certificate-based
+client authentication. More advanced ways can be accomplished by
+writing and using a custom socket factory that accesses the client
+certificate in a more flexible manner, perhaps by using an LDAP
+directory.  The next section shows how to use a custom socket factory
+with your JNDI application.
+
+
+<h2>Using Custom Sockets</h2>
+
+When using SSL, the LDAP provider will, by default, use the socket factory,
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/net/ssl/SSLSocketFactory.html"><tt>javax.net.ssl.SSLSocketFactory</tt> </a>, for creating an SSL socket to communicate with the server, using
+the default JSSE configuration.
+The JSSE can be customized in a variety of ways, as detailed in the
+<a class="OutsideLink" target="_blank" href="http://download.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html">Java Secure Socket Extension (JSSE) Reference Guide</a>.
+However, there are times when those customizations are not
+sufficient and you need to have more control over the SSL sockets, or
+sockets in general, used by the LDAP service provider.  For example,
+you might need sockets that can bypass firewalls, or JSSE sockets that
+use nondefault caching/retrieval policies for its trust and key
+stores. To set the socket factory implementation used by
+the LDAP service provider, set the
+<tt>"java.naming.ldap.factory.socket"</tt> property to the 
+fully qualified class name of the socket factory. This class must implement the 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/net/SocketFactory.html"><tt>javax.net.SocketFactory</tt></a>   abstract class and provide an implementation of the
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/net/SocketFactory.html#getDefault()"><tt>getDefault()</tt></a>    method that returns an instance of the socket factory.  See the 
+<a class="OutsideLink" target="_blank" href="http://download.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html">Java Secure Socket Extension (JSSE) Reference Guide</a>.
+<p>
+Here is an example of a <a href=examples/CustomSocketFactory.java>custom
+socket factory</a> that produces plain sockets.
+
+<div class="codeblock"><pre>
+public class CustomSocketFactory extends SocketFactory {
+    public static SocketFactory getDefault() {
+
+	System.out.println("[acquiring the default socket factory]");
+	return new CustomSocketFactory();
+    }
+	...
+}
+</pre></div>
+
+
+Note that this example creates a new instance of <tt>CustomSocketFactory</tt>
+each time a new LDAP connection is created. This might be appropriate
+for some applications and socket factories.
+If you want to reuse the same socket factory, <tt>getDefault()</tt>
+should return a singleton.
+
+<p>
+To use this custom socket factory with a JNDI program, set the
+<tt>"java.naming.ldap.factory.socket"</tt> property, as shown in the
+<a href=examples/UseFactory.java>following example</a>.
+
+<div class="codeblock"><pre>
+// Set up the environment for creating the initial context
+Hashtable&lt;String, Object&gt; env = new Hashtable&lt;String, Object&gt;();
+env.put(Context.INITIAL_CONTEXT_FACTORY, 
+    "com.sun.jndi.ldap.LdapCtxFactory");
+env.put(Context.PROVIDER_URL, "ldap://localhost:389/o=JNDITutorial");
+
+// Specify the socket factory
+env.put("java.naming.ldap.factory.socket", "CustomSocketFactory");
+
+// Create the initial context
+DirContext ctx = new InitialDirContext(env);
+
+// ... do something useful with ctx
+</pre></div>
+
+<p>
+The <tt>"java.naming.ldap.factory.socket"</tt> property is
+useful for setting the socket factory on a per context basis.
+Another way to control the sockets used by the LDAP service provider is
+to set the socket factory for all sockets used in the entire program, by using
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/net/Socket.html#setSocketImplFactory(java.net.SocketImplFactory)"><tt>java.net.Socket.setSocketImplFactory()</tt></a>. 
+Use of this method is less flexible because it affects all socket connections,
+not just LDAP connections and therefore, should be used with care.
+        </div>
+        <div class=NavBit>
+            <a target=_top href=digest.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=rename.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Digest-MD5
+        <br><b>Next page:</b> More LDAP Operations
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

@@ -1,0 +1,666 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Creating and Reading Directories (The Java&trade; Tutorials &gt;        
+            Essential Classes &gt; Basic I/O)
+</title>
+
+     <meta name="description" content="This Java tutorial describes exceptions, basic input/output, concurrency, regular expressions, and the platform environment" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java exception, java input output, java threads, java regex, regular expressions, path, classpath, environment variable" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Essential Classes
+        <br><b>Lesson:</b> Basic I/O
+        <br><b>Section:</b> File I/O (Featuring NIO.2)
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Basic I/O</a></div>
+<div class="linkAHEAD"><a href="streams.html">I/O Streams</a></div>
+<div class="linkBHEAD"><a href="bytestreams.html">Byte Streams</a></div>
+<div class="linkBHEAD"><a href="charstreams.html">Character Streams</a></div>
+<div class="linkBHEAD"><a href="buffers.html">Buffered Streams</a></div>
+<div class="linkBHEAD"><a href="scanfor.html">Scanning and Formatting</a></div>
+<div class="linkCHEAD"><a href="scanning.html">Scanning</a></div>
+<div class="linkCHEAD"><a href="formatting.html">Formatting</a></div>
+<div class="linkBHEAD"><a href="cl.html">I/O from the Command Line</a></div>
+<div class="linkBHEAD"><a href="datastreams.html">Data Streams</a></div>
+<div class="linkBHEAD"><a href="objectstreams.html">Object Streams</a></div>
+<div class="linkAHEAD"><a href="fileio.html">File I/O (Featuring NIO.2)</a></div>
+<div class="linkBHEAD"><a href="path.html">What Is a Path? (And Other File System Facts)</a></div>
+<div class="linkBHEAD"><a href="pathClass.html">The Path Class</a></div>
+<div class="linkCHEAD"><a href="pathOps.html">Path Operations</a></div>
+<div class="linkBHEAD"><a href="fileOps.html">File Operations</a></div>
+<div class="linkBHEAD"><a href="check.html">Checking a File or Directory</a></div>
+<div class="linkBHEAD"><a href="delete.html">Deleting a File or Directory</a></div>
+<div class="linkBHEAD"><a href="copy.html">Copying a File or Directory</a></div>
+<div class="linkBHEAD"><a href="move.html">Moving a File or Directory</a></div>
+<div class="linkBHEAD"><a href="fileAttr.html">Managing Metadata (File and File Store Attributes)</a></div>
+<div class="linkBHEAD"><a href="file.html">Reading, Writing, and Creating Files</a></div>
+<div class="linkBHEAD"><a href="rafs.html">Random Access Files</a></div>
+<div class="nolinkBHEAD">Creating and Reading Directories</div>
+<div class="linkBHEAD"><a href="links.html">Links, Symbolic or Otherwise</a></div>
+<div class="linkBHEAD"><a href="walk.html">Walking the File Tree</a></div>
+<div class="linkBHEAD"><a href="find.html">Finding Files</a></div>
+<div class="linkBHEAD"><a href="notification.html">Watching a Directory for Changes</a></div>
+<div class="linkBHEAD"><a href="misc.html">Other Useful Methods</a></div>
+<div class="linkBHEAD"><a href="legacy.html">Legacy File I/O Code</a></div>
+<div class="linkAHEAD"><a href="summary.html">Summary</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Essential Classes</a>
+                &gt;
+                <a href=index.html target=_top>Basic I/O</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=rafs.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=links.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Creating and Reading Directories</h1></div>
+            <div id=PageContent>
+<!-- Creating and Reading Directories -->
+
+Some of the methods previously discussed, such as <code>delete</code>, work on
+files, links <em>and</em> directories.  
+But how do you list all the directories at the top of a file system?
+How do you list the contents of a directory or create a directory?
+<p>
+This section covers the following functionality specific to directories:
+<ul>
+<li><a href="#listall">Listing a File System's Root Directories</a>
+<li><a href="#create">Creating a Directory</a>
+<li><a href="#createTemp">Creating a Temporary Directory</a>
+<li><a href="#listdir">Listing a Directory's Contents</a>
+<li><a href="#glob">Filtering a Directory Listing By Using Globbing</a>
+<li><a href="#filter">Writing Your Own Directory Filter</a>
+</ul>
+
+<p>
+<h2 fmstyle=C-Head><a name="listall">Listing a File System's Root Directories</a></h2>
+<p>
+
+You can list all the root directories for a file system by using the
+<a class="APILink" target="_blank" href="http://download.java.net/jdk7/docs/api/java/nio/file/FileSystem.html#getRootDirectories()"><code>FileSystem.getRootDirectories</code></a> method. This method returns an <code>Iterable</code>, which enables you to
+use the
+<a class="TutorialLink" target="_top" href="../../java/nutsandbolts/for.html">enhanced for</a> statement to iterate over all the root directories.
+<p>
+The following code snippet prints the root directories for the default
+file system:
+<p>
+<div class="codeblock"><pre>
+Iterable&lt;Path&gt; dirs = FileSystems.getDefault().getRootDirectories();
+for (Path name: dirs) {
+    System.err.println(name);
+}
+</pre></div>
+
+<p>
+<h2 fmstyle=C-Head><a name="create">Creating a Directory</a></h2>
+<p>
+
+You can create a new directory by using the
+<a class="APILink" target="_blank" href="http://download.java.net/jdk7/docs/api/java/nio/file/Files.html#createDirectory(java.nio.file.Path, java.nio.file.attribute.FileAttribute...)"><code>createDirectory(Path, FileAttribute&lt;?&gt;)</code></a> method.  If you don't specify any <code>FileAttributes</code>,
+the new directory will have default attributes.  For example:
+<p>
+<div class="codeblock"><pre>
+Path dir = ...;
+Files.createDirectory(path);
+</pre></div>
+<p>
+The following code snippet creates a new directory on a POSIX file system
+that has specific permissions:
+<p>
+<div class="codeblock"><pre>
+Set&lt;PosixFilePermission&gt; perms = PosixFilePermissions.fromString("rwxr-x---");
+FileAttribute&lt;Set&lt;PosixFilePermission&gt;&gt; attr = PosixFilePermissions.asFileAttribute(perms);
+Files.createDirectory(file, attr);
+</pre></div>
+<p>
+To create a directory several levels deep when one or more
+of the parent directories might not yet exist,
+you can use the convenience method,
+<a class="APILink" target="_blank" href="http://download.java.net/jdk7/docs/api/java/nio/file/Files.html#createDirectories(java.nio.file.Path, java.nio.file.attribute.FileAttribute...)"><code>createDirectories(Path, FileAttribute&lt;?&gt;)</code></a>.  As with
+the <code>createDirectory(Path, FileAttribute&lt;?&gt;)</code> method,
+you can specify
+an optional set of initial file attributes.  The following code snippet
+uses default attributes:
+<p>
+<div class="codeblock"><pre>
+Files.createDirectories(Paths.get("foo/bar/test"));
+</pre></div>
+<p>
+The directories are created, as needed, from the top down.
+In the <code>foo/bar/test</code> example,
+if the <code>foo</code> directory does not exist, it is created.
+Next, the <code>bar</code> directory is created, if needed,
+and, finally, the <code>test</code> directory is created.
+<p>
+It is possible for this method to fail after creating some, but not all, of the
+parent directories.
+
+<p>
+<h2 fmstyle=C-Head><a name="createTemp">Creating a Temporary Directory</a></h2>
+<p>
+You can create a temporary directory using one of
+<code>createTempDirectory</code> methods:
+<ul>
+<li>
+<a class="APILink" target="_blank" href="http://download.java.net/jdk7/docs/api/java/nio/file/Files.html#createTempDirectory(java.nio.file.Path,%20java.lang.String,%20java.nio.file.attribute.FileAttribute...)"><code>createTempDirectory(Path, String, FileAttribute&lt;?&gt;...)</code></a><li>
+<a class="APILink" target="_blank" href="http://download.java.net/jdk7/docs/api/java/nio/file/Files.html#createTempDirectory(java.lang.String,%20java.nio.file.attribute.FileAttribute...)"><code>createTempDirectory(String, FileAttribute&lt;?&gt;...)</code></a></ul>
+The first method allows the code to specify a location for the temporary
+directory and the second method creates a new directory in the default
+temporary-fle directory.
+
+<p>
+<h2 fmstyle=C-Head><a name="listdir">Listing a Directory's Contents</a></h2>
+<p>
+You can list all the contents of a directory by using the
+<a class="APILink" target="_blank" href="http://download.java.net/jdk7/docs/api/java/nio/file/Files.html#newDirectoryStream(java.nio.file.Path)"><code>newDirectoryStream(Path)</code></a> method. This method returns an object that implements the
+<a class="APILink" target="_blank" href="http://download.java.net/jdk7/docs/api/java/nio/file/DirectoryStream.html"><code>DirectoryStream</code></a> interface.  The class that implements the <code>DirectoryStream</code> interface
+also implements <code>Iterable</code>, so you can iterate through the
+directory stream, reading all of the objects.
+This approach scales well to very large directories.
+<p>
+<div class="note"><hr><strong>Remember:</strong>&nbsp;The returned <code>DirectoryStream</code> is a <em>stream</em>.
+If you are not using a <code>try-</code>with-resources statement,
+don't forget to close the stream in the <code>finally</code> block.
+The <code>try-</code>with-resources statement takes care of this for you.
+<hr></div>
+<p>
+The following code snippet shows how to print the contents of a directory:
+<p>
+<div class="codeblock"><pre>
+Path dir = ...;
+try (DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(dir)) {
+    for (Path file: stream) {
+        System.out.println(file.getFileName());
+    }
+} catch (IOException | DirectoryIteratorException x) {
+    //IOException can never be thrown by the iteration.
+    //In this snippet, it can only be thrown by newDirectoryStream.
+    System.err.println(x);
+}
+</pre></div>
+<p>
+The <code>Path</code> objects returned by the iterator are the names
+of the entries resolved against the directory.  So, if you are listing
+the contents of the <code>/tmp</code> directory, the entries are
+returned with the form <code>/tmp/a</code>, <code>/tmp/b</code>,
+and so on.
+<p>
+This method returns the entire contents of a directory:  files, links,
+subdirectories, and hidden files.  If you want to be more selective about
+the contents that are retrieved, you can use one of the other
+<code>newDirectoryStream</code> methods, as described later in this page.
+<p>
+Note that if there is an exception during directory iteration then
+<code>DirectoryIteratorException</code> is thrown with the
+<code>IOException</code> as the cause. Iterator methods cannot
+throw exception exceptions.
+
+<p>
+<h2 fmstyle=C-Head><a name="glob">Filtering a Directory Listing By Using Globbing</a></h2>
+<p>
+
+If you want to fetch only files and subdirectories where each name matches a particular
+pattern, you can do so by using the
+<a class="APILink" target="_blank" href="http://download.java.net/jdk7/docs/api/java/nio/file/Files.html#newDirectoryStream(java.nio.file.Path, java.lang.String)"><code>newDirectoryStream(Path, String)</code></a> method, which provides a built-in glob filter.  If you are not familiar with
+glob syntax, see
+<a class="TutorialLink" target="_top" href="fileOps.html#glob">What Is a Glob?</a>
+<p>
+For example, the following code snippet lists files relating to Java:
+<em>.class</em>, <em>.java</em>, and <em>.jar</em> files.:
+<p>
+<div class="codeblock"><pre>
+Path dir = ...;
+try (DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(dir, "*.{java,class,jar}")) {
+    for (Path entry: stream) {
+        System.out.println(entry.getFileName());
+    }
+} catch (IOException x) {
+    //IOException can never be thrown by the iteration.
+    //In this snippet, it can only be thrown by newDirectoryStream.
+    System.err.println(x);
+}
+</pre></div>
+
+<p>
+<h2 fmstyle=C-Head><a name="filter">Writing Your Own Directory Filter</a></h2>
+<p>
+Perhaps you want to filter the contents of a directory based on some condition
+other than pattern matching.  You can create your own filter by implementing the
+<a class="APILink" target="_blank" href="http://download.java.net/jdk7/docs/api/java/nio/file/DirectoryStream.Filter.html"><code>DirectoryStream.Filter&lt;T&gt;</code></a> interface.  This interface consists of one method, <code>accept</code>,
+which determines whether a file fulfills the search requirement.
+<p>
+For example, the following code snippet implements a filter 
+that retrieves only directories:
+<p>
+<div class="codeblock"><pre>
+DirectoryStream.Filter&lt;Path&gt; filter = newDirectoryStream.Filter&lt;Path&gt;() {
+    public boolean accept(Path file) throws IOException {
+        try {
+            return (Files.isDirectory(path));
+        } catch (IOException x) {
+            //Failed to determine if it's a directory.
+            System.err.println(x);
+            return false;
+        }
+    }
+};
+</pre></div>
+<p>
+Once the filter has been created, it can be invoked by using the
+<a class="APILink" target="_blank" href="http://download.java.net/jdk7/docs/api/java/nio/file/Files.html#newDirectoryStream(java.nio.file.Path, java.nio.file.DirectoryStream.Filter)"><code>newDirectoryStream(Path, DirectoryStream.Filter&lt;? super Path&gt;)</code></a> method.  The following code snippet uses the <code>isDirectory</code>
+filter to print only the
+directory's subdirectories to standard output:
+<p>
+<div class="codeblock"><pre>
+Path dir = ...;
+try (DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(dir, filter)) {
+    for (Path entry: stream) {
+        System.out.println(entry.getFileName());
+    }
+} catch (IOException x) {
+    System.err.println(x);
+}
+</pre></div>
+<p>
+This method is used to filter a single directory only. However, if you want to
+find all the subdirectories in a file tree, you would use the mechanism for
+<a class="TutorialLink" target="_top" href="walk.html">Walking the File Tree</a>.
+        </div>
+        <div class=NavBit>
+            <a target=_top href=rafs.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=links.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Random Access Files
+        <br><b>Next page:</b> Links, Symbolic or Otherwise
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

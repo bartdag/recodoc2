@@ -1,0 +1,626 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Dealing with Compound Messages (The Java&trade; Tutorials &gt;        
+            Internationalization &gt; Formatting)
+</title>
+
+     <meta name="description" content="This internationalization Java tutorial describes setting locale, isolating locale-specific data, formatting data, internationalized domain name and resource identifier" />
+     <meta name="keywords" content="java programming, learn java, java sample code, i18n, internationalization, locale, text formatting" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Internationalization
+        <br><b>Lesson:</b> Formatting
+        <br><b>Section:</b> Messages
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Formatting</a></div>
+<div class="linkAHEAD"><a href="numberintro.html">Numbers and Currencies</a></div>
+<div class="linkBHEAD"><a href="numberFormat.html">Using Predefined Formats</a></div>
+<div class="linkBHEAD"><a href="decimalFormat.html">Customizing Formats</a></div>
+<div class="linkAHEAD"><a href="dateintro.html">Dates and Times</a></div>
+<div class="linkBHEAD"><a href="dateFormat.html">Using Predefined Formats</a></div>
+<div class="linkBHEAD"><a href="simpleDateFormat.html">Customizing Formats</a></div>
+<div class="linkBHEAD"><a href="dateFormatSymbols.html">Changing Date Format Symbols</a></div>
+<div class="linkAHEAD"><a href="messageintro.html">Messages</a></div>
+<div class="nolinkBHEAD">Dealing with Compound Messages</div>
+<div class="linkBHEAD"><a href="choiceFormat.html">Handling Plurals</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Internationalization</a>
+                &gt;
+                <a href=index.html target=_top>Formatting</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=messageintro.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=choiceFormat.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Dealing with Compound Messages</h1></div>
+            <div id=PageContent>
+A compound message may contain several kinds of variables: dates,
+times, strings, numbers, currencies, and percentages. To format a
+compound message in a locale-independent manner, you construct a
+pattern that you apply to a <CODE>MessageFormat</CODE> object, and
+store this pattern in a <CODE>ResourceBundle</CODE>.
+<P>
+By stepping through a sample program, this section demonstrates how to
+internationalize a compound message. The sample program makes use of
+the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/text/MessageFormat.html"><code>MessageFormat</code></a> class.
+The full source code for this program is in the file called
+
+<a class="SourceLink" target="_blank" href="examples/MessageFormatDemo.java"><code>MessageFormatDemo.java</code></a>.
+The German locale properties are in the file called
+
+<a class="SourceLink" target="_blank" href="examples/MessageBundle_de_DE.properties"><code>MessageBundle_de_DE.properties</code></a>.
+
+
+<h2>1. Identify the Variables in the Message</h2>
+
+Suppose that you want to internationalize the following message: 
+
+<p><center><IMG SRC="../../figures/i18n/i18n-2.gif" WIDTH="574" HEIGHT="66" ALIGN="BOTTOM" ALT="The following line of text: At 1:15 on April 13, 1998, we detected 7 spaceships on the planet Mars.  The variable data (1:15, April 13,1998, 7, and Mars) have been underlined."></center></p>
+<P>
+Notice that we've underlined the variable data and have identified what
+kind of objects will represent this data.
+
+
+<h2>2. Isolate the Message Pattern in a ResourceBundle</h2>
+
+Store the message in a <CODE>ResourceBundle</CODE> named
+<CODE>MessageBundle</CODE>, as follows:
+<div class="codeblock"><pre>
+ResourceBundle messages =
+   ResourceBundle.getBundle(&quot;MessageBundle&quot;, currentLocale);
+</pre></div>
+<P>
+This <CODE>ResourceBundle</CODE> is backed by a properties file for
+each <CODE>Locale</CODE>. Since the <CODE>ResourceBundle</CODE> is
+called <CODE>MessageBundle</CODE>, the properties file for U.S. English
+is named <CODE>MessageBundle_en_US.properties</CODE>. The contents of
+this file is as follows:
+<div class="codeblock"><pre>
+template = At {2,time,short} on {2,date,long}, we detected \
+	      {1,number,integer} spaceships on the planet {0}.
+planet = Mars
+</pre></div>
+<P>
+The first line of the properties file contains the message pattern. If
+you compare this pattern with the message text shown in step 1, you'll
+see that an argument enclosed in braces replaces each variable in the
+message text. Each argument starts with a digit called the argument
+number, which matches the index of an element in an <CODE>Object</CODE>
+array that holds the argument values. Note that in the pattern the
+argument numbers are not in any particular order. You can place the
+arguments anywhere in the pattern. The only requirement is that the
+argument number have a matching element in the array of argument
+values.
+<P>
+The next step discusses the argument value array, but first let's look
+at each of the arguments in the pattern. The following table provides
+some details about the arguments:
+<p>
+<TABLE BORDER="1">
+<CAPTION>
+Arguments for <CODE>template</CODE> in <CODE>MessageBundle_en_US.properties</CODE>
+</CAPTION>
+<TR>
+<th id="h1">
+Argument
+</TH>
+<th id="h2">
+Description
+</TH>
+</TR>
+<TR>
+<td headers="h1">
+<CODE>{2,time,short}</CODE>
+
+</TD>
+<td headers="h2">
+The time portion of a <CODE>Date</CODE> object. The <CODE>short</CODE>
+style specifies the <CODE>DateFormat.SHORT</CODE> formatting style.
+</TD>
+</TR>
+<TR>
+<td headers="h1">
+<CODE>{2,date,long}</CODE>
+
+</TD>
+<td headers="h2">
+The date portion of a <CODE>Date</CODE>
+object. The same <CODE>Date</CODE>
+object is used for both the date and time variables.
+In the <CODE>Object</CODE> array of arguments the index of the element
+holding the <CODE>Date</CODE>
+object is 2. (This is described in the next step.)
+</TD>
+</TR>
+<TR>
+<td headers="h1">
+<CODE>{1,number,integer}</CODE>
+
+</TD>
+<td headers="h2">
+A <CODE>Number</CODE> object,
+further qualified with the <CODE>integer</CODE> number style.
+</TD>
+</TR>
+<TR>
+<td headers="h1">
+<CODE>{0}</CODE>
+
+</TD>
+<td headers="h2">
+The <CODE>String</CODE>
+in the <CODE>ResourceBundle</CODE>
+that corresponds to the <CODE>planet</CODE> key.
+</TD>
+</TR>
+</TABLE>
+<P>
+For a full description of the argument syntax, see the API documentation for the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/text/MessageFormat.html"><code>MessageFormat</code></a> class.
+
+ 
+<h2>3. Set the Message Arguments</h2>
+
+The following lines of code assign values to each argument in the
+pattern. The indexes of the elements in the
+<CODE>messageArguments</CODE> array match the argument numbers in the
+pattern. For example, the <CODE>Integer </CODE> element at index 1
+corresponds to the <CODE>{1,number,integer}</CODE> argument in the
+pattern. Because it must be translated, the <CODE>String</CODE> object
+at element 0 will be fetched from the <CODE>ResourceBundle</CODE> with
+the <CODE>getString</CODE> method. Here is the code that defines the
+array of message arguments:
+<div class="codeblock"><pre>
+Object[] messageArguments = {
+    messages.getString(&quot;planet&quot;),
+    new Integer(7),
+    new Date()
+};
+</pre></div>
+
+
+<h2> 4. Create the Formatter</h2>
+
+Next, create a <CODE>MessageFormat</CODE> object. You set the
+<CODE>Locale</CODE> because the message contains <CODE>Date</CODE> and
+<CODE>Number</CODE> objects, which should be formatted in a
+locale-sensitive manner.
+<div class="codeblock"><pre>
+MessageFormat formatter = new MessageFormat(&quot;&quot;);
+formatter.setLocale(currentLocale);
+</pre></div>
+
+
+<h2>5. Format the Message Using the Pattern and the Arguments</h2>
+
+This step shows how the pattern, message arguments, and formatter all
+work together. First, fetch the pattern <CODE>String</CODE> from the
+<CODE>ResourceBundle </CODE> with the <CODE>getString</CODE> method.
+The key to the pattern is <CODE>template</CODE>. Pass the pattern
+<CODE>String</CODE> to the formatter with the <CODE>applyPattern
+</CODE> method. Then format the message using the array of message
+arguments, by invoking the <CODE>format</CODE> method. The
+<CODE>String</CODE> returned by the <CODE>format</CODE> method is ready
+to be displayed. All of this is accomplished with just two lines of
+code:
+<div class="codeblock"><pre>
+formatter.applyPattern(messages.getString(&quot;template&quot;));
+String output = formatter.format(messageArguments);
+</pre></div>
+
+
+<h2> 6. Run the Demo Program</h2>
+
+The demo program prints the translated messages for the English and
+German locales and properly formats the date and time variables. Note
+that the English and German verbs (&quot;detected&quot; and
+&quot;entdeckt&quot;) are in different locations relative to the
+variables:
+<div class="codeblock"><pre>
+currentLocale = en_US
+At 10:16 AM on July 31, 2009, we detected 7 spaceships on the planet Mars.
+currentLocale = de_DE
+Um 10:16 am 31. Juli 2009 haben wir 7 Raumschiffe auf dem Planeten Mars entdeckt.
+</pre></div>
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=messageintro.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=choiceFormat.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h101" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h101" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h102" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Messages
+        <br><b>Next page:</b> Handling Plurals
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

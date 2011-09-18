@@ -1,0 +1,757 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Using Predefined Formats (The Java&trade; Tutorials &gt;        
+            Internationalization &gt; Formatting)
+</title>
+
+     <meta name="description" content="This internationalization Java tutorial describes setting locale, isolating locale-specific data, formatting data, internationalized domain name and resource identifier" />
+     <meta name="keywords" content="java programming, learn java, java sample code, i18n, internationalization, locale, text formatting" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Internationalization
+        <br><b>Lesson:</b> Formatting
+        <br><b>Section:</b> Dates and Times
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Formatting</a></div>
+<div class="linkAHEAD"><a href="numberintro.html">Numbers and Currencies</a></div>
+<div class="linkBHEAD"><a href="numberFormat.html">Using Predefined Formats</a></div>
+<div class="linkBHEAD"><a href="decimalFormat.html">Customizing Formats</a></div>
+<div class="linkAHEAD"><a href="dateintro.html">Dates and Times</a></div>
+<div class="nolinkBHEAD">Using Predefined Formats</div>
+<div class="linkBHEAD"><a href="simpleDateFormat.html">Customizing Formats</a></div>
+<div class="linkBHEAD"><a href="dateFormatSymbols.html">Changing Date Format Symbols</a></div>
+<div class="linkAHEAD"><a href="messageintro.html">Messages</a></div>
+<div class="linkBHEAD"><a href="messageFormat.html">Dealing with Compound Messages</a></div>
+<div class="linkBHEAD"><a href="choiceFormat.html">Handling Plurals</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Internationalization</a>
+                &gt;
+                <a href=index.html target=_top>Formatting</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=dateintro.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=simpleDateFormat.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Using Predefined Formats</h1></div>
+            <div id=PageContent>
+The 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/text/DateFormat.html"><code>DateFormat</code></a> class allows you to format dates and times with predefined styles in a
+locale-sensitive manner. The sections that follow demonstrate how to
+use the <CODE>DateFormat</CODE> class with a program called
+
+<a class="SourceLink" target="_blank" href="examples/DateFormatDemo.java"><code>DateFormatDemo.java</code></a>.
+
+
+<h2>Dates</h2>
+
+Formatting dates with the <CODE>DateFormat</CODE> class is a two-step
+process. First, you create a formatter with the
+<CODE>getDateInstance</CODE> method. Second, you invoke the
+<CODE>format</CODE> method, which returns a <CODE>String</CODE>
+containing the formatted date. The following example formats today's
+date by calling these two methods:
+<div class="codeblock"><pre>
+Date today;
+String dateOut;
+DateFormat dateFormatter;
+
+dateFormatter = DateFormat.getDateInstance(DateFormat.DEFAULT,
+					   currentLocale);
+today = new Date();
+dateOut = dateFormatter.format(today);
+
+System.out.println(dateOut + &quot; &quot; + currentLocale.toString());
+</pre></div>
+<P>
+The output generated by this code follows. Notice that the formats of
+the dates vary with <CODE>Locale</CODE>. Since <CODE>DateFormat</CODE>
+is locale-sensitive, it takes care of the formatting details for each
+<CODE>Locale</CODE>.
+<div class="codeblock"><pre>
+30 juin 2009	 fr_FR
+30.06.2009	 de_DE
+Jun 30, 2009     en_US
+</pre></div>
+<P>
+The preceding code example specified the <CODE>DEFAULT</CODE>
+formatting style. The <CODE>DEFAULT</CODE> style is just one of the
+predefined formatting styles that the <CODE>DateFormat</CODE> class
+provides, as follows:
+<UL>
+<LI> DEFAULT
+<LI> SHORT
+<LI> MEDIUM
+<LI> LONG
+<LI> FULL
+</UL>
+<P>
+The following table shows how dates are formatted for each style with
+the U.S. and French locales:
+<p>
+<TABLE BORDER="1">
+<caption>
+Sample Date Formats
+</caption>
+<TR>
+<th id="h1">
+Style
+</TH>
+<th id="h2">
+U.S. Locale
+</TH>
+<th id="h3">
+French Locale
+</TH>
+</TR>
+<TR>
+<td headers="h1">
+<CODE>DEFAULT</CODE>
+
+</TD>
+<td headers="h2">
+Jun 30, 2009
+</TD>
+<td headers="h3">
+30 juin 2009
+</TD>
+</TR>
+<TR>
+<td headers="h1">
+<CODE>SHORT</CODE>
+
+</TD>
+<td headers="h2">
+6/30/09
+</TD>
+<td headers="h3">
+30/06/09
+</TD>
+</TR>
+<TR>
+<td headers="h1">
+<CODE>MEDIUM</CODE>
+
+</TD>
+<td headers="h2">
+Jun 30, 2009
+</TD>
+<td headers="h3">
+30 juin 2009
+</TD>
+</TR>
+<TR>
+<td headers="h1">
+<CODE>LONG</CODE>
+
+</TD>
+<td headers="h2">
+June 30, 2009
+</TD>
+<td headers="h3">
+30 juin 2009
+</TD>
+</TR>
+<TR>
+<td headers="h1">
+<CODE>FULL</CODE>
+
+</TD>
+<td headers="h2">
+Tuesday, June 30, 2009
+</TD>
+<td headers="h3">
+mardi 30 juin 2009
+</TD>
+</TR>
+</TABLE>
+
+
+<h2>Times</h2>
+
+<CODE>Date</CODE> objects represent both dates and times. Formatting
+times with the <CODE>DateFormat</CODE> class is similar to formatting
+dates, except that you create the formatter with the
+<CODE>getTimeInstance</CODE> method, as follows:
+<div class="codeblock"><pre>
+DateFormat timeFormatter =
+    DateFormat.getTimeInstance(DateFormat.DEFAULT,
+                               currentLocale);
+</pre></div>
+<P>
+The table that follows shows the various predefined format styles for
+the U.S. and German locales:
+
+<p>
+<TABLE BORDER="1">
+<caption>
+Sample Time Formats
+</caption>
+<TR>
+<th id="h101">
+Style
+</TH>
+<th id="h102">
+U.S. Locale
+</TH>
+<th id="h103">
+German Locale
+</TH>
+</TR>
+<TR>
+<td headers="h101">
+<CODE>DEFAULT</CODE>
+
+</TD>
+<td headers="h102">
+7:03:47 AM
+</TD>
+<td headers="h103">
+7:03:47
+</TD>
+</TR>
+<TR>
+<td headers="h101">
+<CODE>SHORT</CODE>
+
+</TD>
+<td headers="h102">
+7:03 AM
+</TD>
+<td headers="h103">
+07:03
+</TD>
+</TR>
+<TR>
+<td headers="h101">
+<CODE>MEDIUM</CODE>
+
+</TD>
+<td headers="h102">
+7:03:47 AM
+</TD>
+<td headers="h103">
+07:03:07
+</TD>
+</TR>
+<TR>
+<td headers="h101">
+<CODE>LONG</CODE>
+
+</TD>
+<td headers="h102">
+7:03:47 AM PDT
+</TD>
+<td headers="h103">
+07:03:45 PDT
+</TD>
+</TR>
+<TR>
+<td headers="h101">
+<CODE>FULL</CODE>
+
+</TD>
+<td headers="h102">
+7:03:47 AM PDT
+</TD>
+<td headers="h103">
+7.03 Uhr PDT
+</TD>
+</TR>
+</TABLE>
+
+
+<h2>Both Dates and Times</h2>
+
+To display a date and time in the same <CODE>String</CODE>, create the
+formatter with the <CODE>getDateTimeInstance</CODE> method. The first
+parameter is the date style, and the second is the time style. The
+third parameter is the <CODE>Locale</CODE> . Here's a quick example:
+<div class="codeblock"><pre>
+DateFormat formatter = 
+    DateFormat.getDateTimeInstance(DateFormat.LONG,
+                                   DateFormat.LONG,
+                                   currentLocale);
+</pre></div>
+<P>
+The following table shows the date and time formatting styles for the
+U.S. and French locales:
+
+<p>
+<TABLE BORDER="1">
+<caption>
+Sample Date and Time Formats
+</caption>
+<TR>
+<th id="h201">
+Style
+</TH>
+<th id="h202">
+U.S. Locale
+</TH>
+<th id="h203">
+French Locale
+</TH>
+</TR>
+<TR>
+<td headers="h201">
+<CODE>DEFAULT</CODE>
+
+</TD>
+<td headers="h202">
+Jun 30, 2009 7:03:47 AM
+</TD>
+<td headers="h203">
+30 juin 2009 07:03:47
+</TD>
+</TR>
+<TR>
+<td headers="h201">
+<CODE>SHORT</CODE>
+
+</TD>
+<td headers="h202">
+6/30/09 7:03 AM
+</TD>
+<td headers="h203">
+30/06/09 07:03
+</TD>
+</TR>
+<TR>
+<td headers="h201">
+<CODE>MEDIUM</CODE>
+
+</TD>
+<td headers="h202">
+Jun 30, 2009 7:03:47 AM
+</TD>
+<td headers="h203">
+30 juin 2009 07:03:47
+</TD>
+</TR>
+<TR>
+<td headers="h201">
+<CODE>LONG</CODE>
+
+</TD>
+<td headers="h202">
+June 30, 2009 7:03:47 AM PDT
+</TD>
+<td headers="h203">
+30 juin 2009 07:03:47 PDT
+</TD>
+</TR>
+<TR>
+<td headers="h201">
+<CODE>FULL</CODE>
+
+</TD>
+<td headers="h202">
+Tuesday, June 30, 2009 7:03:47 AM PDT
+</TD>
+<td headers="h203">
+mardi 30 juin 2009 07 h 03 PDT
+</TD>
+</TR>
+</TABLE>
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=dateintro.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=simpleDateFormat.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h301" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h301" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h302" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Dates and Times
+        <br><b>Next page:</b> Customizing Formats
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

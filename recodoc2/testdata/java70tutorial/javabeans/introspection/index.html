@@ -1,0 +1,536 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Lesson: Introspection (The Java&trade; Tutorials &gt; JavaBeans(TM))</title>
+     <meta name="description" content="This JavaBean Java tutorial describes using the JavaBeans API to develop JavaBean components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, javabean, bean persistence, java introspection, beancontext" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+    </head>
+<body>
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                    <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                        <br>
+                    </div> 
+                </div> </div> </div> </div> </div>
+
+    <div class=MainFlow_wide>
+        <div class=PrintHeaders>
+            <b>Trail:</b> JavaBeans(TM)
+        </div>
+        <div id=BreadCrumbs>
+            <a href=../../index.html target=_top>Home Page</a>
+        &gt;
+            <a href=../index.html target=_top>JavaBeans(TM)</a>
+        </div>
+        <div class=NavBit>
+                <a target=_top href=../longpersistence/index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../customization/index.html>Next&nbsp;&raquo;</a>
+        </div>
+        <div id=PageTitle><h1>Lesson: Introspection</h1></div>
+        <div id=PageContent>
+<P><EM class="Emphasis">Introspection</EM> is the automatic process of 
+analyzing a bean's design patterns to 
+reveal the bean's properties, events, and methods. This process controls the 
+publishing and discovery of bean operations and properties.
+This lesson explains the purpose of introspection, introduces the Introspection API, and
+gives an example of introspection code.
+
+<h2>Purpose of Introspection</h2>
+
+<P>A growing number of Java object repository sites exist on the Internet
+in answer to the demand for centralized deployment of applets,
+classes, and source code in general. Any developer who has spent time 
+hunting through these sites for licensable Java code to incorporate
+into a program has undoubtedly struggled with issues of how to
+quickly and cleanly integrate code from one particular source into an application.
+<P>The way in which introspection is implemented
+provides great advantages, including:
+<OL>
+<LI><EM class="Emphasis">Portability</EM> - Everything is done in the Java platform, so you can
+write components once, reuse them everywhere. There are no
+extra specification files that need to be maintained independently
+from your component code. There are no platform-specific issues
+to contend with. Your component is not tied to one component
+model or one proprietary platform. You get all the advantages of
+the evolving Java APIs, while maintaining the portability of your
+components.
+<LI><EM class="Emphasis">Reuse</EM> - By following the JavaBeans design conventions,
+implementing the appropriate interfaces, and extending the
+appropriate classes, you provide your component with reuse potential that possibly
+exceeds your expectations.
+</OL>
+
+<h2>Introspection API</h2>
+
+The JavaBeans API  architecture supplies a set of classes and interfaces to 
+provide introspection.
+<P>The 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/BeanInfo.html"><CODE>BeanInfo</CODE></a> (in the API reference documentation) interface of the <CODE>java.beans</CODE> package 
+defines a set of methods that allow bean implementors to
+provide explicit information about their beans. By specifying BeanInfo for a bean component, a developer can hide methods,
+specify an icon for the toolbox, provide descriptive names for
+properties, define which properties are bound properties, and
+much more.
+<P>The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/Introspector.html#getBeanInfo(java.lang.Class)"><CODE>getBeanInfo(beanName)</CODE></a> (in the API reference documentation) of the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/Introspector.html"><CODE>Introspector</CODE></a> (in the API reference documentation) class can be used by builder tools and 
+other automated environments to provide detailed 
+information about a bean. The <CODE>getBeanInfo</CODE> method relies on the 
+naming conventions for the bean's
+properties, events, and methods. 
+A call to <CODE>getBeanInfo</CODE> results in the introspection process analyzing
+the beanÂs classes and superclasses.
+<P>The <CODE>Introspector</CODE> class provides descriptor classes with information about  
+properties, events, and methods of a bean. Methods of this class locate any 
+descriptor information that has been explicitly supplied by the developer through 
+<CODE>BeanInfo</CODE> classes. Then the <CODE>Introspector</CODE> class applies the naming conventions to determine 
+what properties the bean has, the events to which it can listen, and those which 
+it can send.
+<P>The following figure represents a hierarchy of the <CODE>FeatureDescriptor</CODE>
+classes:
+<p><center><IMG SRC="../../figures/javabeans/DescriptorAPI.gif" WIDTH="312" HEIGHT="241" ALIGN="BOTTOM" ALT="This figure represents a hierarchy of descriptor classes beginning with the FeatureDescriptor class"></center></p><P>Each class represented in this group describes a particular attribute of the bean.
+For example, the <CODE>isBound</CODE> method of the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/PropertyDescriptor.html"><CODE>PropertyDescriptor</CODE></a> class indicates whether a <CODE>PropertyChangeEvent</CODE> event is fired when 
+the value of this property changes.
+
+<h2>Editing Bean Info with the NetBeans BeanInfo Editor</h2>
+
+<P>To open the BeanInfo dialog box, expand the appropriate class hierarchy to the bean Patterns node. 
+Right-click the bean Patterns node and choose BeanInfo Editor from the pop-up menu.
+All elements of the selected class that match bean-naming conventions will be displayed at the 
+left in the BeanInfo Editor dialog box as shown in the following figure:
+<p><center><IMG SRC="../../figures/javabeans/introspection.gif" WIDTH="600" HEIGHT="367" ALIGN="BOTTOM" ALT="This figure shows the BeanInfo Editor dialog box and expanded Properties node "></center></p><P>
+Select one of the following nodes to view and edit its properties at the right of the dialog box:
+<UL>
+	<LI>BeanInfo
+	<LI>Bean
+	<LI>Properties
+	<LI>Methods
+	<LI>Event Sources
+</UL>
+<P>Special symbols (green and red) appear next to the subnode to indicate whether an element will be 
+included or excluded from the <CODE>BeanInfo</CODE> class.
+<P>
+If the Get From Introspection option is not selected, the node's subnodes are 
+available for inclusion in the <CODE>BeanInfo</CODE> class. To include all subnodes,
+right-click a node and choose Include All. You can also include each element individually
+by selecting its subnode and setting the Include in BeanInfo property. 
+If the Get From Introspection option is selected, the setting the properties of 
+subnodes has no effect in the generated <CODE>BeanInfo</CODE> code.
+<P>
+The following attributes are available for the nodes for each bean, property, event sources, and method:
+<UL>
+	<LI>Name - A name of the selected element as it appears in code.
+	<LI>Preferred - An attribute to specify where this property 
+            appears in the Inspector window under the Properties node.
+	<LI>Expert - An attribute to specify where this property 
+            appears in the Inspector window under the Other Properties node.
+	<LI>Hidden - An attribute to mark an element for tool use only.
+	<LI>Display Name Code - A display name of the property.
+	<LI>Short Description Code - A short description of the property.
+	<LI>Include in BeanInfo - An attribute to include the selected element in
+        the <CODE>BeanInfo</CODE> class.
+	<LI>Bound - An attribute to make the bean property bound.
+	<LI>Constrained - An attribute to make the bean property constrained.
+	<LI>Mode - An attribute to set the property's mode and generate getter and 
+        setter methods.
+	<LI>Property Editor Class - An attribute to specify a custom class 
+            to act as a property editor for the property. 
+</UL>
+<P>For Event Source nodes, the following Expert properties are available:
+<UL>
+	<LI>Unicast (read-only)
+	<LI>In Default Event Set
+</UL>	
+
+<h2>Introspection Sample</h2>
+
+The following example represents code to perform introspection:
+<div class="codeblock"><pre>
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+
+public class SimpleBean
+{
+    private final String name = "SimpleBean";
+    private int size;
+
+    public String getName()
+    {
+        return this.name;
+    }
+
+    public int getSize()
+    {
+        return this.size;
+    }
+
+    public void setSize( int size )
+    {
+        this.size = size;
+    }
+
+    public static void main( String[] args )
+            throws IntrospectionException
+    {
+        BeanInfo info = Introspector.getBeanInfo( SimpleBean.class );
+        for ( PropertyDescriptor pd : info.getPropertyDescriptors() )
+            System.out.println( pd.getName() );
+    }
+}
+</pre></div>
+<P>This example creates a non-visual bean and displays the following properties derived 
+from the <CODE>BeanInfo</CODE> object:
+<UL>
+	<LI><CODE>class</CODE>
+	<LI><CODE>name</CODE>
+	<LI><CODE>size</CODE>
+</UL>	
+<P>Note that a <CODE>class</CODE> property was not
+defined in the <CODE>SimpleBean</CODE> class. This property was inherited from the
+<CODE>Object</CODE> class. To get properties defined only in the <CODE>SimpleBean</CODE>
+class, use the following form of the <CODE>getBeanInfo</CODE> method:
+<div class="codeblock"><pre>
+	Introspector.getBeanInfo( SimpleBean.class, Object.class );
+</pre></div>
+
+
+
+
+
+
+
+
+
+        </div>
+    <div class=NavBit>
+        <a href=../longpersistence/index.html>&laquo; Previous</a>
+        &bull;
+        <a href=../TOC.html>Trail</a>
+        &bull;
+        <a href=../customization/index.html>Next &raquo;</a>
+    </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Previous Lesson
+        <br><b>Next page:</b> Bean Customization
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

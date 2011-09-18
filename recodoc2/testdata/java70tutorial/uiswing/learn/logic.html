@@ -1,0 +1,565 @@
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Adding the Application Logic (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Learning Swing with the NetBeans IDE)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Learning Swing with the NetBeans IDE
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Learning Swing with the NetBeans IDE</a></div>
+<div class="linkAHEAD"><a href="settingup.html">Setting up the CelsiusConverter Project</a></div>
+<div class="linkAHEAD"><a href="netbeansbasics.html">NetBeans IDE Basics</a></div>
+<div class="linkAHEAD"><a href="creatinggui.html">Creating the CelsiusConverter GUI</a></div>
+<div class="linkAHEAD"><a href="adjustinggui.html">Adjusting the CelsiusConverter GUI</a></div>
+<div class="nolinkAHEAD">Adding the Application Logic</div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Learning Swing with the NetBeans IDE</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=adjustinggui.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../QandE/questions-learn.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Adding the Application Logic</h1></div>
+            <div id=PageContent>
+<!-- Adding the Application Logic -->
+
+It is now time to
+add in the application logic.
+
+<A NAME="a23"></A>
+<h2>Step 1: Change the Default Variable Names</h2>
+
+The figure below shows the default variable names as they
+currently appear within the Inspector. For each component, the variable name appears first,
+followed by the object's type in square brackets. For example, <CODE>jTextField1 [JTextField]</CODE>
+means that "jTextField1" is the variable name
+and "JTextField" is its type.
+<P>
+<center><p><IMG SRC="../../figures/uiswing/learn/nb-swing-20.png" WIDTH="278" HEIGHT="213" ALIGN="BOTTOM" ALT="Default Variable Names"></p><p class="FigureCaption">Default Variable Names</p></center></P>
+The default names are not very relevant in the context of this application, so it makes
+sense to change them from their defaults to something that is more meaningful. Right-click each
+variable name and choose "Change variable name." When you are finished, the variable names
+should appear as follows:
+</P>
+
+<center><p><IMG SRC="../../figures/uiswing/learn/nb-swing-21.png" WIDTH="277" HEIGHT="212" ALIGN="BOTTOM" ALT="New Variable Names "></p><p class="FigureCaption">New Variable Names</p></center>
+
+The new variable names are  "tempTextField", "celsiusLabel", "convertButton", and "fahrenheitLabel."
+Each change that you make in the Inspector will automatically
+propagate its way back into the source code. You can rest assured that compilation
+will not fail due to typos or mistakes of that nature &mdash; mistakes that are common
+when editing by hand.
+
+
+<A NAME="a24"></A>
+<h2>Step 2: Register the Event Listeners</h2>
+When an end-user interacts with a Swing GUI component
+(such as clicking the Convert button), that component will generate a special kind of object &mdash; 
+called an <i>event
+ object</i> &mdash; which it will then broadcast to any other objects that have previously registered themselves as
+ <i>listeners</i> for that event. 
+
+ The NetBeans IDE makes event listener registration extremely simple:
+  </P>
+
+<P>
+
+<p><center><a href="../../figures/uiswing/learn/nb-swing-22.png" target="_top"><IMG SRC="../../figures/uiswing/learn/nb-swing-22.png" WIDTH="400" HEIGHT="409" ALIGN="BOTTOM" ALT="using the NetBeans GUI to connect the actionPerformed method to the object"></a><br><em>This figure has been reduced to fit on the page. <br> Click the image to view it at its natural size.</em></center></p>
+
+
+</P>
+
+
+<P>
+  In the Design Area, click on the Convert button to select it. Make sure that
+ <i>only</i> the Convert button is selected (if the JFrame itself is also selected, this step will not work.)
+ Right-click the Convert button and choose Events -&gt; Action -&gt; ActionPerformed. This will generate the 
+ required event-handling code, leaving you with empty method bodies in which to add your
+ own functionality:
+ </P>
+
+
+<p><center><a href="../../figures/uiswing/learn/nb-swing-23.png" target="_top"><IMG SRC="../../figures/uiswing/learn/nb-swing-23.png" WIDTH="400" HEIGHT="216" ALIGN="BOTTOM" ALT="the actionPerformed method in the source code tab"></a><br><em>This figure has been reduced to fit on the page. <br> Click the image to view it at its natural size.</em></center></p>
+
+
+
+
+
+
+
+ <P>
+ There are many different event types representing
+  the various kinds of actions that an end-user can take (clicking the mouse triggers one type of event, typing
+  at the keyboard triggers another, moving the mouse yet another, and so on.)
+  Our application is only concerned with the ActionEvent; for more information about event handling, see
+
+
+<a class="TutorialLink" target="_top" href="../events/index.html">Writing Event Listeners</a>.
+</P>
+
+<A NAME="a25"></A>
+<h2>Step 3: Add the Temperature Conversion Code</h2>
+
+The final step is to simply paste the temperature conversion code into the
+empty method body.
+
+ The following code is all that is necessary to
+convert a temperature from Celsius to Fahrenheit:
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;This example is not localizable because the <code>parseDouble</code>
+method is not localizable. This code snippet is for illustration purposes only.
+A more robust implementation would use the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Scanner.html">Scanner</a> class to parse the user input.
+<hr></div>
+
+<div class="codeblock"><pre>
+    //Parse degrees Celsius as a double and convert to Fahrenheit.
+    int tempFahr = (int)((Double.parseDouble(<strong>tempTextField</strong>.getText()))
+            * 1.8 + 32);
+    <strong>fahrenheitLabel</strong>.setText(tempFahr + " Fahrenheit");
+</pre></div>
+
+Simply copy this code and paste it into the convertButtonActionPerformed method
+ as shown below:
+
+
+<p><center><a href="../../figures/uiswing/learn/nb-swing-24.png" target="_top"><IMG SRC="../../figures/uiswing/learn/nb-swing-24.png" WIDTH="400" HEIGHT="217" ALIGN="BOTTOM" ALT="Step 3: Add the Temperature Conversion Code"></a><br><em>This figure has been reduced to fit on the page. <br> Click the image to view it at its natural size.</em></center></p>
+
+With the conversion code in place, the application is now complete. 
+
+<A NAME="a26"></A>
+    <h2>Step 4: Run the Application</h2>
+
+           Running the application is simply a matter of choosing Run -&gt; Run Main Project 
+within the NetBeans IDE. The
+                   first time you run this application, you will be prompted with a dialog asking to set
+                   <CODE>CelsiusConverterGUI</CODE> as the main class for this project. Click the OK button, 
+                   and when the program finishes compiling, you should see the application running in
+                   its own window. 
+
+
+                   <P>
+                   Congratulations! You have completed your first Swing application!
+                   </P>
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=adjustinggui.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=../QandE/questions-learn.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Adjusting the CelsiusConverter GUI
+        <br><b>Next page:</b> Questions and Exercises: Learning Swing with the NetBeans IDE
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

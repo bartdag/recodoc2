@@ -1,0 +1,682 @@
+
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Manipulating LdapName (Distinguished Name) (The Java&trade; Tutorials &gt;        
+            Java Naming and Directory Interface(TM). &gt; New features in JDK 5.0 and JDK 6)
+</title>
+
+     <meta name="description" content="This JNDI Java tutorial describes Java Naming and Directory Interface (JNDI) technology, naming and directory operations, and LDAP" />
+     <meta name="keywords" content="java programming, learn java, java sample code, jndi, ldap, jndi service provider" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Java Naming and Directory Interface(TM).
+        <br><b>Lesson:</b> New features in JDK 5.0 and JDK 6
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">New features in JDK 5.0 and JDK 6</a></div>
+<div class="linkAHEAD"><a href="dn.html">Retrieving Distinguished Name</a></div>
+<div class="linkAHEAD"><a href="controls-std.html">Standard LDAP Controls</a></div>
+<div class="linkAHEAD"><a href="paged-results.html">Paged Results Control</a></div>
+<div class="linkAHEAD"><a href="sort.html">Sort Control</a></div>
+<div class="linkAHEAD"><a href="mdsaIT.html">Manage Referral Control</a></div>
+<div class="nolinkAHEAD">Manipulating LdapName (Distinguished Name)</div>
+<div class="linkAHEAD"><a href="rdn.html">Manipulating Relative Distringuished Name (RDN)</a></div>
+<div class="linkAHEAD"><a href="readtimeout.html">Setting Timeout for Ldap Operations</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Java Naming and Directory Interface(TM).</a>
+                &gt;
+                <a href=index.html target=_top>New features in JDK 5.0 and JDK 6</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=mdsaIT.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=rdn.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Manipulating LdapName (Distinguished Name)</h1></div>
+            <div id=PageContent>
+The Distinguished Name (DN) is used by LDAP in its string
+representation.
+The string format used to represent a DN is specified in
+<a href=http://ietf.org/rfc/rfc2253.txt> RFC2253</a>.
+The DN is made up of components called the Relative Distinguished Names
+(RDN). 
+Below is an example of a DN:
+<p> "CN=Steve Kille, O=Isode Limited, C=GB" </p>
+
+It consist of the following RDNs:
+<ul>
+<li>CN=Steve Kille
+<li>O=Isode Limited
+<li>C=GB
+</ul>
+<p>
+The classes below that are available in JDK 5.0 represent the DN and
+RDN respectively.
+<ul>
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html"><tt>javax.naming.ldap.LdapName</tt></a><li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/Rdn.html"><tt>javax.naming.ldap.Rdn</tt></a></ul>
+<p>
+The LdapName class implements the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/Name.html"><tt>javax.naming.Name</tt></a> interface similar to the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/Name.html"><tt>javax.naming.CompoundName</tt></a> and
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/CompositeName.html"><tt>javax.naming.CompositeName</tt></a>	classes.
+<p>
+LdapName and Rdn classes allow easy manipulation of DNs and RDNs. Using these APIs
+it's easy to construct an RDN by pairing up names and values. A DN can be
+constructed with a list of RDNs. Similarly the individual components
+of DN and RDN can be retrieved from their string representation.
+ </p>
+
+<h2>LdapName</h2>
+
+An LdapName can be created with its string representation as defined in
+<a href=http://ietf.org/rfc/rfc2253.txt> RFC2253</a> or with a list of Rdns.
+When the former way is used, the specified string is parsed as per the
+rules defined in RFC2253. An 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/InvalidNameException.html"><tt>InvalidNameException</tt></a>
+  is thrown if the string is not a valid DN.
+
+Here's an example that uses the constructor to parse an LDAP name and
+print its components.
+
+<div class="codeblock"><pre>
+    String name = "cn=Mango,ou=Fruits,o=Food";
+    try {
+        LdapName dn = new LdapName(name);
+        System.out.println(dn + " has " + dn.size() + " RDNs: ");
+        for (int i = 0; i < dn.size(); i++) {
+    	    System.out.println(dn.get(i));
+        }
+    } catch (InvalidNameException e) {
+        System.out.println("Cannot parse name: " + name);
+    }
+</pre></div>
+    
+
+Running this example with an input of <tt>"cn=Mango,ou=Fruits,o=Food"</tt> produces the following results:
+    
+<div class="codeblock"><pre>
+    cn=Mango,ou=Fruits,o=Food has 3 RDNs: 
+    o=Food
+    ou=Fruits
+    cn=Mango
+</pre></div>
+    
+<p>
+The LdapName class contains methods to access its components as RDNs and strings,
+to modify an LdapName, to compare two LdapNames for equality,
+and to get a string representation of the name.
+
+<h3>Accessing the name components of an LDAP name: </h3>
+Here are the methods that you can use to access the name components as RDNs and strings:
+<p> 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#getRdn(int)"><tt>getRdn(int posn)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#get(int)"><tt>get(int posn)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#getRdns()"><tt>getRdns()</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#getAll()"><tt>getAll()</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#getPrefix(int posn)"><tt>getPrefix(int posn)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#getSuffix(int posn)"><tt>getSuffix(int posn)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#clone()"><tt>clone()</tt></a><p>
+To retrieve the component at a particular position within an LdapName, you use getRdn() or get().
+The previous constructor example shows an example of its use.
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#getRdns()"><tt>getRdns()</tt></a>  
+returns a list of all the RDNs and
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#getAll()"><tt>getAll()</tt></a>
+returns all of the components of an LdapName
+as an enumeration.
+<p>
+The right most RDN is at index 0, and the left most RDN is at
+index n-1. For example, the distinguished name:
+<tt>"cn=Mango, ou=Fruits, o=Food"</tt> is numbered in the following
+sequence ranging from 0 to 2: <tt>{o=Food, ou=Fruits, cn=Mango} </tt>
+
+<p>
+
+You can also get a LdapNames's suffix or prefix as a LdapName instance.
+Here's an <a href=examples/LdapNameSuffixPrefix.java>example</a>
+that gets the suffix and prefix of an LDAP name.
+
+<div class="codeblock"><pre>
+    LdapName dn = new LdapName("cn=Mango, ou=Fruits, o=Food");
+    Name suffix = dn.getSuffix(1);  // 1 <= index < cn.size()
+    Name prefix = dn.getPrefix(1);  // 0 <= index < 1
+</pre></div>
+
+When you run this program, it generates the following output:
+
+<div class="codeblock"><pre>
+        cn=Mango ou=Fruits
+        o=Food 
+</pre></div>
+    
+To make a copy of an LdapName, you use clone().
+
+<h3>Modifying an LDAP name</h3>
+Following are the methods that you can use to modify an LDAP name:
+<p>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#add(Rdn)"><tt>add(Rdn rdn)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#add(String)"><tt>add(String comp)</tt></a><br>
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#add(int, String)"><tt>add(int posn, String comp)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#addAll(List)"><tt>addAll(List suffixRdns)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#addAll(Name suffix)"><tt>addAll(Name suffix)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#addAll(int, List)"><tt>addAll(int posn, List suffixRdns)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#addAll(int, Name)"><tt>addAll(int posn, Name suffix)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#remove(int)"><tt>remove(int posn)</tt></a><p>
+
+After creating an LdapName instance, you can add and remove components from it.
+Here's an <a href=examples/ModifyLdapName.java> example</a> that appends an
+LdapName to an existing LdapName,
+adds components to the front and the end, and removes the second component.
+
+<div class="codeblock"><pre>
+     LdapName dn = new LdapName("ou=Fruits,o=Food");
+     LdapName dn2 = new LdapName("ou=Summer");
+     System.out.println(dn.addAll(dn2)); // ou=Summer,ou=Fruits,o=Food
+     System.out.println(dn.add(0, "o=Resources")); // ou=Summer,ou=Fruits,o=Food,o=Resources
+     System.out.println(dn.add("cn=WaterMelon")); // cn=WaterMelon,ou=Summer,ou=Fruits,o=Food,o=Resources
+     System.out.println(dn.remove(1));  // o=Food
+     System.out.println(dn);  // cn=WaterMelon,ou=Summer,ou=Fruits,o=Resources
+</pre></div>
+    
+
+<h3>Comparing an LDAP name</h3>
+Following are the methods that you can use to compare two LDAP names:
+<p>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#compareTo(Object)"><tt>compareTo(Object name)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#equals(Object)"><tt>equals(Object name)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#endsWith(List)"><tt>endsWith(List)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#endsWith(Name)"><tt>endWith(Name name)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#startsWith(iList)"><tt>startsWith(List rdns)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#startsWith(Name)"><tt>startsWith(Name name)</tt></a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#isEmpty()"><tt>isEmpty()</tt></a><p>
+You can use compareTo() to sort a list of LdapName instances.
+equals() lets you determine whether two LdapNames are syntactically equal.
+Two LdapNames are equal if they both have the same (case-exact matched)
+components in the same order.
+<p>
+With startsWith() and endsWith(), you can learn whether an LdapName starts
+or ends with another LdapName; that is, whether an LdapName is a suffix or
+prefix of another LdapName.
+<p>
+The convenience method isEmpty() enables you to determine whether an
+LdapName has zero components. You can also use the expression size() == 0 to perform the same check.
+<p>
+Here is an <a href=examples/CompareLdapNames.java>example</a> that
+uses some of these comparison methods.
+
+<div class="codeblock"><pre>
+    LdapName one = new LdapName("cn=Vincent Ryan, ou=People, o=JNDITutorial");
+    LdapName two = new LdapName("cn=Vincent Ryan");
+    LdapName three = new LdapName("o=JNDITutorial");
+    LdapName four = new LdapName("");
+
+    System.out.println(one.equals(two)); 	// false
+    System.out.println(one.startsWith(three));  // true
+    System.out.println(one.endsWith(two));      // true
+    System.out.println(one.startsWith(four));   // true
+    System.out.println(one.endsWith(four));     // true
+    System.out.println(one.endsWith(three));    // false
+    System.out.println(one.isEmpty());	        // false
+    System.out.println(four.isEmpty());	        // true
+    System.out.println(four.size() == 0);	// true
+</pre></div>
+    
+<h3>Getting the String Representation</h3>
+The method below gets you the string representation of an LDAP name
+formatted according to the syntax specified in RFC2253:
+<p>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#toString()"><tt>toString()</tt></a><p>
+When you use the LdapName constructor, you supply the string representation of an LDAP name
+and get back an LdapName instance. To do the reverse, that is, to get the string representation
+of an LdapName instance, you use toString(). The result of toString() can be fed back to the
+constructor to produce a LdapName instance that is equal to the original LdapName instance.
+Here's an <a href="examples/LdapNametoString.java"> example</a>.
+</p>
+    
+<div class="codeblock"><pre>
+    LdapName dn = new LdapName(name);
+    String str = dn.toString();
+    System.out.println(str);
+    LdapName dn2 = new LdapName(str);
+    System.out.println(dn.equals(dn2));	 // true
+</pre></div>
+    
+<h3>LdapName as an Argument to Context Methods</h3>
+
+The Context method require either a composite or a compound name passed as
+argument to its methods.
+
+Hence an LdapName can be directly passed to a context method as shown in the 
+<a href=examples/LookupLdapName.java> example</a> below:
+
+<div class="codeblock"><pre>
+    // Create the initial context
+    Context ctx = new InitialContext(env);
+
+    // An LDAP name
+    LdapName dn = new LdapName("ou=People,o=JNDITutorial");
+
+    // Perform the lookup using the dn
+    Object obj = ctx.lookup(dn);
+</pre></div>
+
+Similarly, when the Context methods return results from list(), listBindings(), or
+search() operations, the DN can be retrieved by calling 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/ldap/LdapName.html#getNameInNamepspace()"><tt>getNameInNamespace()</tt></a>. The LdapName can be constructed directly from the DN as shown in the
+<a href=examples/RetrievingLdapName.java> example</a> below:
+
+<div class="codeblock"><pre>
+     while (answer.hasMore()) {
+         SearchResult sr = (SearchResult) answer.next();
+         String name = sr.getNameInNamespace();
+         System.out.println(name);
+         LdapName dn = new LdapName(name);
+
+	 // do something with the dn
+     }
+</pre></div>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=mdsaIT.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=rdn.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Manage Referral Control
+        <br><b>Next page:</b> Manipulating Relative Distringuished Name (RDN)
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

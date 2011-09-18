@@ -1,0 +1,489 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Lesson: Writing a Simple Bean (The Java&trade; Tutorials &gt; JavaBeans(TM))</title>
+     <meta name="description" content="This JavaBean Java tutorial describes using the JavaBeans API to develop JavaBean components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, javabean, bean persistence, java introspection, beancontext" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+    </head>
+<body>
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                    <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                        <br>
+                    </div> 
+                </div> </div> </div> </div> </div>
+
+    <div class=MainFlow_wide>
+        <div class=PrintHeaders>
+            <b>Trail:</b> JavaBeans(TM)
+        </div>
+        <div id=BreadCrumbs>
+            <a href=../../index.html target=_top>Home Page</a>
+        &gt;
+            <a href=../index.html target=_top>JavaBeans(TM)</a>
+        </div>
+        <div class=NavBit>
+                <a target=_top href=../nb/index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../properties/index.html>Next&nbsp;&raquo;</a>
+        </div>
+        <div id=PageTitle><h1>Lesson: Writing a Simple Bean</h1></div>
+        <div id=PageContent>
+<p>In this section you will learn more about beans by performing the following 
+actions:</p>
+
+<ul>
+ <li>Creating a simple bean</li>
+ <li>Compiling the bean</li>
+ <li>Generating a Java Archive (JAR) file</li>
+ <li>Loading the bean into the GUI Builder of the NetBeans IDE</li>
+ <li>Inspecting the bean's properties and events </li>
+ </ul>
+
+<p>Your bean will be named <code>SimpleBean</code>.
+Here are the steps to create it:</p>
+
+<ol>
+ <li><p><b>Write the <code>SimpleBean</code> code</b>. Put it in a file
+     named <code>SimpleBean.java</code>, in the directory
+     of your choice. Here's the code:</p>
+
+<div class="codeblock"><pre>
+import java.awt.Color;
+import java.beans.XMLDecoder;
+import javax.swing.JLabel;
+import java.io.Serializable;
+
+public class SimpleBean extends JLabel 
+                        implements Serializable {
+    public SimpleBean() {
+        setText( "Hello world!" );
+        setOpaque( true );
+        setBackground( Color.RED );
+        setForeground( Color.YELLOW );
+        setVerticalAlignment( CENTER );
+        setHorizontalAlignment( CENTER );
+    } 
+}
+</pre></div>
+
+<p><code>SimpleBean</code> extends the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JLabel.html"><code>javax.swing.JLabel</code></a> graphic component and inherits its properties, which makes the 
+SimpleBean a visual component.
+<code>SimpleBean</code> also implements the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/io/Serializable.html"><code>java.io.Serializable</code></a> interface. Your bean may implement either the <CODE>Serializable</CODE> or 
+ the <CODE>Externalizable</CODE> interface.
+ </p></li>
+ 
+ <li><p><b>Create a manifest, the JAR file, and the class file SimpleBean.class</b>. Use 
+the Apache Ant tool to create these files. Apache Ant is a Java-based build tool 
+that enables you to generate XML-based configurations files as follows:</p>
+
+<div class="codeblock"><pre>
+ &lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+
+ &lt;project default="build"&gt;
+
+  &lt;dirname property="basedir" file="${ant.file}"/&gt;
+
+  &lt;property name="beanname" value="SimpleBean"/&gt;
+  &lt;property name="jarfile" value="${basedir}/${beanname}.jar"/&gt;
+
+  &lt;target name="build" depends="compile"&gt;
+      &lt;jar destfile="${jarfile}" basedir="${basedir}" includes="*.class"&gt;
+          &lt;manifest&gt;
+              &lt;section name="${beanname}.class"&gt;
+                 &lt;attribute name="Java-Bean" value="true"/&gt;
+              &lt;/section&gt;
+          &lt;/manifest&gt;
+      &lt;/jar&gt;
+  &lt;/target&gt;
+
+  &lt;target name="compile"&gt;
+      &lt;javac destdir="${basedir}"&gt;
+          &lt;src location="${basedir}"/&gt;
+      &lt;/javac&gt;
+  &lt;/target&gt;
+
+  &lt;target name="clean"&gt;
+      &lt;delete file="${jarfile}"&gt;
+          &lt;fileset dir="${basedir}" includes="*.class"/&gt;
+      &lt;/delete&gt;
+  &lt;/target&gt;
+
+&lt;/project&gt; 
+</pre></div>
+
+    <p>It is recommended to save an XML script in the <CODE>build.xml</CODE> file,
+    because Ant recognizes this file name automatically.</p></li>
+    
+<li><p><b>Load the JAR file</b>. Use the NetBeans IDE GUI Builder to load the jar file as follows:</p>
+
+    <ol>
+	  <li>Start NetBeans.</li>
+	<li>From the File menu select &quot;New Project&quot; to create a new 
+          application for your bean. You can use "Open Project" to add your bean to an 
+         existing application.</li>
+        <li>Create a new application using the New Project Wizard.</li>
+        <li>Select a newly created project in the List of Projects, expand the 
+Source Packages node, and select the Default Package element.</li>
+        <li>Click the right mouse button and select New|JFrameForm from the 
+pop-up menu.</li>
+        <li>Select the newly created Form node in the Project Tree. A blank form 
+opens in the GUI Builder view of an Editor tab.</li>
+        <li>Open the Palette Manager for Swing/AWT components by selecting 
+Palette Manager in the Tools menu.</li>
+        <li>In the Palette Manager window select the beans components in the 
+Palette tree and press the "Add from JAR" button.</li>
+        <li>Specify a location for your SimpleBean JAR file and follow the Add 
+from JAR Wizard instructions.</li>
+        <li>Select the Palette and Properties options from the Windows menu.</li> 
+        <li>Expand the beans group in the Palette window. The SimpleBean object 
+appears. Drag the SimpleBean object to the GUI Builder panel.</li>
+    </ol>
+ 
+    <P>The following figure represents the SimpleBean object loaded in the GUI Builder panel:</p>
+<p><center><IMG SRC="../../figures/javabeans/nb-simplebean.gif" WIDTH="739" HEIGHT="472" ALIGN="BOTTOM" ALT="This figure represents the SimpleBean object loaded in the GUI Builder panel, "></center></p>    
+</li>
+
+ <li><p><strong>Inspect Properties and Events</strong>. The <code>SimpleBean</code> properties will appear in the
+  Properties window. For example, you can change a background property by 
+selecting another color. To preview your form, use the Preview Design button of 
+the GUI Builder toolbar. To inspect events associated with the SimpleBean 
+object, switch to the Events tab of the Properties window. You will learn more 
+about bean properties and events in the lessons that follow.</p></li>
+
+</ol>
+ 
+
+
+
+        </div>
+    <div class=NavBit>
+        <a href=../nb/index.html>&laquo; Previous</a>
+        &bull;
+        <a href=../TOC.html>Trail</a>
+        &bull;
+        <a href=../properties/index.html>Next &raquo;</a>
+    </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Previous Lesson
+        <br><b>Next page:</b> Properties
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

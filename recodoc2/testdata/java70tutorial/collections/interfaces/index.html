@@ -1,0 +1,567 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Lesson: Interfaces (The Java&trade; Tutorials &gt; Collections)</title>
+     <meta name="description" content="This collections Java tutorial describes interfaces, implementations, and algorithms in the Java Collections framework" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java collections, set, list, queue, map, array, arraylist" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                    <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                        <br>
+                        <a href="javascript:toggleLeft()"
+                            id="ToggleLeft">Hide the TOC</a>
+                    </div> 
+                </div> </div> </div> </div> </div>
+
+    <div id=LeftBar>
+        <div id=Contents>
+            <div class="nolinkLESSON">Interfaces</div>
+<div class="linkAHEAD"><a href="collection.html">The Collection Interface</a></div>
+<div class="linkAHEAD"><a href="set.html">The Set Interface</a></div>
+<div class="linkAHEAD"><a href="list.html">The List Interface</a></div>
+<div class="linkAHEAD"><a href="queue.html">The Queue Interface</a></div>
+<div class="linkAHEAD"><a href="map.html">The Map Interface</a></div>
+<div class="linkAHEAD"><a href="order.html">Object Ordering</a></div>
+<div class="linkAHEAD"><a href="sorted-set.html">The SortedSet Interface</a></div>
+<div class="linkAHEAD"><a href="sorted-map.html">The SortedMap Interface</a></div>
+<div class="linkAHEAD"><a href="summary.html">Summary of Interfaces</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+        <div class=PrintHeaders>
+            <b>Trail:</b> Collections
+        </div>
+        <div id=BreadCrumbs>
+            <a href=../../index.html target=_top>Home Page</a>
+        &gt;
+            <a href=../index.html target=_top>Collections</a>
+        </div>
+        <div class=NavBit>
+                <a target=_top href=../intro/index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=collection.html>Next&nbsp;&raquo;</a>
+        </div>
+        <div id=PageTitle><h1>Lesson: Interfaces</h1></div>
+        <div id=PageContent>
+The <i>core collection interfaces</i> encapsulate different
+types of collections, which are shown in the figure below. These
+interfaces allow collections to be manipulated independently of the
+details of their representation. Core collection interfaces are
+the foundation of the Java Collections Framework.
+
+As you can see in
+<span id="figure:colls-coreInterfaces.gif">the following figure</span>, the core collection interfaces form a hierarchy.
+
+<center><p><IMG SRC="../../figures/collections/colls-coreInterfaces.gif" WIDTH="438" HEIGHT="129" ALIGN="BOTTOM" ALT="Two interface trees, one starting with Collection and including Set, SortedSet, List, and Queue, and the other starting with Map and including SortedMap."></p><p class="FigureCaption">The core collection interfaces.</p></center>A <code>Set</code> is a special kind of
+<code>Collection</code>, a <code>SortedSet</code> is a special kind of
+<code>Set</code>, and so forth. Note also that the hierarchy consists
+of two distinct trees &mdash; a <code>Map</code> is not a true
+<code>Collection</code>.
+
+<P>
+
+Note that all the core collection interfaces are generic. For example,
+this is the declaration of the <code>Collection</code> interface.
+
+<div class="codeblock"><pre>
+public interface Collection&lt;E&gt;...
+</pre></div>
+
+<p>
+
+The <code>&lt;E&gt;</code> syntax tells you that the interface is generic. When you declare a <code>Collection</code> instance you can <i>and
+should</i> specify the type of object contained in the collection.
+Specifying the type allows the compiler to verify (at compile-time) that
+the type of object you put into the collection is correct, thus reducing
+errors at runtime. For information on generic types, see the
+<a class="TutorialLink" target="_top" href="../../java/generics/index.html">Generics</a> lesson.
+
+<P>
+
+When you understand how to use these interfaces, you will know most of what
+there is to know about the Java Collections Framework. This chapter
+discusses general guidelines for effective use of the interfaces,
+including when to use which interface. You'll also learn programming
+idioms for each interface to help you get the most out of it.
+
+<P>
+
+To keep the number of core collection interfaces manageable, the
+Java platform doesn't provide separate interfaces for each variant
+of each collection type. (Such variants might include immutable,
+fixed-size, and append-only.) Instead, the modification operations
+in each interface are designated <I>optional</I> &mdash; a given implementation
+may elect not to support all operations. If an unsupported operation is
+invoked, a collection throws an
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/UnsupportedOperationException.html"><code>UnsupportedOperationException</code></a>.
+
+Implementations are responsible for documenting which of the optional
+operations they support. All of the Java platform's general-purpose
+implementations support all of the optional operations.
+
+<P>
+
+The following list describes the core collection interfaces:
+<UL>
+<LI><code>Collection</code> &mdash; the root of the collection hierarchy.
+A collection represents a group of objects known as its
+<i>elements</i>. The <code>Collection</code> interface is the least
+common denominator that all collections implement and is used to pass
+collections around and to manipulate them when maximum generality is
+desired. Some types of collections allow duplicate elements, and others
+do not. Some are ordered and others are unordered. The Java platform doesn't
+provide any direct implementations of this interface but provides
+implementations of more specific subinterfaces, such as <code>Set</code>
+and <code>List</code>. Also see
+<a class="TutorialLink" target="_top" href="collection.html">The Collection Interface</a> section.
+
+<P>
+<LI><code>Set</code> &mdash; a collection that cannot contain duplicate elements. This interface models the mathematical set abstraction and is used to
+represent sets, such as the cards comprising a poker hand, the courses
+making up a student's schedule, or the processes running on a machine.
+See also
+<a class="TutorialLink" target="_top" href="set.html">The Set Interface</a> section.
+
+<P>
+<LI><code>List</code> &mdash; an ordered collection (sometimes called a
+<I>sequence</I>). <code>List</code>s can contain duplicate elements. The user of a <code>List</code> generally has precise control over where in the
+list each element is inserted and can access elements by
+their integer index (position). If you've used <code>Vector</code>,
+you're familiar with the general flavor of <code>List</code>. Also see
+
+<a class="TutorialLink" target="_top" href="list.html">The List Interface</a> section.
+
+<P>
+
+<LI><code>Queue</code> &mdash; a collection used to hold multiple elements
+prior to processing. Besides basic <code>Collection</code> operations,
+a <code>Queue</code> provides additional insertion, extraction, and inspection
+operations. <P>
+Queues typically, but do not necessarily, order elements in a FIFO
+(first-in, first-out) manner. Among the exceptions are priority queues,
+which order elements according to a supplied comparator or the elements'
+natural ordering. Whatever the ordering used, the head of the queue is
+the element that would be removed by a call to <code>remove</code> or
+<code>poll</code>. In a FIFO queue, all new elements are inserted at the
+tail of the queue. Other kinds of queues may use different placement
+rules. Every <code>Queue</code> implementation must specify its ordering
+properties. Also see
+<a class="TutorialLink" target="_top" href="queue.html">The Queue Interface</a> section.
+
+<P>
+
+<LI><code>Map</code> &mdash; an object that maps keys to values. A
+<code>Map</code> cannot contain duplicate keys; each key can map to at
+most one value. If you've used <code>Hashtable</code>, you're already
+familiar with the basics of <code>Map</code>. Also see
+<a class="TutorialLink" target="_top" href="map.html">The Map Interface</a> section.
+</UL>
+
+The last two core collection interfaces are merely sorted versions of
+<code>Set</code> and <code>Map</code>:
+<UL>
+<LI><code>SortedSet</code> &mdash; a <code>Set</code> that maintains its elements in
+ascending order. Several additional operations are provided to take
+advantage of the ordering. Sorted sets are used for naturally ordered
+sets, such as word lists and membership rolls. Also see
+<a class="TutorialLink" target="_top" href="sorted-set.html">The SortedSet Interface</a> section.
+<P>
+<LI><code>SortedMap</code> &mdash; a <code>Map</code> that maintains its
+mappings in ascending key order. This is the <code>Map</code> analog
+of <code>SortedSet</code>. Sorted maps are used for naturally ordered
+collections of key/value pairs, such as dictionaries and telephone
+directories. Also see
+<a class="TutorialLink" target="_top" href="sorted-map.html">The SortedMap Interface</a> section.
+</UL>
+
+To understand how the sorted interfaces maintain the order of
+their elements, see the
+<a class="TutorialLink" target="_top" href="order.html">Object Ordering</a> section.
+
+
+
+
+        </div>
+    <div class=NavBit>
+        <a href=../intro/index.html>&laquo; Previous</a>
+        &bull;
+        <a href=../TOC.html>Trail</a>
+        &bull;
+        <a href=collection.html>Next &raquo;</a>
+    </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Previous Lesson
+        <br><b>Next page:</b> The Collection Interface
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

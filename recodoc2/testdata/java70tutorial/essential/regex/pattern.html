@@ -1,0 +1,788 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Methods of the Pattern Class (The Java&trade; Tutorials &gt;        
+            Essential Classes &gt; Regular Expressions)
+</title>
+
+     <meta name="description" content="This Java tutorial describes exceptions, basic input/output, concurrency, regular expressions, and the platform environment" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java exception, java input output, java threads, java regex, regular expressions, path, classpath, environment variable" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Essential Classes
+        <br><b>Lesson:</b> Regular Expressions
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Regular Expressions</a></div>
+<div class="linkAHEAD"><a href="intro.html">Introduction</a></div>
+<div class="linkAHEAD"><a href="test_harness.html">Test Harness</a></div>
+<div class="linkAHEAD"><a href="literals.html">String Literals</a></div>
+<div class="linkAHEAD"><a href="char_classes.html">Character Classes</a></div>
+<div class="linkAHEAD"><a href="pre_char_classes.html">Predefined Character Classes</a></div>
+<div class="linkAHEAD"><a href="quant.html">Quantifiers</a></div>
+<div class="linkAHEAD"><a href="groups.html">Capturing Groups</a></div>
+<div class="linkAHEAD"><a href="bounds.html">Boundary Matchers</a></div>
+<div class="nolinkAHEAD">Methods of the Pattern Class</div>
+<div class="linkAHEAD"><a href="matcher.html">Methods of the Matcher Class</a></div>
+<div class="linkAHEAD"><a href="pse.html">Methods of the PatternSyntaxException Class</a></div>
+<div class="linkAHEAD"><a href="unicode.html">Unicode Support</a></div>
+<div class="linkAHEAD"><a href="resources.html">Additional Resources</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Essential Classes</a>
+                &gt;
+                <a href=index.html target=_top>Regular Expressions</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=bounds.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=matcher.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Methods of the Pattern Class</h1></div>
+            <div id=PageContent>
+<!--Methods of the Pattern Class-->
+ 
+Until now, we've only used the test harness to create 
+<code>Pattern</code> objects in their most basic form.
+
+This section explores advanced techniques such as creating patterns with flags 
+and using embedded flag expressions. It also explores some additional useful methods that we haven't yet discussed. 
+
+<h2>Creating a Pattern with Flags</h2>
+The <code>Pattern</code> class defines an alternate 
+<code>compile</code> method that accepts a set of flags
+affecting the way the pattern is matched.
+The flags parameter is a bit mask that may include any of the following public static fields: 
+<ul>
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#CANON_EQ"><code>Pattern.CANON_EQ</code></a> Enables canonical equivalence.
+When this flag is specified, two characters will be considered to match if, and only if, their full canonical decompositions match. The expression <code>"a\u030A"</code>, for example, will match the string <code>"\u00E5"</code> when this flag is specified. By default, matching does not take canonical equivalence into account.
+Specifying this flag may impose a performance penalty.
+<p>
+<li>
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#CASE_INSENSITIVE"><code>Pattern.CASE_INSENSITIVE</code></a>
+Enables case-insensitive matching.
+
+By default, case-insensitive matching assumes that only characters in the US-ASCII charset are being matched. Unicode-aware case-insensitive matching can be enabled by specifying the UNICODE_CASE flag in conjunction with this flag.
+
+Case-insensitive matching can also be enabled via the embedded flag 
+expression <code>(?i)</code>.
+
+Specifying this flag may impose a slight performance penalty. 
+<p>
+
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#COMMENTS"><code>Pattern.COMMENTS</code></a>
+Permits whitespace and comments in the pattern.
+
+In this mode, whitespace is ignored, and embedded comments starting with 
+<code>#</code> are ignored until the end of a line.
+
+Comments mode can also be enabled via the embedded flag expression <code>(?x)</code>.
+
+<p>
+
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#DOTALL"><code>Pattern.DOTALL</code></a>
+Enables dotall mode.
+
+In dotall mode, the expression <code>.</code> matches any character, including a line terminator. By default this expression does not match line terminators.
+
+Dotall mode can also be enabled via the embedded flag expression <code>(?s)</code>. (The s is a mnemonic for "single-line" mode, which is what this is called in Perl.) 
+
+<p>
+
+
+
+
+
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#LITERAL"><code>Pattern.LITERAL</code></a>
+Enables literal parsing of the pattern.
+
+When this flag is specified then the input string that specifies the pattern is treated as a sequence of literal characters. Metacharacters or escape sequences in the input sequence will be given no special meaning.
+
+The flags <code>CASE_INSENSITIVE</code> and <code>UNICODE_CASE</code> retain their impact on matching when used in conjunction with this flag. The other flags become superfluous.
+
+There is no embedded flag character for enabling literal parsing. 
+
+<p>
+
+
+
+
+
+
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#MULTILINE"><code>Pattern.MULTILINE</code></a> Enables multiline mode.
+
+In multiline mode the expressions <code>^</code> and <code>$</code> match just after or just before, respectively, a line terminator or the end of the input sequence. By default these expressions only match at the beginning and the end of the entire input sequence.
+
+Multiline mode can also be enabled via the embedded flag expression <code>(?m)</code>. 
+
+<p>
+
+
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#UNICODE_CASE"><code>Pattern.UNICODE_CASE</code></a>
+Enables Unicode-aware case folding.
+
+When this flag is specified then case-insensitive matching, when enabled by the <code>CASE_INSENSITIVE</code> flag, is done in a manner consistent with the Unicode Standard. By default, case-insensitive matching assumes that only characters in the US-ASCII charset are being matched.
+Unicode-aware case folding can also be enabled via the embedded flag expression <code>(?u)</code>.
+
+Specifying this flag may impose a performance penalty. 
+<p>
+
+
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#UNIX_LINES"><code>Pattern.UNIX_LINES</code></a>
+Enables Unix lines mode.
+
+In this mode, only the <code>'\n'</code> line terminator is recognized in the behavior of <code>.</code>, <code>^</code>, and <code>$</code>.
+
+Unix lines mode can also be enabled via the embedded flag expression <code>(?d)</code>. 
+
+
+</ul>
+In the following steps we will modify the test harness, 
+<a class="SourceLink" target="_blank" href="examples/RegexTestHarness.java"><code>RegexTestHarness.java</code></a> to create a pattern with case-insensitive matching.
+
+<p>
+First, modify the code to invoke the alternate version of <code>compile</code>: 
+<div class="codeblock"><pre>
+Pattern pattern = 
+Pattern.compile(console.readLine("%nEnter your regex: "),
+Pattern.CASE_INSENSITIVE);
+</pre></div>
+
+Then compile and run the test harness to get the following results:
+<div class="codeblock"><pre> 
+Enter your regex: dog
+Enter input string to search: DoGDOg
+I found the text "DoG" starting at index 0 and ending at index 3.
+I found the text "DOg" starting at index 3 and ending at index 6.
+</pre></div> 
+
+As you can see, the string literal "dog" matches both occurences, regardless of case. To compile a pattern with multiple flags, separate the 
+flags to be included using the bitwise OR operator "<code>|</code>". 
+For clarity, the following
+ code samples hardcode the regular expression instead of reading it 
+from the <code>Console</code>:
+
+<div class="codeblock"><pre> 
+pattern = Pattern.compile("[az]$", Pattern.MULTILINE <B>|</B> Pattern.UNIX_LINES);
+</pre></div> 
+
+You could also specify an <code>int</code> variable instead:
+
+<div class="codeblock"><pre> 
+final int flags = Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE;
+Pattern pattern = Pattern.compile("aa", flags);
+</pre></div> 
+
+<A NAME=embedded></A>
+<h2>Embedded Flag Expressions</h2>
+It's also possible to enable various flags using 
+<I>embedded flag expressions</I>. Embedded flag expressions are    
+   an alternative to the two-argument 
+version of <code>compile</code>, and are specified in the regular expression itself. 
+The following example uses the original test harness, 
+<a class="SourceLink" target="_blank" href="examples/RegexTestHarness.java"><code>RegexTestHarness.java</code></a> with the embedded flag expression <code>(?i)</code> to 
+enable case-insensitive matching.
+
+<div class="codeblock"><pre> 
+Enter your regex: (?i)foo
+Enter input string to search: FOOfooFoOfoO
+I found the text "FOO" starting at index 0 and ending at index 3.
+I found the text "foo" starting at index 3 and ending at index 6.
+I found the text "FoO" starting at index 6 and ending at index 9.
+I found the text "foO" starting at index 9 and ending at index 12.
+</pre></div> 
+
+Once again, all matches succeed regardless of case. 
+
+<p>
+The embedded flag expressions 
+that correspond to <code>Pattern</code>'s 
+publicly accessible fields are presented in the following table:
+
+<table border="1" cellspacing="2" cellpadding="0"
+ summary="table of flag expressions that correspond to Pattern's publicly accessible fields">
+  <tr>
+    <th id="h1">Constant</td>
+    <th id="h2">Equivalent Embedded Flag Expression</td>
+  </tr>
+  <tr>
+    <td headers="h1"><code>Pattern.CANON_EQ</code></td>
+    <td headers="h2">None</td>
+  </tr>
+  <tr>
+    <td headers="h1"><code>Pattern.CASE_INSENSITIVE</code></td>
+    <td headers="h2"><code>(?i)</code></td></tr>
+  <tr>
+    <td headers="h1"><code>Pattern.COMMENTS</code></td>
+    <td headers="h2"><code>(?x)</code></td>
+  </tr>
+  <tr>
+    <td headers="h1"><code>Pattern.MULTILINE </code></td>
+    <td headers="h2"><code>(?m)</code></td>
+  </tr>
+  <tr>
+    <td headers="h1"><code>Pattern.DOTALL</code></td>
+    <td headers="h2"><code>(?s)</code></td>
+  </tr>
+<tr>
+    <td headers="h1"><code>Pattern.LITERAL</code></td>
+    <td headers="h2">None</td>
+  </tr>
+  <tr>
+    <td headers="h1"><code>Pattern.UNICODE_CASE</code></td>
+    <td headers="h2"><code>(?u)</code></td>
+  </tr>
+  <tr>
+    <td headers="h1"><code>Pattern.UNIX_LINES</code></td>
+    <td headers="h2"><code>(?d)</code></td>
+  </tr>
+</table>
+
+<h2>Using the <code>matches(String,CharSequence)</code> Method</h2>
+
+The <code>Pattern</code> class defines a convenient 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#matches(java.lang.String, java.lang.CharSequence)"><code>matches</code></a> method that allows 
+you to quickly check if a pattern is present in a given input string.
+As with all public static methods, you should invoke <code>matches</code> 
+by its  class name, such as 
+<code>Pattern.matches("\\d","1");</code>.
+In this example, the method returns <code>true</code>, because the digit "1" matches the regular expression <code>\d</code>.
+
+<h2>Using the <code>split(String)</code> Method</h2>
+The 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#split(java.lang.CharSequence)"><code>split</code></a> method is a great tool for gathering the text that lies on 
+either side of the pattern that's been matched. As shown below in
+<a class="SourceLink" target="_blank" href="examples/SplitDemo.java"><code>SplitDemo.java</code></a>, the 
+<code>split</code> method could extract the words 
+"<code>one two three four five</code>" from the 
+string "<code>one:two:three:four:five</code>":
+
+<div class="codeblock"><pre>
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+public class SplitDemo {
+
+    private static final String REGEX = &quot;:&quot;;
+    private static final String INPUT = &quot;one:two:three:four:five&quot;;
+    
+    public static void main(String[] args) {
+        Pattern p = Pattern.compile(REGEX);
+        String[] items = p.split(INPUT);
+        for(String s : items) {
+            System.out.println(s);
+        }
+    }
+}
+</pre></div>
+
+
+<div class="codeblock"><pre>
+OUTPUT:
+
+one
+two
+three
+four
+five
+</pre></div> 
+
+
+
+For simplicity, we've matched a string literal, the colon (<code>:</code>)  instead of a complex regular expression. 
+Since we're still using <code>Pattern</code> and <code>Matcher</code> 
+objects, you can use split to get the text that falls
+on either side of any regular expression. Here's the same example, 
+<a class="SourceLink" target="_blank" href="examples/SplitDemo2.java"><code>SplitDemo2.java</code></a>, modified to  
+split on digits instead:
+
+<div class="codeblock"><pre>
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+public class SplitDemo2 {
+
+    private static final String REGEX = &quot;\\d&quot;;
+    private static final String INPUT = &quot;one9two4three7four1five&quot;;
+
+    public static void main(String[] args) {
+        Pattern p = Pattern.compile(REGEX);
+        String[] items = p.split(INPUT);
+        for(String s : items) {
+            System.out.println(s);
+        }
+    }
+}
+</pre></div>
+
+<div class="codeblock"><pre>
+OUTPUT:
+
+one
+two
+three
+four
+five
+</pre></div> 
+<h2>Other Utility Methods</h2>
+You may find the following methods to be of some use as well:
+<ul>
+<li>
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#quote(java.lang.String)"><code>public static String quote(String s)</code></a>
+    Returns a literal pattern <code>String</code> for the specified <code>String</code>.
+
+    This method produces a <code>String</code> that can be used to create a <code>Pattern</code> that would match <code>String s</code> as if it were a literal pattern.
+    Metacharacters or escape sequences in the input sequence will be given no special meaning.
+
+<p>
+
+<li>
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#toString()"><code>public String toString()</code></a>
+ Returns the <code>String</code> representation of this pattern. This is the regular expression from which this pattern was compiled.
+
+
+
+
+
+
+
+</ul>
+<h2>Pattern Method Equivalents in <code>java.lang.String</code></h2>
+Regular expression support also exists in <code>java.lang.String</code> through 
+ several methods that mimic the behavior of <code>java.util.regex.Pattern</code>.
+For convenience, key excerpts from their API are presented below. 
+
+
+<ul>
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/String.html#matches(java.lang.String)"><code>public boolean matches(String regex)</code></a>: Tells whether or not this string matches the given regular expression. 
+An invocation of this method of the form <code><I>str</I>.matches(<I>regex</I>)</code> yields exactly the same result as the expression <code>Pattern.matches(<I>regex</I>, <I>str</I>)</code>.
+<p>
+
+
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/String.html#split(java.lang.String, int)"><code>public String[] split(String regex, int limit)</code></a>: Splits this string around matches of the given regular expression. 
+An invocation of this method of the form <code><I>str</I>.split(<I>regex</I>, <I>n</I>)</code> yields the same result as the expression 
+         <code>Pattern.compile(<I>regex</I>).split(<I>str</I>, <I>n</I>)</code>  
+<p>
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/String.html#split(java.lang.String)"><code>public String[] split(String regex)</code></a>: 
+Splits this string around matches of the given regular expression. 
+     This method works the same as if you invoked the two-argument split method with the given expression and a limit argument of
+     zero. Trailing empty strings are not included in the resulting array. 
+</ul> 
+There is also a replace method, that replaces one <code>CharSequence</code> with another:
+<ul>
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/String.html#replace(java.lang.CharSequence, java.lang.CharSequence)"><code>public String replace(CharSequence target,CharSequence replacement)</code></a>: Replaces each substring of this string that matches the literal target sequence with the specified literal replacement sequence. The replacement proceeds from the beginning of the string to the end, for example, replacing "aa" with "b" in the string "aaa" will result in "ba" rather than "ab".
+
+
+</ul>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=bounds.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=matcher.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h101" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h101" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h102" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Boundary Matchers
+        <br><b>Next page:</b> Methods of the Matcher Class
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

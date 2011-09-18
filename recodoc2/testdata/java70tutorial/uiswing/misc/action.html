@@ -1,0 +1,846 @@
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>How to Use Actions (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Using Other Swing Features)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Using Other Swing Features
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Using Other Swing Features</a></div>
+<div class="linkAHEAD"><a href="desktop.html">How to Integrate with the Desktop Class</a></div>
+<div class="linkAHEAD"><a href="trans_shaped_windows.html">How to Create Translucent and Shaped Windows</a></div>
+<div class="linkAHEAD"><a href="jlayer.html">How to Decorate Components with the JLayer Class</a></div>
+<div class="nolinkAHEAD">How to Use Actions</div>
+<div class="linkAHEAD"><a href="timer.html">How to Use Swing Timers</a></div>
+<div class="linkAHEAD"><a href="access.html">How to Support Assistive Technologies</a></div>
+<div class="linkAHEAD"><a href="focus.html">How to Use the Focus Subsystem</a></div>
+<div class="linkAHEAD"><a href="keybinding.html">How to Use Key Bindings</a></div>
+<div class="linkAHEAD"><a href="modality.html">How to Use Modality in Dialogs</a></div>
+<div class="linkAHEAD"><a href="printtable.html">How to Print Tables</a></div>
+<div class="linkAHEAD"><a href="printtext.html">How to Print Text</a></div>
+<div class="linkAHEAD"><a href="splashscreen.html">How to Create a Splash Screen</a></div>
+<div class="linkAHEAD"><a href="systemtray.html">How to Use the System Tray</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Problems Using Other Swing Features</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Using Other Swing Features</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=jlayer.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=timer.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>How to Use Actions</h1></div>
+            <div id=PageContent>
+<p>An 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Action.html"><code>Action</code></a>
+can be used to separate functionality and state from a component. For 
+example, if you have two or more components that perform the same function,
+consider using an <code>Action</code> object to implement the function. 
+An <code>Action</code> object is an
+
+<a class="TutorialLink" target="_top" href="../events/actionlistener.html">action listener</a>
+that provides not only action-event handling, but also centralized handling 
+of the state of action-event-firing components such as 
+
+<a class="TutorialLink" target="_top" href="../components/toolbar.html">tool bar buttons</a>, 
+<a class="TutorialLink" target="_top" href="../components/menu.html">menu items</a>, 
+<a class="TutorialLink" target="_top" href="../components/button.html">common buttons</a>, and
+<a class="TutorialLink" target="_top" href="../components/textfield.html">text fields</a>. The state that an action can handle includes text, icon, mnemonic, enabled, 
+and selected status. </p>
+
+<p>You typically attach an action to a component using the 
+<code>setAction</code> method. Here's what happens when <code>setAction</code> 
+is invoked on a component: </p>
+
+<ul>
+<li> The component's state is updated to match the state of the
+     <code>Action</code>.  
+     For example, if the <code>Action</code>'s text and icon values
+     were set,
+     the component's text and icon are set to those values.
+<li> The <code>Action</code> object is registered as an action listener
+     on the component.
+<li> If the state of the <code>Action</code> changes, 
+     the component's state is updated to match the <code>Action</code>.
+     For example, if you change the enabled status of the action,
+     all components it's attached to change their enabled states
+     to match the action.
+</ul>
+
+<p>Here's an example of creating a tool-bar button and menu item
+that perform the same function:</p>
+
+<div class="codeblock"><pre>
+Action leftAction = new LeftAction(); <em>//LeftAction code is shown later</em>
+...
+button = new JButton(leftAction)
+...
+menuItem = new JMenuItem(leftAction);
+</pre></div>
+
+<p>To create an <code>Action</code> object,
+you generally create a subclass of
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/AbstractAction.html"><code>AbstractAction</code></a> and then instantiate it.
+In your subclass, 
+you must implement the <code>actionPerformed</code> method 
+to react appropriately 
+when the action event occurs.
+Here's an example of creating and instantiating
+an <code>AbstractAction</code> subclass:
+
+<div class="codeblock"><pre>
+leftAction = new LeftAction("Go left", anIcon,
+             "This is the left button.",
+             new Integer(KeyEvent.VK_L));
+...
+class LeftAction extends AbstractAction {
+    public LeftAction(String text, ImageIcon icon,
+                      String desc, Integer mnemonic) {
+        super(text, icon);
+        putValue(SHORT_DESCRIPTION, desc);
+        putValue(MNEMONIC_KEY, mnemonic);
+    }
+    public void actionPerformed(ActionEvent e) {
+        displayResult("Action for first button/menu item", e);
+    }
+}
+</pre></div>
+
+<p>
+When the action created by the preceding code is attached to a
+button and a menu item, the button and menu item display the 
+text and icon associated with the action.  The <code>L</code>
+character is used for mnemonics on the button and menu item, and
+their tool-tip text is set to the <code>SHORT_DESCRIPTION</code>
+string followed by a representation of the mnemonic key.
+<p>
+For example, we have provided a simple example,
+<a class="SourceLink" target="_blank" href="../examples/misc/ActionDemoProject/src/misc/ActionDemo.java"><code>ActionDemo.java</code></a>, which defines three actions. Each action is attached to a button
+and a menu item.
+Thanks to the mnemonic values set for each button's action, the key
+sequence <code>Alt-L</code> activates the left button, <code>Alt-M</code>
+the middle button, and <code>Alt-R</code> the right button.  The tool tip
+for the left button displays <em>This is the left button. Alt-L.</em>
+All of this configuration occurs automatically, without the program making
+explicit calls to set the mnemonic or tool-tip text.  As we'll show
+later, the program <em>does</em> make calls to set the button text, 
+but only to avoid using the values already set by the actions.
+
+<p>
+<p><center><IMG SRC="../../figures/uiswing/misc/ActionDemo.png" WIDTH="458" HEIGHT="207" ALIGN="BOTTOM" ALT="A snapshot of ActionDemo, which uses actions to coordinate menus and buttons."></center></p>
+<div class="note"><hr><strong>Try this:</strong>&nbsp;
+<ol>
+<li><p>Click the Launch button to run ActionDemo using
+
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a>
+(<a href="http://java.sun.com/javase/downloads/index.jsp">download 
+JDK 6</a>). Or, to compile and run the example yourself, consult 
+the <a href="../examples/misc/index.html#ActionDemo">example 
+index</a>. </p>
+<p><center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/ActionDemo.jnlp"><img src="../../images/jws-launch-button.png" width="88" height="23" align="bottom" alt="Launches the ActionDemo example" /></a>
+</center></p></li>
+
+<li><p>Choose the top item from the left menu (<b>Menu &gt; Go left</b>).
+<br />
+The text area displays some text identifying both the event source and 
+the action listener that received the event. </p></li>
+<li><p>Click the leftmost button in the tool bar.
+<br />
+The text area again displays information about the event. Note that although 
+the source of the events is different, both events were detected by the same 
+action listener: the <code>Action</code> object attached to the 
+components. </p></li>
+<li><p>Choose the top item from the <b>Action State</b> menu.
+<br />
+This disables the "Go left" <code>Action</code> object, which in turn 
+disables its associated menu item and button. </p></li>
+</ol>
+<hr></div>
+
+Here is what the user sees when the "Go left" action is disabled:
+<table border="0" summary="">
+<tr>
+<td headers="h1">
+<p><center><IMG SRC="../../figures/uiswing/misc/ActionDemo-a.png" WIDTH="458" HEIGHT="207" ALIGN="BOTTOM" ALT="A snapshot of ActionDemo when "Go Left" is disabled."></center></p></td><td headers="h2">
+
+<p><center><IMG SRC="../../figures/uiswing/misc/ActionDemo-b.png" WIDTH="458" HEIGHT="207" ALIGN="BOTTOM" ALT="A snapshot of ActionDemo when "Go Left" is disabled."></center></p></td></tr>
+</table>
+
+
+<p>
+
+Here's the code that disables the "Go left" action:
+<div class="codeblock"><pre>
+boolean selected = ...//<em>true if the action should be enabled;</em>
+                      //<em>false, otherwise</em>
+leftAction.setEnabled(selected);
+</pre></div>
+
+After you create components using an <code>Action</code>,
+you might well need to customize them.
+For example, you might want to customize the
+appearance of one of the components
+by adding or deleting the icon or text.
+For example, 
+
+<a class="SourceLink" target="_blank" href="../examples/misc/ActionDemoProject/src/misc/ActionDemo.java"><code>ActionDemo.java</code></a>
+has no icons in its menus, and no text in its buttons.
+Here's the code that accomplishes this:
+
+<div class="codeblock"><pre>
+menuItem = new JMenuItem();
+menuItem.setAction(leftAction);
+menuItem.setIcon(null); //arbitrarily chose not to use icon in menu
+...
+button = new JButton();
+button.setAction(leftAction);
+button.setText(""); //an icon-only button
+</pre></div>
+
+<p>We chose to create an icon-only button and
+a text-only menu item from the same action by setting
+the icon property to <code>null</code> and the text
+to an empty string.
+However, if a property of the <code>Action</code> changes, the
+widget may try to reset the icon and text from the
+<code>Action</code> again.
+
+<h2>
+<a name="api">The Action API</a>
+</h2>
+The following tables list the commonly used
+<code>Action</code> constructors and methods.
+The API for using <code>Action</code> objects
+falls into three categories:
+
+<ul>
+<li><a href="#actioncomponents">Components that Support set/getAction</a>
+<li><a href="#actionapi">Creating and Using an AbstractAction</a>
+<li><a href="#properties">Action Properties</a>
+</ul>
+
+<p>
+<table border=1 summary="commony used Action constructors and methods">
+<caption><a name="actioncomponents">Components that Support set/getAction</a></caption>
+<tr>
+<th id="h101" align=left>Class</th>
+<th id="h102" align=left>Purpose</th>
+</tr>
+
+<tr>
+<td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/AbstractButton.html#setAction(javax.swing.Action)">AbstractButton</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComboBox.html#setAction(javax.swing.Action)">JComboBox</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html#setAction(javax.swing.Action)">JTextField</a></td>
+<td headers="h102">
+These components and their subclasses may have an action directly assigned
+to them via <code>setAction</code>.
+For further information about components that are often
+associated with actions, see the sections on
+<a class="TutorialLink" target="_top" href="../components/toolbar.html">tool bar buttons</a>,
+<a class="TutorialLink" target="_top" href="../components/menu.html">menu items</a>,     
+<a class="TutorialLink" target="_top" href="../components/button.html">common buttons</a>,    and
+<a class="TutorialLink" target="_top" href="../components/textfield.html">text fields</a>.
+For details on which properties
+each component takes from the <code>Action</code>,
+see the API documentation for the relevant class's
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JMenuItem.html#configurePropertiesFromAction(javax.swing.Action)"><code>configurePropertiesFromAction</code></a>
+method. Also refer to the 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Action.html#buttonActions"><code>buttonActions</code></a>
+table.
+</tr>
+</tr>
+</table>
+
+
+<p>
+<table border=1 summary="methods for creating and using an AbstractAction"> 
+<caption><a name="actionapi">Creating and Using an AbstractAction</a></caption>
+<tr>
+<th id="h201" align=left>Constructor or Method</th>
+<th id="h202" align=left>Purpose</th>
+</tr>
+ 
+<tr>
+<td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/AbstractAction.html#AbstractAction()">AbstractAction()</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/AbstractAction.html#AbstractAction(java.lang.String)">AbstractAction(String)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/AbstractAction.html#AbstractAction(java.lang.String, javax.swing.Icon)">AbstractAction(String, Icon)</a></td>
+<td headers="h202">Create an <code>Action</code> object.
+    Through arguments,
+    you can specify the text and icon
+    to be used in the components that the action is attached to.</td>
+</tr>
+
+<tr>
+<td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/AbstractAction.html#setEnabled(boolean)">void setEnabled(boolean)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/AbstractAction.html#isEnabled()">boolean isEnabled()</a></td>
+<td headers="h202">Set or get whether the components the action controls are enabled.
+    Invoking <code>setEnabled(false)</code>
+    disables all the components that the action controls.
+    Similarly, invoking <code>setEnabled(true)</code>
+    enables the action's components.</td>
+</tr>
+<tr>
+<td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/AbstractAction.html#putValue(java.lang.String, java.lang.Object)">void putValue(String, Object)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/AbstractAction.html#getValue(java.lang.String)">Object getValue(String)</a></td>
+<td headers="h202">Set or get an object associated with a specified key.
+    Used for setting and getting properties associated
+    with an action.
+</td>
+</tr>
+
+</table>
+
+<p>
+<p align=center><a name="properties">Action Properties</a>
+<p>This table defines the properties that can be set on an
+action.  The second column lists which components automatically
+use the properties (and what method is specifically called).
+For example,
+setting the <code>ACCELERATOR_KEY</code> on an action that
+is then attached to a menu item, means that
+<code>JMenuItem.setAccelerator(KeyStroke)</code>
+is called automatically.
+<p>
+<table border=1 summary="ActionProperty methods"> 
+<tr>
+<th id="h301" align=left>Property</th>
+<th id="h302" align=left>Auto-Applied to: <br>Class <br><em>(Method Called)</em></th>
+<th id="h303" align=left>Purpose</th>
+</tr>
+ 
+<tr>
+<td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Action.html#ACCELERATOR_KEY">ACCELERATOR_KEY</a></td>
+<td headers="h302"><code>JMenuItem</code>
+    <br>(<em>setAccelerator</em>)
+</td>
+<td headers="h303">The <code>KeyStroke</code> to be used as the accelerator for
+    the action.
+    For a discussion of accelerators versus mnemonics, see
+<a class="TutorialLink" target="_top" href="../components/menu.html#mnemonic">Enabling Keyboard Operation.</a>    Introduced in 1.3.
+</td>
+</tr>
+<tr>
+<td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Action.html#ACTION_COMMAND_KEY">ACTION_COMMAND_KEY</a></td>
+<td headers="h302"><code>AbstractButton</code>, <code>JCheckBox</code>,
+    <code>JRadioButton</code>
+    <br>(<em>setActionCommand</em>)
+</td>
+<td headers="h303">The command string associated with the
+    <code>ActionEvent</code>.
+</td>
+</tr>
+<tr>
+<td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Action.html#LONG_DESCRIPTION">LONG_DESCRIPTION</a></td>
+<td headers="h302">None
+</td>
+<td headers="h303">The longer description for the action.
+    Can be used for context-sensitive help.
+</td>
+</tr>
+<tr>
+<td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Action.html#MNEMONIC_KEY">MNEMONIC_KEY</a></td>
+<td headers="h302"><code>AbstractButton</code>, <code>JMenuItem</code>,
+    <code>JCheckBox</code>, <code>JRadioButton</code>
+    <br>(<em>setMnemonic</em>)
+</td>
+<td headers="h303">The mnemonic for the action.
+    For a discussion of accelerators versus mnemonics, see
+<a class="TutorialLink" target="_top" href="../components/menu.html#mnemonic">Enabling Keyboard Operation.</a>    Introduced in 1.3. 
+</td>
+</tr>
+<tr>
+<td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Action.html#NAME">NAME</a></td>
+<td headers="h302"><code>AbstractButton</code>, <code>JMenuItem</code>,
+    <code>JCheckBox</code>, <code>JRadioButton</code>
+    <br>(<em>setText</em>)
+</td>
+<td headers="h303">The name of the action.
+    You can set this property when creating the action using
+    the <code>AbstractAction(String)</code> or 
+    <code>AbstractAction(String, Icon)</code> constructors.
+</td>
+</tr>
+<tr>
+<td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Action.html#SHORT_DESCRIPTION">SHORT_DESCRIPTION</a></td>
+<td headers="h302"><code>AbstractButton</code>,
+    <code>JCheckBox</code>, <code>JRadioButton</code>
+    <br>(<em>setToolTipText</em>)
+</td>
+<td headers="h303">The short description of the action.
+</td>
+</tr>
+<tr>
+<td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Action.html#SMALL_ICON">SMALL_ICON</a></td>
+<td headers="h302"><code>AbstractButton</code>, <code>JMenuItem</code>
+    <br>(<em>setIcon</em>)
+</td>
+<td headers="h303">The icon for the action used in the tool bar or on
+    a button.
+    You can set this property when creating the action using
+    the <code>AbstractAction(name, icon)</code> constructor.
+</td>
+</tr>
+</table>
+
+
+<h2>
+<a name="eg">Examples that Use Actions</a>
+</h2>
+The following examples
+use <code>Action</code> objects.
+<p>
+<table summary="list of examples that use Action objects">
+<tr>
+<th id="h401" align=left>Example</th>
+<th id="h402" align=left>Where Described</th>
+<th id="h403" align=left>Notes</th>
+</tr>
+
+<tr>
+<td headers="h401"> <a href="../examples/misc/index.html#ActionDemo"><code>ActionDemo</code></a></td>
+<td headers="h402"> This section</td>
+<td headers="h403"> Uses actions to bind buttons and menu items to the same function.</td>
+</tr>
+
+<tr>
+<td headers="h401"> <a href="../examples/components/index.html#TextComponentDemo">
+     <code>TextComponentDemo</code></a></td>
+<td headers="h402"> 
+<a class="TutorialLink" target="_top" href="../components/generaltext.html">Text Component Features</a></td>
+<td headers="h403"> Uses text actions to create menu items
+     for text editing commands, such as cut, copy, and paste,
+     and to bind key strokes to caret movement.
+     Also implements custom <code>AbstractAction</code> subclasses
+     to implement undo and redo.
+     The text action discussion begins in
+     <a href="../components/generaltext.html#editorkits">Concepts:
+     About Editor Kits</a>.</td>
+</tr>
+
+</table>
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=jlayer.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=timer.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h501" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h501" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h502" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Decorate Components with the JLayer Class
+        <br><b>Next page:</b> How to Use Swing Timers
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

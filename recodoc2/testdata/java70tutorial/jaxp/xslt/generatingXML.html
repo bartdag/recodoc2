@@ -1,0 +1,898 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Generating XML from an Arbitrary Data Structure (The Java&trade; Tutorials &gt;        
+            Java API for XML Processing (JAXP) &gt; Extensible Stylesheet Language Transformations)
+</title>
+
+     <meta name="description" content="This JAXP Java tutorial describes Java API for XML Processing (jaxp), XSLT, SAX, and related XML topics" />
+     <meta name="keywords" content="java programming, learn java, java sample code, jaxp, xml, xslt, sax" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Java API for XML Processing (JAXP)
+        <br><b>Lesson:</b> Extensible Stylesheet Language Transformations
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Extensible Stylesheet Language Transformations</a></div>
+<div class="linkAHEAD"><a href="intro.html">Introducing XSL, XSLT, and XPath</a></div>
+<div class="linkAHEAD"><a href="xpath.html">How XPath Works</a></div>
+<div class="linkAHEAD"><a href="writingDom.html">Writing Out a DOM as an XML File</a></div>
+<div class="nolinkAHEAD">Generating XML from an Arbitrary Data Structure</div>
+<div class="linkAHEAD"><a href="transformingXML.html">Transforming XML Data with XSLT</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Java API for XML Processing (JAXP)</a>
+                &gt;
+                <a href=index.html target=_top>Extensible Stylesheet Language Transformations</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=writingDom.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=transformingXML.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Generating XML from an Arbitrary Data Structure</h1></div>
+            <div id=PageContent>
+<!-- Generating XML from an Arbitrary Data Structure -->
+
+This section uses XSLT to convert an arbitrary data structure to XML.</p><p>Here is an outline of the process:</p>
+<ol><li><p>Modify an existing program that reads the data, to make it generate SAX events. (Whether that program is a real parser or simply a data filter of some kind is irrelevant for the moment).</p></li>
+<li><p>Use the SAX "parser" to construct a <tt>SAXSource</tt> for the transformation.</p></li>
+<li><p>Use the same <tt>StreamResult</tt> object as created in the last exercise to display the results. (But note that you could just as easily create a <tt>DOMResult</tt> object to create a DOM in memory).</p></li>
+<li><p>Wire the source to the result using the transformer object to make the conversion.</p></li></ol>
+<p>For starters, you need a data set you want to convert and
+a program capable of reading the data. The next two sections create a
+simple data file and a program that reads it.</p>
+
+<a name="gghhh"></a><h2>Creating a Simple File</h2>
+<p>This example uses data set for an address book, <tt>PersonalAddressBook.ldif</tt>. If you
+have not done so already, <a href="../examples/xslt_samples.zip">download the XSLT examples</a> and unzip them into the <i>install-dir</i><tt>/jaxp-1_4_2-</tt><i>release-date</i><tt>/samples</tt> directory.
+The file shown here was produced by creating a new address book in
+Netscape Messenger, giving it some dummy data (one address card), and then exporting
+it in LDAP Data Interchange Format (LDIF) format. It contained in the directory
+<tt>xslt/data</tt> after you unzip the XSLT examples.</p><p><a href="#gghhj">Figure&nbsp;4-1</a> shows the address book entry that was created.</p><a name="gghhj"></a><p>Figure&nbsp;4-1 Address Book Entry</p><img src="../../figures/jaxp/intro/addressBook.gif" alt="Snapshot of a Mozilla Thunderbird contact details card." width="302" height="344"></img><p>Exporting the address book produces a file like the one shown next. The
+parts of the file that we care about are shown in bold.
+</p>
+<div class="codeblock"><pre>
+dn: cn=Fred Flintstone,mail=fred@barneys.house
+modifytimestamp: 20010409210816Z
+cn: Fred Flintstone
+<b>xmozillanickname: Fred</b>
+<b>mail: Fred@barneys.house</b>
+<b>xmozillausehtmlmail: TRUE</b>
+<b>givenname: Fred</b>
+<b>sn: Flintstone</b>
+<b>telephonenumber: 999-Quarry</b>
+<b>homephone: 999-BedrockLane</b>
+<b>facsimiletelephonenumber: 888-Squawk</b>
+<b>pagerphone: 777-pager</b>
+<b>cellphone: 555-cell</b>
+<b>xmozillaanyphone: 999-Quarry</b>
+<b>objectclass: top</b>
+<b>objectclass: person</b>
+</pre></div>
+<p>Note that each line of the file contains a variable name, a
+colon, and a space followed by a value for the variable. The <tt>sn</tt>
+variable contains the person's surname (last name) and the variable <tt>cn</tt> contains the <tt>DisplayName</tt>
+field from the address book entry.</p>
+
+<a name="gghhy"></a><h2>Creating a Simple Parser</h2>
+<p>The next step is to create a program that parses the data.</p>
+<hr><p><b>Note - </b>The code discussed in this section is in <tt>AddressBookReader01.java</tt>, which is found
+in the <tt>xslt</tt> directory after you unzip <a href="../examples/xslt_samples.zip">XSLT examples</a> into the <i>install-dir</i><tt>/jaxp-1_4_2-</tt><i>release-date</i><tt>/samples</tt> directory.</p>
+<hr>
+<p>The text for the program is shown next. It is an extremely
+simple program that does not even loop for multiple entries because, after all,
+it is only a demo.</p>
+<div class="codeblock"><pre>
+import java.io.*; 
+public class AddressBookReader01 
+{ 
+
+  public static void main(String argv[])
+  {
+    // Check the arguments
+    if (argv.length != 1) {
+      System.err.println (
+        "Usage: java AddressBookReader01 filename");
+      System.exit (1);
+    }
+    String filename = argv[0];
+    File f = new File(filename);
+    AddressBookReader01 reader = new AddressBookReader01();
+    reader.parse(f);
+  }
+
+  /** Parse the input */
+  public void parse(File f) 
+  {
+    try {
+      // Get an efficient reader for the file
+      FileReader r = new FileReader(f);
+      BufferedReader br = new BufferedReader(r);
+
+       // Read the file and display its contents.
+      String line = br.readLine();
+      while (null != (line = br.readLine())) {
+        if (line.startsWith("xmozillanickname: "))
+          break;
+      }
+      output("nickname", "xmozillanickname", line);
+      line = br.readLine();
+      output("email",    "mail",             line);
+      line = br.readLine();
+      output("html",     "xmozillausehtmlmail", line);
+      line = br.readLine();
+      output("firstname","givenname",        line);
+      line = br.readLine();
+      output("lastname", "sn",               line);
+      line = br.readLine();
+      output("work",     "telephonenumber",  line);
+      line = br.readLine();
+      output("home",     "homephone",        line);
+      line = br.readLine();
+      output("fax",      "facsimiletelephonenumber",
+        line);
+      line = br.readLine();
+      output("pager",    "pagerphone",       line);
+      line = br.readLine();
+      output("cell",     "cellphone",        line);
+    
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+</pre></div>
+<p>This program contains three methods: </p><dl><dt><tt>main</tt></dt>
+<dd><p>The <tt>main</tt> method gets the name of the file from the command line, creates an instance of the parser, and sets it to work parsing the file. This method will disappear when we convert the program into a SAX parser. (That is one reason for putting the parsing code into a separate method).</p></dd>
+<dt><tt>parse</tt></dt>
+<dd><p>This method operates on the <tt>File</tt> object sent to it by the main routine. As you can see, it is very straightforward. The only concession to efficiency is the use of a <tt>BufferedReader</tt>, which can become important when you start operating on large files.</p></dd>
+<dt><tt>output</tt></dt>
+<dd><p>The output method contains the logic for the structure of a line. It takes three arguments. The first argument gives the method a name to display, so it can output <tt>html</tt> as a variable name, instead of <tt>xmozillausehtmlmail</tt>. The second argument gives the variable name stored in the file (<tt>xmozillausehtmlmail</tt>). The third argument gives the line containing the data. The routine then strips off the variable name from the start of the line and outputs the desired name, plus the data.</p></dd>
+</dl>
+
+
+<a name="gghni"></a><h3> Running the <tt>AddressBookReader01</tt> Sample</h3>
+<ol>
+<li><b>Navigate to the <tt>samples</tt> directory.</b>
+<div class="codeblock"><pre>
+% cd <i>install-dir</i><tt>/jaxp-1_4_2-</tt><i>release-date</i><tt>/samples</tt>.
+</pre></div>
+</li>
+<li><b><a href="../examples/xslt_samples.zip">Download the XSLT examples by clicking this link</a> and unzip them into the <i>install-dir</i><tt>/jaxp-1_4_2-</tt><i>release-date</i><tt>/samples</tt> directory.</b></li>
+<li><b>Navigate to the <tt>xslt</tt> directory.</b>
+<div class="codeblock"><pre>
+cd xslt
+</pre></div>
+</li>
+<li><b>Compile the <tt>AddressBookReader01</tt> sample.</b><p>Type the following command:</p>
+<div class="codeblock"><pre>
+% javac AddressBookReader01.java
+</pre></div>
+</li>
+<li><b>Run the <tt>AddressBookReader01</tt> sample on a data file.</b><p>In the case below, <tt>AddressBookReader01</tt> is run on the file <tt>PersonalAddressBook.ldif</tt> shown above,
+found in the <tt>xslt/data</tt> directory after you have unzipped the samples bundle.</p>
+<div class="codeblock"><pre>
+% java AddressBookReader01 data/PersonalAddressBook.ldif
+</pre></div>
+<p>You will see the following output:</p>
+<div class="codeblock"><pre>
+nickname: Fred
+email: Fred@barneys.house
+html: TRUE
+firstname: Fred
+lastname: Flintstone
+work: 999-Quarry
+home: 999-BedrockLane
+fax: 888-Squawk
+pager: 777-pager
+cell: 555-cell
+</pre></div>
+<p>This is a bit more readable than the file shown in <a href="#gghhh">Creating a Simple File</a>.</p></li></ol>
+
+<a name="gghhe"></a><h2>Creating a Parser that Generates SAX Events</h2>
+<p>This section shows how to make the parser generate SAX events, so
+that you can use it as the basis for a <tt>SAXSource</tt> object in
+an XSLT transform.</p>
+<hr><p><b>Note - </b>The code discussed in this section is in <tt>AddressBookReader02.java</tt>, which is found
+in the <tt>xslt</tt> directory after you unzip <a href="../examples/xslt_samples.zip">XSLT examples</a> into the <i>install-dir</i><tt>/jaxp-1_4_2-</tt><i>release-date</i><tt>/samples</tt> directory. <tt>AddressBookReader02.java</tt> is adapted
+from <tt>AddressBookReader01.java</tt>, so only the differences in code between the two examples will
+be discussed here.</p>
+<hr>
+<p><tt>AddressBookReader02</tt> requires the following highlighted classes that were not used in <tt>AddressBookReader01</tt>.</p>
+<div class="codeblock"><pre>
+import java.io.*; 
+
+<b>import org.xml.sax.*;</b>
+<b>import org.xml.sax.helpers.AttributesImpl;</b>
+</pre></div>
+<p>The application also extends <tt>XmlReader</tt>. This change converts the application into a parser
+that generates the appropriate SAX events. </p>
+<div class="codeblock"><pre>
+public class AddressBookReader02 
+  <b>implements XMLReader</b>
+{
+</pre></div>
+<p>Unlike the <tt>AddressBookReader01</tt> sample, this application does not have a <tt>main</tt> method.</p><p>The following global variables will be used later in this section:</p>
+<div class="codeblock"><pre>
+public class AddressBookReader02 
+  implements XMLReader
+{
+  <b>ContentHandler handler;</b>
+
+  <b>String nsu = "";</b>  
+  <b>Attributes atts = new AttributesImpl();</b>
+  <b>String rootElement = "addressbook";</b>
+
+  <b>String indent = "\n ";</b>
+</pre></div>
+<p>The SAX <tt>ContentHandler</tt> is the object that will get the SAX events generated
+by the parser. To make the application into an <tt>XmlReader</tt>, the application
+defines a <tt>setContentHandler</tt> method. The handler variable will hold a reference to the
+object that is sent when <tt>setContentHandler</tt> is invoked.  </p><p>When the parser generates SAX element events, it will need to supply namespace
+and attribute information. Because this is a simple application, it defines null values
+for both of those.</p><p>The application also defines a root element for the data structure (<tt>addressbook</tt>)
+and sets up an indent string to improve the readability of the output.</p><p>Furthermore, the parse method is modified so that it takes an <tt>InputSource</tt>
+(rather than a <tt>File</tt>) as an argument and accounts for the exceptions it
+can generate:</p>
+<div class="codeblock"><pre>
+public void parse<b>(InputSource input)</b> 
+<b>throws IOException, SAXException</b>
+</pre></div>
+<p>Now, rather than creating a new <tt>FileReader</tt> instance as was done in <tt>AddressBookReader01</tt>,
+the reader is encapsulated by the <tt>InputSource</tt> object:</p>
+<div class="codeblock"><pre>
+try {
+  <b>java.io.Reader r = input.getCharacterStream();</b>
+  BufferedReader Br = new BufferedReader(r);
+</pre></div>
+<hr><p><b>Note - </b>The next section shows how to create the input source object and what
+is put in it will, in fact, be a buffered reader. But
+the <tt>AddressBookReader</tt> could be used by someone else, somewhere down the line.
+This step makes sure that the processing will be efficient, regardless of the
+reader you are given.</p>
+<hr>
+<p>The next step is to modify the parse method to generate SAX
+events for the start of the document and the root element. The following
+highlighted code does that:</p>
+<div class="codeblock"><pre>
+public void parse(InputSource input) 
+...
+{
+  try {
+    ...
+    String line = br.readLine();
+    while (null != (line = br.readLine())) {
+      if (line.startsWith("xmozillanickname: ")) break;
+    }
+
+    <b>if (handler==null) {</b>
+      <b>throw new SAXException("No content handler");</b>
+    <b>}</b>
+
+    <b>handler.startDocument();</b> 
+    <b>handler.startElement(nsu, rootElement, </b>
+      <b>rootElement, atts);</b>
+
+    output("nickname", "xmozillanickname", line);
+    ...
+    output("cell",     "cellphone",        line);
+
+    <b>handler.ignorableWhitespace("\n".toCharArray(),</b> 
+            <b>0, // start index</b>
+            <b>1 // length</b>
+            <b>);</b> 
+    handler.endElement(nsu, rootElement, rootElement);
+    handler.endDocument(); 
+  }
+  catch (Exception e) {
+  ...
+</pre></div>
+<p>Here, the application checks to make sure that the parser is properly configured
+with a <tt>ContentHandler</tt>. (For this application, we do not care about anything else).
+It then generates the events for the start of the document and the
+root element, and finishes by sending the end event for the root element
+and the end event for the document.</p><p>Two items are noteworthy at this point:</p>
+<ul><li><p>The <tt>setDocumentLocator</tt> event has not been sent, because that is optional. Were it important, that event would be sent immediately before the <tt>startDocument</tt> event.</p></li>
+<li><p>An <tt>ignorableWhitespace</tt> event is generated before the end of the root element. This, too, is optional, but it drastically improves the readability of the output, as will be seen shortly. (In this case, the whitespace consists of a single newline, which is sent in the same way that characters are sent to the characters method: as a character array, a starting index, and a length).</p></li></ul>
+<p>Now that SAX events are being generated for the document and the
+root element, the next step is to modify the output method to generate
+the appropriate element events for each data item. Removing the call to <tt>System.out.println(name + ": " + text)</tt>
+and adding the following highlighted code achieves that:</p>
+<div class="codeblock"><pre>
+void output(String name, String prefix, String line) 
+throws SAXException 
+{
+  int startIndex = prefix.length() + 2; // 2=length of ": "
+  String text = line.substring(startIndex);
+
+  <b>int textLength = line.length() - startIndex;</b>
+  <b>handler.ignorableWhitespace(indent.toCharArray(),</b> 
+              <b>0, // start index</b>
+              <b>indent.length() </b>
+              <b>);</b>
+  <b>handler.startElement(nsu, name, name /*"qName"*/, atts);</b>
+  <b>handler.characters(line.toCharArray(),</b> 
+          <b>startIndex,</b>
+          <b>textLength);</b>
+  <b>handler.endElement(nsu, name, name);</b>
+}
+</pre></div>
+<p>Because the <tt>ContentHandler</tt> methods can send <tt>SAXExceptions</tt> back to the parser, the
+parser must be prepared to deal with them. In this case, none are
+expected, so the application is simply allowed to fail if any occur.</p><p>The length of the data is then calculated, again generating some ignorable whitespace
+for readability. In this case, there is only one level of data, so
+we can use a fixed-indent string. (If the data were more structured,
+we would have to calculate how much space to indent, depending on the
+nesting of the data).</p>
+<hr><p><b>Note - </b>The indent string makes no difference to the data but will make the
+output a lot easier to read. Without that string, all the elements
+would be concatenated end to end:</p>
+<div class="codeblock"><pre>
+&lt;addressbook>&lt;nickname>Fred&lt;/nickname>&lt;email>...
+</pre></div>
+<hr>
+<p>Next, the following method configures the parser with the <tt>ContentHandler</tt> that is
+to receive the events it generates:</p>
+<div class="codeblock"><pre>
+void output(String name, String prefix, String line)
+  throws SAXException
+{
+  ...
+}
+
+/** Allow an application to register a content event handler. */
+<b>public void setContentHandler(ContentHandler handler) {</b>
+  <b>this.handler = handler;</b>
+<b>}</b>  
+/** Return the current content handler. */
+<b>public ContentHandler getContentHandler() {</b>
+  <b>return this.handler;</b>
+<b>}</b>
+</pre></div>
+<p>Several other methods must be implemented in order to satisfy the <tt>XmlReader</tt>
+interface. For the purpose of this exercise, null methods are generated for all
+of them. A production application, however, would require that the error handler methods
+be implemented to produce a more robust application. For this example, though, the
+following code generates null methods for them:</p>
+<div class="codeblock"><pre>
+/** Allow an application to register an error event handler. */
+public void setErrorHandler(ErrorHandler handler)
+{ } 
+/** Return the current error handler. */
+public ErrorHandler getErrorHandler()
+{ return null; }
+</pre></div>
+<p>Then the following code generates null methods for the remainder of the <tt>XmlReader</tt>
+interface. (Most of them are of value to a real SAX parser but
+have little bearing on a data-conversion application like this one).</p>
+<div class="codeblock"><pre>
+/** Parse an XML document from a system identifier (URI). */
+public void parse(String systemId)
+throws IOException, SAXException 
+{ } 
+ /** Return the current DTD handler. */
+public DTDHandler getDTDHandler()
+{ return null; } 
+/** Return the current entity resolver. */
+public EntityResolver getEntityResolver()
+{ return null; } 
+/** Allow an application to register an entity resolver. */
+public void setEntityResolver(EntityResolver resolver)
+{ } 
+/** Allow an application to register a DTD event handler. */
+public void setDTDHandler(DTDHandler handler)
+{ } 
+/** Look up the value of a property. */
+public Object getProperty(String name)
+{ return null; } 
+/** Set the value of a property. */
+public void setProperty(String name, Object value)
+{ }  
+/** Set the state of a feature. */
+public void setFeature(String name, boolean value)
+{ } 
+/** Look up the value of a feature. */
+public boolean getFeature(String name)
+{ return false; }
+</pre></div>
+<p>You now have a parser you can use to generate SAX events.
+In the next section, you will use it to construct a SAX source
+object that will let you transform the data into XML.</p>
+
+<a name="gghik"></a><h2>Using the Parser as a <tt>SAXSource</tt></h2>
+<p>Given a SAX parser to use as an event source, you can
+construct a transformer to produce a result. In this section, <tt>TransformerApp</tt> will be updated
+to produce a stream output result, although it could just as easily produce
+a DOM result.</p>
+<hr><p><b>Note - </b>Note: The code discussed in this section is in <tt>TransformationApp03.java</tt>, which is
+found in the <tt>xslt</tt> directory after you unzip <a href="../examples/xslt_samples.zip">XSLT examples</a> into the <i>install-dir</i><tt>/jaxp-1_4_2-</tt><i>release-date</i><tt>/samples</tt> directory.</p>
+<hr>
+<p>To start with, <tt>TransformationApp03</tt> differs from <tt>TransformationApp02</tt> in the classes it needs
+to import to construct a <tt>SAXSource</tt> object. These classes are shown highlighted below. The
+DOM classes are no longer needed at this point, so have been
+discarded, although leaving them in does not do any harm.</p>
+<div class="codeblock"><pre>
+import org.xml.sax.SAXException; 
+import org.xml.sax.SAXParseException; 
+<b>import org.xml.sax.ContentHandler;</b>
+<b>import org.xml.sax.InputSource;</b>
+
+<b>import javax.xml.transform.sax.SAXSource;</b> 
+import javax.xml.transform.stream.StreamResult;
+</pre></div>
+<p>Next, instead of creating a DOM <tt>DocumentBuilderFactory</tt> instance, the application creates a SAX
+parser, which is an instance of the <tt>AddressBookReader</tt>:</p>
+<div class="codeblock"><pre>
+public class TransformationApp03 
+{
+  static Document document;  
+   public static void main(String argv[])
+  {
+    ...
+    // Create the sax "parser".
+    <b>AddressBookReader saxReader = new AddressBookReader();</b>
+
+    try {
+      File f = new File(argv[0]);
+</pre></div>
+<p>Then, the following highlighted code constructs a <tt>SAXSource</tt> object</p>
+<div class="codeblock"><pre>
+// Use a Transformer for output
+...
+Transformer transformer = tFactory.newTransformer();
+
+// Use the parser as a SAX source for input
+<b>FileReader fr = new FileReader(f);</b>
+<b>BufferedReader br = new BufferedReader(fr);</b>
+<b>InputSource inputSource = new InputSource(br);</b>
+<b>SAXSource source = new SAXSource(saxReader, inputSource);</b>
+
+StreamResult result = new StreamResult(System.out);
+transformer.transform(source, result);
+</pre></div>
+<p>Here, <tt>TransformationApp03</tt> constructs a buffered reader (as mentioned earlier) and encapsulates it in
+an input source object. It then creates a <tt>SAXSource</tt> object, passing it the
+reader and the <tt>InputSource</tt> object, and passes that to the transformer.</p><p>When the application runs, the transformer configures itself as the <tt>ContentHandler</tt> for
+the SAX parser (the <tt>AddressBookReader</tt>) and tells the parser to operate on the
+<tt>inputSource</tt> object. Events generated by the parser then go to the transformer, which
+does the appropriate thing and passes the data on to the result object.</p><p>Finally, <tt>TransformationApp03</tt> does not generate exceptions, so the exception handling code seen in
+<tt>TransformationApp02</tt> is no longer present.</p>
+
+<a name="gghmh"></a><h3>Running the <tt>TransformationApp03</tt> Sample</h3>
+<ol>
+<li><b>Navigate to the <tt>samples</tt> directory.</b>
+<div class="codeblock"><pre>
+% cd <i>install-dir</i><tt>/jaxp-1_4_2-</tt><i>release-date</i><tt>/samples</tt>.
+</pre></div>
+</li>
+<li><b> <a href="../examples/xslt_samples.zip">Download the XSLT examples by clicking this link</a> and unzip them into the <i>install-dir</i><tt>/jaxp-1_4_2-</tt><i>release-date</i><tt>/samples</tt> directory.</b></li>
+<li><b>Navigate to the <tt>xslt</tt> directory.</b>
+<div class="codeblock"><pre>
+cd xslt
+</pre></div>
+</li>
+<li><b>Compile the <tt>TransformationApp03</tt> sample.</b><p>Type the following command:</p>
+<div class="codeblock"><pre>
+% javac TransformationApp03.java
+</pre></div>
+</li>
+<li><b>Run the <tt>TransformationApp03</tt> sample on a data file you wish to convert to
+XML.</b><p>In the case below, <tt>TransformationApp03</tt> is run on the <tt>PersonalAddressBook.ldif</tt> file, found in
+the <tt>xslt/data</tt> directory after you have unzipped the samples bundle.</p>
+<div class="codeblock"><pre>
+% java TransformationApp03 data/PersonalAddressBook.ldif
+</pre></div>
+<p>You will see the following output:</p>
+<div class="codeblock"><pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;addressbook>
+    &lt;nickname>Fred&lt;/nickname>
+    &lt;email>Fred@barneys.house&lt;/email>
+    &lt;html>TRUE&lt;/html>
+    &lt;firstname>Fred&lt;/firstname>
+    &lt;lastname>Flintstone&lt;/lastname>
+    &lt;work>999-Quarry&lt;/work>
+    &lt;home>999-BedrockLane&lt;/home>
+    &lt;fax>888-Squawk&lt;/fax>
+    &lt;pager>777-pager&lt;/pager>
+    &lt;cell>555-cell&lt;/cell>
+&lt;/addressbook>
+</pre></div>
+<p>As you can see, the LDIF format file <tt>PersonalAddressBook</tt> has been converted to
+XML!</p></li></ol>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=writingDom.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=transformingXML.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Writing Out a DOM as an XML File
+        <br><b>Next page:</b> Transforming XML Data with XSLT
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

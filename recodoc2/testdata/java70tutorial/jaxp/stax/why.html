@@ -1,0 +1,575 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Why StAX? (The Java&trade; Tutorials &gt;        
+            Java API for XML Processing (JAXP) &gt; Streaming API for XML)
+</title>
+
+     <meta name="description" content="This JAXP Java tutorial describes Java API for XML Processing (jaxp), XSLT, SAX, and related XML topics" />
+     <meta name="keywords" content="java programming, learn java, java sample code, jaxp, xml, xslt, sax" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Java API for XML Processing (JAXP)
+        <br><b>Lesson:</b> Streaming API for XML
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Streaming API for XML</a></div>
+<div class="nolinkAHEAD">Why StAX?</div>
+<div class="linkAHEAD"><a href="api.html">StAX API</a></div>
+<div class="linkAHEAD"><a href="using.html">Using StAX</a></div>
+<div class="linkAHEAD"><a href="parser.html">Oracle's Streaming XML Parser Implementation</a></div>
+<div class="linkAHEAD"><a href="example.html">Example Code</a></div>
+<div class="linkAHEAD"><a href="info.html">Further Information</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Java API for XML Processing (JAXP)</a>
+                &gt;
+                <a href=index.html target=_top>Streaming API for XML</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=api.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Why StAX?</h1></div>
+            <div id=PageContent>
+<!-- Why StAX? -->
+
+The StAX project was spearheaded by BEA with support from Sun Microsystems, and
+the JSR 173 specification passed the Java Community Process final approval ballot in
+March, 2004 (
+<a class="OutsideLink" target="_blank" href="http://jcp.org/en/jsr/detail?id=173">http://jcp.org/en/jsr/detail?id=173</a>). The primary goal of the StAX API is to
+give &ldquo;parsing control to the programmer by exposing a simple iterator based API.
+This allows the programmer to ask for the next event (pull the event)
+and allows state to be stored in procedural fashion.&rdquo; StAX was created to
+address limitations in the two most prevalent parsing APIs, SAX and DOM.</p>
+
+<a name="bnbdx"></a><h2>Streaming versus DOM</h2>
+<a name="indexterm-5"></a><a name="indexterm-6"></a><p>Generally speaking, there are two programming models for working with XML infosets: <b>streaming</b>
+and the <b>document object model</b> (DOM).</p><p>The DOM model involves creating in-memory objects representing an entire document tree and
+the complete infoset state for an XML document. Once in memory, DOM trees
+can be navigated freely and parsed arbitrarily, and as such provide maximum flexibility
+for developers. However, the cost of this flexibility is a potentially large memory
+footprint and significant processor requirements, because the entire representation of the document must
+be held in memory as objects for the duration of the document processing.
+This may not be an issue when working with small documents, but memory
+and processor requirements can escalate quickly with document size.</p><p>Streaming refers to a programming model in which XML infosets are transmitted and
+parsed serially at application runtime, often in real time, and often from dynamic
+sources whose contents are not precisely known beforehand. Moreover, stream-based parsers can start
+generating output immediately, and infoset elements can be discarded and garbage collected immediately
+after they are used. While providing a smaller memory footprint, reduced processor requirements, and
+higher performance in certain situations, the primary trade-off with stream processing is that
+you can only see the infoset state at one location at a time
+in the document. You are essentially limited to the &ldquo;cardboard tube&rdquo; view of
+a document, the implication being that you need to know what processing you
+want to do before reading the XML document.</p><p>Streaming models for XML processing are particularly useful when your application has strict
+memory limitations, as with a cellphone running the Java Platform, Micro Edition (Java
+ME platform), or when your application needs to process several requests simultaneously, as
+with an application server. In fact, it can be argued that the majority
+of XML business logic can benefit from stream processing, and does not require
+the in-memory maintenance of entire DOM trees.</p>
+
+<a name="bnbdy"></a><h2>Pull Parsing versus Push Parsing</h2>
+<a name="indexterm-7"></a><a name="indexterm-8"></a><p>Streaming <b>pull parsing</b> refers to a programming model in which a client application calls
+methods on an XML parsing library when it needs to interact with an
+XML infoset&mdash;that is, the client only gets (pulls) XML data when it explicitly
+asks for it.</p><p>Streaming <b>push parsing</b> refers to a programming model in which an XML parser sends
+(pushes) XML data to the client as the parser encounters elements in an
+XML infoset&mdash;that is, the parser sends the data whether or not the client
+is ready to use it at that time.</p><p>Pull parsing provides several advantages over push parsing when working with XML streams:</p>
+<ul><li><p>With pull parsing, the client controls the application thread, and can call methods on the parser when needed. By contrast, with push processing, the parser controls the application thread, and the client can only accept invocations from the parser.</p></li>
+<li><p>Pull parsing libraries can be much smaller and the client code to interact with those libraries much simpler than with push libraries, even for more complex documents.</p></li>
+<li><p>Pull clients can read multiple documents at one time with a single thread.</p></li>
+<li><p>A StAX pull parser can filter XML documents such that elements unnecessary to the client can be ignored, and it can support XML views of non-XML data.</p></li></ul>
+
+
+<a name="bnbdz"></a><h2>StAX Use Cases</h2>
+<a name="indexterm-9"></a><p>The StAX specification defines a number of use cases for the API:</p>
+<ul><li><p><a name="indexterm-10"></a>Data binding</p>
+<ul><li><p>Unmarshalling an XML document</p></li>
+<li><p>Marshalling an XML document</p></li>
+<li><p>Parallel document processing</p></li>
+<li><p>Wireless communication</p></li></ul>
+</li>
+<li><p><a name="indexterm-11"></a>Simple Object Access Protocol (SOAP) message processing</p>
+<ul><li><p>Parsing simple predictable structures</p></li>
+<li><p>Parsing graph representations with forward references</p></li>
+<li><p>Parsing Web Services Description Language (WSDL)</p></li></ul>
+</li>
+<li><p>Virtual data sources</p>
+<ul><li><p>Viewing as XML data stored in databases</p></li>
+<li><p>Viewing data in Java objects created by XML data binding</p></li>
+<li><p>Navigating a DOM tree as a stream of events</p></li></ul>
+</li>
+<li><p>Parsing specific XML vocabularies</p></li>
+<li><p>Pipelined XML processing</p></li></ul>
+<p>A complete discussion of all these use cases is beyond the scope
+of this lesson. Please refer to the StAX specification for further information.</p>
+
+<a name="bnbea"></a><h2>Comparing StAX to Other JAXP APIs</h2>
+<p>As an API in the JAXP family, StAX can be compared, among
+other APIs, to SAX, TrAX, and JDOM. Of the latter two, StAX is
+not as powerful or flexible as TrAX or JDOM, but neither does it
+require as much memory or processor load to be useful, and StAX can,
+in many cases, outperform the DOM-based APIs. The same arguments outlined above, weighing
+the cost/benefits of the DOM model versus the streaming model, apply here.</p><p>With this in mind, the closest comparisons can be made between StAX and
+SAX, and it is here that StAX offers features that are beneficial
+in many cases; some of these include:</p>
+<ul><li><p>StAX-enabled clients are generally easier to code than SAX clients. While it can be argued that SAX parsers are marginally easier to write, StAX parser code can be smaller and the code necessary for the client to interact with the parser simpler.</p></li>
+<li><p>StAX is a bidirectional API, meaning that it can both read and write XML documents. SAX is read only, so another API is needed if you want to write XML documents.</p></li>
+<li><p>SAX is a push API, whereas StAX is pull. The trade-offs between push and pull APIs outlined above apply here.</p></li></ul>
+<p><a href="#bnbeb">Table&nbsp;5-1</a> summarizes the comparative features of StAX, SAX, DOM, and TrAX (table adapted
+from &ldquo;Does StAX Belong in Your XML Toolbox?&rdquo; at
+<a class="OutsideLink" target="_blank" href="http://www.developer.com/xml/article.php/3397691">http://www.developer.com/xml/article.php/3397691</a> by Jeff Ryan).</p><a name="bnbeb"></a><p>Table&nbsp;5-1 XML Parser API Feature Summary</p><a name="indexterm-12"></a>
+ <table summary="XML Parser API Feature Summary"><col width="26%"><col width="18%"><col width="19%"><col width="19%"><col width="15%"><tr><th align="left" valign="top" scope="column"><p>Feature</p></th>
+<th id="h2" align="left" valign="top" scope="column"><p>StAX</p></th>
+<th id="h3" align="left" valign="top" scope="column"><p>SAX</p></th>
+<th id="h4" align="left" valign="top" scope="column"><p>DOM</p></th>
+<th id="h5" align="left" valign="top" scope="column"><p>TrAX</p></th>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p>API Type</p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Pull,
+streaming</p></td>
+<td headers="h2" align="left" valign="top" scope="row"><p>Push, streaming</p></td>
+<td headers="h3" align="left" valign="top" scope="row"><p>In memory tree</p></td>
+<td headers="h4" align="left" valign="top" scope="row"><p>XSLT Rule</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p>Ease of Use</p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>High</p></td>
+<td headers="h2" align="left" valign="top" scope="row"><p>Medium</p></td>
+<td headers="h3" align="left" valign="top" scope="row"><p>High</p></td>
+<td headers="h4" align="left" valign="top" scope="row"><p>Medium</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p>XPath Capability</p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>No</p></td>
+<td headers="h2" align="left" valign="top" scope="row"><p>No</p></td>
+<td headers="h3" align="left" valign="top" scope="row"><p>Yes</p></td>
+<td headers="h4" align="left" valign="top" scope="row"><p>Yes</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p>CPU and Memory Efficiency</p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Good</p></td>
+<td headers="h2" align="left" valign="top" scope="row"><p>Good</p></td>
+<td headers="h3" align="left" valign="top" scope="row"><p>Varies</p></td>
+<td headers="h4" align="left" valign="top" scope="row"><p>Varies</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p>Forward Only</p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Yes</p></td>
+<td headers="h2" align="left" valign="top" scope="row"><p>Yes</p></td>
+<td headers="h3" align="left" valign="top" scope="row"><p>No</p></td>
+<td headers="h4" align="left" valign="top" scope="row"><p>No</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p>Read
+XML</p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Yes</p></td>
+<td headers="h2" align="left" valign="top" scope="row"><p>Yes</p></td>
+<td headers="h3" align="left" valign="top" scope="row"><p>Yes</p></td>
+<td headers="h4" align="left" valign="top" scope="row"><p>Yes</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p>Write XML</p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Yes</p></td>
+<td headers="h2" align="left" valign="top" scope="row"><p>No</p></td>
+<td headers="h3" align="left" valign="top" scope="row"><p>Yes</p></td>
+<td headers="h4" align="left" valign="top" scope="row"><p>Yes</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p>Create, Read, Update, Delete</p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>No</p></td>
+<td headers="h2" align="left" valign="top" scope="row"><p>No</p></td>
+<td headers="h3" align="left" valign="top" scope="row"><p>Yes</p></td>
+<td headers="h4" align="left" valign="top" scope="row"><p>No</p></td>
+</tr>
+</table>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=index.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=api.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h101" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h101" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h102" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Streaming API for XML
+        <br><b>Next page:</b> StAX API
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

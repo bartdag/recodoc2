@@ -1,0 +1,681 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Creating Objects (The Java&trade; Tutorials &gt;        
+            Learning the Java Language &gt; Classes and Objects)
+</title>
+
+     <meta name="description" content="This beginner Java tutorial describes fundamentals of programming in the Java programming language" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java objects, java classes, java inheritance, interfaces, variables, arrays, data types, operators, control flow, number, string" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Learning the Java Language
+        <br><b>Lesson:</b> Classes and Objects
+        <br><b>Section:</b> Objects
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Classes and Objects</a></div>
+<div class="linkAHEAD"><a href="classes.html">Classes</a></div>
+<div class="linkBHEAD"><a href="classdecl.html">Declaring Classes</a></div>
+<div class="linkBHEAD"><a href="variables.html">Declaring Member Variables</a></div>
+<div class="linkBHEAD"><a href="methods.html">Defining Methods</a></div>
+<div class="linkBHEAD"><a href="constructors.html">Providing Constructors for Your Classes</a></div>
+<div class="linkBHEAD"><a href="arguments.html">Passing Information to a Method or a Constructor</a></div>
+<div class="linkAHEAD"><a href="objects.html">Objects</a></div>
+<div class="nolinkBHEAD">Creating Objects</div>
+<div class="linkBHEAD"><a href="usingobject.html">Using Objects</a></div>
+<div class="linkAHEAD"><a href="more.html">More on Classes</a></div>
+<div class="linkBHEAD"><a href="returnvalue.html">Returning a Value from a Method</a></div>
+<div class="linkBHEAD"><a href="thiskey.html">Using the this Keyword</a></div>
+<div class="linkBHEAD"><a href="accesscontrol.html">Controlling Access to Members of a Class</a></div>
+<div class="linkBHEAD"><a href="classvars.html">Understanding Instance and Class Members</a></div>
+<div class="linkBHEAD"><a href="initial.html">Initializing Fields</a></div>
+<div class="linkBHEAD"><a href="summaryclasses.html">Summary of Creating and Using Classes and Objects</a></div>
+<div class="linkQUESTIONS"><a href="QandE/creating-questions.html">Questions and Exercises</a></div>
+<div class="linkQUESTIONS"><a href="QandE/objects-questions.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="nested.html">Nested Classes</a></div>
+<div class="linkBHEAD"><a href="innerclasses.html">Inner Class Example</a></div>
+<div class="linkBHEAD"><a href="summarynested.html">Summary of Nested Classes</a></div>
+<div class="linkQUESTIONS"><a href="QandE/nested-questions.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="enum.html">Enum Types</a></div>
+<div class="linkQUESTIONS"><a href="QandE/enum-questions.html">Questions and Exercises</a></div>
+<div class="linkAHEAD"><a href="annotations.html">Annotations</a></div>
+<div class="linkQUESTIONS"><a href="QandE/annotations-questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Learning the Java Language</a>
+                &gt;
+                <a href=index.html target=_top>Classes and Objects</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=objects.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=usingobject.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Creating Objects</h1></div>
+            <div id=PageContent>
+<!-- Creating Objects -->
+
+As you know, a class provides the blueprint for objects; you create an object from a class.
+
+
+
+Each of the following statements taken from the
+<a class="SourceLink" target="_blank" href="examples/CreateObjectDemo.java"><code>CreateObjectDemo</code></a> program creates an object and assigns it to a variable:
+ 
+<div class="codeblock"><pre>
+<strong>Point originOne</strong> = new Point(23, 94);
+<strong>Rectangle rectOne</strong> = new Rectangle(originOne, 100, 200);
+<strong>Rectangle rectTwo</strong> = new Rectangle(50, 100);
+</pre></div>
+
+The first line creates an object of the
+<a class="SourceLink" target="_blank" href="examples/Point.java"><code>Point</code></a> class, 
+and the second and third lines each create an
+object of the
+<a class="SourceLink" target="_blank" href="examples/Rectangle.java"><code>Rectangle</code></a> class.
+<p>
+Each of these statements has three parts (discussed in detail below):
+<ol>
+
+<li>
+<strong>Declaration</strong>:
+The code set in <strong>bold</strong>  are all
+variable declarations that associate a variable name with an object type. 
+
+
+<li>
+<strong>Instantiation</strong>:
+The <tt>new</tt> keyword is a Java operator
+that creates the object.
+
+<li>
+<strong>Initialization</strong>:
+The <tt>new</tt> operator is followed
+by a call to a constructor, which initializes the new object. 
+
+</ol>
+
+
+<a name="declaring"></a>
+<h2>Declaring a Variable to Refer to an Object</h2>
+
+
+ 
+
+Previously, you learned that to declare a variable, you write:
+
+<div class="codeblock"><pre>
+<em>type name</em>;
+</pre></div>
+
+This notifies the compiler that you will use <em>name</em> to
+refer to data whose type is <em>type</em>.
+
+ With a primitive variable, this declaration also reserves the proper amount of memory for the variable. 
+<p>
+You can also declare a reference variable on its own line. For example:
+<div class="codeblock"><pre>
+Point originOne;
+</pre></div>
+
+
+If you declare <code>originOne</code> like this, its value will be undetermined
+until an object is actually created and assigned to it.
+Simply declaring a reference variable does not create an object.
+For that, you need to use the <code>new</code> operator,
+as described in the next section. You must assign an object to <code>originOne</code> 
+before you use it in your code. Otherwise, you will get a compiler error.<p>
+
+A variable in this state, which currently references no object, 
+can be illustrated as follows (the variable name, <code>originOne</code>, 
+plus a reference pointing to nothing):
+
+<p><center><IMG SRC="../../figures/java/objects-null.gif" WIDTH="103" HEIGHT="24" ALIGN="BOTTOM" ALT="originOne is null."></center></p>
+
+ 
+
+<a name="instantiating"></a>
+<h2>Instantiating a Class</h2>
+
+
+ 
+
+The <tt>new</tt> operator instantiates a class by allocating memory for a new object and returning 
+a reference to that memory. The <tt>new</tt> operator also invokes the object constructor.
+<P>
+<div class="note"><hr><strong>Note:</strong>&nbsp;The phrase "instantiating a class" means the same thing as "creating an object." When you create an object, 
+you are creating an "instance" of a class, therefore "instantiating" a class.
+<hr></div>
+<P>
+The <tt>new</tt> operator requires a single, postfix argument: a call
+to a constructor. The name of the constructor provides the name of the
+class to instantiate.
+
+<p>
+
+The <tt>new</tt> operator returns a reference to the object it created. This reference is usually assigned to 
+a variable of the appropriate type, like:
+<div class="codeblock"><pre>
+<code>Point originOne = new Point(23, 94);</code>
+</pre></div> 
+The reference returned by the <tt>new</tt> operator does not have to be assigned to a variable.
+ It can also be used directly in an expression. For example:
+<div class="codeblock"><pre>
+int height = new Rectangle().height;
+</pre></div>
+
+This statement will be discussed in the next section.
+
+
+<a name="initializing"></a>
+<h2>Initializing an Object</h2>
+ 
+
+Here's the code for the <tt>Point</tt> class: 
+
+<div class="codeblock"><pre>
+public class Point {
+    public int x = 0;
+    public int y = 0;<B>
+    //constructor
+    public Point(int a, int b) {
+	x = a;
+	y = b;
+    }</B>
+}
+</pre></div>
+
+This class contains a single constructor. You can recognize a constructor
+because its declaration uses the same name as the class and it has no return type. The constructor in 
+the <tt>Point</tt> class takes two integer arguments, as declared by the code 
+<tt>(int a, int b)</tt>. The following statement provides 23 and 94 as values for those arguments: 
+
+<div class="codeblock"><pre>
+Point originOne = new Point(23, 94);
+</pre></div>
+
+The result of executing this statement can be illustrated in the next figure: 
+<p><center><IMG SRC="../../figures/java/objects-oneRef.gif" WIDTH="312" HEIGHT="167" ALIGN="BOTTOM" ALT="originOne now points to a Point object."></center></p>
+Here's the code for the <tt>Rectangle</tt> class,
+which contains four constructors: 
+
+<div class="codeblock"><pre>
+public class Rectangle {
+    public int width = 0;
+    public int height = 0;
+    public Point origin;
+
+    // four constructors
+    public Rectangle() {
+	origin = new Point(0, 0);
+    }
+    public Rectangle(Point p) {
+	origin = p;
+    }
+    public Rectangle(int w, int h) {
+	origin = new Point(0, 0);
+	width = w;
+	height = h;
+    }
+    public Rectangle(Point p, int w, int h) {
+	origin = p;
+	width = w;
+	height = h;
+    }
+
+    // a method for moving the rectangle
+    public void move(int x, int y) {
+	origin.x = x;
+	origin.y = y;
+    }
+
+    // a method for computing the area of the rectangle
+    public int getArea() {
+	return width * height;
+    }
+}
+
+</pre></div>
+
+Each constructor lets you provide initial values for the rectangle's
+size and width, using both primitive and reference types.  If a class
+has multiple constructors, they must have different signatures. 
+The Java compiler differentiates
+the constructors based on the number and the type of the arguments.
+When the Java compiler encounters the following code, it knows to call the
+constructor in the <tt>Rectangle</tt> class that requires a <tt>Point</tt> argument followed by two integer arguments:
+
+<div class="codeblock"><pre> 
+Rectangle rectOne = new Rectangle(originOne, 100, 200);
+</pre></div>
+
+This calls one of <code>Rectangle</code>'s constructors that
+initializes <code>origin</code> to <code>originOne</code>.
+Also, the constructor sets <code>width</code> to 100 and
+<code>height</code> to 200.
+Now there are two references to the same <tt>Point object</tt>&mdash;
+an object can have multiple references to it, as shown in the next figure:
+
+<p><center><IMG SRC="../../figures/java/objects-multipleRefs.gif" WIDTH="352" HEIGHT="283" ALIGN="BOTTOM" ALT="Now the rectangle's origin variable also points to the Point."></center></p>
+The following line of code calls the <code>Rectangle</code> constructor that requires two
+integer arguments, which provide the initial values for <tt>width</tt>
+and <tt>height</tt>. If you inspect the code within the constructor,
+you will see that it creates a new <tt>Point</tt> object whose <tt>x</tt>
+and <tt>y</tt> values are initialized to 0: 
+
+<div class="codeblock"><pre>
+Rectangle rectTwo = new Rectangle(50, 100);
+</pre></div>
+
+The <tt>Rectangle</tt> constructor used in the following statement
+doesn't take any arguments, so it's called a <em>no-argument constructor</em>:
+
+<div class="codeblock"><pre>
+Rectangle rect = new Rectangle();
+</pre></div> 
+
+All classes have at least one constructor. If a class does not explicitly declare any,
+the Java compiler automatically provides a no-argument constructor,
+called the <em>default constructor</em>. This default constructor calls the class parent's
+no-argument constructor, or the <code>Object</code> constructor if the class has no other parent.
+ If the parent has no constructor (<code>Object</code> does have one), the compiler will reject the program.
+ 
+
+
+ 
+        </div>
+        <div class=NavBit>
+            <a target=_top href=objects.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=usingobject.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Objects
+        <br><b>Next page:</b> Using Objects
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

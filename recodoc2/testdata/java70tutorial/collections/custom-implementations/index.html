@@ -1,0 +1,575 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Lesson: Custom Collection Implementations (The Java&trade; Tutorials &gt; Collections)</title>
+     <meta name="description" content="This collections Java tutorial describes interfaces, implementations, and algorithms in the Java Collections framework" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java collections, set, list, queue, map, array, arraylist" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+    </head>
+<body>
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                    <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                        <br>
+                    </div> 
+                </div> </div> </div> </div> </div>
+
+    <div class=MainFlow_wide>
+        <div class=PrintHeaders>
+            <b>Trail:</b> Collections
+        </div>
+        <div id=BreadCrumbs>
+            <a href=../../index.html target=_top>Home Page</a>
+        &gt;
+            <a href=../index.html target=_top>Collections</a>
+        </div>
+        <div class=NavBit>
+                <a target=_top href=../algorithms/index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../interoperability/index.html>Next&nbsp;&raquo;</a>
+        </div>
+        <div id=PageTitle><h1>Lesson: Custom Collection Implementations</h1></div>
+        <div id=PageContent>
+Many programmers will never need to implement their own <code>Collection</code>s classes.
+You can go pretty far using the implementations described in the preceding
+sections of this chapter. However, someday you might want to write your
+own implementation. It is fairly easy to do this with the aid of the abstract
+implementations provided by the Java platform. Before we discuss
+<em>how</em> to write an implementation, let's discuss why you might want to write one.
+
+
+
+<h2>Reasons to Write an Implementation</h2>
+
+
+
+
+The following list illustrates the sort of custom <code>Collection</code>s you
+might want to implement. It is not intended to be exhaustive:
+
+<ul>
+
+<li><b>Persistent</b>:
+All of the built-in <code>Collection</code> implementations reside in
+main memory and vanish when the program exits. If you want a
+collection that will still be present the next time the program
+starts, you can implement it by building a veneer over an external
+database. Such a collection might be concurrently accessible by
+multiple programs.
+
+<li><b>Application-specific</b>:
+This is a very broad category. One example is an unmodifiable <code>Map</code>
+containing real-time telemetry data. The keys could represent locations,
+and the values could be read from sensors at these locations in response
+to the <code>get</code> operation.
+
+<li><b>High-performance, special-purpose</b>:
+Many data structures take advantage of restricted usage to offer better
+performance than is possible with general-purpose implementations.
+For instance, consider a <code>List</code> containing long runs of identical
+element values. Such lists, which occur frequently in text processing,
+can be <em>run-length encoded</em> &mdash; runs can be represented as a single
+object containing the repeated element and the number of consecutive
+repetitions. This example is interesting because it trades off two
+aspects of performance: It requires less space but more time than an
+<code>ArrayList</code>.
+
+
+<li><b>High-performance, general-purpose</b>:
+The Java Collections Framework's designers tried to provide the best
+general-purpose implementations for each interface, but many,
+many data structures could have been used, and new ones are
+invented every day. Maybe you can come up with something faster!
+
+
+<li><b>Enhanced functionality</b>:
+Suppose you need an efficient bag implementation (also known as a
+<em>multiset</em>): a <code>Collection</code> that offers constant-time
+containment checks while allowing duplicate elements. It's reasonably
+straightforward to implement such a collection atop a <code>HashMap</code>.
+
+
+<li><b>Convenience</b>:
+You may want additional implementations  that offer conveniences beyond those
+offered by the Java platform. For instance, you may frequently
+need <code>List</code> instances representing a contiguous range of
+<code>Integer</code>s.
+
+
+<li><b>Adapter</b>:
+Suppose you are using a legacy API that has its own ad hoc
+collections' API. You can write an adapter implementation that
+permits these collections to operate in the Java Collections Framework.
+An <em>adapter implementation</em> is a thin veneer that wraps
+objects of one type and makes them behave like objects of another type
+by translating operations on the latter type into operations on the former.
+
+</ul>
+
+
+
+<h2>How to Write a Custom Implementation</h2>
+
+
+
+Writing a custom implementation is surprisingly easy. The Java Collections
+Framework provides abstract implementations designed expressly to
+facilitate custom implementations. We'll start with the following example of
+an implementation of
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Arrays.html#asList(T...)"><code>Arrays.asList</code></a>.
+
+<div class="codeblock"><pre>
+public static &lt;T&gt; List&lt;T&gt; asList(T[] a) {
+    return new MyArrayList&lt;T&gt;(a);
+}
+
+private static class MyArrayList&lt;T&gt; extends AbstractList&lt;T&gt; {
+
+    private final T[] a;
+
+    MyArrayList(T[] array) {
+        a = array;
+    }
+
+    public T get(int index) {
+        return a[index];
+    }
+
+    public T set(int index, T element) {
+        T oldValue = a[index];
+        a[index] = element;
+        return oldValue;
+    }
+
+    public int size() {
+        return a.length;
+    }
+}
+</pre></div>
+
+Believe it or not, this is very close to the implementation that is contained in
+<code>java.util.Arrays</code>. It's that simple! You provide a constructor
+and the <code>get</code>, <code>set</code>, and <code>size</code> methods,
+and <code>AbstractList</code> does all the rest.
+You get the <code>ListIterator</code>, bulk operations, search operations,
+hash code computation, comparison, and string representation for free.
+
+<p>
+
+Suppose you want to make the implementation a bit faster.
+The API documentation for abstract implementations describes
+precisely how each method is implemented, so you'll know which methods
+to override to get the performance you want. The preceding implementation's performance is fine, but it can be improved a bit.
+In particular, the <code>toArray</code> method iterates over the
+<code>List</code>, copying one element at a time. Given the internal
+representation, it's a lot faster and more sensible just to clone the array.
+
+<div class="codeblock"><pre>
+public Object[] toArray() {
+    return (Object[]) a.clone();
+}
+</pre></div>
+
+With the addition of this override and a few more like it,
+this implementation is exactly the one found in <code>java.util.Arrays</code>.
+In the interest of full disclosure, it's a bit tougher to use the other
+abstract implementations because you will have to write your own
+iterator, but it's still not that difficult.
+
+<p>
+
+The following list summarizes the abstract implementations:
+
+<ul>
+
+<li>
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/AbstractCollection.html"><code>AbstractCollection</code></a> &mdash; a <code>Collection</code> that is neither a <code>Set</code> nor a <code>List</code>.  At a minimum, you must provide the
+<code>iterator</code> and the <code>size</code> methods.
+
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/AbstractSet.html"><code>AbstractSet</code></a> &mdash; a <code>Set</code>; use is identical to <code>AbstractCollection</code>.
+
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/AbstractList.html"><code>AbstractList</code></a> &mdash; a <code>List</code> backed up by a random-access data store, such as an array. At a minimum, you must provide the <code>positional access</code> methods (<code>get</code> and, optionally, <code>set</code>,
+<code>remove</code>, and <code>add</code>) and the <code>size</code>
+method.  The abstract class takes care of <code>listIterator</code> (and <code>iterator</code>).
+
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/AbstractSequentialList.html"><code>AbstractSequentialList</code></a> &mdash; a <code>List</code> backed up by a sequential-access data store, such as a linked list.  At a minimum, you must provide the <code>listIterator</code> and <code>size</code> methods.  The abstract class takes care of the positional access methods.  (This is the opposite of <code>AbstractList</code>.)
+
+
+<li>
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/AbstractQueue.html"><code>AbstractQueue</code></a> &mdash;
+
+at a minimum, you must provide the <code>offer</code>, <code>peek</code>, <code>poll</code>, and <code>size</code> methods and an <code>iterator</code> supporting <code>remove</code>.
+
+
+<li>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/AbstractMap.html"><code>AbstractMap</code></a> &mdash; a <code>Map</code>.  At a minimum you must provide the <code>entrySet</code> view.  This is typically implemented with the <code>AbstractSet</code> class. If the <code>Map</code> is modifiable, you must also provide the <code>put</code> method.
+
+</ul>
+
+The process of writing a custom implementation follows:
+<ol>
+<li>
+Choose the appropriate abstract implementation class from the preceding list.
+
+<p>
+
+<li>
+Provide implementations for all the class's abstract methods.
+If your custom collection is to be modifiable, you'll have to
+override one or more of the concrete methods as well. The API documentation
+for the abstract implementation class will tell you which methods to override.
+
+<p>
+
+<li>
+Test and, if necessary, debug the implementation. You now have a working custom collection implementation.
+
+<p>
+
+<li>
+If you're concerned about performance, read the abstract implementation
+class's API documentation for all the methods whose implementations
+you're inheriting. If any seem too slow, override them.
+If you override any methods, be sure to measure the performance of the
+method before and after the override. How much effort you put into
+tweaking performance should be a function of how much use the
+implementation will get and how critical to performance its use is.
+(Often this step is best omitted.)
+
+</ol>
+
+        </div>
+    <div class=NavBit>
+        <a href=../algorithms/index.html>&laquo; Previous</a>
+        &bull;
+        <a href=../TOC.html>Trail</a>
+        &bull;
+        <a href=../interoperability/index.html>Next &raquo;</a>
+    </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Previous Lesson
+        <br><b>Next page:</b> Interoperability
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

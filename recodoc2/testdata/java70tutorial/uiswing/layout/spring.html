@@ -1,0 +1,1502 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>How to Use SpringLayout (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Laying Out Components Within a Container)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Laying Out Components Within a Container
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Laying Out Components Within a Container</a></div>
+<div class="linkAHEAD"><a href="visual.html">A Visual Guide to Layout Managers</a></div>
+<div class="linkAHEAD"><a href="using.html">Using Layout Managers</a></div>
+<div class="linkAHEAD"><a href="howLayoutWorks.html">How Layout Management Works</a></div>
+<div class="linkAHEAD"><a href="layoutlist.html">How to Use Various Layout Managers</a></div>
+<div class="linkAHEAD"><a href="border.html">How to Use BorderLayout</a></div>
+<div class="linkAHEAD"><a href="box.html">How to Use BoxLayout</a></div>
+<div class="linkAHEAD"><a href="card.html">How to Use CardLayout</a></div>
+<div class="linkAHEAD"><a href="flow.html">How to Use FlowLayout</a></div>
+<div class="linkAHEAD"><a href="gridbag.html">How to Use GridBagLayout</a></div>
+<div class="linkAHEAD"><a href="grid.html">How to Use GridLayout</a></div>
+<div class="linkAHEAD"><a href="group.html">How to Use GroupLayout</a></div>
+<div class="linkBHEAD"><a href="groupExample.html">A GroupLayout Example</a></div>
+<div class="nolinkAHEAD">How to Use SpringLayout</div>
+<div class="linkAHEAD"><a href="custom.html">Creating a Custom Layout Manager</a></div>
+<div class="linkAHEAD"><a href="none.html">Doing Without a Layout Manager (Absolute Positioning)</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Layout Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Laying Out Components Within a Container</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=groupExample.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=custom.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>How to Use SpringLayout</h1></div>
+            <div id=PageContent>
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;This lesson covers writing layout code by hand, which can be challenging. If you are not interested in learning all the details of layout management, you might prefer to use the <code>GroupLayout</code> layout manager combined with a builder tool to lay out your GUI. One such builder tool is the  
+
+<a class="TutorialLink" target="_top" href="../learn/index.html">NetBeans IDE</a>. Otherwise, if you want to code by hand and do not want to use <code>GroupLayout</code>, then <code>GridBagLayout</code> is recommended as the next most flexible and powerful layout manager.
+ 
+
+<hr></div> 
+
+The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.html"><code>SpringLayout</code></a> class was added in JDK version 1.4
+to support layout in GUI builders.
+<code>SpringLayout</code> is a very flexible layout
+manager that can emulate many of the features
+of other layout managers. <code>SpringLayout</code> is, however, very low-level and as such you really should only use it with a GUI builder, rather than attempting to code a spring layout manager by hand. 
+
+
+<p>
+This section begins with a simple example showing all the
+things you need to remember to create your first spring layout &mdash;
+and what happens when you forget them!
+Later it presents utility methods
+that let you lay out components
+in a couple of different types of grids.
+</p>
+
+<p>
+Here are pictures of some of the layouts we will cover:
+</p>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringBox.png" WIDTH="477" HEIGHT="72" ALIGN="BOTTOM" ALT="The SpringBox application uses a SpringLayout to produce something similar to what a BoxLayout would produce."></center></p>
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringForm.png" WIDTH="192" HEIGHT="144" ALIGN="BOTTOM" ALT="The SpringForm application has 5 rows of label-textfield pairs."></center></p>
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringCompactGrid.png" WIDTH="403" HEIGHT="267" ALIGN="BOTTOM" ALT="The SpringCompactGrid application presents components in a grid without forcing all components to be the same size.."></center></p>
+
+
+<h2>
+<a name="howitworks">How Spring Layouts Work</a>
+</h2>
+
+
+<p>
+Spring layouts do their job by defining directional relationships, or  <i>constraints</i>, between the
+edges of components.  For example,
+you might define that the left edge of one component
+is a fixed distance (5 pixels, say) from the right edge
+of another component.
+</p>
+
+<p>In a <code>SpringLayout</code>, the position of each edge is dependent on the position of
+just one other edge. If a constraint is subsequently added to create a new
+binding for an edge, the previous binding is discarded and the edge remains
+dependent on a single edge.
+
+<p>Unlike many layout managers, <code>SpringLayout</code> does not automatically set the
+location of the components it manages. If you hand-code a GUI that uses
+<code>SpringLayout</code>, remember to initialize component locations by constraining the west/east and north/south locations.
+Depending on the constraints you use, you may also need to set the size of the
+container explicitly.
+
+<p>
+Components define <em>edge</em> properties, which are connected by <code>Spring</code> instances. Each spring has four properties &mdash;
+its <em>minimum</em>,
+<em>preferred</em>, and
+<em>maximum</em> values,
+and its actual (current) <em>value</em>.
+The springs associated with each component
+are collected into a <code>SpringLayout.Constraints</code> object.
+</p>
+<p>An instance of the <code>Spring</code> class holds three properties that characterize its
+behavior: the minimum, preferred, and maximum values. Each of these properties
+may be involved in defining its fourth, value, property based on a series of rules.
+
+<p>An instance of the <code>Spring</code> class can be visualized as a mechanical spring that provides a corrective force as the spring is compressed or stretched away from
+its preferred value. This force is modelled as linear function of the distance
+from the preferred value, but with two different constants -- one for the
+compressional force and one for the tensional one. Those constants are specified
+by the minimum and maximum values of the spring such that a spring at its
+minimum value produces an equal and opposite force to that which is created when
+it is at its maximum value. The difference between the preferred and minimum
+values, therefore, represents the ease with which the spring can be compressed.
+ The difference between its maximum and preferred values indicates the ease
+with which the <code>Spring</code> can be extended.
+
+<p>Based on this, a <code>SpringLayout</code> can be visualized as a set of objects that are connected by a set of springs on their edges.
+
+
+<h2>
+<a name="SpringDemo">Example: SpringDemo</a>
+</h2>
+
+
+<p>
+This section takes you through the typical steps of
+specifying the constraints for a container that uses
+<code>SpringLayout</code>.
+The first example,
+<a class="SourceLink" target="_blank" href="../examples/layout/SpringDemo1Project/src/layout/SpringDemo1.java"><code>SpringDemo1.java</code></a>,
+is an extremely simple application that features
+a label and a text field
+in a content pane controlled by a spring layout.
+Here is the relevant code:
+</p>
+
+<div class="codeblock"><pre>
+public class SpringDemo1 {
+    public static void main(String[] args) {
+        ...
+        Container contentPane = frame.getContentPane();
+        SpringLayout layout = new SpringLayout();
+        contentPane.setLayout(layout);
+        contentPane.add(new JLabel("Label: "));
+        contentPane.add(new JTextField("Text field", 15));
+        ...
+        frame.pack();
+        frame.setVisible(true);
+    }
+}
+</pre></div>
+
+<p>Click the Launch button to run SpringDemo1 using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/layout/index.html#SpringDemo1">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/layout/ex6/SpringDemo1.jnlp"><img src="../../images/jws-launch-button.png"
+width="88" height="23" align="bottom" alt="Launches the SpringDemo1 example"></a>
+</center>
+
+<p>
+Here is what the GUI looks like when it first comes up:
+</p>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringDemo1.png" WIDTH="123" HEIGHT="34" ALIGN="BOTTOM" ALT="SpringDemo1 -- the parent has no initial size!"></center></p>
+<p>
+Here is what it looks like when it is resized to be bigger:
+</p>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringDemo1-resized.png" WIDTH="192" HEIGHT="58" ALIGN="BOTTOM" ALT="SpringDemo1 -- all the components are at (0, 0)!"></center></p>
+<p>
+Obviously, we have some problems.
+Not only does the frame come up way too small,
+but even when it is resized the components are all 
+located at (0,0).
+This happens because we have set no springs
+specifying the components' positions
+and the width of the container.
+One small consolation is that at least the components
+are at their preferred sizes &mdash;
+we get that for free from the default springs
+created by <code>SpringLayout</code>
+for each component.
+</p>
+
+<p>
+Our next example,
+<a class="SourceLink" target="_blank" href="../examples/layout/SpringDemo2Project/src/layout/SpringDemo2.java"><code>SpringDemo2.java</code></a>,
+improves the situation a bit by specifying
+locations for each component.Click the Launch button to run SpringDemo2 using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/layout/index.html#SpringDemo2">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/layout/ex6/SpringDemo2.jnlp"><img src="../../images/jws-launch-button.png"
+width="88" height="23" align="bottom" alt="Launches the SpringDemo2 example"></a>
+</center>
+
+<p>
+In this example, we will specify that the components
+should appear in a single row,
+with 5 pixels between them.
+The following code specifies the location
+of the label:
+</p>
+
+<div class="codeblock"><pre>
+//Adjust constraints for the label so it's at (5,5).
+layout.putConstraint(SpringLayout.WEST, label,
+                     5,
+                     SpringLayout.WEST, contentPane);
+layout.putConstraint(SpringLayout.NORTH, label,
+                     5,
+                     SpringLayout.NORTH, contentPane);
+</pre></div>
+
+The first <code>putConstraint</code> call
+specifies that the label's left (west) edge
+should be 5 pixels from its container's left edge.
+This translates to an <em>x</em> coordinate of 5.
+The second <code>putConstraint</code> call
+sets up a similar relationship between the top
+(north) edges
+of the label and its container,
+resulting in a <em>y</em> coordinate of 5.
+
+<p>
+
+Here is the code that sets up the location
+of the text field:
+
+<div class="codeblock"><pre>
+//Adjust constraints for the text field so it's at
+//(<em>&lt;label's right edge&gt;</em> + 5, 5).
+layout.putConstraint(SpringLayout.WEST, textField,
+                     5,
+                     SpringLayout.EAST, label);
+layout.putConstraint(SpringLayout.NORTH, textField,
+                     5,
+                     SpringLayout.NORTH, contentPane);
+</pre></div>
+
+<p>
+The first <code>putConstraint</code> call
+makes the text field's left (west) edge
+be 5 pixels away from the label's right (east) edge.
+The second <code>putConstraint</code> call
+is just like the second call in the first snippet,
+and has the same effect of setting the
+component's <em>y</em> coordinate to 5.
+
+<p>
+The previous example still has the problem of
+the container coming up too small.
+But when we resize the window, the components are
+in the right place:
+</p>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringDemo2-resized.png" WIDTH="235" HEIGHT="67" ALIGN="BOTTOM" ALT="SpringDemo2 -- at least now all the components are in the right position!"></center></p>
+<p>
+To make the container initially appear at the right size,
+we need to set the springs that define the right
+(east) and bottom (south) edges
+of the container itself. No constraints for the right and bottom container edges are set by default. The size of the container is defined by setting these constraints. 
+<a class="SourceLink" target="_blank" href="../examples/layout/SpringDemo3Project/src/layout/SpringDemo3.java"><code>SpringDemo3.java</code></a>
+shows how to do this. Click the Launch button to run SpringDemo3 using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/layout/index.html#SpringDemo3">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/layout/ex6/SpringDemo3.jnlp"><img src="../../images/jws-launch-button.png"
+width="88" height="23" align="bottom" alt="Launches the SpringDemo3 example"></a>
+</center>
+
+<p>
+Here is the code that sets the container's springs:
+</p>
+
+<div class="codeblock"><pre>
+layout.putConstraint(SpringLayout.EAST, contentPane,
+                     5,
+                     SpringLayout.EAST, textField);
+layout.putConstraint(SpringLayout.SOUTH, contentPane,
+                     5,
+                     SpringLayout.SOUTH, textField);
+</pre></div>
+
+<p>
+The first <code>putConstraint</code> call
+makes the container's right edge be 5 pixels
+to the right of the text field's right edge.
+The second one makes its bottom edge be 5 pixels beyond
+the bottom edge of the tallest component
+(which, for simplicity's sake,
+we've assumed is the text field).
+
+<p>
+Finally, the window comes up at the right size:
+</p>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringDemo3.png" WIDTH="229" HEIGHT="64" ALIGN="BOTTOM" ALT="SpringDemo3 -- the parent now HAS a correct initial size!"></center></p>
+<p>
+When we make the window larger we can see the spring layout in action,
+distributing the extra space between the available components.
+</p>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringDemo3-resized.png" WIDTH="314" HEIGHT="117" ALIGN="BOTTOM" ALT="SpringDemo3 enlarged"></center></p>
+<p>
+In this case the spring layout has chosen to give all the extra space
+to the text field.
+Although it seems like the spring layout
+treats labels and text fields differently,
+spring layout has no
+special knowledge of any Swing or AWT components.
+It relies on the values of a component's
+minimum, preferred, and maximum size properties.
+The next section discusses how spring layout uses these properties,
+and why they can cause uneven space distribution.
+</p>
+
+
+
+<h2>
+Springs and Component Size
+</h2>
+
+
+<p>
+A <code>SpringLayout</code> object automatically
+installs <code>Spring</code>s for
+the height and width of each component
+that the <code>SpringLayout</code> controls.
+These springs are essentially covers for
+the component's
+<code>getMinimumSize</code>,
+<code>getPreferredSize</code>,
+and <code>getMaximumSize</code> methods.
+By "covers" we mean that
+not only are the springs <em>initialized</em>
+with the appropriate values from these methods,
+but also that the springs <em>track</em>  those values.
+For example, the <code>Spring</code> object
+that represents the width of a component
+is a special kind of spring
+that simply delegates its implementation
+to the relevant size methods of the component.
+That way the spring stays in sync with the size methods
+as the characteristics of the component change.
+</p>
+
+<p>
+When a component's <code>getMaximumSize</code> and
+<code>getPreferredSize</code> methods
+return the same value,
+<code>SpringLayout</code> interprets this as meaning that
+the component should not be stretched.
+<code>JLabel</code> and <code>JButton</code>
+are examples of components implemented this way.
+For this reason,
+the label in the SpringDemo3 example
+does not stretch.
+</p>
+
+<p>
+The <code>getMaximumSize</code> method
+of some components, such as <code>JTextField</code>,
+returns the value <code>Integer.MAX_VALUE</code>
+for the width and height of its maximum size,
+indicating that the component can grow to any size.
+For this reason,
+when the SpringDemo3 window is enlarged,
+<code>SpringLayout</code> distributes all the extra space
+to the only springs that can grow &mdash;
+those determining the size of the text field.
+</p>
+
+
+
+<h2>
+<a name="alternatives">More About the SpringLayout API</a>
+</h2>
+
+
+The SpringDemo examples used the <code>SpringLayout</code>
+method <code>putConstraint</code>
+to set the springs associated with each component.
+The <code>putConstraint</code> method is
+a convenience method
+that lets you modify a component's constraints
+without needing to use the full spring layout API.
+Here, again, is the code from <code>SpringDemo3</code>
+that sets the location of the label:
+
+<div class="codeblock"><pre>
+layout.putConstraint(SpringLayout.WEST, label,
+                     5,
+                     SpringLayout.WEST, contentPane);
+layout.putConstraint(SpringLayout.NORTH, label,
+                     5,
+                     SpringLayout.NORTH, contentPane);
+</pre></div>
+
+Here is equivalent code that uses the
+<code>SpringLayout.Constraints</code>
+and <code>Spring</code> classes directly:
+
+<div class="codeblock"><pre>
+SpringLayout.Constraints  contentPaneCons = 
+	layout.getConstraints(contentPane);
+contentPaneCons.setX(Spring.sum(Spring.constant(5),
+                          contentPaneCons
+                          .getConstraint(SpringLayout.WEST)));
+contentPaneCons.setY(Spring.sum(Spring.constant(5),
+                          contentPaneCons
+                          .getConstraint(SpringLayout.NORTH)));
+</pre></div>
+
+To see the entire demo
+converted to use this API, look at
+<a class="SourceLink" target="_blank" href="../examples/layout/SpringDemo4Project/src/layout/SpringDemo4.java"><code>SpringDemo4.java</code></a>.
+That file also includes a more polished
+(and much longer)
+version of the code that sets the container's size. Click the Launch button to run SpringDemo4 using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/layout/index.html#SpringDemo3">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/layout/ex6/SpringDemo4.jnlp"><img src="../../images/jws-launch-button.png"
+width="88" height="23" align="bottom" alt="Launches the SpringDemo4 example"></a>
+</center>
+
+<p>
+As the preceding snippets imply,
+<code>SpringLayout</code>
+and
+<code>SpringLayout.Constraints</code>
+tend to use different conventions
+for describing springs.
+The <code>SpringLayout</code> API uses edges to define its constraints. Springs connect edges to establish linear relations between them. Edges are defined by  components, using the following constants:
+
+<ul>
+<li> <code>SpringLayout.NORTH</code> specifies the top edge of a component's bounding rectangle.
+<li> <code>SpringLayout.SOUTH</code> specifies the bottom edge of a component's bounding rectangle.
+<li> <code>SpringLayout.EAST</code> specifies the right edge of a component's bounding rectangle.
+<li> <code>SpringLayout.WEST</code> specifies the left edge of a component's bounding rectangle.
+<li> <code>SpringLayout.BASELINE</code> specifies the baseline of a component.
+<li> <code>SpringLayout.HORIZONTAL_CENTER</code> specifies the horizontal center of a component's bounding rectangle.
+<li> <code>SpringLayout.VERTICAL_CENTER</code> specifies the vertical center of a component's bounding rectangle.
+</ul>
+
+
+Edges differ from <code>Spring</code> objects 
+
+The <code>SpringLayout.Constraints</code> class
+knows about edges,
+but only has <code>Spring</code> objects
+for the following properties:
+
+<ul>
+<li> <em>x</em>
+<li> <em>y</em>
+<li> <em>width</em>
+<li> <em>height</em>
+</ul>
+
+Each <code>Constraints</code> object maintains
+the following relationships between its springs
+and the edges they represent:
+
+<div class="codeblock"><pre>
+ west = x
+north = y
+ east = x + width
+south = y + height
+</pre></div>
+
+<p>
+If you are confused, do not worry.
+The next section presents utility methods
+you can use to accomplish some common layout tasks
+without knowing anything about the spring layout API.
+
+
+
+
+<h2>
+<a name="grid">Utility Methods for Grids</a>
+</h2>
+
+
+<p>
+Because the <code>SpringLayout</code> class
+was created for GUI builders,
+setting up individual springs for a layout
+can be cumbersome to code by hand.
+This section presents a couple of methods
+you can use to install all the springs needed
+to lay out a group of components in a grid.
+These methods emulate some of the features of the
+<code>GridLayout</code>,
+<code>GridBagLayout</code>, and
+<code>BoxLayout</code> classes.
+</p>
+
+<p>
+The two methods, called
+<code>makeGrid</code> and
+<code>makeCompactGrid</code>,
+are defined in
+<a class="SourceLink" target="_blank" href="../examples/layout/SpringGridProject/src/layout/SpringUtilities.java"><code>SpringUtilities.java</code></a>.
+Both methods work
+by grouping the components together into rows and columns
+and using the <code>Spring.max</code> method
+to make a width or height spring
+that makes a row or column
+big enough for all the components in it.
+In the
+<code>makeCompactGrid</code>
+method the same width or height spring
+is used for all components in a particular
+column or row, respectively.
+In the
+<code>makeGrid</code> method, by contrast,
+the width and height springs are shared
+by every component in the container,
+forcing them all to be the same size. Furthermore, factory methods are provided by  
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Spring.html"><code>Spring</code></a>
+ for creating different kinds of springs, including springs that depend on other springs.
+</p>
+
+<p>
+Let us see these methods in action.
+Our first example,
+implemented in the source file
+<a class="SourceLink" target="_blank" href="../examples/layout/SpringGridProject/src/layout/SpringGrid.java"><code>SpringGrid.java</code></a>, displays a bunch of numbers in text fields.
+The center text field is much wider than the others.
+Just as with <code>GridLayout</code>,
+having one large cell
+forces all the cells to be equally large. Click the Launch button to run SpringGrid using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/layout/index.html#SpringGrid">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/layout/ex6/SpringGrid.jnlp"><img src="../../images/jws-launch-button.png"
+width="88" height="23" align="bottom" alt="Launches the SpringGrid example"></a>
+</center>
+
+
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringGrid.png" WIDTH="400" HEIGHT="114" ALIGN="BOTTOM" ALT="SpringGrid"></center></p>
+<p>
+Here is the code that creates and lays out the text fields
+in SpringGrid:
+</p>
+
+<div class="codeblock"><pre>
+JPanel panel = new JPanel(new SpringLayout());
+for (int i = 0; i &lt; 9; i++) {
+    JTextField textField = new JTextField(Integer.toString(i));
+    ...<em>//when i==4, put long text in the text field</em>...
+    panel.add(textField);
+}
+...
+SpringUtilities.makeGrid(panel,
+                         3, 3, //rows, cols
+                         5, 5, //initialX, initialY
+                         5, 5);//xPad, yPad
+</pre></div>
+
+
+<p>
+Now let us look at an example,
+in the source file
+<a class="SourceLink" target="_blank" href="../examples/layout/SpringGridProject/src/layout/SpringCompactGrid.java"><code>SpringCompactGrid.java</code></a>, that uses the <code>makeCompactGrid</code> method instead
+of <code>makeGrid</code>.
+This example displays lots of numbers
+to show off spring layout's ability
+to minimize the space required. 
+Click the Launch button to run SpringCompactGrid using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/layout/index.html#SpringCompactGrid">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/layout/ex6/SpringCompactGrid.jnlp"><img src="../../images/jws-launch-button.png"
+width="88" height="23" align="bottom" alt="Launches the SpringCompactGrid example"></a>
+</center>
+<p>
+Here is what the SpringCompactGrid GUI looks like:
+</p>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringCompactGrid.png" WIDTH="403" HEIGHT="267" ALIGN="BOTTOM" ALT="SpringCompactGrid"></center></p>
+<p>
+Here is the code that creates and lays out the text fields
+in SpringCompactGrid:
+</p>
+
+<div class="codeblock"><pre>
+JPanel panel = new JPanel(new SpringLayout());
+
+int rows = 10;
+int cols = 10;
+for (int r = 0; r &lt; rows; r++) {
+    for (int c = 0; c &lt; cols; c++) {
+        int anInt = (int) Math.pow(r, c);
+        JTextField textField =
+                new JTextField(Integer.toString(anInt));
+        panel.add(textField);
+    }
+}
+
+//Lay out the panel.
+SpringUtilities.makeCompactGrid(panel, //parent
+                                rows, cols,
+                                3, 3,  //initX, initY
+                                3, 3); //xPad, yPad
+</pre></div>
+
+<p>
+One of the handiest uses for
+the <code>makeCompactGrid</code> method
+is associating labels with components,
+where the labels are in one column
+and the components in another.
+The file
+<a class="SourceLink" target="_blank" href="../examples/layout/SpringFormProject/src/layout/SpringForm.java"><code>SpringForm.java</code></a> uses <code>makeCompactGrid</code> in this way,
+as the following figure demonstrates.
+
+</p>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringForm.png" WIDTH="192" HEIGHT="144" ALIGN="BOTTOM" ALT="SpringForm"></center></p>
+<p>Click the Launch button to run SpringForm using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/layout/index.html#SpringForm">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/layout/ex6/SpringForm.jnlp"><img src="../../images/jws-launch-button.png"
+width="88" height="23" align="bottom" alt="Launches the SpringForm example"></a>
+</center>
+<p>
+Here is the code that creates and lays out the
+label-text field pairs in SpringForm:
+</p>
+
+<div class="codeblock"><pre>
+String[] labels = {"Name: ", "Fax: ", "Email: ", "Address: "};
+int numPairs = labels.length;
+
+//Create and populate the panel.
+JPanel p = new JPanel(new SpringLayout());
+for (int i = 0; i &lt; numPairs; i++) {
+    JLabel l = new JLabel(labels[i], JLabel.TRAILING);
+    p.add(l);
+    JTextField textField = new JTextField(10);
+    l.setLabelFor(textField);
+    p.add(textField);
+}
+
+//Lay out the panel.
+SpringUtilities.makeCompactGrid(p,
+                                numPairs, 2, //rows, cols
+                                6, 6,        //initX, initY
+                                6, 6);       //xPad, yPad
+</pre></div>
+
+<p>
+Because we are using a real layout manager
+instead of absolute positioning,
+the layout manager responds dynamically
+to changes in components involved.
+For example, if the names of the labels are localized,
+the spring layout produces a configuration
+that gives the first column more or less room,
+as needed.
+And as the following figure shows,
+when the window is resized,
+the flexibly sized components &mdash;
+the text fields &mdash;
+take all the excess space,
+while the labels stick to what they need.
+</p>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringForm-resized.png" WIDTH="292" HEIGHT="184" ALIGN="BOTTOM" ALT="SpringForm enlarged"></center></p>
+<p>
+Our last example of the <code>makeCompactGrid</code> method,
+in
+<a class="SourceLink" target="_blank" href="../examples/layout/SpringBoxProject/src/layout/SpringBox.java"><code>SpringBox.java</code></a>, shows some buttons configured to be laid out in a single row. 
+
+Click the Launch button to run SpringBox using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/layout/index.html#SpringBox">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/layout/ex6/SpringBox.jnlp"><img src="../../images/jws-launch-button.png"
+width="88" height="23" align="bottom" alt="Launches the SpringBox example"></a>
+</center>
+<p>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringBox.png" WIDTH="477" HEIGHT="72" ALIGN="BOTTOM" ALT="SpringBox"></center></p>
+<p>
+Note that the behavior
+is almost identical to that of <code>BoxLayout</code>
+in the case of a single row.
+Not only are the components laid out
+as <code>BoxLayout</code> would arrange them
+but the minimum, preferred, and maximum sizes
+of the container that uses the <code>SpringLayout</code>
+return the same results that <code>BoxLayout</code> would.
+Here is the call to <code>makeCompactGrid</code>
+that produces this layout:
+</p>
+
+<div class="codeblock"><pre>
+//Lay out the buttons in one row and as many columns
+//as necessary, with 6 pixels of padding all around.
+SpringUtilities.makeCompactGrid(contentPane, 1,
+                                contentPane.getComponentCount(),
+                                6, 6, 6, 6);
+</pre></div>
+
+<p>
+Let us look at what happens
+when we resize this window.
+This is an odd special case
+that is worth taking note of
+as you may run into it by accident
+in your first layouts.
+</p>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringBox-resized.png" WIDTH="517" HEIGHT="116" ALIGN="BOTTOM" ALT="SpringBox resized"></center></p>
+<p>
+Nothing moved!
+That is because none of the components (buttons)
+or the spacing between them was defined to be stretchable.
+In this case the spring layout calculates
+a maximum size for the parent container
+that is equal to its preferred size,
+meaning the parent container itself is not stretchable.
+It would perhaps be less confusing if the AWT
+refused to resize a window that was not stretchable,
+but it does not.
+The layout manager cannot do anything sensible here
+as none of the components will take up the required space.
+Instead of crashing, it just does nothing,
+leaving all the components as they were.
+</p>
+
+
+
+<h2>
+<a name="api">The SpringLayout API</a>
+</h2>
+
+
+The API for using <code>SpringLayout</code>
+is spread across three classes:
+
+<ul>
+<li> <a href="#SpringLayout"><code>SpringLayout</code></a>
+<li> <a href="#SpringLayout.Constraints"><code>SpringLayout.Constraints</code></a>
+<li> <a href="#Spring"><code>Spring</code></a>
+</ul>
+
+<p>
+<table border=1 summary="SpringLayout class">
+<caption><a name="SpringLayout">SpringLayout</a></caption>
+<tr>
+<th id="h1">Constructor or Method
+</th>
+<th id="h2">Purpose
+
+</th>
+</tr>
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.html#SpringLayout()">SpringLayout()</a></td>
+<td headers="h2">Create a <code>SpringLayout</code> instance.
+</td>
+</tr>
+
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.html#getConstraints(java.awt.Component)">SpringLayout.Constraints getConstraints(Component)</a></td>
+<td headers="h2">
+Get the constraints (set of springs)
+associated with the specified component.
+</td>
+</tr>
+
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.html#getConstraint(java.lang.String, java.awt.Component)">Spring getConstraint(String, Component)</a></td>
+<td headers="h2">
+Get the spring for an edge of a component.
+The first argument specifies the edge
+and must be one of the following
+<code>SpringLayout</code> constants:
+<code>NORTH</code>,
+<code>SOUTH</code>,
+<code>EAST</code>, or
+<code>WEST</code>.
+</td>
+</tr>
+
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.html#putConstraint(java.lang.String, java.awt.Component, int, java.lang.String, java.awt.Component)">void putConstraint(String, Component, int, String, Component)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.html#putConstraint(java.lang.String, java.awt.Component, javax.swing.Spring, java.lang.String, java.awt.Component)">void putConstraint(String, Component, Spring, String, Component)</a></td>
+<td headers="h2">
+Convenience methods
+for defining relationships between the edges of two components.
+The first two arguments specify the first component and its affected edge.
+The last two arguments specify the second component and its affected edge.
+The third argument specifies the spring that determines
+the distance between the two.
+When the third argument is an integer,
+a constant spring is created to provide a fixed distance
+between the component edges.
+</td>
+</tr>
+
+</table>
+
+<p>
+<table border=1 summary="SpringLayout.Constraints class">
+<caption><a name="SpringLayout.Constraints">SpringLayout.Constraints</a></caption>
+<tr>
+<th id="h101">Constructor or Method
+</th>
+<th id="h102">Purpose
+
+</th>
+</tr>
+<tr>
+<td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#SpringLayout.Constraints()">SpringLayout.Constraints()</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#SpringLayout.Constraints(javax.swing.Spring, javax.swing.Spring)">SpringLayout.Constraints(Spring, Spring)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#SpringLayout.Constraints(javax.swing.Spring, javax.swing.Spring, javax.swing.Spring, javax.swing.Spring)">SpringLayout.Constraints(Spring, Spring, Spring, Spring)</a></td>
+<td headers="h102">Create a <code>SpringLayout.Constraints</code> instance.
+The first two arguments, if present,
+specify the X and Y springs, respectively.
+The second two arguments, if present,
+specify the height and width springs, respectively.
+Omitting an argument causes the corresponding spring
+to be <code>null</code>,
+which <code>SpringLayout</code>
+generally replaces with suitable defaults.
+
+</td>
+</tr>
+
+<tr>
+<td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#getConstraint(java.lang.String)">Spring getConstraint(String)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#getHeight()">Spring getHeight()</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#getWidth()">Spring getWidth()</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#getX()">Spring getX()</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#getY()">Spring getY()</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#setConstraint(java.lang.String, javax.swing.Spring)">void setConstraint(String, Spring)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#setHeight(javax.swing.Spring)">void setHeight(Spring)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#setWidth(javax.swing.Spring)">void setWidth(Spring)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#setX(javax.swing.Spring)">void setX(Spring)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SpringLayout.Constraints.html#setY(javax.swing.Spring)">void setY(Spring)</a></td>
+<td headers="h102">
+Get or set the specified spring.
+The string argument to the <code>getConstraint</code>
+and <code>setConstraint</code> methods specifies an edge name,
+and must be one of the <code>SpringLayout</code> constants
+<code>NORTH</code>,
+<code>SOUTH</code>,
+<code>EAST</code>, or
+<code>WEST</code>.
+</td>
+</tr>
+
+
+</table>
+
+
+<p>
+<table border=1 summary="Spring class">
+<caption><a name="Spring">Spring</a></caption>
+<tr>
+<th id="h201">Method
+</th>
+<th id="h202">Purpose
+
+</th>
+</tr>
+<tr>
+<td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Spring.html#constant(int)">static Spring constant(int)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Spring.html#constant(int, int, int)">static Spring constant(int, int, int)</a></td>
+<td headers="h202">
+Create a spring that does not track a component's sizes.
+The three-argument version creates a spring with
+its minimum, preferred, and maximum values set
+to the specified values, in that order.
+The one-argument version creates a spring with
+its minimum, preferred, and maximum values all set
+to the specified integer.
+<p>
+Despite the name, springs returned by <code>constant</code>
+are mutable.
+To make a layout work out, 
+<code>SpringLayout</code> might be forced to adjust a
+"constant" spring.
+For this reason, you should avoid reusing constant springs
+unless (1) you truly want the springs to always be precisely alike
+and (2) other springs provide
+some flexibility in the layout.
+</td>
+</tr>
+
+<tr>
+<td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Spring.html#sum(javax.swing.Spring, javax.swing.Spring)">static Spring sum(Spring, Spring)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Spring.html#max(javax.swing.Spring, javax.swing.Spring)">static Spring max(Spring, Spring)</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Spring.html#minus(javax.swing.Spring)">static Spring minus(Spring)</a></td>
+<td headers="h202">
+Create a spring that is the result of some mathematical manipulation.
+The <code>sum</code> method adds two springs.
+The <code>max</code> method
+returns a spring whose value is always
+greater than or equal to the values of the two arguments.
+The <code>minus</code> method
+returns a spring running in the opposite direction of the argument.
+The <code>minus</code> method can be used to create
+an argument for the <code>sum</code> method,
+allowing you to get the difference between two springs.
+</td>
+</tr>
+
+<tr>
+<td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Spring.html#getMinimumValue()">int getMinimumValue()</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Spring.html#getPreferredValue()">int getPreferredValue()</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Spring.html#getMaximumValue()">int getMaximumValue()</a></td>
+<td headers="h202">
+Get the corresponding value from the spring.
+For a <code>SpringLayout</code>-created spring
+that automatically tracks a component,
+these methods result in calls to the component's
+corresponding <code>get<em>Xxx</em>Size</code> method.
+</td>
+
+<tr>
+<td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Spring.html#getValue()">int getValue()</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Spring.html#setValue(int)">setValue(int)</a></td>
+<td headers="h202">
+Get or set the spring's current value.
+</td>
+</tr>
+
+</table>
+
+
+
+
+<h2>
+<a name="eg">Examples that Use SpringLayout</a>
+</h2>
+
+
+
+The following table lists some
+examples that use spring layout.
+
+<p>
+
+<table summary="Examples that use SpringLayout">
+<tr>
+<th id="h301" align=left> Example
+</th>
+<th id="h302" align=left> Where Described
+</th>
+<th id="h303" align=left> Notes
+</th>
+</tr>
+
+<tr>
+<td headers="h301" valign=top> <a href="../examples/layout/index.html#SpringDemo3"><code>SpringDemo3</code></a>
+</td>
+<td headers="h302" valign=top> This page
+</td>
+<td headers="h303" valign=top> Uses <code>SpringLayout</code>
+     to create a row of evenly spaced, natural-size components.
+</td>
+</tr>
+
+<tr>
+<td headers="h301" valign=top> <a href="../examples/layout/index.html#SpringDemo4"><code>SpringDemo4</code></a>
+</td>
+<td headers="h302" valign=top> This page
+</td>
+<td headers="h303" valign=top> Reimplements SpringDemo3
+     to use <code>SpringLayout.Constraints</code> and <code>Spring</code>
+     directly.
+</td>
+</tr>
+
+<tr>
+<td headers="h301" valign=top> <a href="../examples/layout/index.html#SpringGrid"><code>SpringGrid</code></a>
+</td>
+<td headers="h302" valign=top> This page
+</td>
+<td headers="h303" valign=top> Uses <code>SpringLayout</code>
+     and the <code>makeGrid</code> utility method
+     to create a layout where all the components
+     are the same size.
+</td>
+</tr>
+
+<tr>
+<td headers="h301" valign=top> <a href="../examples/layout/index.html#SpringCompactGrid"><code>SpringCompactGrid</code></a>
+</td>
+<td headers="h302" valign=top> This page
+</td>
+<td headers="h303" valign=top> Uses <code>SpringLayout</code>
+     and the <code>makeCompactGrid</code> utility method
+     to create a layout where all the components
+     in a row have the same height,
+     and all components in a column have the same width.
+</tr>
+
+<tr>
+<td headers="h301" valign=top> <a href="../examples/layout/index.html#SpringForm"><code>SpringForm</code></a>
+</td>
+<td headers="h302" valign=top> This page
+</td>
+<td headers="h303" valign=top> Uses <code>SpringLayout</code>
+     and <code>makeCompactGrid</code>
+     to align label-text field pairs.
+</td>
+</tr>
+
+<tr>
+<td headers="h301" valign=top> <a href="../examples/layout/index.html#SpringBox"><code>SpringBox</code></a>
+</td>
+<td headers="h302" valign=top> This page
+</td>
+<td headers="h303" valign=top> Uses <code>SpringLayout</code>
+     and <code>makeCompactGrid</code>
+     to demonstrate laying out a single row of components,
+     and what happens when no springs can grow.
+</td>
+</tr>
+
+<tr>
+<td headers="h301" valign=top>
+<a class="TutorialLink" target="_top" href="../components/../examples/components/index.html#SpinnerDemo"><code>SpinnerDemo</code></a></td>
+<td headers="h302" valign=top>
+<a class="TutorialLink" target="_top" href="../components/spinner.html">How to Use Spinners</a></td>
+<td headers="h303" valign=top> Uses <code>SpringLayout</code> and
+     <code>makeCompactGrid</code>
+     to lay out rows of label-spinner pairs.
+</td>
+</tr>
+
+<tr>
+<td headers="h301" valign=top>
+<a class="TutorialLink" target="_top" href="../components/../examples/components/index.html#TextInputDemo"><code>TextInputDemo</code></a></td>
+<td headers="h302" valign=top>
+<a class="TutorialLink" target="_top" href="../components/formattedtextfield.html">How to Use Formatted Text Fields</a></td>
+<td headers="h303" valign=top> Uses <code>SpringLayout</code> and
+     <code>makeCompactGrid</code>
+     to lay out rows of labeled components.
+     The components are a mix of text fields,
+     formatted text fields, and spinners.
+</td>
+</tr>
+
+</table>
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=groupExample.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=custom.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h401" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h401" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h402" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> A GroupLayout Example
+        <br><b>Next page:</b> Creating a Custom Layout Manager
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

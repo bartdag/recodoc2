@@ -1,0 +1,611 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Creating a Custom Layout Manager (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Laying Out Components Within a Container)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Laying Out Components Within a Container
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Laying Out Components Within a Container</a></div>
+<div class="linkAHEAD"><a href="visual.html">A Visual Guide to Layout Managers</a></div>
+<div class="linkAHEAD"><a href="using.html">Using Layout Managers</a></div>
+<div class="linkAHEAD"><a href="howLayoutWorks.html">How Layout Management Works</a></div>
+<div class="linkAHEAD"><a href="layoutlist.html">How to Use Various Layout Managers</a></div>
+<div class="linkAHEAD"><a href="border.html">How to Use BorderLayout</a></div>
+<div class="linkAHEAD"><a href="box.html">How to Use BoxLayout</a></div>
+<div class="linkAHEAD"><a href="card.html">How to Use CardLayout</a></div>
+<div class="linkAHEAD"><a href="flow.html">How to Use FlowLayout</a></div>
+<div class="linkAHEAD"><a href="gridbag.html">How to Use GridBagLayout</a></div>
+<div class="linkAHEAD"><a href="grid.html">How to Use GridLayout</a></div>
+<div class="linkAHEAD"><a href="group.html">How to Use GroupLayout</a></div>
+<div class="linkBHEAD"><a href="groupExample.html">A GroupLayout Example</a></div>
+<div class="linkAHEAD"><a href="spring.html">How to Use SpringLayout</a></div>
+<div class="nolinkAHEAD">Creating a Custom Layout Manager</div>
+<div class="linkAHEAD"><a href="none.html">Doing Without a Layout Manager (Absolute Positioning)</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Layout Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Laying Out Components Within a Container</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=spring.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=none.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Creating a Custom Layout Manager</h1></div>
+            <div id=PageContent>
+
+Before you start creating a custom layout manager,
+make sure that no existing layout manager meets your requirements.
+In particular, layout managers such as
+<a href=gridbag.html><code>GridBagLayout</code></a>,
+<a href=spring.html><code>SpringLayout</code></a>, and
+<a href=box.html><code>BoxLayout</code></a>
+are flexible enough to work in many cases.
+You can also find layout managers from other sources,
+such as from the Internet.
+Finally, you can simplify layout
+by grouping components into containers
+such as  
+<a class="TutorialLink" target="_top" href="../components/panel.html">panels</a>.
+
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;This lesson covers writing layout code by hand, which can be challenging. If you are not interested in learning all the details of layout management, you might prefer to use the <code>GroupLayout</code> layout manager combined with a builder tool to lay out your GUI. One such builder tool is the  
+
+<a class="TutorialLink" target="_top" href="../learn/index.html">NetBeans IDE</a>. Otherwise, if you want to code by hand and do not want to use <code>GroupLayout</code>, then <code>GridBagLayout</code> is recommended as the next most flexible and powerful layout manager.
+ 
+
+<hr></div> 
+<p>
+
+To create a custom layout manager,
+you must create a class that implements the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/LayoutManager.html"><code>LayoutManager</code></a> interface.
+You can either implement it directly,
+or implement its subinterface, 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/LayoutManager2.html"><code>LayoutManager2</code></a>.
+
+<p>
+
+Every layout manager must implement at least
+the following five methods, 
+which are required by the <code>LayoutManager</code> interface:
+<p>
+
+<dl>
+<dt><strong><code>void addLayoutComponent(String, Component)</code></strong>
+<dd>Called by the <code>Container</code> class's <code>add</code> methods.
+    Layout managers that do not associate strings with their components 
+    generally do nothing in this method.
+
+    <p>
+
+<dt><strong><code>void removeLayoutComponent(Component)</code></strong>
+<dd>Called by the <code>Container</code> methods <code>remove</code> and
+    <code>removeAll</code>.
+    Layout managers override this method to clear an internal state they may have associated with the <code>Component</code>.
+<p>
+
+<dt><strong><code>Dimension preferredLayoutSize(Container)</code></strong>
+<dd>Called by the <code>Container</code> class's <code>getPreferredSize</code> method,
+    which is itself called under a variety of circumstances.
+    This method should calculate and return the ideal size of the container,
+    assuming that the components it contains will be at or above
+    their preferred sizes.
+    This method must take into account the container's internal borders,
+    which are returned by the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Container.html#getInsets()"><code>getInsets</code></a>    method.
+
+    <p>
+
+<dt><strong><code>Dimension minimumLayoutSize(Container)</code></strong>
+<dd>Called by the <code>Container</code> <code>getMinimumSize</code> method,
+    which is itself called under a variety of circumstances.
+    This method should calculate and return the minimum size of the container,
+    assuming that the components it contains 
+    will be at or above their minimum sizes.
+    This method must take into account the container's internal borders,
+    which are returned by the 
+    <code>getInsets</code> method.
+
+    <p>
+
+<dt><strong><code>void layoutContainer(Container)</code></strong>
+<dd>Called to position and size each of the components in the container.
+    A layout manager's <code>layoutContainer</code> method
+    does not actually draw components.
+    It simply invokes one or more of each component's 
+    <code>setSize</code>,
+    <code>setLocation</code>,
+    and
+    <code>setBounds</code>
+    methods to set the component's size and position.
+
+<p>
+    This method must take into account the container's internal borders,
+    which are returned by the 
+    <code>getInsets</code> method.
+    If appropriate,
+    it should also take the container's orientation 
+    (returned by the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#getComponentOrientation()"><code>getComponentOrientation</code></a>    method)
+    into account.
+    You cannot assume that the <code>preferredLayoutSize</code>
+    or <code>minimumLayoutSize</code> methods will be called
+    before <code>layoutContainer</code> is called.
+
+</dl>
+
+<p>
+
+Besides implementing the preceding five methods,
+layout managers generally implement at least one public constructor
+and the 
+<code>toString</code>
+method.
+
+<p>
+
+If you wish to support component
+constraints, maximum sizes, or alignment,
+then your layout manager should implement the
+<code>LayoutManager2</code> interface. In fact, for these reasons among many others, nearly all modern layout managers will need to implement <code>LayoutManager2</code>.
+ That interface adds five methods to those
+required by <code>LayoutManager</code>:
+
+<ul>
+<li> <code>addLayoutComponent(Component, Object)</code>
+<li> <code>getLayoutAlignmentX(Container)</code>
+<li> <code>getLayoutAlignmentY(Container)</code>
+<li> <code>invalidateLayout(Container)</code>
+<li> <code>maximumLayoutSize(Container)</code>
+</ul>
+
+<p>
+Of these methods, the most important are <code>addLayoutComponent(Component, Object)</code> and <code>invalidateLayout(Container)</code>. The <code>addLayoutComponent</code>
+method is used to add components to the layout, using the specified constraint object. The <code>invalidateLayout</code> method is used to invalidate the layout, so that if the
+layout manager has cached information, this should be discarded. For more information about <code>LayoutManager2</code>,
+see the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/LayoutManager2.html"><code>LayoutManager2</code> </a> API documentation.
+
+
+<p>
+Finally, whenever you create custom layout managers, you should be careful of keeping references to <code>Component</code> instances that are no longer children of the <code>Container</code>. Namely, layout managers should override <code>removeLayoutComponent</code> to clear any cached state related to the <code>Component</code>.
+
+
+<h2>Example of a Custom Layout</h2>
+
+<p>
+
+The example <code>CustomLayoutDemo</code>
+uses a custom layout manager called <code>DiagonalLayout</code>.
+You can find the layout manager's source code in
+<a class="SourceLink" target="_blank" href="../examples/layout/CustomLayoutDemoProject/src/layout/DiagonalLayout.java"><code>DiagonalLayout.java</code></a>.
+<code>DialogLayout</code> lays out components diagonally, 
+from left to right, 
+with one component per row.
+Here is a picture of CustomLayoutDemo using
+<code>DialogLayout</code> to lay out five buttons.
+<p>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/CustomLayoutDemo.png" WIDTH="243" HEIGHT="184" ALIGN="BOTTOM" ALT="A snapshot of CustomLayoutDemo"></center></p>
+<p>
+
+
+Click the Launch button to run <code>CustomLayoutDemo</code> using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+Alternatively, to compile and run the example yourself, consult the
+     <a href="../examples/layout/index.html#CustomLayoutDemo">example index</a>.
+
+<center> <a href="http://download.oracle.com/javase/tutorialJWS/uiswing/layout/ex6/CustomLayoutDemo.jnlp"><img src="../../images/jws-launch-button.png " width="88" height="23" align="bottom" alt="Launches the CustomLayoutDemo example"></a> </center> 
+
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=spring.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=none.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Use SpringLayout
+        <br><b>Next page:</b> Doing Without a Layout Manager (Absolute Positioning)
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

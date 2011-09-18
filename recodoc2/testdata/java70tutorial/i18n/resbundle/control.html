@@ -1,0 +1,548 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Customizing Resource Bundle Loading (The Java&trade; Tutorials &gt;        
+            Internationalization &gt; Isolating Locale-Specific Data)
+</title>
+
+     <meta name="description" content="This internationalization Java tutorial describes setting locale, isolating locale-specific data, formatting data, internationalized domain name and resource identifier" />
+     <meta name="keywords" content="java programming, learn java, java sample code, i18n, internationalization, locale, text formatting" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Internationalization
+        <br><b>Lesson:</b> Isolating Locale-Specific Data
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Isolating Locale-Specific Data</a></div>
+<div class="linkAHEAD"><a href="concept.html">About the ResourceBundle Class</a></div>
+<div class="linkAHEAD"><a href="prepare.html">Preparing to Use a ResourceBundle</a></div>
+<div class="linkAHEAD"><a href="propfile.html">Backing a ResourceBundle with Properties Files</a></div>
+<div class="linkAHEAD"><a href="list.html">Using a ListResourceBundle</a></div>
+<div class="nolinkAHEAD">Customizing Resource Bundle Loading</div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Internationalization</a>
+                &gt;
+                <a href=index.html target=_top>Isolating Locale-Specific Data</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=list.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../format/index.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Customizing Resource Bundle Loading</h1></div>
+            <div id=PageContent>
+<P>Earlier in this lesson you have learned how to create and access objects of the
+<CODE>ResourceBundle</CODE> class. This section extents your knowledge and explains 
+how to take an advantage from the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/ResourceBundle.Control.html"><CODE>ResourceBundle.Control</CODE></a>class capabilities.
+<P>The <CODE>ResourceBundle.Control</CODE> was created to specify how to locate and instantiate resource bundles.
+It defines a set of callback methods that are invoked by the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/ResourceBundle.html#getBundle(java.lang.String,%20java.util.Locale,%20java.util.ResourceBundle.Control)"><CODE>ResourceBundle.getBundle</CODE></a>factory methods during the bundle loading process.
+<P>Unlike a 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/ResourceBundle.html#getBundle(java.lang.String,%20java.util.Locale)"><CODE>ResourceBundle.getBundle</CODE></a>method described earlier, this <CODE>ResourceBundle.getBundle</CODE> method defines a resource bundle using the specified base name, the 
+default locale and the specified control. 
+<div class="codeblock"><pre>
+public static final ResourceBundle getBundle(String baseName, 
+                           ResourceBundle.Control cont
+                           ...
+</pre></div>
+<P>The specified control provide information for the resource bundle loading process.
+<p>The following sample program called 
+<a class="SourceLink" target="_blank" href="examples/RBControl.java"><code>RBControl.java</code></a>illustrates how to define your own search paths for Chinese locales.
+<h2>1. Create the <CODE>properties</CODE> Files.</h2>
+<P>As it was described before you can load your resources either from classes or 
+from <CODE>properties</CODE> files. These files contain descriptions for the 
+following locales: 
+<UL>
+<LI><code>
+<a class="SourceLink" target="_blank" href="examples/RBControl.properties"><code>RBControl.properties</code></a></code> &ndash; Global</LI>
+<LI><code>
+<a class="SourceLink" target="_blank" href="examples/RBControl_zh.properties"><code>RBControl_zh.properties</code></a></code> &ndash; Language only: Simplified Chinese</LI>
+<LI><code>
+<a class="SourceLink" target="_blank" href="examples/RBControl_zh_CN.properties"><code>RBControl_zh_cn.properties</code></a></code> &ndash; Region only: China</LI>
+<LI><code>
+<a class="SourceLink" target="_blank" href="examples/RBControl_zh_HK.properties"><code>RBControl_zh_hk.properties</code></a></code> &ndash; Region only: Hong Kong</LI>
+<LI><code>
+<a class="SourceLink" target="_blank" href="examples/RBControl_zh_TW.properties"><code>RBControl_zh_tw.properties</code></a></code> &ndash; Taiwan</LI>
+</UL>
+<P>In this example an application creates a new locale for the Hong Kong region.
+<h2>2. Create a <CODE>ResourceBundle</CODE> instance.</h2>
+<P>As in the example in the previous section, this application creates a
+<CODE>ResourceBundle</CODE> instance by invoking the <CODE>getBundle</CODE>
+method:
+<div class="codeblock"><pre>
+   private static void test(Locale locale) {
+       ResourceBundle rb = ResourceBundle.getBundle("RBControl", locale,
+	        new ResourceBundle.Control() {
+		...
+</pre></div>
+<P>The <CODE>getBundle</CODE> method searches for <CODE>properties</CODE> files
+with the RBControl prefix. However, this method contains a <CODE>Control</CODE> 
+parameter, which drives the process of searching the Chineese locales.
+<h2>3. Invoke the <CODE>getCandidateLocales</CODE> method</h2>
+<P>The <CODE>getCandidateLocales</CODE> method returns a list of the <CODE>Locales</CODE>
+objects as candidate locales for the base name and locale.  
+
+<div class="codeblock"><pre>
+  new ResourceBundle.Control() {
+		 @Override
+		 public List&lt;Locale&gt; getCandidateLocales(String baseName, 
+		                                         Locale locale) {
+		 ...					    
+</pre></div>
+<p>The default implementation returns a list of the <CODE>Locale</CODE> objects
+as follows: Locale(language, country).
+<P>However, this method is overriden to implement the following
+specific behavior:
+<div class="codeblock"><pre>
+                     {
+                     if (baseName == null)
+			 throw new NullPointerException();
+		     if (locale.equals(new Locale("zh", "HK"))) {
+			 return Arrays.asList(
+			     locale,
+			     Locale.TAIWAN,
+			     // no Locale.CHINESE here
+			     Locale.ROOT);
+		     } else if (locale.equals(Locale.TAIWAN)) {
+			 return Arrays.asList(
+			     locale,
+			     // no Locale.CHINESE here
+			     Locale.ROOT);
+		     }
+</pre></div>
+Note, that the last element of the sequence of candidate locales must be a root 
+locale.
+<h2>4. Call the <CODE>test</CODE> class</h2>
+<P>Call the <CODE>test</CODE> class for the following four different locales:
+<div class="codeblock"><pre>
+   public static void main(String[] args) {
+	test(Locale.CHINA);
+	test(new Locale("zh", "HK"));
+	test(Locale.TAIWAN);
+	test(Locale.CANADA);
+    }
+</pre></div>
+<h2>5. Run the Sample Program</h2>
+You will see the program output as follows:
+<div class="codeblock"><pre>
+locale: zh_CN
+	region: China
+	language: Simplified Chinese
+locale: zh_HK
+	region: Hong Kong
+	language: Traditional Chinese
+locale: zh_TW
+	region: Taiwan
+	language: Traditional Chinese
+locale: en_CA
+	region: global
+	language: English
+</pre></div>
+<P>Note that the newly created was assigned the Hong Kong region, because it was 
+specified in an appropriate <code>properties</code> file. Traditional Chinese was assigned
+as the language for the Taiwan locale.
+
+<P>Two other interesting methods of the <CODE>ResourceBundle.Control</CODE> class were not 
+used in the <CODE>RBControl</CODE> example, but they deserved to be mentioned. 
+The <CODE>getTimeToLive</CODE> method is used to determine how long the 
+resource bundle can exist in the cache. If the time limit for a 
+resource bundle in the cache has expired, the <CODE>needsReload</CODE> method is 
+invoked to determine whether the resource bundle needs to be reloaded.
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=list.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=../format/index.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Using a ListResourceBundle
+        <br><b>Next page:</b> Formatting
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

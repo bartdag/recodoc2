@@ -1,0 +1,750 @@
+
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>How to Write a Property Change Listener (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Writing Event Listeners)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Writing Event Listeners
+        <br><b>Section:</b> Implementing Listeners for Commonly Handled Events
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Writing Event Listeners</a></div>
+<div class="linkAHEAD"><a href="intro.html">Introduction to Event Listeners</a></div>
+<div class="linkAHEAD"><a href="generalrules.html">General Information about Writing Event Listeners</a></div>
+<div class="linkAHEAD"><a href="eventsandcomponents.html">Listeners Supported by Swing Components</a></div>
+<div class="linkAHEAD"><a href="handling.html">Implementing Listeners for Commonly Handled Events</a></div>
+<div class="linkBHEAD"><a href="actionlistener.html">How to Write an Action Listener</a></div>
+<div class="linkBHEAD"><a href="caretlistener.html">How to Write a Caret Listener</a></div>
+<div class="linkBHEAD"><a href="changelistener.html">How to Write a Change Listener</a></div>
+<div class="linkBHEAD"><a href="componentlistener.html">How to Write a Component Listener</a></div>
+<div class="linkBHEAD"><a href="containerlistener.html">How to Write a Container Listener</a></div>
+<div class="linkBHEAD"><a href="documentlistener.html">How to Write a Document Listener</a></div>
+<div class="linkBHEAD"><a href="focuslistener.html">How to Write a Focus Listener</a></div>
+<div class="linkBHEAD"><a href="internalframelistener.html">How to Write an Internal Frame Listener</a></div>
+<div class="linkBHEAD"><a href="itemlistener.html">How to Write an Item Listener</a></div>
+<div class="linkBHEAD"><a href="keylistener.html">How to Write a Key Listener</a></div>
+<div class="linkBHEAD"><a href="listdatalistener.html">How to Write a List Data Listener</a></div>
+<div class="linkBHEAD"><a href="listselectionlistener.html">How to Write a List Selection Listener</a></div>
+<div class="linkBHEAD"><a href="mouselistener.html">How to Write a Mouse Listener</a></div>
+<div class="linkBHEAD"><a href="mousemotionlistener.html">How to Write a Mouse-Motion Listener</a></div>
+<div class="linkBHEAD"><a href="mousewheellistener.html">How to Write a Mouse-Wheel Listener</a></div>
+<div class="nolinkBHEAD">How to Write a Property Change Listener</div>
+<div class="linkBHEAD"><a href="tablemodellistener.html">How to Write a Table Model Listener</a></div>
+<div class="linkBHEAD"><a href="treeexpansionlistener.html">How to Write a Tree Expansion Listener</a></div>
+<div class="linkBHEAD"><a href="treemodellistener.html">How to Write a Tree Model Listener</a></div>
+<div class="linkBHEAD"><a href="treeselectionlistener.html">How to Write a Tree Selection Listener</a></div>
+<div class="linkBHEAD"><a href="treewillexpandlistener.html">How to Write a Tree-Will-Expand Listener</a></div>
+<div class="linkBHEAD"><a href="undoableeditlistener.html">How to Write an Undoable Edit Listener</a></div>
+<div class="linkBHEAD"><a href="windowlistener.html">How to Write Window Listeners</a></div>
+<div class="linkAHEAD"><a href="api.html">Listener API Table</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Event-Handling Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Writing Event Listeners</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=mousewheellistener.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=tablemodellistener.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>How to Write a Property Change Listener</h1></div>
+            <div id=PageContent>
+<P>Property-change events occur whenever the value of a
+<em>bound property</em> changes
+for a <em>bean</em> &#151;
+a component that conforms to the JavaBeans&trade; specification.
+You can find out more about beans from the 
+<a class="TutorialLink" target="_top" href="../../javabeans/">JavaBeans</a> trail of the
+Java Tutorial. All Swing components are also beans.
+
+<p>
+A JavaBeans property is accessed through its
+<em>get</em> and <em>set</em> methods.
+For example, <code>JComponent</code> has the 
+property <em>font</em> which is accessible
+through the <code>getFont</code> and
+<code>setFont</code> methods.
+
+<p>
+Besides the <em>get</em> and <em>set</em>
+methods, a bound property fires a property-change event
+when its value changes.
+For more information, see the
+<a class="TutorialLink" target="_top" href="../../javabeans/properties/bound.html">Bound Properties</a> page in the JavaBeans trail.
+
+<p>Some scenarios that commonly require property-change listeners
+include:
+
+<ul>
+<li>You have implemented a formatted text field and need
+    a way to detect when the user has entered a new value.
+    You can register a property-change listener on
+    the formatted text field to listen to
+    changes on the <em>value</em> property.
+    See <code>FormattedTextFieldDemo</code> in
+<a class="TutorialLink" target="_top" href="../components/formattedtextfield.html#value">How to Use Formatted Text Fields</a>    for an example of this.
+<p>
+<li>You have implemented a dialog and need to
+    know when a user has clicked one of the dialog's
+    buttons or changed a selection in the dialog.
+    See <code>DialogDemo</code> in
+<a class="TutorialLink" target="_top" href="../components/dialog.html#stayup">How to Make Dialogs</a>    for an example of registering a property-change
+    listener on an option pane to listen to changes to
+    the <em>value</em> property.  You can also check
+    out <code>FileChooserDemo2</code> in
+<a class="TutorialLink" target="_top" href="../components/filechooser.html#advancedexample">How to Use File Choosers</a>    for an example of how to register a property-change
+    listener to listen to changes to the
+    <em>directoryChanged</em> and
+    <em>selectedFileChanged</em> properties.
+<p>
+<li>You need to be notified when the component that has
+    the focus changes.  You can register a property-change
+    listener on the keyboard focus manager to listen to
+    changes to the <em>focusOwner</em> property.
+    See <code>TrackFocusDemo</code> and <code>DragPictureDemo</code> in
+<a class="TutorialLink" target="_top" href="../misc/focus.html#trackingFocus">How to Use the Focus Subsystem</a>    for examples of this.
+</ul>
+
+
+<p>Although these are some of the more common uses for
+property-change listeners, you can register a property-change
+listener on the bound property of any component that conforms
+to the JavaBeans specification.
+
+<p>You can register a property change listener in two ways.
+The first uses the method
+<code>addPropertyChangeListener(PropertyChangeListener)</code>.
+When you register a listener this way, you are notified
+of every change to every bound property for that object.
+In the <code>propertyChange</code> method, you can get the name
+of the property that has changed using the
+<code>PropertyChangeEvent</code> <code>getPropertyName</code>
+method, as in the following code snippet:
+
+<div class="codeblock"><pre>
+KeyboardFocusManager focusManager =
+   KeyboardFocusManager.getCurrentKeyboardFocusManager();
+focusManager.addPropertyChangeListener(new FocusManagerListener());
+...
+public FocusManagerListener implements PropertyChangeListener {
+    public void propertyChange(PropertyChangeEvent e) {
+        String propertyName = e.getPropertyName();
+        if ("focusOwner".equals(propertyName) {
+            ...
+        } else if ("focusedWindow".equals(propertyName) {
+            ...
+        }
+    }
+    ...
+}
+</pre></div>
+
+<p>
+The second way to register a property change listener uses the method
+<code>addPropertyChangeListener(String, PropertyChangeListener)</code>.
+The <code>String</code> argument is the name of a property.  Using this
+method means that you only receive notification when
+a change occurs to that particular property. So, for example,
+if you registered a property change listener like this:
+
+<div class="codeblock"><pre>
+aComponent.addPropertyChangeListener("font",
+                                     new FontListener());
+</pre></div>
+
+<p>
+<code>FontListener</code> only receives notification when the
+value of the component's
+<em>font</em> property changes.  It does <em>not</em>
+receive notification when the value changes for <em>transferHandler</em>,
+<em>opaque</em>, <em>border</em>, or any other property.
+
+<p>
+The following example shows how to register a property
+change listener on the <em>value</em> property of a
+formatted text field using the two-argument version of
+<code>addPropertyChangeListener</code>:
+
+<div class="codeblock"><pre>
+<em>//...where initialization occurs:</em>
+double amount;
+JFormattedTextField amountField;
+...
+amountField.addPropertyChangeListener("value",
+                                      new FormattedTextFieldListener());
+...
+class FormattedTextFieldListener implements PropertyChangeListener {
+    public void propertyChanged(PropertyChangeEvent e) {
+        Object source = e.getSource();
+        if (source == amountField) {
+            amount = ((Number)amountField.getValue()).doubleValue();
+            ...
+        }
+        <em>...//re-compute payment and update field...</em>
+    }
+}
+</pre></div>
+
+
+<h2>
+<a name="api">The Property Change Listener API</a>
+</h2>
+
+
+<p align=center><a name="addpropertychangelistener">Registering
+   a PropertyChangeListener</a>
+<p>
+<table border=1 summary="The PropertyChangeListener API">
+<tr>
+<th id="h1" align=left>Method</th>
+<th id="h2" align=left>Purpose</th>
+</tr>
+
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#addPropertyChangeListener(java.beans.PropertyChangeListener)">addPropertyChangeListener(PropertyChangeListener)</a></td>
+<td headers="h2">Add a property-change listener to the listener list.
+</td>
+</tr>
+
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Component.html#addPropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)">addPropertyChangeListener(String, PropertyChangeListener)</a></td>
+<td headers="h2">Add a property-change listener for a specific property.
+    The listener is called only when there is a change to the
+    specified property.
+</td>
+</tr>
+
+</table>
+
+<p align=center><a name="propertychangelistener">The
+   PropertyChangeListener Interface</a>
+<p><em>Because <code>PropertyChangeListener</code>
+   has only one method, it has no corresponding
+   adapter class.</em>
+<table border=1 summary="The PropertyChangeListener Interface">
+<tr>
+<th id="h101" align=left>Method</th>
+<th id="h102" align=left>Purpose</th>
+</tr>
+
+<tr>
+<td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/PropertyChangeListener.html#propertyChange(java.beans.PropertyChangeEvent)">propertyChange(PropertyChangeEvent)</a></td>
+<td headers="h102">Called when the listened-to bean changes a bound property.
+</td>
+</tr>
+</table>
+
+<p align=center><a name="propertychangeevent">The PropertyChangeEvent Class</a>
+<p>
+<table border=1 summary="The PropertyChangeEvent Class">
+<tr>
+<th id="h201" align=left>Method</th>
+<th id="h202" align=left>Purpose</th>
+</tr>
+
+<tr>
+<td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/PropertyChangeEvent.html#getNewValue()">Object getNewValue()</a><br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/PropertyChangeEvent.html#getOldValue()">Object getOldValue()</a></td>
+<td headers="h202">Return the new, or old, value of the property, respectively.
+</td>
+</tr>
+
+<tr>
+<td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/PropertyChangeEvent.html#getPropertyName()">String getPropertyName()</a></td>
+<td headers="h202">Return the name of the property that was changed.
+</td>
+</tr>
+
+<tr>
+<td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/PropertyChangeEvent.html#setPropagationId()">void setPropagationId()</a></td>
+<td headers="h202">Get or set the propagation ID value.  Reserved for future use.
+</td>
+</tr>
+</table>
+
+
+<a name="eg">
+<h2>Examples that Use Property Change Listeners</h2>
+</a>
+
+The following table lists the
+examples that use property-change listeners.
+
+<p>
+
+<table summary="Examples that Use PropertyChangeListener">
+<tr>
+<th id="h301" align=left> Example
+</th>
+<th id="h302" align=left> Where Described
+</th>
+<th id="h303" align=left> Notes
+</th>
+</tr>
+
+<tr valign=top>
+<td headers="h301">
+<a href="../examples/components/index.html#FormattedTextFieldDemo"><code>FormattedTextFieldDemo</code></a>
+</td>
+<td headers="h302">
+<a class="TutorialLink" target="_top" href="../components/formattedtextfield.html#value">How to Use Formatted Text Fields</a></td>
+<td headers="h303"> A property-change listener is registered on 
+     several formatted text fields to track changes
+     to the <em>value</em> property.
+</td>
+</tr>
+
+<tr valign=top>
+<td headers="h301">
+<a href="../examples/components/index.html#DialogDemo"><code>DialogDemo</code></a>
+</td>
+<td headers="h302">
+<a class="TutorialLink" target="_top" href="../components/dialog.html#stayup">How to Make Dialogs</a></td>
+<td headers="h303"> The
+<a class="TutorialLink" target="_top" href="../examples/components/DialogDemoProject/src/components/CustomDialog.java"><code>CustomDialog</code></a> class registers a property-change listener on
+an option pane to listen to the <em>value</em>
+and <em>inputValue</em> properties.
+</td>
+</tr>
+
+<tr valign=top>
+<td headers="h301">
+<a href="../examples/components/index.html#FileChooserDemo2"><code>FileChooserDemo2</code></a>
+</td>
+<td headers="h302">
+<a class="TutorialLink" target="_top" href="../components/filechooser.html#advancedexample">How to Use File Choosers</a></td>
+<td headers="h303"> The
+<a class="TutorialLink" target="_top" href="../examples/components/FileChooserDemo2Project/src/components/ImagePreview.java"><code>ImagePreview</code></a> class registers a property-change listener on
+the file chooser to listen to the 
+<em>directoryChanged</em> and
+<em>selectedFileChanged</em> properties.
+</td>
+</tr>
+
+<tr valign=top>
+<td headers="h301">
+<a href="../examples/misc/index.html#TrackFocusDemo"><code>TrackFocusDemo</code></a>
+</td>
+<td headers="h302">
+<a class="TutorialLink" target="_top" href="../misc/focus.html#trackingFocus">How to Use the Focus Subsystem</a></td>
+<td headers="h303"> A property-change listener is registered
+on the keyboard focus manager to track changes
+to the <em>focusOwner</em> property.
+</td>
+</tr>
+</table>
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=mousewheellistener.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=tablemodellistener.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h401" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h401" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h402" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Write a Mouse-Wheel Listener
+        <br><b>Next page:</b> How to Write a Table Model Listener
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

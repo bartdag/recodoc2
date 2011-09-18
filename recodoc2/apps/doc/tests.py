@@ -543,6 +543,45 @@ class DocParserTest(TransactionTestCase):
         self.assertEqual(1, section.code_snippets.count())
         self.assertEqual(section.word_count, len(section.get_text().split()))
 
+    def test_java_tutorial_parse_doc_code(self):
+        pname = 'project1'
+        release = '3.0'
+        dname = 'manual'
+        test_doc = os.path.join(settings.TESTDATA, 'java70tutorial',
+            'index.html')
+        test_doc = os.path.normpath(test_doc)
+        create_doc_local(pname, dname, release,
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'file://' + test_doc) 
+        create_doc_db('project1', 'manual', '3.0', '',
+                'doc.syncer.generic_syncer.SingleURLSyncer',
+                'doc.parser.common_parsers.JavaTutorialParser')
+        print('Syncing doc')
+        sync_doc(pname, dname, release)
+        print('Synced doc')
+
+        document = parse_doc(pname, dname, release, True)
+        
+        page = Page.objects.filter(document=document).filter(
+                title='The Collection Interface').all()[0]
+        self.assertEqual(page.word_count, len(page.get_text().split()))
+
+        section = Section.objects.filter(page=page).filter(
+                title='The Collection Interface').all()[0]
+        self.assertEqual(2, section.title_references.count())
+        # Only 2, because small references are not added! Yay!
+        self.assertEqual(27, section.code_references.count())
+        self.assertEqual(2, section.code_snippets.count())
+        self.assertEqual(section.word_count, len(section.get_text().split()))
+        
+        section = Section.objects.filter(page=page).filter(
+                title='Traversing Collections').all()[0]
+        self.assertEqual(1, section.title_references.count())
+        # Include the ref in the title too!
+        self.assertEqual(28, section.code_references.count())
+        self.assertEqual(3, section.code_snippets.count())
+        self.assertEqual(section.word_count, len(section.get_text().split()))
+
     @unittest.skip('Usually works.')
     def test_docbook_parse_hib3_doc_code(self):
         pname = 'project1'

@@ -1,0 +1,606 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Accessing MIDI System Resources (The Java&trade; Tutorials &gt;        
+            Sound)
+</title>
+
+     <meta name="description" content="" />
+     <meta name="keywords" content="java programming, learn java, java sample code, " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Sound
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkAHEAD"><a href="sampled-overview.html">Overview of the Sampled Package</a></div>
+<div class="linkAHEAD"><a href="accessing.html">Accessing Audio System Resources</a></div>
+<div class="linkAHEAD"><a href="playing.html">Playing Back Audio</a></div>
+<div class="linkAHEAD"><a href="capturing.html">Capturing Audio</a></div>
+<div class="linkAHEAD"><a href="controls.html">Processing Audio with Controls</a></div>
+<div class="linkAHEAD"><a href="converters.html">Using Files and Format Converters</a></div>
+<div class="linkAHEAD"><a href="overview-MIDI.html">Overview of the MIDI Package</a></div>
+<div class="nolinkAHEAD">Accessing MIDI System Resources</div>
+<div class="linkAHEAD"><a href="MIDI-messages.html">Transmitting and Receiving MIDI Messages</a></div>
+<div class="linkAHEAD"><a href="MIDI-seq-intro.html">Introduction to Sequencers</a></div>
+<div class="linkAHEAD"><a href="MIDI-seq-methods.html">Using Sequencer Methods</a></div>
+<div class="linkAHEAD"><a href="MIDI-seq-adv.html">Using Advanced Sequencer Features</a></div>
+<div class="linkAHEAD"><a href="MIDI-synth.html">Synthesizing Sound</a></div>
+<div class="linkAHEAD"><a href="SPI-intro.html">Introduction to the Service Provider Interfaces</a></div>
+<div class="linkAHEAD"><a href="SPI-providing-sampled.html">Providing Sampled-Audio Services</a></div>
+<div class="linkAHEAD"><a href="SPI-providing-MIDI.html">Providing MIDI Services</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=./index.html target=_top>Sound</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=overview-MIDI.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=./TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=MIDI-messages.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Accessing MIDI System Resources</h1></div>
+            <div id=PageContent>
+The Java Sound API offers a flexible model for MIDI system configuration, just as it does for configuration of the sampled-audio system. An implementation of the Java Sound API can itself provide different sorts of MIDI devices, and additional ones can be supplied by service providers and installed by users. You can write your program in such a way that it makes few assumptions about which specific MIDI devices are installed on the computer. Instead, the program can take advantage of the MIDI system's defaults, or it can allow the user to select from whatever devices happen to be available.
+</p>
+<p><a name="119705"> </a> This section shows how your program can learn what MIDI 
+  resources have been installed, and how to get access to the desired ones. After 
+  you've accessed and opened the devices, you can connect them to each other, 
+  as discussed later in
+
+
+<a class="TutorialLink" target="_top" href="MIDI-messages.html">Transmitting and Receiving MIDI Messages</a>.
+
+
+
+
+<H2>The MidiSystem Class</H2>
+
+
+<p><a name="119713"> </a>
+ The role of the 
+
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/midi/MidiSystem.html"><code>MidiSystem</code></a>
+
+class in the Java Sound API's MIDI package is directly analogous to the role of
+
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/AudioSystem.html"><code>AudioSystem</code></a>
+
+in the sampled-audio package. <code>MidiSystem</code> acts as a clearinghouse for accessing the installed MIDI resources.
+
+</p><p><a name="119718"> </a>
+You can query the <code>MidiSystem</code> to learn what sorts of devices are installed, and then you can iterate over the available devices and obtain access to the desired ones. For example, an application program might start out by asking the <code>MidiSystem</code> what synthesizers are available, and then display a list of them, from which the user can select one. A simpler application program might just use the system's default synthesizer.
+</p><p><a name="119726"> </a>
+The <code>MidiSystem</code> class also provides methods for translating between MIDI files and <code>Sequences</code>. It can report the file format of a MIDI file and can write files of different types.
+
+</p>
+<p>
+An application program can obtain the following resources from the
+<code>MidiSystem</code>:
+<ul>
+<li>Sequencers
+<li>Synthesizers
+<li>Transmitters (such as those associated with MIDI input ports)
+<li>Receivers (such as those associated with MIDI output ports)
+<li>Data from standard MIDI files
+<li>Data from soundbank files
+</ul>
+
+This page focuses on the first four of these types of resource. The 
+others are discussed later in this tutorial.
+
+<p></p><a name="119749"> </a>
+
+
+<H2>Obtaining Default Devices</H2>
+
+
+<p><a name="119751"> </a>
+A typical MIDI application program that uses the Java Sound API begins by obtaining the devices it needs, which can consist of one or more sequencers, synthesizers, input ports, or output ports. 
+</p><p><a name="121015"> </a>
+There is a default synthesizer device, a default sequencer device, a default transmitting device, and a default receiving device.  The latter two devices normally represent the MIDI input and output ports, respectively, if there are any available on the system. (It's easy to get confused about the directionality here.  Think of the ports' transmission or reception in relation to the software, not in relation to any external physical devices connected to the physical ports. A MIDI input port <em>transmits</em> data from  an external device to a Java Sound API <code>Receiver</code>, and likewise a MIDI output port <em>receives</em> data from a software object and relays the data to an external device.) 
+
+</p><p><a name="121012"> </a>
+ A simple application program might just use the default instead of exploring all the installed devices. The <code>MidiSystem</code> class includes the following methods for retrieving default resources:
+</p>
+<div class="codeblock"><pre>
+    static Sequencer getSequencer()
+    static Synthesizer getSynthesizer()
+    static Receiver getReceiver()
+    static Transmitter getTransmitter()
+</pre></div>
+<p><a name="120991"> </a>
+The first two of these methods obtain the system's default sequencing and synthesis resources, which either represent physical devices or are implemented wholly in software.  The <code>getReceiver</code> method obtains a <code>Receiver</code> object that takes MIDI messages sent to it and relays them to the default receiving device.  Similarly, the getTransmitter method obtains a Transmitter object that can send MIDI messages to some receiver on behalf of the default transmitting device.
+
+</p><a name="119787"> </a>
+
+
+<H2>Learning What Devices Are Installed</H2>
+
+
+<p><a name="119789"> </a>
+Instead of using the default devices, a more thorough approach is to select the desired devices from the full set of devices that are installed on the system.  An application program can  select the desired devices programmatically, or it can display a list of available devices and let the user select which ones to use. The <code>MidiSystem</code> class provides a method for learning which devices are installed, and a corresponding method to obtain a device of a given type. 
+</p><p><a name="119794"> </a>
+Here is the method for learning about the installed devices:
+</p>
+<div class="codeblock"><pre>
+    static MidiDevice.Info[] getMidiDeviceInfo()
+</pre></div>
+
+<p>
+As you can see, it returns an array of information objects.
+Each of these returned <code>MidiDevice.Info</code> objects identifies
+one type of sequencer, synthesizer, port, or other device that is installed.
+(Usually a system has at most one instance of a given type.
+For example, a given model of synthesizer from a certain vendor will
+be installed only once.) The <code>MidiDevice.Info</code> includes
+the following strings to describe the device:
+
+<ul>
+<li>Name
+<li>Version number
+<li>Vendor (the company  that created the device)
+<li>A description of the device
+</ul>
+
+You can display these strings in your user interface to let the user select from the list of devices.  
+<p>
+However, to use the strings programmatically to select a device (as opposed to displaying the strings to the user), you need to know in advance what they might be. The company that provides each device should include this information in its documentation. An application program that requires or prefers a particular device can use this information to locate that device.  This approach has the drawback of limiting the program to device implementations that it knows about in advance. 
+</p>
+Another, more general, approach is to go ahead and iterate over the <code>MidiDevice.Info</code> objects, obtaining each corresponding device, and determining programmatically whether it's suitable to use (or at least suitable to include in a list from which the user can choose). The next section describes how to do this.
+
+<H2>Obtaining a Desired Device</H2>
+
+<p>
+Once an appropriate device's info object is found, the application program invokes the following <code>MidiSystem</code> method to obtain the corresponding device itself:
+</p>
+<div class="codeblock"><pre>
+    static MidiDevice getMidiDevice(MidiDevice.Info info)
+</pre></div>
+<p><a name="120804"> </a>
+You can use this method if you've already found the info object describing the device you need. However, if you can't interpret the info objects returned by <code>getMidiDeviceInfo</code> to determine which device you need, and if you don't want to display information about all the devices to the user, you might be able to do the following instead: Iterate over all the <code>MidiDevice.Info</code> objects returned by <code>getMidiDeviceInfo</code>, get the corresponding devices using the method above, and test each device to see whether it's suitable. In other words, you can query each device for its class and its capabilities before including it in the list that you display to the user, or as a way to decide upon a device programmatically without involving the user. For example, if your program needs a synthesizer, you can obtain each of the installed devices, see which are instances of classes that implement the <code>Synthesizer</code> interface, and then display them in a list from which the user can choose one, as follows:
+
+<div class="codeblock"><pre>
+// Obtain information about all the installed synthesizers.
+Vector synthInfos;
+MidiDevice device;
+MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
+for (int i = 0; i &lt; infos.length; i++) {
+    try {
+        device = MidiSystem.getMidiDevice(infos[i]);
+    } catch (MidiUnavailableException e) {
+          // Handle or throw exception...
+    }
+    if (device instanceof Synthesizer) {
+        synthInfos.add(infos[i]);
+    }
+}
+// Now, display strings from synthInfos list in GUI.	
+</pre></div>
+<p><a name="119876"> </a>
+As another example, you might choose a device programmatically, without involving the user.  Let's suppose you want to obtain the synthesizer that can play the most notes simultaneously. <strong> </strong> You iterate over all the MidiDevice.Info objects, as above, but after determining that a device is a synthesizer, you query its capabilities by invoking the <code>getMaxPolyphony</code> method of <code>Synthesizer</code>.   You reserve the synthesizer that has the greatest polyphony, as described in the next section.  Even though you're not asking the user to choose a synthesizer, you might still display strings from the chosen <code>MidiDevice.Info</code> object, just for the user's information.
+
+</p><a name="119891"> </a>
+
+<H2>Opening Devices</H2>
+
+
+<p><a name="119893"> </a>
+The previous section showed how to get an installed device. However, a device might be installed but unavailable. For example, another application program might have exclusive use of it. <strong> </strong>To actually reserve a device for your program, you need to use the <code>MidiDevice</code> method <code>open</code>: 
+</p>
+<div class="codeblock"><pre>
+if (!(device.isOpen())) {
+    try {
+      device.open();
+  } catch (MidiUnavailableException e) {
+          // Handle or throw exception...
+  }
+}
+</pre></div>
+
+<p><a name="119916"> </a> Once you've accessed a device and reserved it by opening 
+  it, you'll probably want to connect it to one or more other devices to let MIDI 
+  data flow between them. This procedure is described in later in 
+ 
+<a class="TutorialLink" target="_top" href="MIDI-messages.html">Transmitting and Receiving MIDI Messages</a>.
+
+<p><a name="121197"> </a>
+When done with a device, you release it for other programs' use by invoking the <code>close</code> method of <code>MidiDevice</code>.
+</p>
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=overview-MIDI.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=./TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=MIDI-messages.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Overview of the MIDI Package
+        <br><b>Next page:</b> Transmitting and Receiving MIDI Messages
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

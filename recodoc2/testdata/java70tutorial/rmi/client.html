@@ -1,0 +1,679 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Creating a Client Program (The Java&trade; Tutorials &gt;        
+            RMI)
+</title>
+
+     <meta name="description" content="This RMI Java tutorial describes the Java RMI system. It walks through a complete client/server example" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java rmi, java client server" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> RMI
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkAHEAD"><a href="overview.html">An Overview of RMI Applications</a></div>
+<div class="linkAHEAD"><a href="server.html">Writing an RMI Server</a></div>
+<div class="linkBHEAD"><a href="designing.html">Designing a Remote Interface</a></div>
+<div class="linkBHEAD"><a href="implementing.html">Implementing a Remote Interface</a></div>
+<div class="nolinkAHEAD">Creating a Client Program</div>
+<div class="linkAHEAD"><a href="example.html">Compiling and Running the Example</a></div>
+<div class="linkBHEAD"><a href="compiling.html">Compiling the Example Programs</a></div>
+<div class="linkBHEAD"><a href="running.html">Running the Example Programs</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=./index.html target=_top>RMI</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=implementing.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=./TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=example.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Creating a Client Program</h1></div>
+            <div id=PageContent>
+The compute engine is a relatively simple program: it runs tasks that are
+handed to it. The clients for the compute engine are more complex. A
+client needs to call the compute engine, but it also has to define the
+task to be performed by the compute engine.
+<P>
+Two separate classes make up the client in our example. The first
+class, <CODE>ComputePi</CODE>, looks up and invokes a
+<CODE>Compute</CODE> object. The second class, <CODE>Pi</CODE>,
+implements the <CODE>Task</CODE> interface and defines the work to be
+done by the compute engine. The job of the <CODE>Pi</CODE> class is to
+compute the value of
+<IMG SRC="../figures/rmi/pi.gif" WIDTH="9" HEIGHT="9" ALT="the pi symbol"> to some number of decimal places.
+<P>
+The non-remote
+
+<a class="SourceLink" target="_blank" href="examples/compute/Task.java"><code><CODE>Task</CODE></code></a>
+interface is defined as follows:
+<div class="codeblock"><pre>
+package compute;
+
+public interface Task&lt;T&gt; {
+    T execute();
+}
+</pre></div>
+<P>
+The code that invokes a <CODE>Compute</CODE> object's methods must obtain
+a reference to that object, create a <CODE>Task</CODE> object, and then
+request that the task be executed. The definition of the task class
+<CODE>Pi</CODE> is shown later. A <CODE>Pi</CODE> object is constructed
+with a single argument, the desired precision of the result. The result
+of the task execution is a <CODE>java.math.BigDecimal</CODE>
+representing
+<IMG SRC="../figures/rmi/pi.gif" WIDTH="9" HEIGHT="9" ALT="the pi symbol"> calculated to the specified precision.
+<P>
+Here is the source code for
+
+<a class="SourceLink" target="_blank" href="examples/client/ComputePi.java"><code><CODE>client.ComputePi</CODE></code></a>, the main client class:
+<div class="codeblock"><pre>
+package client;
+
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.math.BigDecimal;
+import compute.Compute;
+
+public class ComputePi {
+    public static void main(String args[]) {
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+        try {
+            String name = "Compute";
+            Registry registry = LocateRegistry.getRegistry(args[0]);
+            Compute comp = (Compute) registry.lookup(name);
+            Pi task = new Pi(Integer.parseInt(args[1]));
+            BigDecimal pi = comp.executeTask(task);
+            System.out.println(pi);
+        } catch (Exception e) {
+            System.err.println("ComputePi exception:");
+            e.printStackTrace();
+        }
+    }    
+}
+</pre></div>
+<P>
+Like the <CODE>ComputeEngine</CODE> server, the client begins by
+installing a security manager. This step is necessary because the process
+of receiving the server remote object's stub could require downloading
+class definitions from the server. For RMI to download
+classes, a security manager must be in force.
+<P>
+After installing a security manager, the client constructs a name to
+use to look up a <CODE>Compute</CODE> remote object, using the same
+name used by <CODE>ComputeEngine</CODE> to bind its remote object.
+Also, the client uses the <CODE>LocateRegistry.getRegistry</CODE> API to
+synthesize a remote reference to the registry on the server's
+host. The value of the first command-line argument,
+<CODE>args[0]</CODE>, is the name of the remote host on which the
+<CODE>Compute</CODE> object runs. The client then invokes the
+<CODE>lookup</CODE> method on the registry to look up the remote
+object by name in the server host's registry.  The
+particular overload of <CODE>LocateRegistry.getRegistry</CODE> used,
+which has a single <CODE>String</CODE> parameter, returns a
+reference to a registry at the named host and the default registry
+port, 1099.  You must use an overload that has an <CODE>int</CODE>
+parameter if the registry is created on a port other than 1099.
+<P>
+Next, the client creates a new <CODE>Pi</CODE> object, passing to the
+<CODE>Pi</CODE> constructor the value of the second command-line
+argument, <CODE>args[1]</CODE>, parsed as an integer. This argument
+indicates the number of decimal places to
+use in the calculation. Finally, the client invokes the
+<CODE>executeTask</CODE> method of the <CODE>Compute</CODE> remote
+object. The object passed into the <CODE>executeTask</CODE> invocation
+returns an object of type <CODE>BigDecimal</CODE>, which the program
+stores in the variable <CODE>result</CODE>. Finally, the program
+prints the result. The following figure depicts the flow of
+messages among the <CODE>ComputePi</CODE> client, the
+<CODE>rmiregistry</CODE>, and the <CODE>ComputeEngine</CODE>.
+
+<p><center><IMG SRC="../figures/rmi/rmi-4.gif" WIDTH="329" HEIGHT="117" ALIGN="BOTTOM" ALT="the flow of messages between the compute engine, the registry, and the client."></center></p>
+<P>
+The <CODE>Pi</CODE> class implements the <CODE>Task</CODE>
+interface and computes the value of
+<IMG SRC="../figures/rmi/pi.gif " WIDTH="9 " HEIGHT="9  " ALT="the pi symbol"> to a specified number of decimal places. For this example, the actual
+algorithm is unimportant. What is important is that the algorithm is
+computationally expensive, meaning that you would
+want to have it executed on a capable server.
+<P>
+Here is the source code for
+
+<a class="SourceLink" target="_blank" href="examples/client/Pi.java"><code><CODE>client.Pi</CODE></code></a>, the class that implements the <CODE>Task</CODE> interface:
+<div class="codeblock"><pre>
+package client;
+
+import compute.Task;
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+public class Pi implements Task&lt;BigDecimal&gt;, Serializable {
+
+    private static final long serialVersionUID = 227L;
+
+    /** constants used in pi computation */
+    private static final BigDecimal FOUR =
+        BigDecimal.valueOf(4);
+
+    /** rounding mode to use during pi computation */
+    private static final int roundingMode = 
+        BigDecimal.ROUND_HALF_EVEN;
+
+    /** digits of precision after the decimal point */
+    private final int digits;
+    
+    /**
+     * Construct a task to calculate pi to the specified
+     * precision.
+     */
+    public Pi(int digits) {
+        this.digits = digits;
+    }
+
+    /**
+     * Calculate pi.
+     */
+    public BigDecimal execute() {
+        return computePi(digits);
+    }
+
+    /**
+     * Compute the value of pi to the specified number of 
+     * digits after the decimal point.  The value is 
+     * computed using Machin's formula:
+     *
+     *          pi/4 = 4*arctan(1/5) - arctan(1/239)
+     *
+     * and a power series expansion of arctan(x) to 
+     * sufficient precision.
+     */
+    public static BigDecimal computePi(int digits) {
+        int scale = digits + 5;
+        BigDecimal arctan1_5 = arctan(5, scale);
+        BigDecimal arctan1_239 = arctan(239, scale);
+        BigDecimal pi = arctan1_5.multiply(FOUR).subtract(
+                                  arctan1_239).multiply(FOUR);
+        return pi.setScale(digits, 
+                           BigDecimal.ROUND_HALF_UP);
+    }
+    /**
+     * Compute the value, in radians, of the arctangent of 
+     * the inverse of the supplied integer to the specified
+     * number of digits after the decimal point.  The value
+     * is computed using the power series expansion for the
+     * arc tangent:
+     *
+     * arctan(x) = x - (x^3)/3 + (x^5)/5 - (x^7)/7 + 
+     *     (x^9)/9 ...
+     */   
+    public static BigDecimal arctan(int inverseX, 
+                                    int scale) 
+    {
+        BigDecimal result, numer, term;
+        BigDecimal invX = BigDecimal.valueOf(inverseX);
+        BigDecimal invX2 = 
+            BigDecimal.valueOf(inverseX * inverseX);
+
+        numer = BigDecimal.ONE.divide(invX,
+                                      scale, roundingMode);
+
+        result = numer;
+        int i = 1;
+        do {
+            numer = 
+                numer.divide(invX2, scale, roundingMode);
+            int denom = 2 * i + 1;
+            term = 
+                numer.divide(BigDecimal.valueOf(denom),
+                             scale, roundingMode);
+            if ((i % 2) != 0) {
+                result = result.subtract(term);
+            } else {
+                result = result.add(term);
+            }
+            i++;
+        } while (term.compareTo(BigDecimal.ZERO) != 0);
+        return result;
+    }
+}
+</pre></div>
+<P>
+Note that all serializable classes, whether they implement the
+<CODE>Serializable</CODE> interface directly or indirectly, must
+declare a <CODE>private</CODE> <CODE>static</CODE> <CODE>final</CODE>
+field named <CODE>serialVersionUID</CODE> to guarantee
+serialization compatibility between versions.  If no previous version
+of the class has been released, then the value of this field can be
+any <CODE>long</CODE> value, similar to the <CODE>227L</CODE> used by
+<CODE>Pi</CODE>, as long as the value is used consistently in
+future versions.  If a previous version of the class has been released
+without an explicit <CODE>serialVersionUID</CODE> declaration, but
+serialization compatibility with that version is important, then the
+default implicitly computed value for the previous version must be
+used for the value of the new version's explicit declaration.  The
+<CODE>serialver</CODE> tool can be run against the previous version to
+determine the default computed value for it.
+<P>
+The most interesting feature of this example is that the
+<CODE>Compute</CODE> implementation object never needs the <CODE>Pi</CODE> class's
+definition until a <CODE>Pi</CODE> object is passed in as an argument
+to the <CODE>executeTask</CODE> method. At that point, the code for the
+class is loaded by RMI into the <CODE>Compute</CODE> object's Java virtual
+machine, the <CODE>execute</CODE> method is invoked, and the task's code
+is executed. The result, which in the case of
+the <CODE>Pi</CODE> task is a <CODE>BigDecimal</CODE> object,
+is handed back to the calling client, where it is used to print the
+result of the computation.
+<P>
+The fact that the supplied <CODE>Task</CODE> object computes the value
+of <CODE>Pi</CODE> is irrelevant to the <CODE>ComputeEngine</CODE>
+object. You could also implement a task that, for example, generates a
+random prime number by using a probabilistic algorithm. That task would also
+be computationally intensive and therefore a good candidate for passing
+to the <CODE>ComputeEngine</CODE>, but it would require very
+different code. This code could also be downloaded when the
+<CODE>Task</CODE> object is passed to a <CODE>Compute</CODE> object.
+In just the way that the algorithm for computing
+<IMG SRC="../figures/rmi/pi.gif " WIDTH="9 " HEIGHT="9  " ALT="the pi symbol"> is brought in when needed, the code that generates the random prime
+number would be brought in when needed. The <CODE>Compute</CODE>
+object knows only that each object it receives implements the
+<CODE>execute</CODE> method. The <CODE>Compute</CODE> object does not
+know, and does not need to know, what the implementation does.
+        </div>
+        <div class=NavBit>
+            <a target=_top href=implementing.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=./TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=example.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Implementing a Remote Interface
+        <br><b>Next page:</b> Compiling and Running the Example
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

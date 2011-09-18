@@ -1,0 +1,1440 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>How to Use BoxLayout (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Laying Out Components Within a Container)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Laying Out Components Within a Container
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Laying Out Components Within a Container</a></div>
+<div class="linkAHEAD"><a href="visual.html">A Visual Guide to Layout Managers</a></div>
+<div class="linkAHEAD"><a href="using.html">Using Layout Managers</a></div>
+<div class="linkAHEAD"><a href="howLayoutWorks.html">How Layout Management Works</a></div>
+<div class="linkAHEAD"><a href="layoutlist.html">How to Use Various Layout Managers</a></div>
+<div class="linkAHEAD"><a href="border.html">How to Use BorderLayout</a></div>
+<div class="nolinkAHEAD">How to Use BoxLayout</div>
+<div class="linkAHEAD"><a href="card.html">How to Use CardLayout</a></div>
+<div class="linkAHEAD"><a href="flow.html">How to Use FlowLayout</a></div>
+<div class="linkAHEAD"><a href="gridbag.html">How to Use GridBagLayout</a></div>
+<div class="linkAHEAD"><a href="grid.html">How to Use GridLayout</a></div>
+<div class="linkAHEAD"><a href="group.html">How to Use GroupLayout</a></div>
+<div class="linkBHEAD"><a href="groupExample.html">A GroupLayout Example</a></div>
+<div class="linkAHEAD"><a href="spring.html">How to Use SpringLayout</a></div>
+<div class="linkAHEAD"><a href="custom.html">Creating a Custom Layout Manager</a></div>
+<div class="linkAHEAD"><a href="none.html">Doing Without a Layout Manager (Absolute Positioning)</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Layout Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Laying Out Components Within a Container</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=border.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=card.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>How to Use BoxLayout</h1></div>
+            <div id=PageContent>
+<div class="note"><hr><strong>Note:</strong>&nbsp;This lesson covers writing layout code by hand, which can be challenging. If you are not interested in learning all the details of layout management, you might prefer to use the <code>GroupLayout</code> layout manager combined with a builder tool to lay out your GUI. One such builder tool is the  
+
+<a class="TutorialLink" target="_top" href="../learn/index.html">NetBeans IDE</a>. Otherwise, if you want to code by hand and do not want to use <code>GroupLayout</code>, then <code>GridBagLayout</code> is recommended as the next most flexible and powerful layout manager.
+ 
+
+<hr></div> 
+
+
+
+
+
+The Swing packages include a general purpose layout manager named
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/BoxLayout.html"><code>BoxLayout</code></a>.  <code>BoxLayout</code>
+either stacks its components
+on top of each other
+or places them in a row &mdash;
+your choice.
+You might think of it as a version of
+<a href="flow.html"><code>FlowLayout</code></a>, but with greater functionality.
+Here is a picture of an application
+that demonstrates using <code>BoxLayout</code>
+to display a centered column of components:
+
+<p>
+<p><center><IMG SRC="../../figures/uiswing/layout/BoxLayoutDemo.png" WIDTH="203" HEIGHT="164" ALIGN="BOTTOM" ALT="A snapshot of BoxLayoutDemo"></center></p>Click the Launch button to run BoxLayoutDemo using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/layout/index.html#BoxLayoutDemo">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/layout/ex6/BoxLayoutDemo.jnlp"><img src="../../images/jws-launch-button.png"
+width="88" height="23" align="bottom" alt="Launches the BoxLayoutDemo example"></a>
+</center>
+<p>
+You can see the code in
+<a class="SourceLink" target="_blank" href="../examples/layout/BoxLayoutDemoProject/src/layout/BoxLayoutDemo.java"><code>BoxLayoutDemo.java</code></a>.
+
+<p>
+
+The following figure shows a GUI
+that uses two instances of <code>BoxLayout</code>.
+In the top part of the GUI,
+a top-to-bottom box layout
+places a label above a scroll pane.
+In the bottom part of the GUI,
+a left-to-right box layout
+places two buttons next to each other.
+A <code>BorderLayout</code>
+combines the two parts of the GUI
+and ensures that any excess space
+is given to the scroll pane.
+
+<p><center><IMG SRC="../../figures/uiswing/layout/ListDialogMetal.png" WIDTH="278" HEIGHT="191" ALIGN="BOTTOM" ALT="Uses both left-to-right and top-to-bottom box layouts"></center></p>
+You can find links for running ListDialog
+and for its source files in the
+<a class="TutorialLink" target="_top" href="../components/../examples/components/index.html#ListDialog">example index</a> for Using Swing Components.
+
+<!--
+<p>
+<font color=gray>
+[PENDING: add boxes and callouts:
+Draw a box that includes the buttons
+(aligned with the buttons' top edges,
+even with the inside edge of the window-frame on the bottom,
+and stretching between the inside edges of the window-frame
+from side to side;
+in other words, 0 pixels above the buttons,
+10 pixels below and to the right of the buttons,
+and 10 pixels further left than the list).
+Label this box "left-to-right box layout".
+Draw a second box that has the same lower borders as the first box
+and extends up to the window-frame's inner edge.
+Label this box "top-to-bottom box layout".]
+</font>
+-->
+
+<p>
+The following code,
+taken from
+<a class="SourceLink" target="_blank" href="../examples/components/ListDialogRunnerProject/src/components/ListDialog.java"><code><code>ListDialog.java</code></code></a>, lays out the GUI.
+This code is in the constructor for the dialog,
+which is implemented as a <code>JDialog</code> subclass.
+The bold lines of code
+set up the box layouts
+and add components to them.
+
+<p>
+<div class="codeblock"><pre>
+JScrollPane listScroller = new JScrollPane(list);
+listScroller.setPreferredSize(new Dimension(250, 80));
+listScroller.setAlignmentX(LEFT_ALIGNMENT);
+...
+//Lay out the label and scroll pane from top to bottom.
+JPanel listPane = new JPanel();
+<b>listPane.setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));</b>
+JLabel label = new JLabel(labelText);
+...
+<b>listPane.add(label);</b>
+<b>listPane.add(Box.createRigidArea(new Dimension(0,5)));</b>
+<b>listPane.add(listScroller);</b>
+listPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+
+//Lay out the buttons from left to right.
+JPanel buttonPane = new JPanel();
+<b>buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));</b>
+buttonPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+<b>buttonPane.add(Box.createHorizontalGlue());</b>
+<b>buttonPane.add(cancelButton);</b>
+<b>buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));</b>
+<b>buttonPane.add(setButton);</b>
+
+//Put everything together, using the content pane's BorderLayout.
+Container contentPane = getContentPane();
+contentPane.add(listPane, BorderLayout.CENTER);
+contentPane.add(buttonPane, BorderLayout.PAGE_END);
+</pre></div>
+<p>
+
+The first bold line creates a top-to-bottom box layout
+and sets it up as the layout manager for <code>listPane</code>.
+The two arguments to the <code>BoxLayout</code> constructor
+are the container that it manages
+and the axis along which the components will be laid out. The <code>PAGE_AXIS</code> constant specifies that components should be laid out in the direction that lines flow across a page as determined by the target container's <code>ComponentOrientation</code> property. The <code>LINE_AXIS</code> constant specifies that components should be laid out in the direction of a line of text as determined by the target container's <code>ComponentOrientation</code> property. These constants allow for internationalization, by laying out components in their container with the correct left-to-right, right-to-left or top-to-bottom orientation for the language being used.
+
+<p>
+The next three bold lines
+add the label and scroll pane to the container,
+separating them with a <em>rigid area</em> &mdash;
+an invisible component used
+to add space between components.
+In this case, the rigid area has no width
+and puts exactly 5 pixels between the label and scroll pane.
+Rigid areas are discussed later, in
+<a href="#filler">Using Invisible Components as Filler</a>.
+
+<p>
+
+The next chunk of bold code
+creates a left-to-right box layout
+and sets it up for the <code>buttonPane</code> container.
+Then the code adds two buttons to the container,
+using a rigid area to put 10 pixels
+between the buttons.
+To place the buttons at the right side of their container,
+the first component added to the container is <em>glue</em>.
+This glue is an invisible component
+that grows as necessary to absorb any extra space in its container.
+Glue is discussed in
+<a href="#filler">Using Invisible Components as Filler</a>.
+
+<p>
+
+As an alternative to using invisible components,
+you can sometimes use empty borders to create space around components, most particularly panels.
+For example, the preceding code snippet uses
+empty borders to put 10 pixels
+between all sides of the dialog and its contents,
+and between the two parts of the contents.
+Borders are completely independent of layout managers.
+They are simply how Swing components draw their edges and provide padding between the content of the component and the edge.
+See
+<a class="TutorialLink" target="_top" href="../components/border.html">How to Use Borders</a> for more information.
+
+<p>
+
+The following sections discuss <code>BoxLayout</code>
+in more detail:
+
+<ul>
+<li> <a href="#features">Box layout features</a>
+<li> <a href="#filler">Using invisible components as filler</a>
+<li> <a href="#alignment">Fixing alignment problems</a>
+<li> <a href="#size">Specifying component sizes</a>
+<li> <a href="#api">The box layout API</a>
+<li> <a href="#eg">Examples that use box layouts</a>
+</ul>
+
+Do not let the length of the <code>BoxLayout</code> discussion
+scare you!
+You can probably use <code>BoxLayout</code>
+with the information you already have.
+If you run into trouble or you want to take advantage of
+<code>BoxLayout</code>'s power,
+read on.
+
+
+<h2>
+<a name="features">
+Box Layout Features
+</a>
+</h2>
+
+
+As said before,
+<code>BoxLayout</code> arranges components either
+on top of each other
+or in a row.
+As the box layout arranges components,
+it takes the components'
+alignments and minimum, preferred, and maximum sizes into account.
+In this section, we will talk about top-to-bottom layout.
+The same concepts apply to left-to-right or right-to-left layout.
+You simply substitute X for Y,
+height for width, and so on.
+
+<div class="note"><hr><strong>Version note:</strong>&nbsp;Before JDK version 1.4, no constants existed for specifying the
+box layout's axis
+in a localizable way.
+Instead, you specified <code>X_AXIS</code>
+(left to right)
+or <code>Y_AXIS</code>
+(top to bottom)
+when creating the <code>BoxLayout</code>.
+Our examples now use the constants
+<code>LINE_AXIS</code> and <code>PAGE_AXIS</code>,
+which are preferred
+because they enable programs to adjust
+to languages that have different orientations.
+In the default, left-to-right orientation,
+<code>LINE_AXIS</code> specifies left-to-right layout
+and <code>PAGE_AXIS</code> specifies top-to-bottom layout.
+<hr></div>
+
+<p>
+
+When a <code>BoxLayout</code> lays out components
+from top to bottom,
+it tries to size each component at the component's preferred height.
+If the vertical space of the layout does not match the sum of the preferred heights, then <code>BoxLayout</code> tries to resize the components to fill the space. The components either grow or shrink to fill the space, with <code>BoxLayout</code> honoring the minimum and maximum sizes of each of the components. Any extra space appears at the bottom of the container.
+
+
+
+<p>
+
+For a top-to-bottom box layout, the preferred width of the container is that of the maximum preferred width of the children. If the container is forced to be wider than that, <code>BoxLayout</code> attempts to size the width of each component to that of the container's width (minus insets). If the maximum size of a component is smaller than the width of the container, then X alignment comes into play.
+
+
+
+<p>
+
+The X alignments affect not only the components' positions
+relative to each other,
+but also the location of the components (as a group)
+within their container.
+The following figures illustrate alignment
+of components that have restricted maximum widths.
+
+
+<p align=center>
+<IMG SRC="../../figures/uiswing/layout/BoxLayoutDemo-left.png" WIDTH="124" HEIGHT="181" ALT="Three left-aligned components">&nbsp;
+<IMG SRC="../../figures/uiswing/layout/BoxLayoutDemo-center.png" WIDTH="126" HEIGHT="181" ALT="Three center-aligned components">&nbsp;
+<IMG SRC="../../figures/uiswing/layout/BoxLayoutDemo-right.png" WIDTH="124" HEIGHT="181" ALT="Three right-aligned components"></p>
+
+<p>
+In the first figure, all three components have an X alignment
+of 0.0 (<code>Component.LEFT_ALIGNMENT</code>).
+This means that the components' left sides
+should be aligned.
+Furthermore, it means that all three components are positioned
+as far left in their container as possible.
+
+<p>
+
+In the second figure,
+all three components have an X alignment
+of 0.5 (<code>Component.CENTER_ALIGNMENT</code>).
+This means that the components' centers
+should be aligned,
+and that the components should be positioned
+in the horizontal center of their container.
+
+<p>
+
+In the third figure,
+the components have an X alignment
+of 1.0 (<code>Component.RIGHT_ALIGNMENT</code>).
+You can guess what that means for the components'
+alignment and position relative to their container.
+
+<p>
+
+You might be wondering what happens
+when the components have both restricted maximum sizes
+and different X alignments.
+The next figure shows an example of this:
+
+<p><center><IMG SRC="../../figures/uiswing/layout/BoxLayoutDemo-wacky.png" WIDTH="249" HEIGHT="181" ALIGN="BOTTOM" ALT="Three components with mixed X alignments"></center></p>
+<p>
+As you can see, the left side of the component
+with an X alignment of 0.0
+(<code>Component.LEFT_ALIGNMENT</code>)
+is aligned with the center of the component
+that has the 0.5 X alignment
+(<code>Component.CENTER_ALIGNMENT</code>),
+which is aligned with
+the right side of the component
+that has an X alignment of 1.0
+(<code>Component.RIGHT_ALIGNMENT</code>).
+Mixed alignments like this are further discussed in
+<a href="#alignment">Fixing Alignment Problems</a>.
+
+<p>
+
+What if none of the components has a maximum width?
+In this case, if all the components have identical X alignment,
+then all components are made as wide as their container.
+If the X alignments are different,
+then any component with an X alignment of 0.0 (left)
+or 1.0 (right) will be smaller.
+All components with an intermediate X alignment (such as center)
+will be as wide as their container.
+Here are two examples:
+
+<p align=center>
+<IMG SRC="../../figures/uiswing/layout/BoxLayoutDemo-left2.png" WIDTH="200" HEIGHT="181" ALT="Three components with mixed X alignments and no maximum size">&nbsp;
+<IMG SRC="../../figures/uiswing/layout/BoxLayoutDemo-wacky2.png" WIDTH="202" HEIGHT="181" ALT="Three components with mixed X alignments and no maximum size"></p>
+
+To get to know <code>BoxLayout</code> better,
+you can run your own experiments with BoxLayoutDemo2.
+
+
+<div class="note"><hr><strong>Try this:</strong>&nbsp;
+<ol>
+<li>Click the Launch button to run BoxLayoutDemo2 using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/layout/index.html#BoxLayoutDemo2">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/layout/ex6/BoxLayoutDemo2.jnlp"><img src="../../images/jws-launch-button.png"
+width="88" height="23" align="bottom" alt="Launches the BoxLayoutDemo2 example"></a>
+</center>
+<p>
+You can see the code in
+<a class="SourceLink" target="_blank" href="../examples/layout/BoxLayoutDemo2Project/src/layout/BoxLayoutDemo2.java"><code>BoxLayoutDemo2.java</code></a>.   
+<br>
+     You will see a window like the one above that contains three
+     rectangles.  Each rectangle is an instance of <code>BLDComponent</code>,
+     which is a <code>JComponent</code> subclass.
+
+<li>Click inside one of the rectangles.
+     <br>
+     This is how you change the rectangle's X alignment.
+
+<li> Click the check box at the bottom of the window.
+     <br>
+     This turns off restricted sizing for all the rectangles.
+
+<li> Make the window taller.
+     <br>
+     This makes the rectangles' container
+     larger than the sum of the rectangles' preferred sizes.
+     The container is a <code>JPanel</code> that has
+     a red outline, so that you can tell where the container's
+     edges are.
+</ol>
+<hr></div>
+
+<p>
+
+
+<h2>
+<a name="filler">
+Using Invisible Components as Filler
+</a>
+</h2>
+
+
+Each component controlled by a box layout
+butts up against its neighboring components.
+If you want to have space between components,
+you can either add an empty
+<a href="border.html">border</a> to one or both components,
+or insert invisible components to provide the space.
+You can create invisible components
+with the help of the <code>Box</code> class.
+
+<p>
+
+The
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Box.html"><code>Box</code></a> class defines a nested class,
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/Box.Filler.html"><code>Box.Filler</code></a>, that is a transparent component that paints nothing, and is used to provide space between other components. However, <code>Filler</code> is not actually invisible, because <code>setVisible(false)</code> is not invoked. 
+The <code>Box</code> class
+provides convenience methods
+to help you create common kinds of filler.
+The following table gives details about
+creating invisible components with <code>Box</code> and
+<code>Box.Filler</code>.
+
+<p>
+
+<table border="1" summary="Details about creating invisible components with Box or Box.Filler">
+<tr>
+  <th id="h1">Type</th>
+  <th id="h2">Size Constraints</th>
+  <th id="h3">How to Create</th>
+</tr>
+
+<tr>
+  <td headers="h1"><a href="#rigidarea">rigid area</a></td>
+  <td headers="h2">
+<CENTER>
+<IMG SRC="../../figures/uiswing/layout/7fill.gif" WIDTH="42" HEIGHT="42" ALT="Three components with mixed X alignments and no maximum size"></CENTER>
+  </td>
+  <td headers="h3"><code>Box.createRigidArea(size)</code></td>
+</tr>
+
+
+
+
+
+<tr>
+  <td headers="h1"><a href="#glue">glue</a>, horizontal</td>
+  <td headers="h2">
+<CENTER>
+<IMG SRC="../../figures/uiswing/layout/9fill.gif" WIDTH="60" HEIGHT="13" ALT="Three components with mixed X alignments and no maximum size"></CENTER>
+  </td>
+  <td headers="h3"><code>Box.createHorizontalGlue()</code></td>
+</tr>
+
+<tr>
+  <td headers="h1"><a href="#glue">glue</a>, vertical</td>
+  <td headers="h2">
+<CENTER>
+<IMG SRC="../../figures/uiswing/layout/8fill.gif" WIDTH="13" HEIGHT="60" ALT="Three components with mixed X alignments and no maximum size"></CENTER>
+  </td>
+  <td headers="h3"><code>Box.createVerticalGlue()</code></td>
+</tr>
+
+<tr>
+  <td headers="h1"><a href="#box.filler">custom <code>Box.Filler</code></a></td>
+  <td headers="h2"><em>(as specified)</em></td>
+  <td headers="h3"><code>new Box.Filler(minSize,
+  prefSize, maxSize)</code></td>
+</tr>
+
+</table>
+
+<p>Here is how you generally use each type of filler:</p>
+
+<dl>
+<dt> <a name="rigidarea"><strong>Rigid area</strong></a></dt>
+<dd> Use this when you want a fixed-size space between two components.
+     For example, to put 5 pixels between two components
+     in a left-to-right box,
+     you can use this code:
+<div class="codeblock"><pre>
+container.add(firstComponent);
+container.add(Box.createRigidArea(new Dimension(5,0)));
+container.add(secondComponent);
+</pre></div>
+
+
+<p>
+<IMG SRC="../../figures/uiswing/layout/3fill.gif" WIDTH="169" HEIGHT="95" ALT="Without rigid area"><IMG SRC="../../figures/uiswing/layout/6fill.gif" WIDTH="168" HEIGHT="95" ALT="With rigid area"></p>
+
+
+<hr>
+<p><strong>Note:</strong>
+The <code>Box</code> class provides another kind of filler
+for putting fixed space between components: a
+vertical or horizontal strut.
+Unfortunately, struts have unlimited maximum heights or widths
+(for horizontal and vertical struts, respectively).
+This means that if you use a horizontal box within a vertical box,
+for example,
+the horizontal box can sometimes become too tall.
+For this reason,
+we recommend that you use rigid areas instead of struts.</p>
+<hr>
+
+</dd>
+<dt> <a name="glue"><strong>Glue</strong></a></dt>
+<dd> Use this to specify where excess space in a layout
+     should go.
+     Think of it as a kind of elastic glue &mdash;
+     stretchy and expandable, yet taking up no space
+     unless you pull apart the components that it is sticking to.
+     For example, by putting horizontal glue
+     between two components in a left-to-right box,
+     you make any extra space go between those components,
+     instead of to the right of all the components.
+     Here is an example of making the space in a left-to-right box
+     go between two components,
+     instead of to the right of the components:
+     <div class="codeblock"><pre>
+container.add(firstComponent);
+container.add(Box.createHorizontalGlue());
+container.add(secondComponent);
+</pre></div>
+
+<p>
+<IMG SRC="../../figures/uiswing/layout/2fill.gif" WIDTH="171" HEIGHT="99" ALT="Without horizontal glue"><IMG SRC="../../figures/uiswing/layout/5fill.gif" WIDTH="171" HEIGHT="99" ALT="With glue"></p>
+</dd>
+<dt> <a name="box.filler"><strong>Custom <code>Box.Filler</code></strong></a></dt>
+<dd> Use this to specify a component
+     with whatever minimum, preferred, and maximum
+     sizes you want.  For example,
+     to create some filler in a left-to-right layout that puts
+     at least 5 pixels between two components
+     and ensures that the container has a minimum height of 100 pixels,
+     you could use this code:
+<div class="codeblock"><pre>
+container.add(firstComponent);
+Dimension minSize = new Dimension(5, 100);
+Dimension prefSize = new Dimension(5, 100);
+Dimension maxSize = new Dimension(Short.MAX_VALUE, 100);
+container.add(new Box.Filler(minSize, prefSize, maxSize));
+container.add(secondComponent);
+
+</pre></div>
+
+<p>
+<IMG SRC="../../figures/uiswing/layout/1fill.gif" WIDTH="171" HEIGHT="99" ALT="Without custom filler">
+<IMG SRC="../../figures/uiswing/layout/4fill.gif" WIDTH="166" HEIGHT="121" ALT="With custom filler"></p>
+</dd>
+</dl>
+
+<h2>
+<a name="alignment">
+Fixing Alignment Problems
+</a>
+</h2>
+
+
+Two types of alignment problems sometimes occur with <code>BoxLayout</code>:
+
+<ul>
+<li> A group of components all have the same alignment,
+     but you want to change their alignment
+     to make them look better.
+     For example, instead of having the centers of
+     a group of left-to-right buttons all in a line,
+     you might want the bottoms of the buttons to be aligned.
+     Here is an example:
+
+<p>
+<IMG SRC="../../figures/uiswing/layout/AlignmentDemo-0.png" WIDTH="458" HEIGHT="214" ALT="Customizing alignment">
+<li> Two or more components controlled
+     by a <code>BoxLayout</code> have different default alignments,
+     which causes them to be mis-aligned.
+     For example, as the following shows,
+     if a label and a panel
+     are in a top-to-bottom box layout,
+     the label's left edge is, by default,
+     aligned with the center of the panel.
+
+<p>
+<IMG SRC="../../figures/uiswing/layout/AlignmentDemo-1.png" WIDTH="458" HEIGHT="214" ALT="X alignment mismatch"></ul>
+
+<p>
+
+In general, all the components
+controlled by a top-to-bottom <code>BoxLayout</code> object
+should have the same X alignment.
+Similarly,
+all the components controlled by a left-to-right <code>Boxlayout</code>
+should generally have the same Y alignment.
+You can set a <code>JComponent</code>'s X alignment
+by invoking its <code>setAlignmentX</code> method.
+An alternative available to all components is to override the
+<code>getAlignmentX</code> method
+in a custom subclass of the component class.
+Similarly, you set the Y alignment of a component
+by invoking the <code>setAlignmentY</code> method
+or by overriding <code>getAlignmentY</code>.
+
+<p>
+
+Here is an example, taken from an application called
+<a href="../examples/layout/index.html#BoxAlignmentDemo"><code>BoxAlignmentDemo</code></a>,
+of changing the Y alignments of two buttons
+so that the bottoms of the buttons are aligned:
+
+<div class="codeblock"><pre>
+button1.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+button2.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+</pre></div>
+
+<p>
+Click the Launch button to run BoxAlignmentDemo using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/layout/index.html#BoxAlignmentDemo">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/layout/ex6/BoxAlignmentDemo.jnlp"><img src="../../images/jws-launch-button.png"
+width="88" height="23" align="bottom" alt="Launches the BoxAlignmentDemo example"></a>
+</center>
+<p>
+By default, most components have center X and Y alignment.
+However, buttons, combo boxes, labels, and menu items
+have a different default X alignment value:
+<code>LEFT_ALIGNMENT</code>.
+The previous picture shows what happens
+if you put a left-aligned component such as a label
+together with a center-aligned component
+in a container controlled by a top-to-bottom <code>BoxLayout</code>.
+
+<p>
+
+The <a href="../examples/layout/index.html#BoxAlignmentDemo"><code>BoxAlignmentDemo</code></a>
+program gives examples of fixing mismatched alignment problems.
+Usually, it is as simple
+as making an offending button or label
+be center aligned.
+For example:
+
+<div class="codeblock"><pre>
+label.setAlignmentX(Component.CENTER_ALIGNMENT);
+</pre></div>
+
+<p>
+
+
+
+<h2>
+<a name="size">
+Specifying Component Sizes
+</a>
+</h2>
+
+
+<p>
+As mentioned before,
+<code>BoxLayout</code> pays attention
+to a component's requested minimum, preferred, and maximum sizes.
+While you are fine-tuning the layout,
+you might need to adjust these sizes.
+
+<p>
+
+Sometimes the need to adjust the size is obvious.
+For example, a button's maximum size
+is generally the same as its preferred size.
+If you want the button
+to be drawn wider
+when additional space is available,
+then you need to change its maximum size.
+
+<p>
+
+Sometimes, however, the need to adjust size is not so obvious.
+You might be getting unexpected results with a box layout,
+and you might not know why.
+In this case, it is usually best
+to treat the problem as an
+<a href="#alignment">alignment problem</a> first.
+If adjusting the alignments does not help,
+then you might have a size problem.
+We'll discuss this further a bit later.
+
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;
+Although <code>BoxLayout</code> pays attention to
+a component's maximum size,
+many layout managers do not.
+For example, if you put a button
+in the bottom part of a <code>BorderLayout</code>,
+the button will probably be wider than its preferred width,
+no matter what the button's maximum size is.
+<code>BoxLayout</code>, on the other hand,
+never makes a button wider than its maximum size.
+<hr></div>
+
+<p>
+
+You can change the minimum, preferred, and maximum sizes
+in two ways:
+
+<ul>
+<li> By invoking the appropriate <code>set<em>Xxx</em>Size</code> method
+     (which is defined by the <code>JComponent</code> class).
+     For example:
+<div class="codeblock"><pre>
+comp.setMinimumSize(new Dimension(50, 25));
+comp.setPreferredSize(new Dimension(50, 25));
+comp.setMaximumSize(new Dimension(Short.MAX_VALUE,
+                                  Short.MAX_VALUE));
+</pre></div>
+<li> By overriding the appropriate <code>get<em>Xxx</em>Size</code> method.
+     For example:
+<div class="codeblock"><pre>
+<em>...//in a subclass of a component class:</em>
+public Dimension getMaximumSize() {
+    size = getPreferredSize();
+    size.width = Short.MAX_VALUE;
+    return size;
+}
+</pre></div>
+</ul>
+
+<p>
+
+
+<p>
+
+If you are running into trouble with a box layout
+and you have ruled out alignment problems,
+then the trouble might well be size-related.
+For example, if the container controlled by the box layout
+is taking up too much space,
+then one or more of the components in the container
+probably needs to have its maximum size restricted.
+
+<p>
+
+You can use two techniques to track down size trouble
+in a box layout:
+
+<ul>
+<li> Add a garish line <a href="border.html">border</a>
+     to the outside of the Swing components in question.
+     This lets you see what size they really are.
+     For example:
+<div class="codeblock"><pre>
+comp.setBorder(BorderFactory.createCompoundBorder(
+                   BorderFactory.createLineBorder(Color.red),
+                   comp.getBorder()));
+</pre></div>
+
+<li> Use <code>System.out.println</code>
+     to print the components' minimum, preferred, and maximum
+     sizes, and perhaps their bounds.
+</ul>
+
+<h2>
+<a name="api">The Box Layout API</a>
+</h2>
+
+<p>
+The following tables list the commonly used
+<code>BoxLayout</code> and
+<code>Box</code> constructors and methods.
+The API for using box layouts falls into these categories:
+
+<p>
+
+<ul>
+<li><a href="#construct">Creating <code>BoxLayout</code> objects</a>
+<li><a href="#fillerapi">Creating space fillers</a>
+<li><a href="#other">Other useful methods</a>
+</ul>
+
+<p>
+
+<table border="1" summary="Creating BoxLayout Objects">
+
+  <caption><a name="construct">Creating <code>BoxLayout</code> Objects</a></caption>
+  <tr>
+    <th id="h101">Constructor or Method</th>
+    <th id="h102">Purpose</th>
+  </tr>
+
+  <tr>
+    <td headers="h101"><code>BoxLayout(Container, int)</code></td>
+    <td headers="h102">Creates a <code>BoxLayout</code> instance
+    that controls the specified <code>Container</code>.
+    The integer argument specifies the axis
+    along which the container's components
+    should be laid out.
+    When the container has the default component orientation,
+    <code>BoxLayout.LINE_AXIS</code>
+    specifies that the components be laid out
+    from left to right,
+    and <code>BoxLayout.PAGE_AXIS</code>
+    specifies that the components be laid out
+    from top to bottom.
+    </td>
+  </tr>
+
+  <tr>
+    <td headers="h101"><code>Box(int)</code></td>
+    <td headers="h102">Creates a <code>Box</code> &mdash; a container
+    that uses a <code>BoxLayout</code>
+    with the specified axis.
+    As of release 1.3,
+    <code>Box</code> extends <code>JComponent</code>.
+    Before that,
+    it was implemented as a subclass of <code>Container</code>.
+    </td>
+  </tr>
+
+
+  <tr>
+    <td headers="h101"><code>static Box createHorizontalBox()</code>
+      <br>
+      <em>(in <code>Box</code>)</em></td>
+    <td headers="h102">Creates a <code>Box</code> that lays out its components
+    from left to right.</td>
+  </tr>
+
+
+  <tr>
+    <td headers="h101"><code>static Box createVerticalBox()</code>
+      <br>
+      <em>(in <code>Box</code>)</em></td>
+    <td headers="h102">Creates a <code>Box</code> that lays out its components from top to bottom.</td>
+  </tr>
+
+
+</table>
+
+
+
+<table border="1" summary="Creating Space Fillers">
+  <caption><a name="fillerapi">Creating Space Fillers</a>
+  <br>
+  <em>These methods are defined in the <code>Box</code> class.</em></caption>
+
+<tr>
+  <th id="h201">Constructor or Method</th>
+  <th id="h202">Purpose</th>
+</tr>
+
+<tr>
+  <td headers="h201"><code>Component createRigidArea(Dimension)</code></td>
+  <td headers="h202">Create a <a href="#rigidarea">rigid</a> component.</td>
+</tr>
+
+<tr>
+  <td headers="h201"><code>Component createHorizontalGlue()
+    <br>
+    Component createVerticalGlue()
+    <br>
+    Component createGlue()</code></td>
+
+  <td headers="h202">Create a <a href="#glue">glue</a> component.
+    Horizontal glue and vertical glue can be very useful.</td>
+
+</tr>
+
+
+<tr>
+<td headers="h201"><code>Component createHorizontalStrut()
+    <br>
+    Component createVerticalStrut()</code>
+</td>
+<td headers="h202">Create a "strut" component.
+    We recommend using rigid areas
+    instead of struts.
+</td>
+</tr>
+
+
+<tr>
+<td headers="h201"><code>Box.Filler(Dimension, Dimension,
+    Dimension)</code></td>
+<td headers="h202">Creates a component with the specified
+    minimum, preferred, and maximum sizes
+    (with the arguments specified in that order).
+    See the
+    <a href="#box.filler">custom <code>Box.Filler</code></a>
+    discussion,
+    earlier in this section, for details.
+</td>
+</tr>
+
+
+</table>
+
+<p>
+
+
+<table border="1" summary="Other Useful Methods">
+<caption><a name="other">Other Useful Methods</a></caption>
+<tr>
+<th id="h301">Method
+</th>
+<th id="h302">Purpose
+
+</th>
+</tr>
+<tr>
+<td headers="h301"><code>void changeShape(Dimension, Dimension,
+    Dimension)</code> <em>(in <code>Box.Filler</code>)</em>
+</td>
+<td headers="h302">Change the minimum, preferred, and maximum sizes
+    of the recipient <code>Box.Filler</code> object.
+    The layout changes accordingly.
+</td>
+</tr>
+
+</table>
+
+
+<h2>
+<a name="eg">Examples that Use Box Layouts</a>
+</h2>
+
+
+The following table lists some of the many examples
+that use box layouts.
+
+<p>
+<table summary="Examples that use box layouts">
+<tr>
+<th id="h401" align=left> Example
+</th>
+<th id="h402" align=left> Where Described
+</th>
+<th id="h403" align=left> Notes
+
+</th>
+</tr>
+<tr>
+<td headers="h401" valign=top> <a href="../examples/layout/index.html#BoxLayoutDemo2">BoxLayoutDemo2</a>
+</td>
+<td headers="h402" valign=top> This page
+</td>
+<td headers="h403" valign=top> Uses a box layout to create a centered column of components.
+
+</td>
+</tr>
+<tr>
+<td headers="h401" valign=top> <a href="../examples/layout/index.html#BoxAlignmentDemo">BoxAlignmentDemo</a>
+</td>
+<td headers="h402" valign=top> This page
+</td>
+<td headers="h403" valign=top> Demonstrates how to fix common alignment problems.
+</td>
+</tr>
+<tr>
+<td headers="h401" valign=top> <a href="../examples/layout/index.html#BoxLayoutDemo">BoxLayoutDemo</a>
+</td>
+<td headers="h402" valign=top> This page
+</td>
+<td headers="h403" valign=top> Lets you play with alignments and maximum sizes.
+
+</td>
+</tr>
+<tr>
+<td headers="h401" valign=top>
+<a class="TutorialLink" target="_top" href="../components/../examples/components/index.html#ListDialog">ListDialog</a></td>
+<td headers="h402" valign=top> This page
+</td>
+<td headers="h403" valign=top> A simple yet realistic example
+     of using both a top-to-bottom box layout
+     and a left-to-right one.
+     Uses horizontal glue, rigid areas, and empty borders.
+     Also sets the X alignment of a component.
+
+</td>
+</tr>
+<tr>
+<td headers="h401" valign=top>
+<a class="TutorialLink" target="_top" href="../events/../examples/events/index.html#InternalFrameEventDemo">InternalFrameEventDemo</a></td>
+<td headers="h402" valign=top>
+<a class="TutorialLink" target="_top" href="../events/internalframelistener.html">How to Write an Internal Frame Listener</a></td>
+<td headers="h403" valign=top> Uses a top-to-bottom layout to center
+     buttons and a scroll pane
+     in an internal frame.
+
+</td>
+</tr>
+<tr>
+<td headers="h401" valign=top>
+<a class="TutorialLink" target="_top" href="../components/../examples/components/index.html#MenuGlueDemo">MenuGlueDemo</a></td>
+<td headers="h402" valign=top>
+<a class="TutorialLink" target="_top" href="../components/menu.html#custom">Customizing Menu Layout</a>
+</td>
+<td headers="h403" valign=top> Shows how to right-align a menu in the menu bar,
+     using a glue component.
+
+</td>
+</tr>
+<tr>
+<td headers="h401" valign=top>
+<a class="TutorialLink" target="_top" href="../components/../examples/components/index.html#MenuLayoutDemo">MenuLayoutDemo</a></td>
+<td headers="h402" valign=top>
+<a class="TutorialLink" target="_top" href="../components/menu.html#custom">Customizing Menu Layout</a></td>
+<td headers="h403" valign=top> Shows how to customize menu layout
+     by changing the menu bar to use a top-to-bottom box layout,
+     and the popup menu to use a left-to-right box layout.
+
+</td>
+</tr>
+<tr>
+<td headers="h401" valign=top>
+<code>ConversionPanel.java</code> in the
+<a class="TutorialLink" target="_top" href="../components/../examples/components/index.html#Converter">Converter</a> demo
+</td>
+<td headers="h402" valign=top>
+<a class="TutorialLink" target="_top" href="../components/panel.html">How to Use Panels</a></td>
+<td headers="h403" valign=top> Aligns two components in different box-layout-controlled containers
+     by setting the components' widths to be the same,
+     and their containers' widths to be the same.
+</td>
+</tr>
+</table>
+
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=border.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=card.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h501" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h501" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h502" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Use BorderLayout
+        <br><b>Next page:</b> How to Use CardLayout
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

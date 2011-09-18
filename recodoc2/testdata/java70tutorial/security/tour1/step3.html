@@ -1,0 +1,628 @@
+ 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>See the Policy File Effects (The Java&trade; Tutorials &gt;        
+            Security Features in Java SE &gt; Quick Tour of Controlling Applets)
+</title>
+
+     <meta name="description" content="This security Java tutorial describes usage of digital signatures, keys, and cryptography services" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java security, cryptography, digital signature, verifying signature, signing code" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Security Features in Java SE
+        <br><b>Lesson:</b> Quick Tour of Controlling Applets
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Quick Tour of Controlling Applets</a></div>
+<div class="linkAHEAD"><a href="step1.html">Observe Applet Restrictions</a></div>
+<div class="linkAHEAD"><a href="step2.html">Set up a Policy File to Grant the Required Permission</a></div>
+<div class="linkBHEAD"><a href="wstep1.html">Start Policy Tool</a></div>
+<div class="linkBHEAD"><a href="wstep2.html">Grant the Required Permission</a></div>
+<div class="linkBHEAD"><a href="wstep3.html">Save the Policy File</a></div>
+<div class="nolinkAHEAD">See the Policy File Effects</div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Security Features in Java SE</a>
+                &gt;
+                <a href=index.html target=_top>Quick Tour of Controlling Applets</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=wstep3.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../tour2/index.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>See the Policy File Effects</h1></div>
+            <div id=PageContent>
+Now that you have created the <code>examplepolicy</code> policy file, 
+you can 
+execute the <code>WriteFile</code> applet to create and to write the
+file <code>writetest</code>, as shown in the following figure.
+
+<p><center><IMG SRC="../../figures/security/step5.gif" WIDTH="282" HEIGHT="159" ALIGN="BOTTOM" ALT="WriteFile can now access writetest"></center></p>
+<br>
+
+<p>Whenever you run an applet, or an application with a security manager, 
+the policy files that are loaded and used by default are the ones 
+specified in the <b>"security properties file"</b>,
+which is located in one of the following directories:
+
+<div class="codeblock"><pre>
+  <b>Windows</b>:
+    <i>java.home</i>\lib\security\java.security 
+  <b>UNIX</b>:
+    <i>java.home</i>/lib/security/java.security
+</pre></div>
+
+<b>Note:</b>&nbsp;&nbsp; The <tt>java.home</tt> environment variable names the directory into which the JRE was installed.
+
+<p>The policy file locations are specified as the values of properties whose names take the form
+
+<div class="codeblock"><pre>
+policy.url.<i>n</i>
+</pre></div>
+
+Where <code><i>n</i></code> indicates a number. Specify each  property 
+value in a line that takes the following form:
+
+<div class="codeblock"><pre>
+policy.url.<i>n</i>=<i>URL</i>
+</pre></div>
+
+Where <i>URL</i> is a URL specification.
+For example, the default policy files, sometimes referred to as
+the system and user policy files, respectively,
+are defined in the security properties file as
+
+<div class="codeblock"><pre>
+policy.url.1=file:${java.home}/lib/security/java.policy
+policy.url.2=file:${user.home}/.java.policy
+</pre></div>
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;Use of the notation <code>${propName}</code> 
+in the security properties file is a way of 
+specifying the value of a property. Thus <code>${java.home}</code> will be 
+replaced at runtime by the actual value of the <code>"java.home"</code> property, 
+which indicates the directory into which the JRE was installed, and
+<code>${user.home}</code> will be 
+replaced by the value of the <code>"user.home"</code> property, for
+example, <code>C:\Windows</code>.
+<hr></div>
+
+In the <a href = "step2.html">previous step</a>
+you did not modify one of these existing policy files. You created a new policy file 
+named <code>examplepolicy</code>. There are two possible ways you can have the 
+<code>examplepolicy</code> file
+be considered as part of the overall policy, in addition to the policy files specified in
+the security properties file. You can either specify the additional policy file in a 
+property passed to the runtime system, as described in 
+<a href = "#Approach1">Approach 1</a>,
+or add a line in the security properties 
+file specifying the additional policy file, as described in
+<a href = "#Approach2">Approach 2</a>.
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;On a UNIX system, you must have DNS
+configured in order for the <code>WriteFile</code> program
+to be downloaded from the public web site, shown in the command  below.
+You need to have <code>dns</code> 
+in the list of lookup services for hosts in your
+<code>/etc/nsswitch.conf</code> file, as in
+<div class="codeblock"><pre>
+    hosts:    dns files nis
+</pre></div>
+You also need a <code>/etc/resolv.conf</code> file
+with a list of nameservers.
+Consult your system administrator for more information.
+<hr></div>
+
+
+<h2><a name="Approach1">Approach 1</a></h2>
+
+You can use the <code>appletviewer</code>
+command-line argument, <code>-J-Djava.security.policy</code>, to specify a
+policy file that should be used, in addition to the ones
+specified in the security properties file.
+To run the <code>WriteFile</code> applet with your new
+<code>examplepolicy</code> policy file included, type the following in the
+directory in which <code>examplepolicy</code> is stored:
+
+<div class="codeblock"><pre>
+appletviewer -J-Djava.security.policy=examplepolicy  
+ http://download.oracle.com/javase/tutorial/security/tour1/examples/WriteFile.html
+</pre></div>
+
+<div class="note"><hr><strong>Notes:</strong>&nbsp;<ul>
+<li>Type this command as a single line, with a space between
+<code>examplepolicy</code> and the URL, and no spaces in the URL. Multiple lines 
+are used in this example for legibility purposes. <p>
+
+<li>If this command line is longer than the maximum number of
+characters you are allowed to type on a single line, do the following.
+Create and save a text file containing the full 
+command, and name the file with a <code>.bat</code> extension,
+for example, <code>wf.bat</code>. Then in your command
+window, type the name of the <code>.bat</code> file instead of the command.
+
+</ul>
+<hr></div>
+
+<p>If the applet still reports an error, 
+you must troubleshoot the policy file.
+Use the Policy Tool to open the <code>examplepolicy</code> file 
+(using <b>File</b> > <b>Open</b>) and
+check the policy entries you just created in the
+previous step, 
+<a href = "step2.html">Set Up a Policy File to Grant the Required Permissions</a>. 
+
+<p>To view or edit an existing policy entry, click on the line displaying that entry in the main 
+Policy Tool window, then choose the <b>Edit Policy Entry</b> button. 
+You can also double-click the line for that entry. 
+
+<p>This launches the same type of Policy Entry dialog box that displays when you 
+are adding a new policy entry after choosing the <b>Add Policy Entry</b> button,
+except in this case the dialog box is filled in with 
+the existing policy entry information. To change the information,  
+retype it (for the <b>CodeBase</b> and <b>SignedBy</b> 
+values) or add, remove, or modify permissions. 
+
+<h2><a name="Approach2">Approach 2</a></h2>
+
+You can specify a number of URLs (including ones of the form "http://")
+in <code>policy.url.n</code> properties in the security properties file, and 
+all the designated policy files will get loaded. 
+
+<p>So one way to have our <code>examplepolicy</code> file's policy entry considered 
+by the <code>appletviewer</code> is to add 
+an entry specifying that policy file in the security properties file.
+
+
+<div class="note"><hr><strong>Important:</strong>&nbsp; If you are running your own copy of the JDK, 
+you can easily edit your
+security properties file. If you are running a version shared
+with other users, you may only be able to modify the system-wide
+security properties file if you have write access to it or if you ask your
+system administrator to modify the file when appropriate. However, 
+it's probably not appropriate for you to make modifications to a system-wide policy file
+for this tutorial test. We suggest that you just read the following to see how it is done
+or that you install your own private version of the JDK to use for the tutorial
+lessons.
+<hr></div>
+
+<p>To modify the security properties file, open it in an editor suitable for editing an 
+ASCII text file. Then add the following line after the line starting with
+<code>policy.url.2</code>:
+
+<div class="codeblock"><pre>
+  <b>Windows</b>:
+    <b>policy.url.3=file:/C:/Test/examplepolicy</b>
+  <b>UNIX</b>:
+    <b>policy.url.3=file:${user.home}/test/examplepolicy</b>
+</pre></div>
+
+<p>On a UNIX system you can also explicitly specify your home directory:
+
+<div class="codeblock"><pre>
+<b>policy.url.3=file:/home/susanj/test/examplepolicy</b>
+</pre></div>
+
+<p>Now you can run the following:
+
+<div class="codeblock"><pre>
+<b>appletviewer http://download.oracle.com/javase/tutorial/security1.2/tour1/examples/WriteFile.html</b>
+</pre></div>
+
+Type this command on one line, without spaces in the URL.
+
+<p>If you still get a security exception, you must troubleshoot 
+your new policy file.
+Use the Policy Tool to check the policy entry you just created in the
+previous step, 
+<a href = "step2.html">Set Up a Policy File to Grant the Required Permissions</a>. 
+Change any typos or other errors.
+
+<div class="note"><hr><strong>Important:</strong>&nbsp;The <code>examplepolicy</code> policy file is also used in the
+
+<a class="TutorialLink" target="_top" href="../tour2/index.html">Quick Tour of Controlling Applications</a>
+lesson. You do not need to include the <code>examplepolicy</code> file unless you are running this Tutorial lesson. To exclude this file, open the security properties file and delete the line you just added. 
+
+<hr></div>
+
+
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=wstep3.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=../tour2/index.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Save the Policy File
+        <br><b>Next page:</b> Quick Tour of Controlling Applications
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

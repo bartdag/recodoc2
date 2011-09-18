@@ -1,0 +1,1075 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>How to Use Root Panes (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Using Swing Components)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Using Swing Components
+        <br><b>Section:</b> How to Use Various Components
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Using Swing Components</a></div>
+<div class="linkAHEAD"><a href="toplevel.html">Using Top-Level Containers</a></div>
+<div class="linkAHEAD"><a href="jcomponent.html">The JComponent Class</a></div>
+<div class="linkAHEAD"><a href="text.html">Using Text Components</a></div>
+<div class="linkBHEAD"><a href="generaltext.html">Text Component Features</a></div>
+<div class="linkBHEAD"><a href="textapi.html">The Text Component API</a></div>
+<div class="linkAHEAD"><a href="componentlist.html">How to Use Various Components</a></div>
+<div class="linkBHEAD"><a href="applet.html">How to Make Applets</a></div>
+<div class="linkBHEAD"><a href="button.html">How to Use Buttons, Check Boxes, and Radio Buttons</a></div>
+<div class="linkBHEAD"><a href="buttongroup.html">How to Use the ButtonGroup Component</a></div>
+<div class="linkBHEAD"><a href="colorchooser.html">How to Use Color Choosers</a></div>
+<div class="linkBHEAD"><a href="combobox.html">How to Use Combo Boxes</a></div>
+<div class="linkBHEAD"><a href="dialog.html">How to Make Dialogs</a></div>
+<div class="linkBHEAD"><a href="editorpane.html">How to Use Editor Panes and Text Panes</a></div>
+<div class="linkBHEAD"><a href="filechooser.html">How to Use File Choosers</a></div>
+<div class="linkBHEAD"><a href="formattedtextfield.html">How to Use Formatted Text Fields</a></div>
+<div class="linkBHEAD"><a href="frame.html">How to Make Frames (Main Windows)</a></div>
+<div class="linkBHEAD"><a href="internalframe.html">How to Use Internal Frames</a></div>
+<div class="linkBHEAD"><a href="label.html">How to Use Labels</a></div>
+<div class="linkBHEAD"><a href="layeredpane.html">How to Use Layered Panes</a></div>
+<div class="linkBHEAD"><a href="list.html">How to Use Lists</a></div>
+<div class="linkBHEAD"><a href="menu.html">How to Use Menus</a></div>
+<div class="linkBHEAD"><a href="panel.html">How to Use Panels</a></div>
+<div class="linkBHEAD"><a href="passwordfield.html">How to Use Password Fields</a></div>
+<div class="linkBHEAD"><a href="progress.html">How to Use Progress Bars</a></div>
+<div class="nolinkBHEAD">How to Use Root Panes</div>
+<div class="linkBHEAD"><a href="scrollpane.html">How to Use Scroll Panes</a></div>
+<div class="linkBHEAD"><a href="separator.html">How to Use Separators</a></div>
+<div class="linkBHEAD"><a href="slider.html">How to Use Sliders</a></div>
+<div class="linkBHEAD"><a href="spinner.html">How to Use Spinners</a></div>
+<div class="linkBHEAD"><a href="splitpane.html">How to Use Split Panes</a></div>
+<div class="linkBHEAD"><a href="tabbedpane.html">How to Use Tabbed Panes</a></div>
+<div class="linkBHEAD"><a href="table.html">How to Use Tables</a></div>
+<div class="linkBHEAD"><a href="textarea.html">How to Use Text Areas</a></div>
+<div class="linkBHEAD"><a href="textfield.html">How to Use Text Fields</a></div>
+<div class="linkBHEAD"><a href="toolbar.html">How to Use Tool Bars</a></div>
+<div class="linkBHEAD"><a href="tooltip.html">How to Use Tool Tips</a></div>
+<div class="linkBHEAD"><a href="tree.html">How to Use Trees</a></div>
+<div class="linkAHEAD"><a href="html.html">How to Use HTML in Swing Components</a></div>
+<div class="linkAHEAD"><a href="model.html">How to Use Models</a></div>
+<div class="linkAHEAD"><a href="icon.html">How to Use Icons</a></div>
+<div class="linkAHEAD"><a href="border.html">How to Use Borders</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Component Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Using Swing Components</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=progress.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=scrollpane.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>How to Use Root Panes</h1></div>
+            <div id=PageContent>
+
+In general, you don't directly create a 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JRootPane.html"><code>JRootPane</code></a> object.
+Instead, you get a <code>JRootPane</code>
+(whether you want it or not!)
+when you instantiate 
+<a href="internalframe.html"><code>JInternalFrame</code></a> or
+one of the top-level Swing containers,
+such as
+<a href="applet.html"><code>JApplet</code></a>,
+<a href="dialog.html"><code>JDialog</code></a>, and
+<a href="frame.html"><code>JFrame</code></a>.
+
+<p>
+
+<a href="toplevel.html">Using Top-Level Containers</a>
+tells you the basics of using root panes &mdash;
+getting the content pane,
+setting its layout manager, and 
+adding Swing components to it.
+This section tells you more about root panes,
+including the components that make up a root pane
+and how you can use them.
+
+<p><center><IMG SRC="../../figures/uiswing/components/1layers.gif" WIDTH="370" HEIGHT="127" ALIGN="BOTTOM" ALT="A root pane manages four other panes: a layered pane, a menu bar, a content pane, and a glass pane."></center></p>
+As the preceding figure shows, a root pane has four parts:  
+
+<dl>
+<dt> <strong>The glass pane</strong>
+<dd> Hidden, by default.
+     If you make the glass pane visible, 
+     then it's like a sheet of glass over
+     all the other parts of the root pane.
+     It's completely transparent
+     unless you implement the glass pane's
+     <code>paintComponent</code> method so that it does something,
+     and it can intercept input events for the root pane.
+     In the <a href="#glasspane">next section</a>, 
+     you'll see an example of using a glass pane.
+<dt> <strong>The layered pane</strong>
+<dd> Serves to position its contents, 
+     which consist of the content pane 
+     and the optional menu bar.
+     Can also hold other components
+     in a specified Z order.
+     For information, see <a href="#layeredpane">The Layered Pane</a>.
+<dt> <strong>The content pane</strong>
+<dd> The container of the root pane's visible components,
+     excluding the menu bar.
+     For information on using the content pane, see
+     <a href="toplevel.html">Using Top-Level Containers</a>.
+<dt> <strong>The optional menu bar</strong>
+<dd> The home for the root pane's container's menus.
+     If the container has a menu bar, 
+     you generally use the container's
+     <code>setJMenuBar</code> method
+     to put the menu bar in the appropriate place.
+     For more information on using menus and menu bars, see
+     <a href="menu.html">How to Use Menus</a>.
+</dl>
+
+
+<h2>
+<a name="glasspane">
+The Glass Pane
+</a>
+</h2>
+
+
+The glass pane is useful when you want
+to be able to catch events or paint
+over an area 
+that already contains one or more components.
+For example, 
+you can deactivate mouse events for a multi-component region
+by having the glass pane intercept the events.
+Or you can display an image over multiple components
+using the glass pane.
+
+<p>
+
+Here's a picture of an application
+that demonstrates glass pane features.
+It contains a check box that lets you set
+whether the glass pane is "visible" &mdash;
+whether it can get events and 
+paint itself onscreen.
+When the glass pane is visible, 
+it blocks all input events from reaching 
+the components in the content pane.
+It also paints a red dot in the place 
+where it last detected a mouse-pressed event.
+
+<p>
+
+<p><center><IMG SRC="../../figures/uiswing/components/GlassPaneDemo.png" WIDTH="321" HEIGHT="93" ALIGN="BOTTOM" ALT="A snapshot of GlassPaneDemo"></center></p>
+<div class="note"><hr><strong>Try this:</strong>&nbsp;
+<ol>
+<li>Click the Launch button to run GlassPaneDemo using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/components/index.html#GlassPaneDemo">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/components/ex6/GlassPaneDemo.jnlp"><img src="../../images/jws-launch-button.png" width="88" height="23" align="bottom" alt="Launches the GlassPaneDemo example"></a>
+</center>
+<p>
+
+<li> Click Button 1.
+     <br>
+     The button's appearance changes to show that it's been clicked.
+<li> Click the check box so that the glass pane becomes "visible,"
+     and then click Button 1 again.
+     <br> 
+     The button does not act clicked 
+     because the glass pane intercepts
+     all the mouse events.
+     The glass pane paints a red circle
+     where you release the mouse.
+<li> Click the check box again so that the glass pane is hidden.
+     <br>
+     When the glass pane detects an event over the check box,
+     it forwards it to the check box.
+     Otherwise, the check box would not respond to clicks.
+</ol>
+<hr></div>
+
+<p>
+
+The following code from 
+<a class="SourceLink" target="_blank" href="../examples/components/GlassPaneDemoProject/src/components/GlassPaneDemo.java"><code>GlassPaneDemo.java</code></a> shows and hides the glass pane.
+This program happens to create its own glass pane.
+However, if a glass pane doesn't do any painting,
+the program might simply attach listeners to the default glass pane,
+as returned by <code>getGlassPane</code>.
+
+<div class="codeblock"><pre>
+myGlassPane = new MyGlassPane(...);
+changeButton.addItemListener(myGlassPane);
+frame.setGlassPane(myGlassPane);
+...
+class MyGlassPane extends JComponent
+                  implements ItemListener {
+    ...
+    //React to change button clicks.
+    public void itemStateChanged(ItemEvent e) {
+        <b>setVisible(e.getStateChange() == ItemEvent.SELECTED);</b>
+    }
+...
+}
+</pre></div>
+
+<p>
+
+The next code snippet
+implements the mouse-event handling for the glass pane.
+If a mouse event occurs over the check box,
+then the glass pane redispatches the event 
+so that the check box receives it.
+
+<div class="codeblock"><pre>
+<em>...//In the implementation of the glass pane's mouse listener:</em>
+public void mouseMoved(MouseEvent e) {
+    redispatchMouseEvent(e, false);
+}
+
+<em>.../* The mouseDragged, mouseClicked, mouseEntered,
+    * mouseExited, and mousePressed methods have the same
+    * implementation as mouseMoved. */...</em>
+
+public void mouseReleased(MouseEvent e) {
+    redispatchMouseEvent(e, true);
+}
+
+private void redispatchMouseEvent(MouseEvent e,
+                                  boolean repaint) {
+    Point glassPanePoint = e.getPoint();
+    Container container = contentPane;
+    Point containerPoint = SwingUtilities.convertPoint(
+                                    glassPane,
+                                    glassPanePoint,
+                                    contentPane);
+
+    if (containerPoint.y < 0) { //we're not in the content pane
+        <em>//Could have special code to handle mouse events over
+        //the menu bar or non-system window decorations, such as
+        //the ones provided by the Java look and feel.</em>
+    } else {
+        //The mouse event is probably over the content pane.
+        //Find out exactly which component it's over.
+        Component component =
+            SwingUtilities.getDeepestComponentAt(
+                                    container,
+                                    containerPoint.x,
+                                    containerPoint.y);
+
+        if ((component != null)
+            && (component.equals(liveButton))) {
+            //Forward events over the check box.
+            Point componentPoint = SwingUtilities.convertPoint(
+                                        glassPane,
+                                        glassPanePoint,
+                                        component);
+            component.dispatchEvent(new MouseEvent(component,
+                                                 e.getID(),
+                                                 e.getWhen(),
+                                                 e.getModifiers(),
+                                                 componentPoint.x,
+                                                 componentPoint.y,
+                                                 e.getClickCount(),
+                                                 e.isPopupTrigger()));
+        }
+    }
+
+    //Update the glass pane if requested.
+    if (repaint) {
+        glassPane.setPoint(glassPanePoint);
+        glassPane.repaint();
+    }
+}
+</pre></div>
+
+Here is the code in <code>MyGlassPane</code>
+that implements the painting.
+
+<div class="codeblock"><pre>
+protected void paintComponent(Graphics g) {
+    if (point != null) {
+        g.setColor(Color.red);
+        g.fillOval(point.x - 10, point.y - 10, 20, 20);
+    }
+}
+</pre></div>
+
+
+<h2>
+<a name="layeredpane">
+The Layered Pane
+</a>
+</h2>
+
+A layered pane is
+a container with depth 
+such that
+overlapping components can appear one on top of the other.
+General information about layered panes is in
+<a class="TutorialLink" target="_top" href="layeredpane.html">How to Use Layered Panes</a>.
+This section discusses the particulars of how 
+root panes use layered panes.
+
+<p>
+Each root pane places its menu bar and content pane
+in an instance of <code>JLayeredPane</code>.
+The Z ordering that the layered pane provides
+enables behavior such as
+displaying popup menus above other components.
+
+<p>
+You can choose to put components in the root pane's layered pane.
+If you do, then you should be aware that certain depths
+are defined to be used for specific functions,
+and you should use the depths as intended.
+Otherwise, your components might not play well with the others.
+Here's a diagram that shows the functional layers
+and their relationship:
+
+<p><center><IMG SRC="../../figures/uiswing/components/layeredPaneLayers.gif" WIDTH="239" HEIGHT="169" ALIGN="BOTTOM" ALT="Layers defined by JLayeredPane"></center></p>
+The table below describes the intended use for each layer
+and lists the <code>JLayeredPane</code> constant
+that corresponds to each layer:
+
+<table cellpadding=5 summary="JLayeredPane constant that corresponds to each layer">
+<tr>
+<th id="h1" align=left>Layer Name<th id="h2" align=left>Value<th id="h3" align=left>Description
+</th>
+</tr>
+<tr valign=top>
+<td headers="h1"><code>FRAME_CONTENT_LAYER</code> <td headers="h2"> <code>new Integer(-30000)</code>
+</td>
+<td headers="h3"> The root pane adds the menu bar and content pane
+     to its layered pane at this depth.
+
+</td>
+</tr>
+<tr valign=top>
+<td headers="h1"><code>DEFAULT_LAYER</code> <td headers="h2"> <code>new Integer(0)</code>
+</td>
+<td headers="h3"> If you don't specify a component's depth
+     when adding it to a layered pane,
+     the layered pane puts it at this depth.
+</td>
+</tr>
+<tr valign=top>
+<td headers="h1"><code>PALETTE_LAYER</code> <td headers="h2"> <code>new Integer(100)</code>
+</td>
+<td headers="h3"> This layer is useful for floating tool bars and palettes.
+
+</td>
+</tr>
+<tr valign=top>
+<td headers="h1"><code>MODAL_LAYER</code> <td headers="h2"> <code>new Integer(200)</code>
+</td>
+<td headers="h3"> Modal internal-frame dialogs
+     would belong in this layer.
+</td>
+</tr>
+<tr valign=top>
+<td headers="h1"><code>POPUP_LAYER</code> <td headers="h2"> <code>new Integer(300)</code>
+</td>
+<td headers="h3"> Popups go in this layer because they need to appear
+        above just about everything.
+</td>
+</tr>
+<tr valign=top>
+<td headers="h1"><code>DRAG_LAYER</code> <td headers="h2"> <code>new Integer(400)</code>
+</td>
+<td headers="h3"> Intended to be used when a component is being dragged.
+     The component should return to its regular layer when dropped.
+</td>
+</tr>
+</table>
+
+<p>
+<a name="examplemods">
+Here is a picture of RootLayeredPaneDemo,
+which is a version of 
+<a href="../examples/components/index.html#LayeredPaneDemo">LayeredPaneDemo</a>
+that uses the root pane's layered pane,
+rather than creating a new layered pane.
+</a>
+</p>
+
+<p><center><IMG SRC="../../figures/uiswing/components/RootLayeredPaneDemo.png" WIDTH="300" HEIGHT="350" ALIGN="BOTTOM" ALT="LayeredPaneDemo modified to use the root pane's layered pane"></center></p>
+<div class="note"><hr><strong>Try this:</strong>&nbsp;
+<ol>
+<li>Click the Launch button to run RootLayeredPaneDemo using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/components/index.html#RootLayeredPaneDemo">example index</a>.
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/components/ex6/RootLayeredPaneDemo.jnlp"><img src="../../images/jws-launch-button.png" width="88" height="23" align="bottom" alt="Launches the RootLayeredPaneDemo"></a>
+</center>
+<p>
+
+<li> Move the cursor around in the window, 
+     so that Duke moves on top of other components.
+     <br>
+     Note that when the cursor is on top of non-label components &mdash;
+     whether it's 
+     in the content pane or
+     in the Java-look-and-feel provided title bar
+     &mdash; 
+     Duke's movement is temporarily stopped.
+     This is because mouse-motion events go to the component that's
+     deepest in the containment hierarchy 
+     and is interested in mouse events.
+     The mouse-motion listener that moves Duke
+     is registered on the layered pane,
+     and most of the components in that pane
+     (with the exception of the labels)
+     happen to have mouse-motion listeners.
+     When the mouse moves over an interested component
+     in the layered pane,
+     the layered pane doesn't get the event
+     and the interested component does.
+
+<li> Making sure the Top Position in Layer check box is selected,
+     change Duke's layer to Yellow (-30000).
+     <br>
+     As before, he appears on top of other components,
+     except for the Magenta (0) and Cyan (301) rectangles.
+<li> Keeping Duke in the Yellow layer,
+     click the check box to send Duke to the back of layer -30000.
+     <br>
+     Duke disappears because the content pane 
+     and all the components in it are now above him.
+<li> Change Duke's layer to Cyan (301), move Duke
+     down a bit so he's standing on the top edge of the Yellow rectangle,
+     and then press Space to bring up the 
+     combo box's drop-down list.
+     <br>
+     If the look and feel implements the drop-down list
+     as a lightweight popup,
+     Duke appears on top of the drop-down list.
+</ol>
+<hr></div>
+
+
+
+<h2>
+<a name="api">The Root Pane API</a>
+</h2>
+
+
+The tables that follow list the API
+for using root panes, glass panes,
+and content panes.
+For more information on using content panes,
+go to <a href="toplevel.html">Using Top-Level Containers</a>.
+Here are the tables in this section:
+
+<ul>
+<li><a href="#rootpaneapi">Using a Root Pane</a>
+<li><a href="#contentapi">Setting or Getting the Root Pane's Contents</a>
+</ul>
+
+<p>
+
+The API for using other parts of the root pane
+is described elsewhere:
+<ul>
+<li> <a href="layeredpane.html#api">The Layered Pane API</a>
+<li> <a href="menu.html#api">The Menu API</a>
+</ul>
+
+<p>
+
+<table border=1> 
+<caption><a name="rootpaneapi">Using a Root Pane</a>
+</caption>
+<tr>
+<th id="h101" align=left>Method
+</th>
+<th id="h102" align=left>Purpose
+ 
+</th>
+</tr>
+  <tr>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JFrame.html#getRootPane()">JRootPane getRootPane()</a>    <br>
+    <em>(in
+    <code>JApplet</code>,
+    <code>JDialog</code>,
+    <code>JFrame</code>,
+    <code>JInternalFrame</code>, and
+    <code>JWindow</code>)
+    </td>
+    <td headers="h102">Get the root pane of the
+        applet, dialog, frame, internal frame, or window.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/SwingUtilities.html#getRootPane(java.awt.Component)">static JRootPane getRootPane(Component)</a><br>
+    <em>(in <code>SwingUtilities</code>)
+    </td>
+    <td headers="h102">If the component contains a root pane,
+        return that root pane.
+        Otherwise, return the root pane (if any)
+        that contains the component.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JComponent.html#getRootPane()">JRootPane getRootPane()</a>    <br>
+    <em>(in <code>JComponent</code>)</em>
+    </td>
+    <td headers="h102">Invoke the <code>SwingUtilities</code>
+        <code>getRootPane</code> method 
+        for the <code>JComponent</code>.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JRootPane.html#setDefaultButton(javax.swing.JButton)">void setDefaultButton(JButton)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JRootPane.html#getDefaultButton()">JButton getDefaultButton()</a>    </td>
+    <td headers="h102">Set or get which button (if any)
+        is the default button in the root pane.
+        A look-and-feel-specific action, 
+        such as pressing Enter,
+        causes the button's action to be performed.
+    </td>
+  </tr>
+</table>
+
+<p>
+
+<table border=1 width=100%> 
+<caption><a name="contentapi">Setting or Getting the Root Pane's Contents</a>
+<br>
+<em>The following methods are defined in
+    <code>JApplet</code>,
+    <code>JDialog</code>,
+    <code>JFrame</code>,
+    <code>JInternalFrame</code>,
+    <code>JRootPane</code>, and
+    <code>JWindow</code>,
+    unless noted otherwise.</em>
+</caption>
+<tr>
+<th id="h201" align=left>Method
+</th>
+<th id="h202" align=left>Purpose
+</th>
+</tr>
+  <tr>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JFrame.html#setGlassPane(java.awt.Component)">void setGlassPane(Component)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JFrame.html#getGlassPane()">Component getGlassPane()</a>    </td>
+    <td headers="h202">Set or get the glass pane.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JFrame.html#setLayeredPane(javax.swing.JLayeredPane)">void setLayeredPane(JLayeredPane)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JFrame.html#getLayeredPane()">Container getLayeredPane()</a>    </td>
+    <td headers="h202">Set or get the layered pane.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JFrame.html#setContentPane(java.awt.Container)">void setContentPane(Container)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JFrame.html#getContentPane()">Container getContentPane()</a>    </td>
+    <td headers="h202">Set or get the content pane.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JFrame.html#setJMenuBar(javax.swing.JMenuBar)">void setJMenuBar(JMenuBar)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JFrame.html#getJMenuBar()">JMenuBar getJMenuBar()</a><br>
+<em>(not defined in <code>JWindow</code>)</em>
+    </td>
+    <td headers="h202">Set or get the menu bar.
+    </td>
+  </tr>
+</table>
+
+
+
+
+<h2>
+<a name="eg">Examples that Use Root Panes</a>
+</h2>
+
+Every Swing program has a root pane,
+but few reference it directly.
+The examples in the following list
+illustrate how to use features of <code>JRootPane</code>
+or the glass pane.
+Also see these lists:
+<ul>
+<li> <a href="layeredpane.html#eg">Examples that Use Layered Panes</a>
+<li> <a href="menu.html#eg">Examples that Use Menus</a>
+<li> <a href="frame.html#eg">Examples that Use Frames</a>
+     (for examples of using content panes)
+</ul>
+
+
+<p>
+<table summary="Information about examples">
+<tr>
+<th id="h301" align=left> Example
+</th>
+<th id="h302" align=left> Where Described
+</th>
+<th id="h303" align=left> Notes
+</th>
+</tr>
+
+<tr>
+<td headers="h301">
+<a href="../examples/components/index.html#GlassPaneDemo"><code>GlassPaneDemo</code></a>
+</td>
+<td headers="h302"> This section
+</td>
+<td headers="h303"> Uses a glass pane that paints a bit and
+     redispatches events.
+</td>
+</tr>
+
+<tr>
+<td headers="h301">
+<a href="../examples/components/index.html#RootLayeredPaneDemo"><code>RootLayeredPaneDemo</code></a>
+</td>
+<td headers="h302"> This section
+</td>
+<td headers="h303"> Adapts LayeredPaneDemo to use the root pane's layered pane.
+</td>
+</tr>
+
+<tr>
+<td headers="h301">
+<a href="../examples/components/index.html#ListDialog"><code>ListDialog</code></a>
+</td>
+<td headers="h302"> <a href="list.html">How to Use Lists</a>
+</td>
+<td headers="h303"> Sets the default button for a <code>JDialog</code>.
+</td>
+</tr>
+
+<tr>
+<td headers="h301">
+<a href="../examples/components/index.html#FrameDemo2"><code>FrameDemo2</code></a>
+</td>
+<td headers="h302"> <a href="frame.html">How to Make Frames</a>
+</td>
+<td headers="h303"> Sets the default button for a <code>JFrame</code>.
+</td>
+</tr>
+</table>
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=progress.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=scrollpane.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h401" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h401" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h402" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Use Progress Bars
+        <br><b>Next page:</b> How to Use Scroll Panes
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

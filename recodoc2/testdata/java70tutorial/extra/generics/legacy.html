@@ -1,0 +1,714 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Interoperating with Legacy Code (The Java&trade; Tutorials &gt;        
+            Bonus &gt; Generics)
+</title>
+
+     <meta name="description" content="This Java tutorial describes generics, full screen mode API, and Java certification related resources" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java generics, full screen mode API, certification" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Bonus
+        <br><b>Lesson:</b> Generics
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Generics</a></div>
+<div class="linkAHEAD"><a href="intro.html">Introduction</a></div>
+<div class="linkAHEAD"><a href="simple.html">Defining Simple Generics</a></div>
+<div class="linkAHEAD"><a href="subtype.html">Generics and Subtyping</a></div>
+<div class="linkAHEAD"><a href="wildcards.html">Wildcards</a></div>
+<div class="linkAHEAD"><a href="methods.html">Generic Methods</a></div>
+<div class="nolinkAHEAD">Interoperating with Legacy Code</div>
+<div class="linkAHEAD"><a href="fineprint.html">The Fine Print</a></div>
+<div class="linkAHEAD"><a href="literals.html">Class Literals as Runtime-Type Tokens</a></div>
+<div class="linkAHEAD"><a href="morefun.html">More Fun with Wildcards</a></div>
+<div class="linkAHEAD"><a href="convert.html">Converting Legacy Code to Use Generics</a></div>
+<div class="linkAHEAD"><a href="acknowledgements.html">Acknowledgements</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Bonus</a>
+                &gt;
+                <a href=index.html target=_top>Generics</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=methods.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=fineprint.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Interoperating with Legacy Code</h1></div>
+            <div id=PageContent>
+<!--Interoperating with Legacy Code-->
+
+Until now, all our examples have assumed an idealized world, where everyone
+is using the latest version of the Java programming language, which supports
+generics.
+<P>
+Alas, in reality this isn't the case. Millions of lines of code have been 
+written in earlier versions of the language, and they won't all be
+converted overnight.
+<P>
+Later, in the  
+<a class="TutorialLink" target="_top" href="convert.html">Converting Legacy Code to Use Generics</a> section, we will tackle the problem of 
+converting your old code to
+use generics. In this section, we'll focus on a simpler problem: how can 
+legacy code and generic code interoperate? This question has two parts:
+using legacy code from within generic code and using generic code
+within legacy code.
+
+<h2>Using Legacy Code in Generic Code</h2>
+
+How can you 
+use old code, while still enjoying the benefits of generics in your own code?
+<P>
+
+As an example, assume you want to use the package
+<code>com.Example.widgets</code>. The folks at Example.com  
+market a system for inventory control, highlights of which are shown below:
+
+<div class="codeblock"><pre>
+<b>package</b> com.Example.widgets;
+
+<b>public interface</b> Part { ...}
+
+<b>public class</b> Inventory {
+/**
+ * Adds a new Assembly to the inventory database.
+ * The assembly is given the name name, and consists of a set
+ * parts specified by parts. All elements of the collection parts
+ * must support the Part interface.
+**/ 
+    <b>public static void</b> addAssembly(String name, Collection parts) {...}
+    <b>public static</b> Assembly getAssembly(String name) {...}
+}
+
+<b>public interface</b> Assembly {
+    Collection getParts(); // <i>Returns a collection of Parts</i>
+}
+</pre></div>
+
+Now, you'd like to add new code that uses the API above. It would be
+nice to ensure that you always called <code>addAssembly()</code> with the proper
+arguments - that is, that the collection you pass in is indeed a
+<code>Collection</code> of <code>Part</code>. Of course, generics are tailor made for this:
+
+<div class="codeblock"><pre>
+<b>package</b> com.mycompany.inventory;
+
+<b>import</b> com.Example.widgets.*;
+
+<b>public class</b> Blade implements Part {
+    ...
+}
+
+<b>public class</b> Guillotine implements Part {
+}
+
+<b>public class</b> Main {
+    <b>public static void</b> main(String[] args) {
+        Collection&lt;Part&gt; c = new ArrayList&lt;Part&gt;();
+        c.add(new Guillotine()) ;
+        c.add(new Blade());
+        Inventory.addAssembly("thingee", c);
+        Collection&lt;Part&gt; k = Inventory.getAssembly("thingee").getParts();
+    }
+}
+</pre></div>
+
+When we call <code>addAssembly</code>, it expects the second parameter to be of type
+<code>Collection</code>. 
+The actual argument is of type <code>Collection&lt;Part&gt;</code>. This works,
+but why? After all, most collections don't contain <code>Part</code> objects, and so
+in general, the compiler has no way of knowing what kind of collection
+the type <code>Collection</code> refers to. 
+<P>
+In proper generic code, <code>Collection</code> would always be accompanied by a type
+parameter. When a generic type like <code>Collection</code> is used without a
+type parameter, it's called a <i>raw type</i>.
+<P>
+Most people's first instinct is that <code>Collection</code> really means
+<code>Collection&lt;Object&gt;</code>. However, as we saw earlier, it isn't safe to
+pass a <code>Collection&lt;Part&gt;</code> in a place where a 
+<code>Collection&lt;Object&gt;</code> is required.
+It's more accurate to say that the type <code>Collection</code> denotes a collection
+of some unknown type, just like <code>Collection&lt;?&gt;</code>. 
+<P>
+But wait, that can't be right either! Consider the call to <code>getParts()</code>,
+which returns a <code>Collection</code>. This is then assigned to 
+<code>k</code>, which is a
+<code>Collection&lt;Part&gt;</code>. If the result of the call is a 
+<code>Collection&lt;?&gt;</code>, the
+assignment would be an error.  
+<P>
+In reality, the assignment is legal, but it generates an
+<i>unchecked  warning</i>. The warning is needed, because the fact is that
+the compiler can't guarantee its correctness. We have no way of checking
+the legacy code in 
+<code>getAssembly()</code> to ensure that
+indeed the collection being returned is a collection of <code>Part</code>s. The type
+used in the code is <code>Collection</code>, and one could legally insert 
+all kinds of objects into such a collection.
+<P>
+So, shouldn't this be an error?  Theoretically speaking, yes; but 
+practically speaking, if generic code is going to call legacy code,
+this has to be allowed.  It's up to you, the programmer, to satisfy yourself
+that in this case, the assignment is safe because the contract of
+<code>getAssembly()</code> says it returns a collection of 
+<code>Part</code>s, even though the type
+signature doesn't show this.
+<P>
+So raw types are very much like wildcard types, but they are not typechecked
+as stringently. This is a deliberate design decision, to allow
+generics to interoperate with pre-existing legacy code.
+<P>
+Calling legacy code from generic code is inherently dangerous; 
+once you mix generic code with
+non-generic legacy code, all the safety guarantees that the generic type 
+system usually provides are void. However, you are still better off than
+you were without using generics at all. At least you know the code
+on your end is consistent.
+<P>
+At the moment 
+there's a lot more non-generic
+code out there then there is generic code, and there will inevitably be
+situations where they have to mix. 
+<P>
+If you find that you must intermix legacy and generic code, pay close
+attention to the unchecked warnings. Think carefully how you can
+justify the safety of the code that gives rise to the warning.
+<P>
+What happens if you still made a mistake, and the code that
+caused a warning is indeed not type safe? Let's take a look
+at such a situation. In the process, we'll get
+some insight into the workings of the compiler.
+
+<H2>Erasure and Translation</h2>
+
+<div class="codeblock"><pre>
+<b>public</b> String loophole(Integer x) {
+    List&lt;String&gt; ys = new LinkedList&lt;String&gt;();
+    List xs = ys;
+    xs.add(x); // <i>Compile-time unchecked warning</i>
+    <b>return</b> ys.iterator().next();
+}
+</pre></div>
+
+Here, we've aliased a list of strings and a plain old list. We insert
+an <code>Integer</code> into the list, and attempt to extract a <code>String</code>.
+This is clearly wrong. If we ignore the warning and try to execute
+this code, it will fail exactly at the point where we try to use
+the wrong type. At run time, this code behaves like:
+
+<div class="codeblock"><pre>
+<b>public</b> String loophole(Integer x) {
+    List ys = new LinkedList;
+    List xs = ys;
+    xs.add(x); 
+    <b>return</b>(String) ys.iterator().next(); // <i>run time error</i>
+}
+</pre></div>
+
+When we extract an element from the list, and attempt to treat it as a
+string by casting it to <code>String</code>, we will get a
+<code>ClassCastException</code>. The exact same thing happens with the
+generic version of <code>loophole()</code>. 
+<P>
+The reason for this is, that generics are implemented by the Java compiler
+as a front-end conversion called <i>erasure</i>. You can (almost) think of it 
+as a source-to-source translation, whereby the generic version of 
+<code>loophole()</code> is converted to the non-generic version.
+<P>
+As a result, <b>the type safety and integrity
+of the Java virtual machine are never at risk, even in the presence of
+unchecked warnings</b>.
+<P>
+Basically, erasure gets rid of (or <i>erases</i>) all generic type information.
+All the type information betweeen angle brackets is thrown out, so, for
+example, a parameterized type like <code>List&lt;String&gt;</code> is converted
+into <code>List</code>. All remaining uses of type variables are replaced by
+the upper bound of the type variable (usually <code>Object</code>). And,
+whenever the resulting code isn't type-correct, a cast to the appropriate
+type is inserted, as in the last line of <code>loophole</code>.
+<P>
+The full details of erasure are beyond the scope of this tutorial,
+but the simple description we just gave isn't far from the truth.
+It's good to know a bit about this, especially if you want to do
+more sophisticated things like converting existing APIs to use
+generics (see the 
+<a class="TutorialLink" target="_top" href="convert.html">Converting Legacy Code to Use Generics</a>section), 
+or just want to understand why 
+things are the way they are.
+
+<!-- inverse: calling generic libraries from legacy code-->
+
+<h2>Using Generic Code in Legacy Code</h2>
+
+Now let's consider the inverse case. Imagine that Example.com
+chose to convert their API to use generics, but that some of their
+clients haven't yet. So now the code looks like:
+
+<div class="codeblock"><pre>
+<b>package</b> com.Example.widgets;
+
+<b>public interface</b> Part { 
+    ...
+}
+
+<b>public class</b> Inventory {
+/**
+ * Adds a new Assembly to the inventory database.
+ * The assembly is given the name name, and consists of a set
+ * parts specified by parts. All elements of the collection parts
+ * must support the Part interface.
+**/ 
+    <b>public static void</b> addAssembly(String name, Collection&lt;Part&gt; parts) {...}
+    <b>public static</b> Assembly getAssembly(String name) {...}
+}
+
+<b>public interface</b> Assembly {
+    Collection&lt;Part&gt; getParts(); // <i>Returns a collection of Parts</i>
+}
+</pre></div>
+
+and the client code looks like:
+
+<div class="codeblock"><pre>
+<b>package</b> com.mycompany.inventory;
+
+<b>import</b> com.Example.widgets.*;
+
+<b>public class</b> Blade implements Part {
+...
+}
+
+<b>public class</b> Guillotine implements Part {
+}
+
+<b>public class</b> Main {
+    <b>public static void</b> main(String[] args) {
+        Collection c = new ArrayList();
+        c.add(new Guillotine()) ;
+        c.add(new Blade());
+        Inventory.addAssembly("thingee", c); // <i>1: unchecked warning}</i>
+        Collection k = Inventory.getAssembly("thingee").getParts();
+    }
+}
+</pre></div>
+
+The client code was written before generics were introduced, but it uses
+the package <code>com.Example.widgets</code>
+and the collection library, both of which are using generic types.
+All the uses of generic type declarations in the client code are raw types.
+<P>
+Line 1 generates an unchecked warning, because a raw <code>Collection</code> 
+is being passed in where a <code>Collection</code> of <code>Part</code>s is expected, 
+and the compiler
+cannot ensure that the raw <code>Collection</code> really is a 
+<code>Collection</code> of <code>Part</code>s.
+<P>
+As an alternative, you can compile the client code using the
+source 1.4 flag, ensuring that no warnings are generated. However,
+in that case you won't be able to use any of the new language features
+introduced in JDK 5.0.
+<P>
+<hr>
+<P>
+
+ 
+<!--restrictions - on casts, instanceOf, reflection, arrays-->
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=methods.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=fineprint.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Generic Methods
+        <br><b>Next page:</b> The Fine Print
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

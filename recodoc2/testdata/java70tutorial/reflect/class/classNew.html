@@ -1,0 +1,721 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Retrieving Class Objects (The Java&trade; Tutorials &gt;        
+            The Reflection API &gt; Classes)
+</title>
+
+     <meta name="description" content="This reflection Java tutorial describes using reflection for accessing and manipulating classes, fields, methods, and constructors" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java reflection" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> The Reflection API
+        <br><b>Lesson:</b> Classes
+        <br><b>Section:</b> Sealing Packages in Extensions
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Classes</a></div>
+<div class="nolinkBHEAD">Retrieving Class Objects</div>
+<div class="linkBHEAD"><a href="classModifiers.html">Examining Class Modifiers and Types</a></div>
+<div class="linkBHEAD"><a href="classMembers.html">Discovering Class Members</a></div>
+<div class="linkBHEAD"><a href="classTrouble.html">Troubleshooting</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>The Reflection API</a>
+                &gt;
+                <a href=index.html target=_top>Classes</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=classModifiers.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Retrieving Class Objects</h1></div>
+            <div id=PageContent>
+The entry point for all reflection operations is
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>java.lang.Class</code></a>. With the exception of
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/reflect/ReflectPermission.html"><code>java.lang.reflect.ReflectPermission</code></a>, none of the classes in
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/reflect/package-summary.html"><code>java.lang.reflect</code></a>
+have public constructors. To get to these classes, it is necessary to invoke
+appropriate methods on
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>.  There are several ways to get a
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+depending on whether the code has access to an object, the name of class, a
+type, or an existing
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>.
+
+<h2>Object.getClass()</h2>
+
+If an instance of an object is available, then the simplest way to get its
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+is to invoke
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Object.html#getClass()"><code>Object.getClass()</code></a>.  Of course, this only works for reference types which all inherit from
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Object.html"><code>Object</code></a>.  Some examples follow.
+
+<div class="codeblock"><pre>
+Class c = "foo".getClass();
+</pre></div>
+
+Returns the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+for
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/String.html"><code>String</code></a>
+<div class="codeblock"><pre>
+Class c = System.console().getClass();
+</pre></div>
+
+There is a unique console associated with the virtual machine which is returned
+by the <code>static</code> method
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/System.html#console()"><code>System.console()</code></a>.  The value returned by
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Object.html#getClass()"><code>getClass()</code></a>
+is the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+corresponding to
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/io/Console.html"><code>java.io.Console</code></a>.
+
+<div class="codeblock"><pre>
+enum E { A, B }
+Class c = A.getClass();
+</pre></div>
+
+<code>A</code> is is an instance of the enum <code>E</code>; thus
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Object.html#getClass()"><code>getClass()</code></a>
+returns the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+corresponding to the enumeration type <code>E</code>.
+
+<div class="codeblock"><pre>
+byte[] bytes = new byte[1024];
+Class c = bytes.getClass();
+</pre></div>
+
+Since arrays are
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Object.html"><code>Objects</code></a>, it is also possible to invoke
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Object.html#getClass()"><code>getClass()</code></a>
+on an instance of an array.  The returned
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+corresponds to an array with component type <code>byte</code>.
+
+<div class="codeblock"><pre>
+import java.util.HashSet;
+import java.util.Set;
+
+Set&lt;String&gt; s = new HashSet&lt;String&gt;();
+Class c = s.getClass();
+</pre></div>
+
+In this case,
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/Set.html"><code>java.util.Set</code></a>
+is an interface to an object of type
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/HashSet.html"><code>java.util.HashSet</code></a>.  The value returned by
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Object.html#getClass()"><code>getClass()</code></a>
+is the class corresponding to
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/HashSet.html"><code>java.util.HashSet</code></a>.
+
+<h2>The .class Syntax</h2>
+
+If the type is available but there is no instance then it is possible to
+obtain a
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+by appending <code>".class"</code> to the name of the type.  This is also the
+easiest way to obtain the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+for a primitive type.
+
+<div class="codeblock"><pre>
+boolean b;
+Class c = b.getClass();   // compile-time error
+
+Class c = boolean.class;  // correct
+</pre></div>
+
+Note that the statement <code>boolean.getClass()</code> would produce a
+compile-time error because a <code>boolean</code> is a primitive type and
+cannot be dereferenced.  The <code>.class</code> syntax returns the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+corresponding to the type <code>boolean</code>.
+
+<div class="codeblock"><pre>
+Class c = java.io.PrintStream.class;
+</pre></div>
+
+The variable <code>c</code> will be the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+corresponding to the type
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/io/PrintStream.html"><code>java.io.PrintStream</code></a>.
+
+<div class="codeblock"><pre>
+Class c = int[][][].class;
+</pre></div>
+
+The <code>.class</code> syntax may be used to retrieve a
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+corresponding to a multi-dimensional array of a given type.
+
+<h2>Class.forName()</h2>
+
+If the fully-qualified name of a class is available, it is possible to get the
+corresponding
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+using the static method
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html#forName(java.lang.String)"><code>Class.forName()</code></a>.  This cannot be used for primitive types.  The syntax for names of array
+classes is described by
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html#getName()"><code>Class.getName()</code></a>.  This syntax is applicable to references and primitive types.
+
+<div class="codeblock"><pre>
+Class c = Class.forName("com.duke.MyLocaleServiceProvider");
+</pre></div>
+
+This statement will create a class from the given fully-qualified name.
+
+<div class="codeblock"><pre>
+Class cDoubleArray = Class.forName("[D");
+
+Class cStringArray = Class.forName("[[Ljava.lang.String;");
+</pre></div>
+
+The variable <code>cDoubleArray</code> will contain the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+corresponding to an array of primitive type <code>double</code> (i.e. the same
+as <code>double[].class</code>). The   <code>cStringArray</code> variable will
+contain the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+corresponding to a two-dimensional array of
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/String.html"><code>String</code></a>
+(i.e. identical to <code>String[][].class</code>).
+
+<h2>TYPE Field for Primitive Type Wrappers</h2>
+
+The <code>.class</code> syntax is a more convenient and the preferred way to
+obtain the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+for a primitive type; however there is another way to acquire the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>.  Each of the primitive types and <code>void</code> has a wrapper class in
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/package-summary.html"><code>java.lang</code></a>
+that is used for boxing of primitive types to reference types.  Each wrapper
+class contains a field named <code>TYPE</code> which is equal to the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+for the primitive type being wrapped.
+
+<div class="codeblock"><pre>
+Class c = Double.TYPE;
+</pre></div>
+
+There is a class
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Double.html"><code>java.lang.Double</code></a>
+which is used to wrap the primitive type <code>double</code> whenever an
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Object.html"><code>Object</code></a>
+is required. The value of
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Double.html#TYPE"><code>Double.TYPE</code></a>
+is identical to that of <code>double.class</code>.
+
+<div class="codeblock"><pre>
+Class c = Void.TYPE;
+</pre></div>
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Void.html#TYPE"><code>Void.TYPE</code></a>
+is identical to <code>void.class</code>.
+
+<h2>Methods that Return Classes</h2>
+
+There are several Reflection APIs which return classes but these may only be
+accessed if a
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+has already been obtained either directly or indirectly.
+
+<dl>
+<dt>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html#getSuperclass()"><code>Class.getSuperclass()</code></a><dd> Returns the super class for the given class.
+<div class="codeblock"><pre>
+Class c = javax.swing.JButton.class.getSuperclass();
+</pre></div>
+
+The super class of
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JButton.html"><code>javax.swing.JButton</code></a>
+is
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/AbstractButton.html"><code>javax.swing.AbstractButton</code></a>.
+</dl>
+
+<dl>
+<dt>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html#getClasses()"><code>Class.getClasses()</code></a><dd> Returns all the public classes, interfaces, and enums that are members of
+     the class including inherited members.
+<div class="codeblock"><pre>
+Class&lt;?&gt;[] c = Character.class.getClasses();
+</pre></div>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Character.html"><code>Character</code></a>
+contains two member classes
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Character.Subset.html"><code>Character.Subset</code></a>
+and
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Character.UnicodeBlock.html"><code>Character.UnicodeBlock</code></a>.
+</dl>
+
+<dl>
+<dt>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html#getDeclaredClasses()"><code>Class.getDeclaredClasses()</code></a>
+<dd> Returns all of the classes interfaces, and enums that are explicitly
+     declared in this class.
+<div class="codeblock"><pre>
+Class&lt;?&gt;[] c = Character.class.getDeclaredClasses();
+</pre></div>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Character.html"><code>Character</code></a>
+contains two public member classes
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Character.Subset.html"><code>Character.Subset</code></a>
+and
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Character.UnicodeBlock.html"><code>Character.UnicodeBlock</code></a>
+and one private class <code>Character.CharacterCache</code>.
+</dl>
+
+<dl>
+<dt> <code>{</code>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html#getDeclaringClass()"><code>Class</code></a><code>, java.lang.reflect. {</code>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/reflect/Field.html#getDeclaringClass()"><code>Field</code></a>,
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/reflect/Method.html#getDeclaringClass()"><code>Method</code></a>,
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/reflect/Constructor.html#getDeclaringClass()"><code>Constructor</code></a><code> } }.getDeclaringClass()</code>
+
+<dd> Returns the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html"><code>Class</code></a>
+in which these members were declared.
+<a class="OutsideLink" target="_blank" href="http://java.sun.com/docs/books/jls/third_edition/html/expressions.html#252986">Anonymous classes</a>
+will not have a declaring class but will have an enclosing class.
+
+<div class="codeblock"><pre>
+import java.lang.reflect.Field;
+
+Field f = System.class.getField("out");
+Class c = f.getDeclaringClass();
+</pre></div>
+
+The field
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/System.html#out"><code>out</code</a>
+is declared in
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/System.html"><code>System</code></a>.
+
+<div class="codeblock"><pre>
+public class MyClass {
+    static Object o = new Object() { public void m() {} };
+    static Class&lt;c&gt; = o.getClass().getEnclosingClass();
+}
+</pre></div>
+
+The declaring class of the anonymous class defined by <code>o</code> is
+<code>null</code>.
+</dl>
+
+<dl>
+<dt>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Class.html#getEnclosingClass()"><code>Class.getEnclosingClass()</code></a><dd> Returns the immediately enclosing class of the class.
+<div class="codeblock"><pre>
+Class c = Thread.State.class().getEnclosingClass();
+</pre></div>
+
+The enclosing class of the enum
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Thread.State.html"><code>Thread.State</code></a>
+is
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/Thread.html"><code>Thread</code></a>.
+
+<div class="codeblock"><pre>
+public class MyClass {
+    static Object o = new Object() { public void m() {} };
+    static Class&lt;c&gt; = o.getClass().getEnclosingClass();
+}
+</pre></div>
+
+The anonymous class defined by <code>o</code> is enclosed by
+<code>MyClass</code>.
+</dl>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=index.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=classModifiers.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Classes
+        <br><b>Next page:</b> Examining Class Modifiers and Types
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

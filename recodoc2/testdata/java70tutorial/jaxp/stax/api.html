@@ -1,0 +1,722 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>StAX API (The Java&trade; Tutorials &gt;        
+            Java API for XML Processing (JAXP) &gt; Streaming API for XML)
+</title>
+
+     <meta name="description" content="This JAXP Java tutorial describes Java API for XML Processing (jaxp), XSLT, SAX, and related XML topics" />
+     <meta name="keywords" content="java programming, learn java, java sample code, jaxp, xml, xslt, sax" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Java API for XML Processing (JAXP)
+        <br><b>Lesson:</b> Streaming API for XML
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Streaming API for XML</a></div>
+<div class="linkAHEAD"><a href="why.html">Why StAX?</a></div>
+<div class="nolinkAHEAD">StAX API</div>
+<div class="linkAHEAD"><a href="using.html">Using StAX</a></div>
+<div class="linkAHEAD"><a href="parser.html">Oracle's Streaming XML Parser Implementation</a></div>
+<div class="linkAHEAD"><a href="example.html">Example Code</a></div>
+<div class="linkAHEAD"><a href="info.html">Further Information</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Java API for XML Processing (JAXP)</a>
+                &gt;
+                <a href=index.html target=_top>Streaming API for XML</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=why.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=using.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>StAX API</h1></div>
+            <div id=PageContent>
+<!-- StAX API -->
+
+<a name="indexterm-13"></a><p>The StAX API exposes methods for iterative, event-based processing of XML documents. XML
+documents are treated as a filtered series of events, and infoset states can
+be stored in a procedural fashion. Moreover, unlike SAX, the StAX API is
+bidirectional, enabling both reading and writing of XML documents.</p><p>The StAX API is really two distinct API sets: a <b>cursor</b> API and
+an <b>iterator</b> API. These two API sets are explained in greater detail later
+in this lesson, but their main features are briefly described below.</p>
+
+<a name="bnbed"></a><h2>Cursor API</h2>
+<a name="indexterm-14"></a><a name="indexterm-15"></a><p>As the name implies, the StAX <b>cursor</b> API represents a cursor with which
+you can walk an XML document from beginning to end. This cursor can
+point to one thing at a time, and always moves forward, never
+backward, usually one infoset element at a time.</p><p>The two main cursor interfaces are <tt>XMLStreamReader</tt> and <tt>XMLStreamWriter</tt>. <tt>XMLStreamReader</tt> includes accessor methods
+for all possible information retrievable from the XML Information model, including document encoding,
+element names, attributes, namespaces, text nodes, start tags, comments, processing instructions, document boundaries, and
+so forth; for example:</p>
+<div class="codeblock"><pre>
+public interface XMLStreamReader {
+    public int next() throws XMLStreamException;
+    public boolean hasNext() throws XMLStreamException;
+    public String getText();
+    public String getLocalName();
+    public String getNamespaceURI();
+    // ... other methods not shown
+}
+</pre></div>
+<p>You can call methods on <tt>XMLStreamReader</tt>, such as <tt>getText</tt> and <tt>getName</tt>, to
+get data at the current cursor location. <tt>XMLStreamWriter</tt> provides methods that correspond to <tt>StartElement</tt>
+and <tt>EndElement</tt> event types; for example:</p>
+<div class="codeblock"><pre>
+public interface XMLStreamWriter {
+    public void writeStartElement(String localName) 
+        throws XMLStreamException;
+    public void writeEndElement() 
+        throws XMLStreamException;
+    public void writeCharacters(String text) 
+        throws XMLStreamException;
+// ... other methods not shown
+}
+</pre></div>
+<p>The cursor API mirrors SAX in many ways. For example, methods are
+available for directly accessing string and character information, and integer indexes can be used
+to access attribute and namespace information. As with SAX, the cursor API methods
+return XML information as strings, which minimizes object allocation requirements.</p>
+
+<a name="bnbee"></a><h2>Iterator API</h2>
+<a name="indexterm-16"></a><a name="indexterm-17"></a><p>The StAX <b>iterator</b> API represents an XML document stream as a set of
+discrete event objects. These events are pulled by the application and provided by
+the parser in the order in which they are read in the source
+XML document.</p><p>The base iterator interface is called <tt>XMLEvent</tt>, and there are subinterfaces for each
+event type listed in <a href="#bnbeg">Table&nbsp;5-2</a>. The primary parser interface for reading iterator
+events is <tt>XMLEventReader</tt>, and the primary interface for writing iterator events is <tt>XMLEventWriter</tt>. The
+<tt>XMLEventReader</tt> interface contains five methods, the most important of which is <tt>nextEvent</tt>,
+which returns the next event in an XML stream. <tt>XMLEventReader</tt> implements <tt>java.util.Iterator</tt>,
+which means that returns from <tt>XMLEventReader</tt> can be cached or passed into routines that
+can work with the standard Java Iterator; for example:</p>
+<div class="codeblock"><pre>
+public interface XMLEventReader extends Iterator {
+    public XMLEvent nextEvent() throws XMLStreamException;
+    public boolean hasNext();
+    public XMLEvent peek() throws XMLStreamException;
+    ...
+}
+</pre></div>
+<p>Similarly, on the output side of the iterator API, you have:</p>
+<div class="codeblock"><pre>
+public interface XMLEventWriter {
+    public void flush() throws XMLStreamException;
+    public void close() throws XMLStreamException;
+    public void add(XMLEvent e) throws XMLStreamException;
+    public void add(Attribute attribute) throws XMLStreamException;
+    ...
+}
+</pre></div>
+
+<a name="bnbef"></a><h3>Iterator Event Types</h3>
+<a name="indexterm-18"></a><p><a href="#bnbeg">Table&nbsp;5-2</a> lists the <tt>XMLEvent</tt> types defined in the event iterator API.</p><a name="bnbeg"></a><h4>Table&nbsp;5-2 <tt>XMLEvent</tt> Types</h4><table summary="XMLEvent Types"><col width="25%"><col width="74%"><tr><th align="left" valign="top" scope="col"><p>Event Type</p></th>
+<th id="h2" align="left" valign="top" scope="col"><p>Description</p></th>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p><tt>StartDocument</tt></p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Reports
+the beginning of a set of XML events, including encoding, XML version, and
+standalone properties.</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p><tt>StartElement</tt></p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Reports the start of an element, including any attributes and namespace declarations;
+also provides access to the prefix, namespace URI, and local name of the
+start tag.</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p><tt>EndElement</tt></p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Reports the end tag of an element. Namespaces that have gone
+out of scope can be recalled here if they have been explicitly set
+on their corresponding <tt>StartElement</tt>.</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p><tt>Characters</tt></p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Corresponds to XML <tt>CData</tt> sections and <tt>CharacterData</tt> entities. Note
+that ignorable white space and significant white space are also reported as <tt>Character</tt>
+events.</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p><tt>EntityReference</tt></p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Character entities can be reported as discrete events, which an application developer can
+then choose to resolve or pass through unresolved. By default, entities are resolved.
+Alternatively, if you do not want to report the entity as an event,
+replacement text can be substituted and reported as <tt>Characters</tt>.</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p><tt>ProcessingInstruction</tt></p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Reports the target and
+data for an underlying processing instruction.</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p><tt>Comment</tt></p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Returns the text of a comment.</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p><tt>EndDocument</tt></p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Reports the
+end of a set of XML events.</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p><tt>DTD</tt></p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Reports as <tt>java.lang.String</tt> information about the DTD,
+if any, associated with the stream, and provides a method for returning custom
+objects found in the DTD.</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p><tt>Attribute</tt></p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>Attributes are generally reported as part of a
+<tt>StartElement</tt> event. However, there are times when it is desirable to return an
+attribute as a standalone <tt>Attribute</tt> event; for example, when a namespace is returned as
+the result of an <tt>XQuery</tt> or <tt>XPath</tt> expression.</p></td>
+</tr>
+<tr><td headers="h1" align="left" valign="top" scope="row"><p><tt>Namespace</tt></p></td>
+<td headers="h1" align="left" valign="top" scope="row"><p>As with attributes, namespaces are
+usually reported as part of a <tt>StartElement</tt>, but there are times when
+it is desirable to report a namespace as a discrete <tt>Namespace</tt> event.</p></td>
+</tr>
+</table><p>Note that the <tt>DTD</tt>, <tt>EntityDeclaration</tt>, <tt>EntityReference</tt>, <tt>NotationDeclaration</tt>, and <tt>ProcessingInstruction</tt> events are only
+created if the document being processed contains a DTD.</p>
+
+<a name="bnbeh"></a><h3>Example of Event Mapping</h3>
+<a name="indexterm-19"></a><a name="indexterm-20"></a><p>As an example of how the event iterator API maps an XML
+stream, consider the following XML document:</p>
+<div class="codeblock"><pre>
+&lt;?xml version="1.0"?>
+&lt;BookCatalogue xmlns="http://www.publishing.org">
+    &lt;Book>
+        &lt;Title>Yogasana Vijnana: the Science of Yoga&lt;/Title>
+        &lt;ISBN>81-40-34319-4&lt;/ISBN>
+        &lt;Cost currency="INR">11.50&lt;/Cost>
+    &lt;/Book>
+&lt;/BookCatalogue>
+</pre></div>
+<p>This document would be parsed into eighteen primary and secondary events, as shown
+in <a href="#bnbei">Table&nbsp;5-3</a>. Note that secondary events, shown in curly braces (<tt>{}</tt>), are typically
+accessed from a primary event rather than directly.</p><a name="bnbei"></a><h4>Table&nbsp;5-3 Example of Iterator API Event Mapping</h4>
+<table summary="Example of Iterator API Event Mapping"><col width="6%"><col width="72%"><col width="21%"><tr><th align="left" valign="top" scope="col"><p>#</p></th>
+<th id="h102" align="left" valign="top" scope="col"><p>Element/Attribute</p></th>
+<th id="h103" align="left" valign="top" scope="col"><p>Event</p></th>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>1</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>version="1.0"</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>StartDocument</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>2</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>isCData = false
+data = "\n"
+IsWhiteSpace = true</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>Characters</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>3</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>qname = BookCatalogue:http://www.publishing.org
+attributes = null
+namespaces = {BookCatalogue" -> http://www.publishing.org"}</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>StartElement</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>4</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>qname = Book
+attributes = null
+namespaces = null</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>StartElement</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>5</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>qname = Title
+attributes = null
+namespaces = null</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>StartElement</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>6</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>isCData = false
+data = "Yogasana Vijnana: the Science of Yoga\n\t"
+IsWhiteSpace = false</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>Characters</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>7</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>qname = Title
+namespaces = null</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>EndElement</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>8</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>qname = ISBN
+attributes = null
+namespaces = null</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>StartElement</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>9</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>isCData = false
+data = "81-40-34319-4\n\t"
+IsWhiteSpace = false</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>Characters</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>10</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>qname = ISBN
+namespaces = null</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>EndElement</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>11</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>qname = Cost
+attributes = {"currency" -> INR}
+namespaces = null</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>StartElement</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>12</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>isCData = false
+data = "11.50\n\t"
+IsWhiteSpace = false</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>Characters</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>13</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>qname = Cost
+namespaces = null</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>EndElement</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>14</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>isCData = false
+data = "\n"
+IsWhiteSpace = true</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>Characters</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>15</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>qname = Book
+namespaces = null</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>EndElement</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>16</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>isCData = false
+data = "\n"
+IsWhiteSpace = true</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>Characters</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>17</p></td>
+<td headers="h101" align="left" valign="top" scope="row"><code>qname = BookCatalogue:http://www.publishing.org
+namespaces = {BookCatalogue" -> http://www.publishing.org"}</code></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>EndElement</tt></p></td>
+</tr>
+<tr><td headers="h101" align="left" valign="top" scope="row"><p>18</p></td>
+<td headers="h101" align="left" valign="top" scope="row"></td>
+<td headers="h102" align="left" valign="top" scope="row"><p><tt>EndDocument</tt></p></td>
+</tr>
+</table><p>There are several important things to note in this example:</p>
+<ul><li><p>The events are created in the order in which the corresponding XML elements are encountered in the document, including nesting of elements, opening and closing of elements, attribute order, document start and document end, and so forth.</p></li>
+<li><p>As with proper XML syntax, all container elements have corresponding start and end events; for example, every <tt>StartElement</tt> has a corresponding <tt>EndElement</tt>, even for empty elements.</p></li>
+<li><p><tt>Attribute</tt> events are treated as secondary events, and are accessed from their corresponding <tt>StartElement</tt> event.</p></li>
+<li><p>Similar to <tt>Attribute</tt> events, <tt>Namespace</tt> events are treated as secondary, but appear twice and are accessible twice in the event stream, first from their corresponding <tt>StartElement</tt> and then from their corresponding <tt>EndElement</tt>.</p></li>
+<li><p><tt>Character</tt> events are specified for all elements, even if those elements have no character data. Similarly, <tt>Character</tt> events can be split across events.</p></li>
+<li><p>The StAX parser maintains a namespace stack, which holds information about all XML namespaces defined for the current element and its ancestors. The namespace stack, which is exposed through the <tt>javax.xml.namespace.NamespaceContext</tt> interface, can be accessed by namespace prefix or URI.</p></li></ul>
+
+
+<a name="bnbej"></a><h2>Choosing between Cursor and Iterator APIs</h2>
+<a name="indexterm-21"></a><p>It is reasonable to ask at this point, &ldquo;What API should I
+choose? Should I create instances of <tt>XMLStreamReader</tt> or <tt>XMLEventReader</tt>? Why are there two
+kinds of APIs anyway?&rdquo;</p>
+
+<a name="bnbek"></a><h3>Development Goals</h3>
+<p>The authors of the StAX specification targeted three types of developers:</p>
+<ul><li><p><b>Library and infrastructure developers</b>: Create application servers, JAXM, JAXB, JAX-RPC and similar implementations; need highly efficient, low-level APIs with minimal extensibility requirements.</p></li>
+<li><p><b>Java ME developers</b>: Need small, simple, pull-parsing libraries, and have minimal extensibility needs.</p></li>
+<li><p><b>Java Platform, Enterprise Edition (Java EE) and Java Platform, Standard Edition (Java SE) developers</b>: Need clean, efficient pull-parsing libraries, plus need the flexibility to both read and write XML streams, create new event types, and extend XML document elements and attributes.</p></li></ul>
+<p>Given these wide-ranging development categories, the StAX authors felt it was more useful
+to define two small, efficient APIs rather than overloading one larger and necessarily
+more complex API.</p>
+
+<a name="bnbel"></a><h3>Comparing Cursor and Iterator APIs</h3>
+<p>Before choosing between the cursor and iterator APIs, you should note a few
+things that you can do with the iterator API that you cannot
+do with the cursor API:</p>
+<ul><li><p>Objects created from the <tt>XMLEvent</tt> subclasses are immutable, and can be used in arrays, lists, and maps, and can be passed through your applications even after the parser has moved on to subsequent events.</p></li>
+<li><p>You can create subtypes of <tt>XMLEvent</tt> that are either completely new information items or extensions of existing items but with additional methods.</p></li>
+<li><p>You can add and remove events from an XML event stream in much simpler ways than with the cursor API.</p></li></ul>
+<p>Similarly, keep some general recommendations in mind when making your choice:</p>
+<ul><li><p>If you are programming for a particularly memory-constrained environment, like Java ME, you can make smaller, more efficient code with the cursor API.</p></li>
+<li><p>If performance is your highest priority&mdash;for example, when creating low-level libraries or infrastructure&mdash;the cursor API is more efficient.</p></li>
+<li><p>If you want to create XML processing pipelines, use the iterator API.</p></li>
+<li><p>If you want to modify the event stream, use the iterator API.</p></li>
+<li><p>If you want your application to be able to handle pluggable processing of the event stream, use the iterator API.</p></li>
+<li><p>In general, if you do not have a strong preference one way or the other, using the iterator API is recommended because it is more flexible and extensible, thereby &ldquo;future-proofing&rdquo; your applications.</p></li></ul>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=why.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=using.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h201" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h201" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h202" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Why StAX?
+        <br><b>Next page:</b> Using StAX
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

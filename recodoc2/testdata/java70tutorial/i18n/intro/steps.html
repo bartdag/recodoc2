@@ -1,0 +1,583 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Internationalizing the Sample Program (The Java&trade; Tutorials &gt;        
+            Internationalization &gt; Introduction)
+</title>
+
+     <meta name="description" content="This internationalization Java tutorial describes setting locale, isolating locale-specific data, formatting data, internationalized domain name and resource identifier" />
+     <meta name="keywords" content="java programming, learn java, java sample code, i18n, internationalization, locale, text formatting" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Internationalization
+        <br><b>Lesson:</b> Introduction
+        <br><b>Section:</b> A Quick Example
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Introduction</a></div>
+<div class="linkAHEAD"><a href="quick.html">A Quick Example</a></div>
+<div class="linkBHEAD"><a href="before.html">Before Internationalization</a></div>
+<div class="linkBHEAD"><a href="after.html">After Internationalization</a></div>
+<div class="linkBHEAD"><a href="run.html">Running the Sample Program</a></div>
+<div class="nolinkBHEAD">Internationalizing the Sample Program</div>
+<div class="linkAHEAD"><a href="checklist.html">Checklist</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Internationalization</a>
+                &gt;
+                <a href=index.html target=_top>Introduction</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=run.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=checklist.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Internationalizing the Sample Program</h1></div>
+            <div id=PageContent>
+If you look at the internationalized source code, you'll notice that
+the hardcoded English messages have been removed. Because the messages
+are no longer hardcoded and because the language code is specified at
+run time, the same executable can be distributed worldwide. No
+recompilation is required for localization. The program has been
+internationalized.
+<P>
+You may be wondering what happened to the text of the messages or what
+the language and country codes mean. Don't worry. You'll learn about
+these concepts as you step through the process of internationalizing
+the sample program.
+
+
+<h2>1. Create the Properties Files</h2>
+
+A properties file stores information about the characteristics of a
+program or environment. A properties file is in plain-text format. You
+can create the file with just about any text editor.
+<P>
+In the example the properties files store the translatable text of the
+messages to be displayed. Before the program was internationalized, the
+English version of this text was hardcoded in the
+<CODE>System.out.println </CODE> statements. The default properties
+file, which is called <CODE>MessagesBundle.properties</CODE>, contains
+the following lines:
+<div class="codeblock"><pre>
+greetings = Hello
+farewell = Goodbye
+inquiry = How are you?
+</pre></div>
+
+Now that the messages are in a properties file, they can be translated
+into various languages. No changes to the source code are required. The
+French translator has created a properties file called
+<CODE>MessagesBundle_fr_FR.properties</CODE>, which contains these lines: 
+<div class="codeblock"><pre>
+greetings = Bonjour.
+farewell = Au revoir.
+inquiry = Comment allez-vous?
+</pre></div>
+
+Notice that the values to the right side of the equal sign have been
+translated but that the keys on the left side have not been changed.
+These keys must not change, because they will be referenced when your
+program fetches the translated text.
+<P>
+The name of the properties file is important. For example, the name of
+the <CODE>MessagesBundle_fr_FR.properties</CODE> file contains the
+<CODE>fr</CODE> language code and the <CODE>FR</CODE> country code.
+These codes are also used when creating a <CODE>Locale</CODE> object.
+
+
+<h2>2. Define the Locale</h2>
+
+The <CODE>Locale</CODE> object identifies a particular language and
+country. The following statement defines a <CODE>Locale</CODE> for
+which the language is English and the country is the United States:
+<div class="codeblock"><pre>
+aLocale = new Locale(&quot;en&quot;,&quot;US&quot;);
+</pre></div>
+<P>
+The next example creates <CODE>Locale</CODE> objects for the French
+language in Canada and in France:
+<div class="codeblock"><pre>
+caLocale = new Locale(&quot;fr&quot;,&quot;CA&quot;);
+frLocale = new Locale(&quot;fr&quot;,&quot;FR&quot;);
+</pre></div>
+<P>
+The program is flexible. Instead of using hardcoded language and
+country codes, the program gets them from the command line at run
+time:
+<div class="codeblock"><pre>
+String language = new String(args[0]);
+String country = new String(args[1]);
+currentLocale = new Locale(language, country);
+</pre></div>
+<P>
+<CODE>Locale</CODE> objects are only identifiers. After defining a
+<CODE>Locale</CODE>, you pass it to other objects that perform useful
+tasks, such as formatting dates and numbers. These objects are <EM
+CLASS="Book">locale-sensitive</EM> because their behavior varies
+according to <CODE>Locale</CODE>. A <CODE>ResourceBundle </CODE> is an
+example of a locale-sensitive object.
+
+
+<h2>3. Create a ResourceBundle</h2>
+
+<CODE>ResourceBundle</CODE> objects contain locale-specific objects.
+You use <CODE>ResourceBundle</CODE> objects to isolate locale-sensitive
+data, such as translatable text. In the sample program the
+<CODE>ResourceBundle</CODE> is backed by the properties files that
+contain the message text we want to display.
+<P>
+The <CODE>ResourceBundle</CODE> is created as follows: 
+<div class="codeblock"><pre>
+messages = ResourceBundle.getBundle(&quot;MessagesBundle&quot;,
+                                   currentLocale);
+</pre></div>
+<P>
+The arguments passed to the <CODE>getBundle</CODE> method identify
+which properties file will be accessed. The first argument,
+<CODE>MessagesBundle</CODE>, refers to this family of properties
+files:
+<div class="codeblock"><pre>
+MessagesBundle_en_US.properties
+MessagesBundle_fr_FR.properties
+MessagesBundle_de_DE.properties
+</pre></div>
+<P>
+The <CODE>Locale</CODE>, which is the second argument of
+<CODE>getBundle</CODE>, specifies which of the <CODE>
+MessagesBundle</CODE> files is chosen. When the <CODE>Locale</CODE> was
+created, the language code and the country code were passed to its
+constructor. Note that the language and country codes follow
+<CODE>MessagesBundle </CODE> in the names of the properties files.
+<P>
+Now all you have to do is get the translated messages from the
+<CODE>ResourceBundle</CODE>.
+
+
+<h2>4. Fetch the Text from the ResourceBundle</h2>
+
+The properties files contain key-value pairs. The values consist of the
+translated text that the program will display. You specify the keys
+when fetching the translated messages from the <CODE>ResourceBundle</CODE>
+with the <CODE>getString</CODE> method. For example, to retrieve the
+message identified by the greetings key, you invoke
+<CODE>getString</CODE> as follows:
+<div class="codeblock"><pre>
+String msg1 = messages.getString(&quot;greetings&quot;);
+</pre></div>
+
+The sample program uses the key <CODE>greetings</CODE> because it
+reflects the content of the message, but it could have used another
+<CODE>String</CODE>, such as <CODE>s1</CODE> or <CODE>msg1</CODE>. Just
+remember that the key is hardcoded in the program and it must be
+present in the properties files. If your translators accidentally
+modify the keys in the properties files, <CODE>getString </CODE> won't
+be able to find the messages.
+
+
+<h2>Conclusion</h2>
+
+That's it. As you can see, internationalizing a program isn't too
+difficult. It requires some planning and a little extra coding, but the
+benefits are enormous. To provide you with an overview of the
+internationalization process, the sample program in this lesson was
+intentionally kept simple. As you read the lessons that follow, you'll
+learn about the more advanced internationalization features of the Java
+programming language.
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=run.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=checklist.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Running the Sample Program
+        <br><b>Next page:</b> Checklist
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

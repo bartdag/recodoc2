@@ -301,7 +301,7 @@ class GenericParser(object):
                 number=number,
                 word_count=word_count)
 
-        if settings.SAVE_MESSAGE_TEXT:
+        if settings.SAVE_SECTION_TEXT:
             section.text_content = text
 
         section.save()

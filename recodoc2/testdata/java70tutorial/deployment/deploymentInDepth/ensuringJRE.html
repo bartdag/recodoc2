@@ -1,0 +1,521 @@
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Ensuring the Presence of the JRE Software (The Java&trade; Tutorials &gt;        
+            Deployment &gt; Deployment In-Depth)
+</title>
+
+     <meta name="description" content="This deployment Java tutorial describes development and deployment of applets, Java Web Start applications, rich Internet applications, and JAR related tools" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java applet, java web start, rich internet application, RIA, jar, plugin, plug-in" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Deployment
+        <br><b>Lesson:</b> Deployment In-Depth
+        <br><b>Section:</b> Deployment Best Practices
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Deployment In-Depth</a></div>
+<div class="linkAHEAD"><a href="depltoolkit_index.html">Deployment Toolkit</a></div>
+<div class="linkBHEAD"><a href="runAppletFunction.html">Deploying an Applet</a></div>
+<div class="linkCHEAD"><a href="customizeLoadingScreen.html">Customizing the Loading Screen</a></div>
+<div class="linkCHEAD"><a href="embeddingJNLPFileInWebPage.html">Embedding JNLP File in Applet Tag</a></div>
+<div class="linkBHEAD"><a href="createWebStartLaunchButtonFunction.html">Deploying a Java Web Start Application</a></div>
+<div class="linkCHEAD"><a href="changeLaunchButtonOfJWS.html">Changing the Launch Button</a></div>
+<div class="linkCHEAD"><a href="deployingWithoutCodebase.html">Deploying Without Codebase</a></div>
+<div class="linkBHEAD"><a href="jreVersionCheck.html">Checking the Client JRE Software Version</a></div>
+<div class="linkAHEAD"><a href="jnlp.html">Java Network Launch Protocol</a></div>
+<div class="linkBHEAD"><a href="jnlpFileSyntax.html">Structure of the JNLP File</a></div>
+<div class="linkAHEAD"><a href="bestPractices.html">Deployment Best Practices</a></div>
+<div class="linkBHEAD"><a href="reducingDownloadTime.html">Reducing the Download Time</a></div>
+<div class="linkBHEAD"><a href="avoidingUnnecessaryUpdateChecks.html">Avoiding Unnecessary Update Checks</a></div>
+<div class="linkBHEAD"><a href="signing.html">Signing JAR Files Only When Necessary</a></div>
+<div class="nolinkBHEAD">Ensuring the Presence of the JRE Software</div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Deployment</a>
+                &gt;
+                <a href=index.html target=_top>Deployment In-Depth</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=signing.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=QandE/questions.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Ensuring the Presence of the JRE Software</h1></div>
+            <div id=PageContent>
+<p>Rich Internet applications (RIAs) usually need a minimum version of the 
+Java Runtime Environment (JRE) software to be present on the client machine. 
+When deploying a RIA, you need to ensure that client 
+machines have the required version of the JRE software so that your RIA 
+can function well.
+With the Deployment Toolkit script, you have at least two ways to handle this 
+requirement.</p>
+<ul>
+	<li>You can check the version of client JRE software as soon as users 
+    access your web site and install the latest version if necessary.
+	</li>
+	<li>You can let users  navigate the web site, and check and install the 
+    latest JRE only when they attempt to use your RIA.
+	</li>
+</ul>
+
+<h2><a name="correctJREAtOutset" id="correctJREAtOutset"></a>Checking and 
+Installing the Latest JRE Software When the User Accesses Your Web Site</h2>
+
+<p>The following example checks if a user has at least version 1.6.0_13 of the JRE software  
+installed. If not, the code installs the latest JRE software . 
+See inline comments in the code.</p>
+<div class="codeblock"><pre>
+&lt;script src="http://www.java.com/js/deployJava.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+    
+    // check if current JRE version is greater than 1.6.0 
+    alert("versioncheck " + deployJava.versionCheck('1.6.0_10+'));
+    if (deployJava.versionCheck('1.6.0_10+') == false) {                   
+        userInput = confirm("You need the latest Java(TM) Runtime Environment. Would you like to update now?");        
+        if (userInput == true) {  
+    
+            // Set deployJava.returnPage to make sure user comes back to 
+            // your web site after installing the JRE
+            deployJava.returnPage = location.href;
+            
+            // install latest JRE or redirect user to another page to get JRE from.
+            deployJava.installLatestJRE(); 
+        }
+    }
+&lt;/script&gt;
+</pre></div>
+
+<h2><a name="correctJREOnUse" id="correctJREOnUse"></a>Installing the Correct 
+JRE Software Only When the User Attempts to Use Your RIA</h2>
+<p>When you specify the minimum version of the JRE software in the <code>runApplet</code> or 
+<code>createWebStartLaunchButton</code> function, the Deployment Toolkit script makes sure 
+that the required version of the JRE software exists on the client before running 
+your RIA.
+</p>
+<p>Use the <code>runApplet</code> function to deploy an applet, as shown in the 
+following example. The last parameter of the <code>runApplet</code> function is the 
+minimum version that is required to the run your applet (version 1.6).</p>
+<div class="codeblock"><pre>    
+&lt;script src=&quot;http://www.java.com/js/deployJava.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+    var attributes = { code:'components.DynamicTreeApplet',  width:300, height:300};
+    var parameters = {jnlp_href: 'dynamictree-applet.jnlp'};
+    deployJava.runApplet(attributes, parameters, '1.6');
+&lt;/script&gt;
+</pre></div>
+
+<p>To deploy a Java Web Start application, use the <code>createWebStartLaunchButton</code> 
+function with the correct minimum version parameter (version 1.6).</p>
+<div class="codeblock"><pre>
+&lt;script src=&quot;http://www.java.com/js/deployJava.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+    var url = &quot;dynamictree-applet.jnlp&quot;;
+    deployJava.createWebStartLaunchButton(url, '1.6.0');
+&lt;/script&gt;
+</pre></div>
+
+
+<p>The <code>runApplet</code> and <code>createWebStartLaunchButton</code> 
+functions check the client's version of the JRE software. If the minimum version is not 
+installed, the funtions install the latest version of the JRE software.
+</p> 
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=signing.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=QandE/questions.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Signing JAR Files Only When Necessary
+        <br><b>Next page:</b> Questions and Exercises: Deployment In-Depth
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

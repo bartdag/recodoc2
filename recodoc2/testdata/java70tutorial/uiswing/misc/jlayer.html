@@ -1,0 +1,1068 @@
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>How to Decorate Components with the JLayer Class (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Using Other Swing Features)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Using Other Swing Features
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Using Other Swing Features</a></div>
+<div class="linkAHEAD"><a href="desktop.html">How to Integrate with the Desktop Class</a></div>
+<div class="linkAHEAD"><a href="trans_shaped_windows.html">How to Create Translucent and Shaped Windows</a></div>
+<div class="nolinkAHEAD">How to Decorate Components with the JLayer Class</div>
+<div class="linkAHEAD"><a href="action.html">How to Use Actions</a></div>
+<div class="linkAHEAD"><a href="timer.html">How to Use Swing Timers</a></div>
+<div class="linkAHEAD"><a href="access.html">How to Support Assistive Technologies</a></div>
+<div class="linkAHEAD"><a href="focus.html">How to Use the Focus Subsystem</a></div>
+<div class="linkAHEAD"><a href="keybinding.html">How to Use Key Bindings</a></div>
+<div class="linkAHEAD"><a href="modality.html">How to Use Modality in Dialogs</a></div>
+<div class="linkAHEAD"><a href="printtable.html">How to Print Tables</a></div>
+<div class="linkAHEAD"><a href="printtext.html">How to Print Text</a></div>
+<div class="linkAHEAD"><a href="splashscreen.html">How to Create a Splash Screen</a></div>
+<div class="linkAHEAD"><a href="systemtray.html">How to Use the System Tray</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Problems Using Other Swing Features</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Using Other Swing Features</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=trans_shaped_windows.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=action.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>How to Decorate Components with the JLayer Class</h1></div>
+            <div id=PageContent>
+<!-- How to Decorate Components with the JLayer Class -->
+
+<p>
+The <code>JLayer</code> class is a flexible and powerful <i>decorator</i> for Swing
+components. It enables you to draw on components and respond to component
+events without modifying the underlying component directly.
+</p>
+
+<p>
+The <code>JLayer</code> class in Java SE 7 is similar in spirit to the
+<a class="OutsideLink" target="_blank" href="http://java.net/projects/jxlayer/">JxLayer project</a> project at
+<a class="OutsideLink" target="_blank" href="http://home.java.net/">java.net</a>. The <code>JLayer</code> class was initially based on
+the <code>JXLayer</code> project, but its API evolved separately.
+</p>
+
+<p>
+This document describes examples that show the power of the <code>JLayer</code> class.
+Full source code is available.
+</p>
+
+<ul>
+<li><a href="#using">Using the <code>JLayer</code> Class</a>
+<li><a href="#layerui">Using the <code>LayerUI</code> Class</a>
+<li><a href="#drawing">Drawing on Components</a>
+<li><a href="#events">Responding to Events</a>
+<li><a href="#animating">Animating a Busy Indicator</a>
+<li><a href="#validation">Validating Text Fields</a>
+</ul>
+
+<p>
+For a brief introduction to the material on this page, watch the following video.
+</p>
+
+<iframe width="560" height="349"
+  title="Using JLayer in Swing Applications"
+  src="http://www.youtube.com/embed/6mQYsWCkx4g"
+  frameborder="1" allowfullscreen>
+</iframe>
+
+<p>
+A JavaScript-enabled web browser and an Internet connection are required for the video.
+If you cannot
+see the video, try <a href="http://www.youtube.com/watch?v=6mQYsWCkx4g">
+viewing it at YouTube</a>.
+</p>
+
+<h2 fmstyle=B-HEAD><a name="using">Using the <code>JLayer</code> Class</a></h2>
+
+<p>
+The <code>javax.swing.JLayer</code> class is half of a team. The other half
+is the <code>javax.swing.plaf.LayerUI</code> class.
+Suppose you want to do some custom
+drawing atop a <code>JButton</code> object (<i>decorate</i> the
+<code>JButton</code> object). The component you want to decorate is the <i>target</i>.
+</p>
+
+<ul>
+<li>Create the target component.</li>
+<li>Create an instance of a <code>LayerUI</code> subclass to do the drawing.</li>
+<li>Create a <code>JLayer</code> object that wraps the target and the
+<code>LayerUI</code> object.</li>
+<li>Use the <code>JLayer</code> object in your user interface just as you would use the
+target component.</li>
+</ul>
+
+<p>
+For example, to add an instance of a <code>JPanel</code> subclass to a
+<code>JFrame</code> object, you would do something similar to this:
+</p>
+
+<div class="codeblock"><pre>
+JFrame f = new JFrame();
+
+JPanel panel = createPanel();
+
+f.add (panel);
+</pre></div>
+
+<p>
+To decorate the <code>JPanel</code> object, do something
+similar to this instead:
+</p>
+
+<div class="codeblock"><pre>
+JFrame f = new JFrame();
+
+JPanel panel = createPanel();
+LayerUI&lt;JPanel&gt; layerUI = new MyLayerUISubclass();
+JLayer&lt;JPanel&gt; jlayer = new JLayer&lt;JPanel&gt;(panel, layerUI);
+
+f.add (jlayer);
+</pre></div>
+
+<p>
+Use generics to ensure that the <code>JPanel</code> object and the <code>LayerUI</code>
+object
+are for compatible types. In the previous example, both the
+<code>JLayer</code> object and the <code>LayerUI</code> object are used with
+the <code>JPanel</code> class.
+</p>
+
+<p>
+The <code>JLayer</code> class is usually generified with the exact type of its
+view component, while the <code>LayerUI</code> class is designed to be used with
+<code>JLayer</code> classes of its generic parameter or any of its ancestors.
+</p>
+
+<p>
+For example, a <code>LayerUI&lt;JComponent&gt;</code> object can be used with a
+<code>JLayer&lt;AbstractButton&gt;</code> object.
+</p>
+
+<p>
+A <code>LayerUI</code> object is responsible for custom decoration and event handling
+for a <code>JLayer</code> object. When you create an instance of a <code>LayerUI</code> subclass,
+your custom behavior can be applicable to every <code>JLayer</code> object with an
+appropriate generic type. That is why the <code>JLayer</code> class is <code>final</code>; all
+custom behavior is encapsulated in your <code>LayerUI</code> subclass, so there
+is no need to make a <code>JLayer</code> subclass.
+</p>
+
+<h2 fmstyle=B-HEAD><a name="layerui">Using the <code>LayerUI</code> Class</a></h2>
+
+<p>
+The <code>LayerUI</code> class inherits most of its behavior from
+the <code>ComponentUI</code> class. Here are the most commonly overridden methods:
+</p>
+
+<ul>
+  <li>
+    The <code>paint(Graphics g, JComponent c)</code> method is called when the target
+    component needs to be drawn. To render the
+    component in the same way that Swing renders it, call the
+    <code>super.paint(g, c)</code> method.
+  </li>
+  <li>
+    The <code>installUI(JComponent c)</code> method is called when an instance of your
+    <code>LayerUI</code> subclass is associated with a component. Perform any
+    necessary initializations here. The component that is passed in is the
+    corresponding <code>JLayer</code> object. Retrieve the target component with
+    the <code>JLayer</code> class' <code>getView()</code> method.
+  </li>
+  <li>
+    The <code>uninstallUI(JComponent c)</code> method is called when an
+    instance of your
+    <code>LayerUI</code> subclass is no longer associated with the given
+    component. Clean up here if necessary.
+  </li>
+</ul>
+
+<h2 fmstyle=B-HEAD><a name="drawing">Drawing on Components</a></h2>
+
+<p>
+To use the <code>JLayer</code> class, you need a good <code>LayerUI</code>
+subclass. The simplest kinds of <code>LayerUI</code> classes change how components are
+drawn. Here is one, for example, that paints a transparent color gradient on a
+component.
+</p>
+
+<div class="codeblock"><pre>
+class WallpaperLayerUI extends LayerUI&lt;JComponent&gt; {
+  @Override
+  public void paint(Graphics g, JComponent c) {
+    super.paint(g, c);
+
+    Graphics2D g2 = (Graphics2D) g.create();
+
+    int w = c.getWidth();
+    int h = c.getHeight();
+    g2.setComposite(AlphaComposite.getInstance(
+            AlphaComposite.SRC_OVER, .5f));
+    g2.setPaint(new GradientPaint(0, 0, Color.yellow, 0, h, Color.red));
+    g2.fillRect(0, 0, w, h);
+
+    g2.dispose();
+  }
+}
+</pre></div>
+
+<p>
+The <code>paint()</code> method is where the custom drawing takes place.
+The call to the
+<code>super.paint()</code> method draws the contents of the <code>JPanel</code>
+object.
+After setting up a 50% transparent composite, the color gradient is drawn.
+</p>
+
+<p>
+After the <code>LayerUI</code> subclass is defined, using it is simple.
+Here is some source code that uses the <code>WallpaperLayerUI</code> class:
+</p>
+
+<div class="codeblock"><pre>
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.plaf.LayerUI;
+
+public class Wallpaper {
+  public static void main(String[] args) {
+    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        createUI();
+      }
+    });
+  }
+
+  public static void createUI() {
+    JFrame f = new JFrame("Wallpaper");
+    
+    JPanel panel = createPanel();
+    LayerUI&lt;JComponent&gt; layerUI = new WallpaperLayerUI();
+    JLayer&lt;JComponent&gt; jlayer = new JLayer&lt;JComponent&gt;(panel, layerUI);
+    
+    f.add (jlayer);
+    
+    f.setSize(300, 200);
+    f.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+    f.setLocationRelativeTo (null);
+    f.setVisible (true);
+  }
+
+  private static JPanel createPanel() {
+    JPanel p = new JPanel();
+
+    ButtonGroup entreeGroup = new ButtonGroup();
+    JRadioButton radioButton;
+    p.add(radioButton = new JRadioButton("Beef", true));
+    entreeGroup.add(radioButton);
+    p.add(radioButton = new JRadioButton("Chicken"));
+    entreeGroup.add(radioButton);
+    p.add(radioButton = new JRadioButton("Vegetable"));
+    entreeGroup.add(radioButton);
+
+    p.add(new JCheckBox("Ketchup"));
+    p.add(new JCheckBox("Mustard"));
+    p.add(new JCheckBox("Pickles"));
+
+    p.add(new JLabel("Special requests:"));
+    p.add(new JTextField(20));
+
+    JButton orderButton = new JButton("Place Order");
+    p.add(orderButton);
+
+    return p;
+  }
+}
+</pre></div>
+
+<p>
+Here is the result:
+</p>
+
+<p>
+<p><center><IMG SRC="../../figures/uiswing/misc/Wallpaper.png" WIDTH="" HEIGHT="" ALIGN="BOTTOM" ALT="A panel with a jazzy decoration"></center></p></p>
+
+<p>
+Source code:
+</p>
+
+<dl>
+  <dd>
+<a class="SourceLink" target="_blank" href="../examples/zipfiles/misc-WallpaperProject.zip"><code>Wallpaper NetBeans Project</code></a>  </dd>
+  <dd>
+<a class="SourceLink" target="_blank" href="../examples/misc/WallpaperProject/src/Wallpaper.java"><code>Wallpaper.java</code></a>  </dd>
+</dl>
+
+<p>
+Run with
+<a class="TutorialLink" target="_top" href="http://www.oracle.com/technetwork/java/javase/javawebstart/">Java Web Start</a>:
+</p>
+
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex7/Wallpaper.jnlp"><img src="../../images/jws-launch-button.png" alt="Launches the example"></a>
+</center>
+<p>
+
+<p>
+The <code>LayerUI</code> class' <code>paint()</code> method gives you complete control
+over how a component is drawn. Here is another <code>LayerUI</code>
+subclass that shows how the entire contents of a panel can be modified using Java 2D
+image processing:
+</p>
+
+<div class="codeblock"><pre>
+class BlurLayerUI extends LayerUI&lt;JComponent&gt; {
+  private BufferedImage mOffscreenImage;
+  private BufferedImageOp mOperation;
+
+  public BlurLayerUI() {
+    float ninth = 1.0f / 9.0f;
+    float[] blurKernel = {
+      ninth, ninth, ninth,
+      ninth, ninth, ninth,
+      ninth, ninth, ninth
+    };
+    mOperation = new ConvolveOp(
+            new Kernel(3, 3, blurKernel),
+            ConvolveOp.EDGE_NO_OP, null);
+  }
+
+  @Override
+  public void paint (Graphics g, JComponent c) {
+    int w = c.getWidth();
+    int h = c.getHeight();
+
+    if (w == 0 || h == 0) {
+      return;
+    }
+
+    // Only create the offscreen image if the one we have
+    // is the wrong size.
+    if (mOffscreenImage == null ||
+            mOffscreenImage.getWidth() != w ||
+            mOffscreenImage.getHeight() != h) {
+      mOffscreenImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+    }
+
+    Graphics2D ig2 = mOffscreenImage.createGraphics();
+    ig2.setClip(g.getClip());
+    super.paint(ig2, c);
+    ig2.dispose();
+
+    Graphics2D g2 = (Graphics2D)g;
+    g2.drawImage(mOffscreenImage, mOperation, 0, 0);
+  }
+}
+</pre></div>
+
+<p>
+In the <code>paint()</code> method, the panel is rendered into an offscreen
+image. The offscreen image is processed with a convolution operator, then drawn
+to the screen.
+</p>
+
+<p>
+The entire user interface is still live, just blurry:
+</p>
+
+<p>
+<p><center><IMG SRC="../../figures/uiswing/misc/Myopia.png" WIDTH="" HEIGHT="" ALIGN="BOTTOM" ALT="A graphically inverted user interface"></center></p></p>
+
+<p>
+Source code:
+</p>
+
+<dl>
+  <dd>
+<a class="SourceLink" target="_blank" href="../examples/zipfiles/misc-MyopiaProject.zip"><code>Myopia NetBeans Project</code></a>  </dd>
+  <dd>
+<a class="SourceLink" target="_blank" href="../examples/misc/MyopiaProject/src/Myopia.java"><code>Myopia.java</code></a>  </dd>
+</dl>
+
+<p>
+Run with
+<a class="TutorialLink" target="_top" href="http://www.oracle.com/technetwork/java/javase/javawebstart/">Java Web Start</a>:
+</p>
+
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex7/Myopia.jnlp"><img src="../../images/jws-launch-button.png" alt="Launches the example"></a>
+</center>
+<p>
+
+<h2 fmstyle=B-HEAD><a name="events">Responding to Events</a></h2>
+
+<p>
+Your <code>LayerUI</code> subclass can also receive all of the events of its
+corresponding component. However, the <code>JLayer</code> instance must register its
+interest in specific types of events. This happens with the <code>JLayer</code>
+class'
+<code>setLayerEventMask()</code> method. Typically, however, this call is made
+from initialization performed in the <code>LayerUI</code> class'
+<code>installUI()</code> method.
+</p>
+
+<p>
+For example, the following excerpt shows a portion of a <code>LayerUI</code> subclass that
+registers to receive mouse and mouse motion events.
+</p>
+
+<div class="codeblock"><pre>
+public void installUI(JComponent c) {
+  super.installUI(c);
+  JLayer jlayer = (JLayer)c;
+  jlayer.setLayerEventMask(
+    AWTEvent.MOUSE_EVENT_MASK |
+    AWTEvent.MOUSE_MOTION_EVENT_MASK
+  );
+}
+</pre></div>
+
+<p>
+All events going to your <code>JLayer</code> subclass get routed to an
+event handler method whose name matches the event type. For example, you can
+respond to mouse and
+mouse motion events by overriding corresponding methods:
+</p>
+
+<div class="codeblock"><pre>
+protected void processMouseEvent(MouseEvent e, JLayer l) {
+  // ...
+}
+
+protected void processMouseMotionEvent(MouseEvent e, JLayer l) {
+  // ...
+}
+</pre></div>
+
+<p>
+The following is a <code>LayerUI</code> subclass that draws a translucent circle
+wherever the mouse moves inside a panel.
+</p>
+
+<div class="codeblock"><pre>
+class SpotlightLayerUI extends LayerUI&lt;JPanel&gt; {
+  private boolean mActive;
+  private int mX, mY;
+
+  @Override
+  public void installUI(JComponent c) {
+    super.installUI(c);
+    JLayer jlayer = (JLayer)c;
+    jlayer.setLayerEventMask(
+      AWTEvent.MOUSE_EVENT_MASK |
+      AWTEvent.MOUSE_MOTION_EVENT_MASK
+    );
+  }
+
+  @Override
+  public void uninstallUI(JComponent c) {
+    JLayer jlayer = (JLayer)c;
+    jlayer.setLayerEventMask(0);
+    super.uninstallUI(c);
+  }
+
+  @Override
+  public void paint (Graphics g, JComponent c) {
+    Graphics2D g2 = (Graphics2D)g.create();
+
+    // Paint the view.
+    super.paint (g2, c);
+
+    if (mActive) {
+      // Create a radial gradient, transparent in the middle.
+      java.awt.geom.Point2D center = new java.awt.geom.Point2D.Float(mX, mY);
+      float radius = 72;
+      float[] dist = {0.0f, 1.0f};
+      Color[] colors = {new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.BLACK};
+      RadialGradientPaint p =
+          new RadialGradientPaint(center, radius, dist, colors);
+      g2.setPaint(p);
+      g2.setComposite(AlphaComposite.getInstance(
+          AlphaComposite.SRC_OVER, .6f));
+      g2.fillRect(0, 0, c.getWidth(), c.getHeight());
+    }
+
+    g2.dispose();
+  }
+
+  @Override
+  protected void processMouseEvent(MouseEvent e, JLayer l) {
+    if (e.getID() == MouseEvent.MOUSE_ENTERED) mActive = true;
+    if (e.getID() == MouseEvent.MOUSE_EXITED) mActive = false;
+    l.repaint();
+  }
+
+  @Override
+  protected void processMouseMotionEvent(MouseEvent e, JLayer l) {
+    Point p = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), l);
+    mX = p.x;
+    mY = p.y;
+    l.repaint();
+  }
+}
+</pre></div>
+
+<p>
+The <code>mActive</code> variable indicates whether or not the mouse is inside the
+coordinates of the panel. In the <code>installUI()</code> method, the
+<code>setLayerEventMask()</code> method is called to indicate the
+<code>LayerUI</code> subclass' interest in receiving mouse and mouse motion
+events.
+</p>
+
+<p>
+In the <code>processMouseEvent()</code> method, the <code>mActive</code> flag is set
+depending on the position of the mouse. In the
+<code>processMouseMotionEvent()</code> method, the coordinates of the mouse movement
+are stored in the <code>mX</code> and <code>mY</code> member variables
+so that they can be used later
+in the <code>paint()</code> method.
+</p>
+
+<p>
+The <code>paint()</code> method shows the default appearance of the panel, then
+overlays a radial gradient for a spotlight effect:
+</p>
+
+<p>
+<p><center><IMG SRC="../../figures/uiswing/misc/Diva.png" WIDTH="" HEIGHT="" ALIGN="BOTTOM" ALT="A spotlight that follows the mouse"></center></p></p>
+
+<p>
+Source code:
+</p>
+
+<dl>
+  <dd>
+<a class="SourceLink" target="_blank" href="../examples/zipfiles/misc-DivaProject.zip"><code>Diva NetBeans Project</code></a>  </dd>
+  <dd>
+<a class="SourceLink" target="_blank" href="../examples/misc/DivaProject/src/Diva.java"><code>Diva.java</code></a>  </dd>
+</dl>
+
+<p>
+Run with
+<a class="TutorialLink" target="_top" href="http://www.oracle.com/technetwork/java/javase/javawebstart/">Java Web Start</a>:
+</p>
+
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex7/Diva.jnlp"><img src="../../images/jws-launch-button.png" alt="Launches the example"></a>
+</center>
+<p>
+
+<h2 fmstyle=B-HEAD><a name="animating">Animating a Busy Indicator</a></h2>
+
+<p>
+This example is an animated busy indicator. It demonstrates animation in a
+<code>LayerUI</code> subclass and features a fade-in and fade-out. It
+is more complicated that the previous examples, but it is based on the same
+principle of defining a <code>paint()</code> method for custom drawing.
+</p>
+
+<p>
+Click the <b>Place Order</b> button to see the busy indicator for 4 seconds. Notice
+how the panel is grayed out and the indicator spins. The elements of the
+indicator have varying levels of transparency.
+</p>
+
+<p>
+The <code>LayerUI</code> subclass, the <code>WaitLayerUI</code> class, shows how to
+fire property change events to update the component. The <code>WaitLayerUI</code>
+class uses a
+<code>Timer</code> object to update its state 24 times a second. This happens in the
+timer's target method, the <code>actionPerformed()</code> method.
+</p>
+
+<p>
+The <code>actionPerformed()</code> method uses the <code>firePropertyChange()</code>
+method to
+indicate that the internal state was updated. This triggers a call to
+the <code>applyPropertyChange()</code> method, which repaints the <code>JLayer</code>
+object:
+</p>
+
+<p>
+<p><center><IMG SRC="../../figures/uiswing/misc/TapTapTap.png" WIDTH="" HEIGHT="" ALIGN="BOTTOM" ALT="A smooth busy indicator"></center></p></p>
+
+<p>
+Source code:
+</p>
+
+<dl>
+  <dd>
+<a class="SourceLink" target="_blank" href="../examples/zipfiles/misc-TapTapTapProject.zip"><code>TapTapTap NetBeans Project</code></a>  </dd>
+  <dd>
+<a class="SourceLink" target="_blank" href="../examples/misc/TapTapTapProject/src/TapTapTap.java"><code>TapTapTap.java</code></a>  </dd>
+</dl>
+
+<p>
+Run with
+<a class="TutorialLink" target="_top" href="http://www.oracle.com/technetwork/java/javase/javawebstart/">Java Web Start</a>:
+</p>
+
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex7/TapTapTap.jnlp"><img src="../../images/jws-launch-button.png" alt="Launches the example"></a>
+</center>
+<p>
+
+<h2 fmstyle=B-HEAD><a name="validation">Validating Text Fields</a></h2>
+
+<p>
+The final example in this document shows how the <code>JLayer</code> class
+can be used to
+decorate text fields to show if they contain valid data. While the other
+examples use the <code>JLayer</code> class to wrap panels or general
+components, this example shows how to wrap a <code>JFormattedTextField</code>
+component
+specifically. It also demonstrates that a single <code>LayerUI</code> subclass
+implementation can be used for multiple <code>JLayer</code> instances.
+</p>
+
+<p>
+The <code>JLayer</code> class is used to provide a visual indication for fields that have
+invalid data. When the <code>ValidationLayerUI</code> class paints the text field, it
+draws a red X if the field contents cannot be parsed. Here is an example:
+</p>
+
+<p>
+<p><center><IMG SRC="../../figures/uiswing/misc/FieldValidator.png" WIDTH="" HEIGHT="" ALIGN="BOTTOM" ALT="Immediate feedback for bad input"></center></p></p>
+
+<p>
+Source code:
+</p>
+
+<dl>
+  <dd>
+<a class="SourceLink" target="_blank" href="../examples/zipfiles/misc-FieldValidatorProject.zip"><code>FieldValidator NetBeans Project</code></a>  </dd>
+  <dd>
+<a class="SourceLink" target="_blank" href="../examples/misc/FieldValidatorProject/src/FieldValidator.java"><code>FieldValidator.java</code></a>  </dd>
+</dl>
+
+<p>
+Run with
+<a class="TutorialLink" target="_top" href="http://www.oracle.com/technetwork/java/javase/javawebstart/">Java Web Start</a>:
+</p>
+
+<p>
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex7/FieldValidator.jnlp"><img src="../../images/jws-launch-button.png" alt="Launches the example"></a>
+</center>
+<p>
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=trans_shaped_windows.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=action.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Create Translucent and Shaped Windows
+        <br><b>Next page:</b> How to Use Actions
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

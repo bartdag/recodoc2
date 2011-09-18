@@ -1,0 +1,749 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Methods of the Matcher Class (The Java&trade; Tutorials &gt;        
+            Essential Classes &gt; Regular Expressions)
+</title>
+
+     <meta name="description" content="This Java tutorial describes exceptions, basic input/output, concurrency, regular expressions, and the platform environment" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java exception, java input output, java threads, java regex, regular expressions, path, classpath, environment variable" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Essential Classes
+        <br><b>Lesson:</b> Regular Expressions
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Regular Expressions</a></div>
+<div class="linkAHEAD"><a href="intro.html">Introduction</a></div>
+<div class="linkAHEAD"><a href="test_harness.html">Test Harness</a></div>
+<div class="linkAHEAD"><a href="literals.html">String Literals</a></div>
+<div class="linkAHEAD"><a href="char_classes.html">Character Classes</a></div>
+<div class="linkAHEAD"><a href="pre_char_classes.html">Predefined Character Classes</a></div>
+<div class="linkAHEAD"><a href="quant.html">Quantifiers</a></div>
+<div class="linkAHEAD"><a href="groups.html">Capturing Groups</a></div>
+<div class="linkAHEAD"><a href="bounds.html">Boundary Matchers</a></div>
+<div class="linkAHEAD"><a href="pattern.html">Methods of the Pattern Class</a></div>
+<div class="nolinkAHEAD">Methods of the Matcher Class</div>
+<div class="linkAHEAD"><a href="pse.html">Methods of the PatternSyntaxException Class</a></div>
+<div class="linkAHEAD"><a href="unicode.html">Unicode Support</a></div>
+<div class="linkAHEAD"><a href="resources.html">Additional Resources</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Essential Classes</a>
+                &gt;
+                <a href=index.html target=_top>Regular Expressions</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=pattern.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=pse.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Methods of the Matcher Class</h1></div>
+            <div id=PageContent>
+<!--Methods of the Matcher class-->
+
+This section describes some additional useful methods of the 
+<code>Matcher</code> class. 
+For convenience, the methods listed below 
+are grouped according to functionality.
+
+<h2>Index Methods</h2>
+<I>Index methods</I> provide useful index values that 
+show precisely where the match was found in the input string: 
+<UL>
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#start()"><code>public int start()</code></a>: Returns the start index of the previous match.
+
+
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#start(int)"><code>public int start(int group)</code></a>: Returns the start index of the subsequence captured by the given group during the previous match operation.
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#end()"><code>public int end()</code></a>: Returns the offset after the last character matched.
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#end(int)"><code>public int end(int group)</code></a>: Returns the offset after the last character of the subsequence captured by the given group during the previous match operation.
+</UL>
+
+
+<h2>Study Methods</h2>
+<I>Study methods</I> review the input string and return a boolean 
+indicating whether or not the pattern is found.
+<UL>
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#lookingAt()"><code>public boolean lookingAt()</code></a>: Attempts to match the input sequence, starting at the beginning of the region, against the pattern.
+
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#find()"><code>public boolean find()</code></a>: Attempts to find the next subsequence of the input sequence that matches the pattern.
+
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#find(int)"><code>public boolean find(int start)</code></a>: Resets this matcher and then attempts to find the next subsequence of the input sequence that matches the pattern, starting at the specified index.
+
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#matches()"><code>public boolean matches()</code></a>: Attempts to match the entire region against the pattern.
+</UL>
+
+<h2>Replacement Methods</h2>
+<I>Replacement methods</I> are useful methods for replacing 
+text in an input string.
+<UL>
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#appendReplacement(java.lang.StringBuffer, java.lang.String)"><code>public Matcher appendReplacement(StringBuffer sb, String replacement)</code></a>: Implements a non-terminal append-and-replace step.
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#appendTail(java.lang.StringBuffer)"><code> public StringBuffer appendTail(StringBuffer sb)</code></a>: Implements a terminal append-and-replace step.
+
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#replaceAll(java.lang.String)"><code>public String replaceAll(String replacement)</code></a>: Replaces every subsequence of the input sequence that matches the pattern with the given replacement string.
+
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#replaceFirst(java.lang.String)"><code>public String replaceFirst(String replacement)</code></a>: Replaces the first subsequence of the input sequence that matches the pattern with the given replacement string.
+
+
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#quoteReplacement(java.lang.String)"><code>public static String quoteReplacement(String s)</code></a>:
+ Returns a literal replacement <CODE>String</CODE> for the specified <CODE>String</CODE>. This method produces a <CODE>String</CODE> that will work as a literal replacement <CODE>s</CODE> in the <CODE>appendReplacement</CODE> method of the <CODE>Matcher</CODE> class. The <CODE>String</CODE> produced will match the sequence of characters in <CODE>s</CODE> treated as a literal sequence. Slashes (<CODE>'\'</CODE>) and dollar signs (<CODE>'$'</CODE>) will be given no special meaning.
+
+</UL>
+
+
+<h2>Using the <code>start</code> and <code>end</code> Methods</h2>
+
+Here's an example, 
+<a class="SourceLink" target="_blank" href="examples/MatcherDemo.java"><code>MatcherDemo.java</code></a>, that counts the number
+of times the word "dog" appears in the input string. 
+
+<div class="codeblock"><pre>
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+public class MatcherDemo {
+
+    private static final String REGEX = &quot;\\bdog\\b&quot;;
+    private static final String INPUT = &quot;dog dog dog doggie dogg&quot;;
+
+    public static void main(String[] args) {
+       Pattern p = Pattern.compile(REGEX);
+       Matcher m = p.matcher(INPUT); // get a matcher object
+       int count = 0;
+       while(m.find()) {
+           count++;
+           System.out.println(&quot;Match number &quot;+count);
+           System.out.println(&quot;start(): &quot;+m.start());
+           System.out.println(&quot;end(): &quot;+m.end());
+       }
+    }
+}
+
+</pre></div>
+
+<div class="codeblock"><pre>
+OUTPUT:
+
+Match number 1
+start(): 0
+end(): 3
+Match number 2
+start(): 4
+end(): 7
+Match number 3
+start(): 8
+end(): 11
+</pre></div>
+
+You can see that this example uses 
+word boundaries to ensure that the letters <code>"d" "o" "g"</code> 
+are not merely a substring in a longer word. It also 
+gives some useful information about 
+where in the input string the match has occurred. The 
+<code>start</code> method returns the start index of 
+the subsequence captured by the given group 
+during the previous match operation, and <code>end</code> returns the index of the last character matched, plus one.
+
+
+
+<h2>Using the <code>matches</code> and <code>lookingAt</code> Methods</h2>
+
+The <code>matches</code> and <code>lookingAt</code> methods both 
+attempt to match an input sequence against a pattern.
+The difference, however, is that 
+<code>matches</code> requires the entire input sequence to be matched, while 
+<code>lookingAt</code> does not. Both methods always start at the beginning of the input string. Here's the full code,   
+
+<a class="SourceLink" target="_blank" href="examples/MatchesLooking.java"><code>MatchesLooking.java</code></a>:
+
+<div class="codeblock"><pre>
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+public class MatchesLooking {
+
+    private static final String REGEX = &quot;foo&quot;;
+    private static final String INPUT = &quot;fooooooooooooooooo&quot;;
+    private static Pattern pattern;
+    private static Matcher matcher;
+
+    public static void main(String[] args) {
+   
+      // Initialize
+        pattern = Pattern.compile(REGEX);
+        matcher = pattern.matcher(INPUT);
+
+        System.out.println(&quot;Current REGEX is: &quot;+REGEX);
+        System.out.println(&quot;Current INPUT is: &quot;+INPUT);
+
+        System.out.println(&quot;lookingAt(): &quot;+matcher.lookingAt());
+        System.out.println(&quot;matches(): &quot;+matcher.matches());
+
+    }
+}
+
+</pre></div>
+
+<div class="codeblock"><pre>
+Current REGEX is: foo
+Current INPUT is: fooooooooooooooooo
+lookingAt(): true
+matches(): false
+</pre></div>
+
+
+
+<h2>Using <CODE>replaceFirst(String)</CODE> and <CODE>replaceAll(String)</CODE></h2>
+
+The <CODE>replaceFirst</CODE> and <CODE>replaceAll</CODE> methods 
+replace text that matches a given regular expression. 
+As their names indicate, <CODE>replaceFirst</CODE> replaces
+the first occurrence, and <CODE>replaceAll</CODE> replaces all occurences.
+Here's the  
+
+<a class="SourceLink" target="_blank" href="examples/ReplaceDemo.java"><code>ReplaceDemo.java</code></a> code:
+
+
+<div class="codeblock"><pre>
+
+import java.util.regex.Pattern; 
+import java.util.regex.Matcher;
+
+public class ReplaceDemo {
+ 
+    private static String REGEX = &quot;dog&quot;;
+    private static String INPUT = &quot;The dog says meow. All dogs say meow.&quot;;
+    private static String REPLACE = &quot;cat&quot;;
+ 
+    public static void main(String[] args) {
+        Pattern p = Pattern.compile(REGEX);
+        Matcher m = p.matcher(INPUT); // get a matcher object
+        INPUT = m.replaceAll(REPLACE);
+        System.out.println(INPUT);
+    }
+}
+
+</pre></div>
+
+<div class="codeblock"><pre>
+OUTPUT: The cat says meow. All cats say meow.
+</pre></div>
+
+In this first version, all occurrences of <CODE>dog</CODE> are replaced with
+ <CODE>cat</CODE>. 
+But why stop here? Rather than replace a simple literal like <CODE>dog</CODE>, you can 
+replace text that matches <I>any</I> regular expression.
+
+The API for this method states that "given the regular 
+expression <CODE>a*b</CODE>, the input <CODE>aabfooaabfooabfoob</CODE>, and the
+ replacement string <CODE>-</CODE>, an invocation of this 
+method on a matcher for that expression would
+ yield the string <CODE>-foo-foo-foo-</CODE>."
+
+<P>
+Here's the  
+<a class="SourceLink" target="_blank" href="examples/ReplaceDemo2.java"><code>ReplaceDemo2.java</code></a> code:
+<div class="codeblock"><pre>
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+ 
+public class ReplaceDemo2 {
+ 
+    private static String REGEX = &quot;a*b&quot;;
+    private static String INPUT = &quot;aabfooaabfooabfoob&quot;;
+    private static String REPLACE = &quot;-&quot;;
+ 
+    public static void main(String[] args) {
+        Pattern p = Pattern.compile(REGEX);
+        Matcher m = p.matcher(INPUT); // get a matcher object
+        INPUT = m.replaceAll(REPLACE);
+        System.out.println(INPUT);
+    }
+}
+
+</pre></div>
+
+<div class="codeblock"><pre>
+OUTPUT: -foo-foo-foo-
+</pre></div>
+
+To replace only the first occurrence of the pattern, simply call
+<CODE>replaceFirst</CODE> instead of <CODE>replaceAll</CODE>. It accepts the
+same parameter.
+
+<h2>Using <code>appendReplacement(StringBuffer,String)</code> and <code>appendTail(StringBuffer)</code></h2>
+
+<P>
+The <code>Matcher</code> class also provides <CODE>appendReplacement</CODE> and 
+<CODE>appendTail</CODE> methods
+for text replacement. The following example,
+<a class="SourceLink" target="_blank" href="examples/RegexDemo.java    "><code>RegexDemo.java</code></a>, uses these two methods 
+to achieve the same effect as <CODE>replaceAll</CODE>.  
+
+
+<div class="codeblock"><pre>
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+public class RegexDemo {
+ 
+    private static String REGEX = &quot;a*b&quot;;
+    private static String INPUT = &quot;aabfooaabfooabfoob&quot;;
+    private static String REPLACE = &quot;-&quot;;
+ 
+    public static void main(String[] args) {
+        Pattern p = Pattern.compile(REGEX);
+        Matcher m = p.matcher(INPUT); // get a matcher object
+        StringBuffer sb = new StringBuffer();
+        while(m.find()){
+            m.appendReplacement(sb,REPLACE);
+        }
+        m.appendTail(sb);
+        System.out.println(sb.toString());
+    }
+}
+
+
+</pre></div>
+
+<div class="codeblock"><pre>
+OUTPUT: -foo-foo-foo- 
+</pre></div>
+
+
+<h2>Matcher Method Equivalents in <code>java.lang.String</code></h2>
+
+For convenience, the <code>String</code> class mimics a couple of <code>Matcher</code> methods as well: 
+
+<UL>
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/String.html#replaceFirst(java.lang.String, java.lang.String)"><code>public String replaceFirst(String regex, String replacement)</code></a>:
+
+Replaces the first substring of this string that matches the given regular expression with the given replacement. An invocation of this method of the form <code><I>str</I>.replaceFirst(<I>regex</I>, <I>repl</I>)</code> yields exactly the same result as the expression <code>Pattern.compile(<I>regex</I>).matcher(<I>str</I>).replaceFirst(<I>repl</I>)</code>
+
+ 
+<P>
+<LI>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/lang/String.html#replaceAll(java.lang.String, java.lang.String)"><code>public String replaceAll(String regex, String replacement)</code></a>: Replaces each substring of this string that matches the given 
+regular expression with the given replacement. An invocation of this method of the 
+form <code><I>str</I>.replaceAll(<I>regex</I>, <I>repl</I>)</code> yields exactly the same result as the expression 
+<code>Pattern.compile(<I>regex</I>).matcher(<I>str</I>).replaceAll(<I>repl</I>)</code>
+</UL>
+
+<P>
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=pattern.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=pse.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Methods of the Pattern Class
+        <br><b>Next page:</b> Methods of the PatternSyntaxException Class
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

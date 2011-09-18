@@ -1,0 +1,619 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>A Visual Guide to Layout Managers (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Laying Out Components Within a Container)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Laying Out Components Within a Container
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Laying Out Components Within a Container</a></div>
+<div class="nolinkAHEAD">A Visual Guide to Layout Managers</div>
+<div class="linkAHEAD"><a href="using.html">Using Layout Managers</a></div>
+<div class="linkAHEAD"><a href="howLayoutWorks.html">How Layout Management Works</a></div>
+<div class="linkAHEAD"><a href="layoutlist.html">How to Use Various Layout Managers</a></div>
+<div class="linkAHEAD"><a href="border.html">How to Use BorderLayout</a></div>
+<div class="linkAHEAD"><a href="box.html">How to Use BoxLayout</a></div>
+<div class="linkAHEAD"><a href="card.html">How to Use CardLayout</a></div>
+<div class="linkAHEAD"><a href="flow.html">How to Use FlowLayout</a></div>
+<div class="linkAHEAD"><a href="gridbag.html">How to Use GridBagLayout</a></div>
+<div class="linkAHEAD"><a href="grid.html">How to Use GridLayout</a></div>
+<div class="linkAHEAD"><a href="group.html">How to Use GroupLayout</a></div>
+<div class="linkBHEAD"><a href="groupExample.html">A GroupLayout Example</a></div>
+<div class="linkAHEAD"><a href="spring.html">How to Use SpringLayout</a></div>
+<div class="linkAHEAD"><a href="custom.html">Creating a Custom Layout Manager</a></div>
+<div class="linkAHEAD"><a href="none.html">Doing Without a Layout Manager (Absolute Positioning)</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Layout Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Laying Out Components Within a Container</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=using.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>A Visual Guide to Layout Managers</h1></div>
+            <div id=PageContent>
+
+<p>
+Several AWT and Swing classes provide layout managers for general use:
+<ul>
+<li> <a href="#border"><code>BorderLayout</code></a>
+<li> <a href="#box"><code>BoxLayout</code></a>
+<li> <a href="#card"><code>CardLayout</code></a>
+<li> <a href="#flow"><code>FlowLayout</code></a>
+<li> <a href="#gridbag"><code>GridBagLayout</code></a>
+<li> <a href="#grid"><code>GridLayout</code></a>
+<li> <a href="#group"><code>GroupLayout</code></a>
+<li> <a href="#spring"><code>SpringLayout</code></a>
+</ul>
+
+<p>
+This section shows example GUIs
+that use these layout managers,
+and tells you where to find the how-to page for each layout manager.
+You can find links for running the examples
+in the how-to pages and in the
+<a class="APILink" target="_blank" href="../examples/layout/index.html">example index</a>.
+
+ 
+<div class="note"><hr><strong>Note:</strong>&nbsp;This lesson covers writing layout code by hand, which can be challenging. If you are not interested in learning all the details of layout management, you might prefer to use the <code>GroupLayout</code> layout manager combined with a builder tool to lay out your GUI. One such builder tool is the  
+
+<a class="TutorialLink" target="_top" href="../learn/index.html">NetBeans IDE</a>. Otherwise, if you want to code by hand and do not want to use <code>GroupLayout</code>, then <code>GridBagLayout</code> is recommended as the next most flexible and powerful layout manager.
+ 
+
+<hr></div> 
+
+
+
+<a name="border"></a>
+<h2>BorderLayout</h2>
+
+
+
+<p><center><IMG SRC="../../figures/uiswing/layout/BorderLayoutDemo.png" WIDTH="482" HEIGHT="186" ALIGN="BOTTOM" ALT="A picture of a GUI that uses BorderLayout"></center></p>
+
+Every content pane
+is initialized to use a <code>BorderLayout</code>.
+(As
+<a class="TutorialLink" target="_top" href="../components/toplevel.html">Using Top-Level Containers</a> explains,
+the content pane is the main container in all frames, applets, and dialogs.)
+A <code>BorderLayout</code>
+places components in up to five areas:
+top, bottom, left, right, and center.
+All extra space is placed in the center area. Tool bars that are created using 
+<a class="TutorialLink" target="_top" href="../components/toolbar.html">JToolBar</a>
+ must be created within a <code>BorderLayout</code> container, if you want to be able to drag and drop the bars away from their starting positions. 
+For further details, see
+<a href="border.html">How to Use BorderLayout</a>.
+
+
+
+<h2>
+<a name="box">
+BoxLayout</a>
+</h2>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/BoxLayoutDemo.png" WIDTH="203" HEIGHT="164" ALIGN="BOTTOM" ALT="A picture of a GUI that uses BoxLayout"></center></p>
+The <code>BoxLayout</code> class puts components
+in a single row or column.
+It respects the components' requested
+maximum sizes
+and also lets you align components.
+For further details, see
+<a href="box.html">How to Use BoxLayout</a>.
+
+
+
+<h2>
+<a name="card">
+CardLayout</a>
+</h2>
+
+
+<p align=center>
+<IMG SRC="../../figures/uiswing/layout/CardLayoutDemo.png" WIDTH="265" HEIGHT="105" ALT="A picture of a GUI that uses CardLayout">
+<IMG SRC="../../figures/uiswing/layout/CardLayoutDemo-2.png" WIDTH="265" HEIGHT="105" ALT="Another picture of the same layout"></p>
+
+<p>
+The <code>CardLayout</code> class lets you implement an area
+that contains different components at different times.
+A <code>CardLayout</code> is often controlled by a combo box,
+with the state of the combo box determining
+which panel (group of components)
+the <code>CardLayout</code> displays.
+An alternative to using <code>CardLayout</code> is using a
+<a class="TutorialLink" target="_top" href="../components/tabbedpane.html">tabbed pane</a>, which provides similar functionality
+but with a pre-defined GUI.
+For further details, see
+<a href="card.html">How to Use CardLayout</a>.
+
+
+
+<h2>
+<a name="flow">
+FlowLayout</a>
+</h2>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/FlowLayoutDemo.png" WIDTH="471" HEIGHT="70" ALIGN="BOTTOM" ALT="A picture of a GUI that uses FlowLayout"></center></p>
+<code>FlowLayout</code> is the default layout manager for
+every <code>JPanel</code>.
+It simply lays out components
+in a single row,
+starting a new row if its container is not sufficiently wide.
+Both panels in CardLayoutDemo,
+shown <a href="#card">previously</a>,
+use <code>FlowLayout</code>.
+For further details, see
+<a href="flow.html">How to Use FlowLayout</a>.
+
+
+
+<h2>
+<a name="gridbag">
+GridBagLayout</a>
+</h2>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/GridBagLayoutDemo.png" WIDTH="250" HEIGHT="164" ALIGN="BOTTOM" ALT="A picture of a GUI that uses GridBagLayout"></center></p>
+<code>GridBagLayout</code> is a sophisticated,
+flexible layout manager.
+It aligns components by placing them within a grid of cells,
+allowing components to span more than one cell.
+The rows in the grid can have different heights,
+and grid columns can have different widths.
+For further details, see
+<a href="gridbag.html">How to Use GridBagLayout</a>.
+
+
+
+<h2>
+<a name="grid">
+GridLayout</a>
+</h2>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/GridLayoutDemo.png" WIDTH="326" HEIGHT="217" ALIGN="BOTTOM" ALT="A picture of a GUI that uses GridLayout"></center></p>
+<code>GridLayout</code> simply makes a bunch of components equal in size
+and displays them in the requested number of rows and columns.
+For further details, see
+<a href="grid.html">How to Use GridLayout</a>.
+
+
+
+
+<h2>
+<a name="group">
+GroupLayout</a>
+</h2>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/find.png" WIDTH="411" HEIGHT="130" ALIGN="BOTTOM" ALT="A picture of a GUI that uses GroupLayout"></center></p>
+
+<code>GroupLayout</code> is a layout manager that was developed for use by GUI builder tools, but it can also be used manually. <code>GroupLayout</code> works with the horizontal and vertical layouts separately. The layout is defined for each dimension independently. Consequently, however, each component needs to be defined twice in the layout. The Find window shown above is an example of a <code>GroupLayout</code>.
+For further details, see
+<a href="group.html">How to Use GroupLayout</a>.
+
+
+
+<h2>
+<a name="spring">
+SpringLayout</a>
+</h2>
+
+<p><center><IMG SRC="../../figures/uiswing/layout/SpringBox.png" WIDTH="477" HEIGHT="72" ALIGN="BOTTOM" ALT="A picture of a GUI that uses SpringLayout"></center></p><p><center><IMG SRC="../../figures/uiswing/layout/SpringForm.png" WIDTH="192" HEIGHT="144" ALIGN="BOTTOM" ALT="Another GUI that uses SpringLayout"></center></p>
+<code>SpringLayout</code> is a flexible layout manager
+designed for use by GUI builders.
+It lets you specify precise relationships
+between the edges of components under its control.
+For example, you might define that
+the left edge of one component is a certain distance
+(which can be dynamically calculated)
+from the right edge of a second component. <code>SpringLayout</code> lays out the children of its associated container according to a set of constraints, as shall be seen in 
+<a href="spring.html">How to Use SpringLayout</a>.
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=index.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=using.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Laying Out Components Within a Container
+        <br><b>Next page:</b> Using Layout Managers
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

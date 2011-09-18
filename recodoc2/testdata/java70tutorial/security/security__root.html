@@ -1,0 +1,499 @@
+ 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Trail: Security Features in Java SE (The Java&trade; Tutorials)</title>
+        <meta name="description" content="This security Java tutorial describes usage of digital signatures, keys, and cryptography services" />
+        <meta name="keywords" content="java programming, learn java, java sample code, java security, cryptography, digital signature, verifying signature, signing code" />
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+    </head>
+<body>
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                    <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../search.html" target="_blank">Search the
+                                Tutorials</a>
+                    </div> 
+                </div> </div> </div> </div> </div>
+
+    <div class=MainFlow_wide>
+        <div id=BreadCrumbs>
+            <a href=../index.html target=_top>Home Page</a>
+        </div>
+        <div class=NavBit>
+            <a href=../index.html>&laquo; Previous</a>
+            &bull;
+            <a href=./TOC.html>Trail</a>
+            &bull;
+            <a href=./overview/index.html>Next &raquo;</a>
+        </div>
+        <div id=PageTitle><h1>Trail: Security Features in Java SE</h1></div>
+        <div id=PageContent>
+In this trail you'll learn how the built-in 
+Java&trade; security features protect you 
+from malevolent programs. You'll see how to use tools to control access to 
+resources, to generate and to check digital signatures,
+and to create and to manage 
+keys needed for signature generation and checking. You'll also see how to 
+incorporate cryptography services, such as digital signature generation 
+and checking, into your programs.
+
+<p>The security features provided by the Java Development Kit 
+(JDK&trade;) 
+are intended for a variety of audiences:
+
+<ul>
+<li><p><b>Users running programs</b>:</p>
+
+<p>Built-in security functionality protects you from malevolent
+programs (including viruses), 
+maintains the privacy of your files and information about you,
+and authenticates the identity of each code provider.
+You can subject applications and applets to security
+controls when you need to.</p> 
+
+<li><p><b>Developers</b>:</p>
+
+<p>You can use API methods to incorporate security functionality into
+your programs, including cryptography services and
+security checks.
+The API framework enables you to define and integrate your own
+permissions (controlling access to specific resources), 
+cryptography service implementations, security manager implementations,
+and policy implementations.
+In addition, classes are provided for management of your 
+public/private key pairs and
+public key certificates from people you trust.</p>
+
+<li><p><b>Systems administrators, developers, and users</b>:</p>
+
+<p>JDK tools manage your keystore (database of keys and certificates);
+generate digital signatures for JAR files,
+and verify the authenticity of such signatures
+and the integrity of the signed contents; and
+create and modify the policy 
+files that define your installation's security policy.</p>
+
+</ul>
+
+<H2>Trail Lessons</H2>
+
+<!--    QUICK TOUR  1  -->
+<p>
+<a href="tour1/index.html">
+<img alt="Trail icon" src="../images/coreIcon.gif" align=left width=20 height=20 border=0>
+<b>Quick Tour of Controlling Applets</b></a>
+shows how resource accesses, 
+such as reading or writing a file, 
+are not permitted for unsigned applets unless
+explicitly allowed by a permission in a policy file.
+
+<!--    QUICK TOUR  2   -->
+<p>
+<a href="tour2/index.html">
+<img alt="Trail icon" src="../images/coreIcon.gif" align=left width=20 height=20 border=0>
+<b>Quick Tour of Controlling Applications</b></a>
+builds on the previous lesson, showing that when applications
+are run under a security manager, resource accesses may be
+controlled in exactly the same way as for unsigned applets.
+
+<!--    API AND TOOLS OVERVIEW WRT SIGNING    -->
+<p>
+<a href="sigcert/index.html">
+<img alt="Trail icon" src="../images/coreIcon.gif" align=left width=20 height=20 border=0>
+<b>API and Tools Use for Secure Code and File Exchanges</b></a>
+defines digital signatures, certificates, and keystores and discusses why they are needed.
+It also reviews information applicable to the next three lessons
+regarding the steps commonly needed for using the tools or the API to generate
+signatures, export/import certificates, and so on. 
+
+
+<!--    TOOLS SIGNING CODE  -->
+<p>
+<a href="toolsign/index.html">
+<img alt="Trail icon" src="../images/coreIcon.gif" align=left width=20 height=20 border=0>
+<b>Signing Code and Granting It Permissions</b></a>
+illustrates the use of  all the security-related tools. 
+It shows the steps that a developer would take
+to sign and to distribute code for others
+to run. The lesson also shows how someone
+who will run the code (or a system administrator) 
+could add an entry in a policy file
+to grant the code permission for the resource accesses it needs.
+
+
+<!--    TOOLS USE FOR TWO-PARTY FILE EXCHANGE    -->
+<p>
+<a href="toolfilex/index.html">
+<img alt="Trail icon" src="../images/coreIcon.gif" align=left width=20 height=20 border=0>
+<b>Exchanging Files</b></a>
+shows use of the tools by one person to sign an important document, such as a 
+contract, and to export the public key certificate for the public key
+corresponding to the private key used to sign the contract.
+Then the lesson shows how another person, 
+who receives the contract, the signature, and
+the public key certificate, can import the
+certificate and verify the signature.
+
+
+<!--    API USE FOR TWO-PARTY FILE EXCHANGE    -->
+<p>
+<a href="apisign/index.html">
+<img alt="Trail icon" src="../images/coreIcon.gif" align=left width=20 height=20 border=0>
+<b>Generating and Verifying Signatures</b></a>
+walks you step by step through an example of writing a Java
+program using the JDK Security API to generate keys, to generate a digital signature for data using the private key, and to export the public key and the signature to files.
+Then the example shows writing a second program, which may be expected to run on a different person's computer, that imports the public key and verifies the authenticity of the signature.
+Finally, the example discusses potential weaknesses of the
+approach used by the basic programs and demonstrates possible alternative approaches and methods of supplying and importing keys, including in certificates.
+
+
+<!--    IMPLEMENTING YOUR OWN PERMISSION    -->
+<p>
+<a href="userperm/index.html">
+<img alt="Trail icon" src="../images/coreIcon.gif" align=left width=20 height=20 border=0>
+<b>Implementing Your Own Permission</b></a>
+demonstrates how to write a class that defines its
+own special permission.
+
+<H2>For More Information</H2>
+
+JDK security release documentation can be found at the
+
+<a class="OutsideLink" target="_blank" href="http://download.oracle.com/javase/7/docs/technotes/guides/security/index.html">Security</a> guides page. This index page lists Specifications which present detailed
+information about latest security features,
+including architecture specifications, usage guides,
+API documentation, and tool documentation.
+
+<p>Information on use of the Java Plug-in to download the latest 
+Java Runtime Environment compatible with JDK 6 can be found on the
+
+<a class="OutsideLink" target="_blank" href="http://www.oracle.com/technetwork/java/index-jsp-141438.html">Java Plug-in Technology</a> page.
+        </div>
+    <div class=NavBit>
+        <a href=../index.html>&laquo; Previous</a>
+        &bull;
+        <a href=./TOC.html>TOC</a>
+        &bull;
+        <a href=./overview/index.html>Next &raquo;</a>
+
+    </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Beginning of Tutorial
+        <br><b>Next page:</b> Security Features Overview
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

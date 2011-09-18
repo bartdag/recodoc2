@@ -1,0 +1,549 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>What Applets Can and Cannot Do (The Java&trade; Tutorials &gt;        
+            Deployment &gt; Java Applets)
+</title>
+
+     <meta name="description" content="This deployment Java tutorial describes development and deployment of applets, Java Web Start applications, rich Internet applications, and JAR related tools" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java applet, java web start, rich internet application, RIA, jar, plugin, plug-in" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Deployment
+        <br><b>Lesson:</b> Java Applets
+        <br><b>Section:</b> Doing More With Applets
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Java Applets</a></div>
+<div class="linkAHEAD"><a href="getStarted.html">Getting Started With Applets</a></div>
+<div class="linkBHEAD"><a href="subclass.html">Defining an Applet Subclass</a></div>
+<div class="linkBHEAD"><a href="appletMethods.html">Methods for Milestones</a></div>
+<div class="linkBHEAD"><a href="lifeCycle.html">Life Cycle of an Applet</a></div>
+<div class="linkBHEAD"><a href="appletExecutionEnv.html">Applet's Execution Environment</a></div>
+<div class="linkBHEAD"><a href="developingApplet.html">Developing an Applet</a></div>
+<div class="linkBHEAD"><a href="deployingApplet.html">Deploying an Applet</a></div>
+<div class="linkCHEAD"><a href="html.html">Deploying With the Applet Tag</a></div>
+<div class="linkAHEAD"><a href="doingMoreWithApplets.html">Doing More With Applets</a></div>
+<div class="linkBHEAD"><a href="data.html">Finding and Loading Data Files</a></div>
+<div class="linkBHEAD"><a href="param.html">Defining and Using Applet Parameters</a></div>
+<div class="linkBHEAD"><a href="showStatus.html">Displaying Short Status Strings</a></div>
+<div class="linkBHEAD"><a href="browser.html">Displaying Documents in the Browser</a></div>
+<div class="linkBHEAD"><a href="invokingJavaScriptFromApplet.html">Invoking JavaScript Code From an Applet</a></div>
+<div class="linkBHEAD"><a href="invokingAppletMethodsFromJavaScript.html">Invoking Applet Methods From JavaScript Code</a></div>
+<div class="linkBHEAD"><a href="appletStatus.html">Handling Initialization Status With Event Handlers </a></div>
+<div class="linkBHEAD"><a href="manipulatingDOMFromApplet.html">Manipulating DOM of Applet's Web Page</a></div>
+<div class="linkBHEAD"><a href="customProgressIndicatorForApplet.html">Displaying a Customized Loading Progress Indicator</a></div>
+<div class="linkBHEAD"><a href="stdout.html">Writing Diagnostics to Standard Output and Error Streams</a></div>
+<div class="linkBHEAD"><a href="draggableApplet.html">Developing Draggable Applets</a></div>
+<div class="linkBHEAD"><a href="iac.html">Communicating With Other Applets</a></div>
+<div class="linkBHEAD"><a href="server.html">Working With a Server-Side Application </a></div>
+<div class="linkCHEAD"><a href="clientExample.html">Network Client Applet Example</a></div>
+<div class="nolinkBHEAD">What Applets Can and Cannot Do</div>
+<div class="linkAHEAD"><a href="problemsindex.html">Solving Common Applet Problems</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Deployment</a>
+                &gt;
+                <a href=index.html target=_top>Java Applets</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=clientExample.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=problemsindex.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>What Applets Can and Cannot Do</h1></div>
+            <div id=PageContent>
+<p>Java applets are loaded on a client when the user visits a page containing an
+applet. The security model behind Java applets has been
+designed with the goal of protecting the user from malicious applets.
+</p>
+<p>Applets that are not signed using a security certificate are considered
+to be untrusted and
+referred to as <em>unsigned applets</em>. When running on a client, unsigned
+applets operate within a security sandbox that allows only a set of safe
+operations.
+</p>
+<p>Applets can be signed using a security certificate to indicate that they come
+from a trusted source. Signed applets operate
+outside the security sandbox and have extensive capabilities to access the client.
+A signed applet will run outside the security sandbox only if the user
+accepts the applet's security certificate. If the user refuses to accept the
+certificate, the applet will run within the security sandbox similar to an
+unsigned applet.
+</p>
+<p>With recent improvements to the Java Plug-in software, unsigned applets
+launched using Java Network Launch Protocol (JNLP) can safely access the
+client <em>with the user's permission</em>. It is recommended that you launch
+your applet
+using JNLP to leverage expanded capabilities and improve user experience. See
+<a class="TutorialLink" target="_top" href="deployingApplet.html">Deploying an Applet</a> for step by step instructions on applet deployment.
+</p>
+<p>In this, topic we will discuss the security restrictions and
+capabilities of applets.</p>
+
+<h2>Unsigned Applets</h2>
+<p>Unsigned applets <em>can</em> perform the following operations:
+
+<ul>
+    <li>They can make network connections to the host they came from.</li>
+
+    <li>They can easily display HTML documents using the <code>showDocument</code> method of the <code>java.applet.AppletContext</code> class.</li>
+
+    <li>They can invoke public methods of other applets on the same page.</li>
+
+    <li>Applets that are loaded from the local file system (from a directory in the user's <code>CLASSPATH</code>) have none of the restrictions that applets loaded over the network do.</li>
+
+    <li>They can read secure system properties. See
+<a class="TutorialLink" target="_top" href="../../deployment/doingMoreWithRIA/properties.html">System Properties</a> for a list of secure system properties.</li>
+
+
+    <li>When launched by using JNLP, unsigned applets can also perform the
+    following operations:
+    <ul>
+        <li>They can open, read, and save files on the client.</li>
+        <li>They can access the shared system-wide clipboard.</li>
+        <li>They can access printing functions.</li>
+        <li>They can store data on the client, decide how applets should be
+        downloaded and cached, and much more. See
+<a class="TutorialLink" target="_top" href="../../deployment/doingMoreWithRIA/jnlpAPI.html">JNLP API</a> for more information about developing applets by using the JNLP API.</li>
+    </ul>
+    </li>
+</ul>
+
+</p>
+
+<p>Unsigned applets <em>cannot</em> perform the following operations:
+<ul>
+    <li>They cannot access client resources such as
+    the local filesystem, executable files, system clipboard, and printers.
+    </li>
+    <li>They cannot connect to or retrieve resources from any third
+    party server (any server other than the server it originated from).
+    </li>
+    <li>They cannot load native libraries.</li>
+    <li>They cannot change the SecurityManager.</li>
+    <li>They cannot create a ClassLoader.</li>
+    <li>They cannot read certain system properties. See
+<a class="TutorialLink" target="_top" href="../../deployment/doingMoreWithRIA/properties.html">System Properties</a> for a list of forbidden system properties.
+    </li>
+</ul>
+</p>
+
+<h2>Signed Applets</h2>
+<p>Signed applets do not have the security restrictions that are imposed on
+unsigned applets and can run outside the security sandbox.
+</p>
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;<a id="jsNote" name="jsNote"/>
+JavaScript code is treated like unsigned code. 
+When a signed applet is accessed from JavaScript code in an HTML page, the applet is
+executed <em>within</em> the security sandbox. This implies that the signed
+applet essentially behaves likes an unsigned applet. 
+<hr></div>
+
+<p>See  
+<a class="TutorialLink" target="_top" href="../../deployment/doingMoreWithRIA/security.html">Security in Rich Internet Applications </a>  for information on how to work with signed and unsigned code.
+</p>
+
+<h2>Additional Information</h2>
+<p>For more information about applet security dialog boxes, see
+<a class="OutsideLink" target="_blank" href="http://java.sun.com/developer/technicalArticles/GUI/SecurityWarning/AppletWarning.html">Exploring Security Warning Functionality</a> (article on java.sun.com)
+</p>
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=clientExample.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=problemsindex.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Network Client Applet Example
+        <br><b>Next page:</b> Solving Common Applet Problems
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

@@ -1,0 +1,986 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>How to Use Text Fields (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Using Swing Components)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Using Swing Components
+        <br><b>Section:</b> How to Use Various Components
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Using Swing Components</a></div>
+<div class="linkAHEAD"><a href="toplevel.html">Using Top-Level Containers</a></div>
+<div class="linkAHEAD"><a href="jcomponent.html">The JComponent Class</a></div>
+<div class="linkAHEAD"><a href="text.html">Using Text Components</a></div>
+<div class="linkBHEAD"><a href="generaltext.html">Text Component Features</a></div>
+<div class="linkBHEAD"><a href="textapi.html">The Text Component API</a></div>
+<div class="linkAHEAD"><a href="componentlist.html">How to Use Various Components</a></div>
+<div class="linkBHEAD"><a href="applet.html">How to Make Applets</a></div>
+<div class="linkBHEAD"><a href="button.html">How to Use Buttons, Check Boxes, and Radio Buttons</a></div>
+<div class="linkBHEAD"><a href="buttongroup.html">How to Use the ButtonGroup Component</a></div>
+<div class="linkBHEAD"><a href="colorchooser.html">How to Use Color Choosers</a></div>
+<div class="linkBHEAD"><a href="combobox.html">How to Use Combo Boxes</a></div>
+<div class="linkBHEAD"><a href="dialog.html">How to Make Dialogs</a></div>
+<div class="linkBHEAD"><a href="editorpane.html">How to Use Editor Panes and Text Panes</a></div>
+<div class="linkBHEAD"><a href="filechooser.html">How to Use File Choosers</a></div>
+<div class="linkBHEAD"><a href="formattedtextfield.html">How to Use Formatted Text Fields</a></div>
+<div class="linkBHEAD"><a href="frame.html">How to Make Frames (Main Windows)</a></div>
+<div class="linkBHEAD"><a href="internalframe.html">How to Use Internal Frames</a></div>
+<div class="linkBHEAD"><a href="label.html">How to Use Labels</a></div>
+<div class="linkBHEAD"><a href="layeredpane.html">How to Use Layered Panes</a></div>
+<div class="linkBHEAD"><a href="list.html">How to Use Lists</a></div>
+<div class="linkBHEAD"><a href="menu.html">How to Use Menus</a></div>
+<div class="linkBHEAD"><a href="panel.html">How to Use Panels</a></div>
+<div class="linkBHEAD"><a href="passwordfield.html">How to Use Password Fields</a></div>
+<div class="linkBHEAD"><a href="progress.html">How to Use Progress Bars</a></div>
+<div class="linkBHEAD"><a href="rootpane.html">How to Use Root Panes</a></div>
+<div class="linkBHEAD"><a href="scrollpane.html">How to Use Scroll Panes</a></div>
+<div class="linkBHEAD"><a href="separator.html">How to Use Separators</a></div>
+<div class="linkBHEAD"><a href="slider.html">How to Use Sliders</a></div>
+<div class="linkBHEAD"><a href="spinner.html">How to Use Spinners</a></div>
+<div class="linkBHEAD"><a href="splitpane.html">How to Use Split Panes</a></div>
+<div class="linkBHEAD"><a href="tabbedpane.html">How to Use Tabbed Panes</a></div>
+<div class="linkBHEAD"><a href="table.html">How to Use Tables</a></div>
+<div class="linkBHEAD"><a href="textarea.html">How to Use Text Areas</a></div>
+<div class="nolinkBHEAD">How to Use Text Fields</div>
+<div class="linkBHEAD"><a href="toolbar.html">How to Use Tool Bars</a></div>
+<div class="linkBHEAD"><a href="tooltip.html">How to Use Tool Tips</a></div>
+<div class="linkBHEAD"><a href="tree.html">How to Use Trees</a></div>
+<div class="linkAHEAD"><a href="html.html">How to Use HTML in Swing Components</a></div>
+<div class="linkAHEAD"><a href="model.html">How to Use Models</a></div>
+<div class="linkAHEAD"><a href="icon.html">How to Use Icons</a></div>
+<div class="linkAHEAD"><a href="border.html">How to Use Borders</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Component Problems</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Using Swing Components</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=textarea.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=toolbar.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>How to Use Text Fields</h1></div>
+            <div id=PageContent>
+A text field is a basic text control
+that enables the user to type a small amount of text.
+When the user indicates that text entry is complete
+(usually by pressing Enter),
+the text field fires an
+<a class="TutorialLink" target="_top" href="../events/actionlistener.html">action event</a>.
+If you need to obtain more than one line of input from the user,
+use a 
+<a href="textarea.html">text area</a>.
+
+<p>
+<a name="varieties">
+The Swing API provides several classes for
+components that are either varieties of text fields
+or that include text fields.
+</a>
+
+<p>
+<table summary="">
+<tr>
+<td headers="h1" width=30%>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html"><code>JTextField</code></a><td headers="h2">
+What this section covers:
+basic text fields.
+</tr>
+
+<tr>
+<td headers="h1">
+<code>JFormattedTextField</code>
+<td headers="h2">
+A <code>JTextField</code> subclass 
+that allows you to specify the legal set of characters
+that the user can enter.
+See
+<a href="formattedtextfield.html">How to Use Formatted Text Fields</a>.
+</tr>
+
+<tr>
+<td headers="h1">
+<code>JPasswordField</code>
+<td headers="h2">
+A <code>JTextField</code> subclass 
+that does not show the characters that the user types.
+See
+<a href="passwordfield.html">How to Use Password Fields</a>.
+</tr>
+
+<tr>
+<td headers="h1">
+<code>JComboBox</code>
+<td headers="h2">
+Can be edited,
+and provides a menu of strings to choose from.
+See
+<a href="combobox.html">How to Use Combo Boxes</a>.
+</tr>
+
+<tr>
+<td headers="h1">
+<code>JSpinner</code>
+<td headers="h2">
+Combines a formatted text field
+with a couple of small buttons 
+that enables the user
+to choose the previous or next available value.
+See
+<a href="spinner.html">How to Use Spinners</a>.
+</tr>
+
+</table>
+
+<p>
+
+<p>
+The following example displays a basic text field and a text area.
+The text field is editable. The text area is not editable.
+When the user presses Enter
+in the text field,
+the program copies the text field's
+contents to the text area,
+and then selects all the text in the text field.
+
+<p>
+
+<p><center><IMG SRC="../../figures/uiswing/components/TextDemo.png" WIDTH="232" HEIGHT="137" ALIGN="BOTTOM" ALT="A snapshot of TextDemo"></center></p>
+<p>
+Click the Launch button
+to run TextDemo using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a>
+(<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+Alternatively, to compile and run the example yourself,
+consult the
+<a href="../examples/components/index.html#TextDemo">example index</a>.
+<p><center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/components/ex6/TextDemo.jnlp">
+<img src="../../images/jws-launch-button.png"
+width="88" heigth="23" align="bottom"
+alt="Launches the TextDemo application"></a></center></p>
+
+You can find the entire code for this program in 
+<a class="SourceLink" target="_blank" href="../examples/components/TextDemoProject/src/components/TextDemo.java"><code>TextDemo.java</code></a>.
+The following code 
+creates and sets up the text field:
+
+<div class="codeblock"><pre>
+textField = new JTextField(20);
+</pre></div>
+
+The integer argument passed
+to the <code>JTextField</code> constructor,
+<code>20</code> in the example,
+indicates the number of columns in the field.
+This number is used along with metrics provided by
+the field's current font
+to calculate the field's preferred width.
+It does not limit the number of characters the user
+can enter.
+To do that, you can either use a
+<a href="formattedtextfield.html">formatted text field</a>
+or a 
+document listener, 
+as described in 
+<a href="generaltext.html">Text Component Features</a>.
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;We encourage you to specify the number of columns
+for each text field.
+If you do not specify the number of columns or a preferred size,
+then the field's preferred size changes whenever the text changes,
+which can result in unwanted layout updates.
+<hr></div>
+
+<p>
+The next line of code
+registers a <code>TextDemo</code> object
+as an action listener for the text field.
+
+<div class="codeblock"><pre>
+textField.addActionListener(this);
+</pre></div>
+
+The <code>actionPerformed</code> method
+handles action events from the text field:
+
+<div class="codeblock"><pre>
+private final static String newline = "\n";
+...
+public void actionPerformed(ActionEvent evt) {
+    String text = textField.getText();
+    textArea.append(text + newline);
+    textField.selectAll();
+}
+</pre></div>
+
+Notice the use of <code>JTextField</code>'s <code>getText</code>
+method to retrieve the text currently contained by the text field.
+The text returned by this method
+does <em>not</em> include a newline character
+for the Enter key that fired the action event.
+
+<p>
+You have seen how a basic text field can be used.
+Because the <code>JTextField</code> class inherits from
+the <code>JTextComponent</code> class, 
+text fields are very flexible and can be customized almost
+any way you like.
+For example, you can add a document listener
+or a document filter
+to be notified when the text changes, and
+in the filter case you can
+modify the text field accordingly.
+Information on text components can be found in
+<a href="generaltext.html">Text Component Features</a>.
+Before customizing a <code>JTextField</code>,
+however, 
+make sure that one of the other 
+<a href="#varieties">
+components based on text fields</a>
+will not do the job for you.
+
+<p>
+Often text fields are paired with 
+labels that describe the text fields.
+See <a href="#eg">Examples That Use Text Fields</a>
+for pointers on creating these pairs.
+
+
+<h2>
+<a name="textfielddemo">Another Example: TextFieldDemo</a>
+</h2>
+
+The <code>TextFieldDemo</code> example
+introduces a text field and a text area.
+
+You can find the entire code for this program in
+<a class="SourceLink" target="_blank" href="../examples/components/TextFieldDemoProject/src/components/TextFieldDemo.java"><code>TextFieldDemo.java</code></a>.
+
+<p>
+As you type characters in the text field the program searches for the typed text
+in the text area. If the entry is found it gets highlighted.
+If the program fails to find the entry then
+the text field's background becomes pink.
+A status bar below the text area displays a message
+whether text is found or not.
+The Escape key is used to start a new search or to finish the current one.
+
+Here is a picture of the <code>TextFieldDemo</code> application.
+
+<p><center><IMG SRC="../../figures/uiswing/components/TextFieldDemo.png" WIDTH="482" HEIGHT="323" ALIGN="BOTTOM" ALT="A snapshot of TextFieldDemo"></center></p>
+Click the Launch button
+ro run TextFieldDemo using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a>
+(<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+Alternatively, to compile and run the example yourself,
+consult the <a href="../examples/components/index.html#TextFieldDemo">example index</a>.
+
+<p><center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/components/ex6/TextFieldDemo.jnlp">
+<img src="../../images/jws-launch-button.png"
+width="88" height="23" align="bottom"
+alt="Launches the TextFieldDemo Application"></a></center></p>
+
+To highlight text, this example uses
+a highlighter and a painter. 
+The code below creates and sets up the highlighter and the painter
+for the text area.
+
+<div class="codeblock"><pre>
+final Highlighter hilit;
+final Highlighter.HighlightPainter painter;
+...
+hilit = new DefaultHighlighter();
+painter = new DefaultHighlighter.DefaultHighlightPainter(HILIT_COLOR);
+textArea.setHighlighter(hilit);
+</pre></div>
+
+This code adds a document listener to the text field's document.
+<div class="codeblock"><pre>
+entry.getDocument().addDocumentListener(this);
+</pre></div>
+Document listener's <code>insertUpdate</code>
+and <code>removeUpdate</code> methods call the <code>search</code> method,
+which not only performs a search in the text area
+but also handles highlighting.
+The following code highlights the found text,
+sets the caret to the end of the found match,
+sets the default background for the text field,
+and displays a message in the status bar.
+<div class="codeblock"><pre>
+hilit.addHighlight(index, end, painter);
+textArea.setCaretPosition(end);
+entry.setBackground(entryBg);
+message("'" + s + "' found. Press ESC to end search");
+</pre></div>
+
+The status bar is a <code>JLabel</code> object.
+The code below shows how the <code>message</code> method is implemented.
+<div class="codeblock"><pre>
+private JLabel status;
+...
+void message(String msg) {
+    status.setText(msg);
+}
+</pre></div>
+If there is no match in the text area, the following code
+changes the text field's background to pink
+and displays a proper information message.
+
+<div class="codeblock"><pre>
+entry.setBackground(ERROR_COLOR);
+message("'" + s + "' not found. Press ESC to start a new search");
+</pre></div>
+
+The <code>CancelAction</code> class is responsible
+for handling the Escape key as follows.
+<div class="codeblock"><pre>
+   class CancelAction extends AbstractAction {
+       public void actionPerformed(ActionEvent ev) {
+               hilit.removeAllHighlights();
+               entry.setText("");
+               entry.setBackground(entryBg);
+           }
+   }
+</pre></div>
+
+
+<h2>
+<a name="api">The Text Field API</a>
+</h2>
+
+The following tables list the commonly used
+<code>JTextField</code> 
+constructors and methods.
+Other methods you are likely to call
+are defined in the <code>JTextComponent</code> class.
+Refer to 
+<a href="textapi.html">The Text Component API</a>.
+
+<p>
+You might also invoke methods on a
+text field 
+inherited from the text field's other ancestors,
+such as <code>setPreferredSize</code>,
+<code>setForeground</code>, 
+<code>setBackground</code>, 
+<code>setFont</code>, and so on.
+See
+<a href="jcomponent.html">The JComponent Class</a>
+for tables of commonly used inherited methods.
+
+<p>
+The API for using text fields 
+falls into these categories:
+
+<ul>
+<li><a href="#contents">Setting or Obtaining the Field's Contents</a>
+<li><a href="#looks">Fine Tuning the Field's Appearance</a>
+<li><a href="#function">Implementing the Field's Functionality</a>
+</ul>
+
+<p>
+
+<table border=1>
+<caption><a name="contents"><b>Setting or Obtaining the Field's Contents</b></a></caption>
+<tr>
+<th id="h101">Method or Constructor
+</th>
+<th id="h102">Purpose
+
+</th>
+</tr>
+  <tr>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html#JTextField()">JTextField()</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html#JTextField(java.lang.String)">JTextField(String)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html#JTextField(java.lang.String, int)">JTextField(String, int)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html#JTextField(int)">JTextField(int)</a>    </td>
+    <td headers="h102">Creates a text field.
+        When present, the <code>int</code> argument specifies the desired width
+        in columns.
+        The <code>String</code> argument contains the field's initial text.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setText(java.lang.String)">void setText(String)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#getText()">String getText()</a><br>
+<em>(defined in <code>JTextComponent</code>)</em>
+    </td>
+    <td headers="h102">Sets or obtains the text displayed by the text field.
+    </td>
+  </tr>
+</table>
+
+<p>
+
+<table border=1>
+<caption><a name="looks"><b>Fine Tuning the Field's Appearance</b></a></caption>
+<tr>
+<th id="h201">Method
+</th>
+<th id="h202">Purpose
+ 
+</th>
+</tr>
+  <tr>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#setEditable(boolean)">void setEditable(boolean)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#isEditable()">boolean isEditable()</a><br>
+<em>(defined in <code>JTextComponent</code>)</em>
+    </td>
+    <td headers="h202">Sets or indicates whether the user can edit the text in the text field.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html#setColumns(int)">void setColumns(int);</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html#getColumns()">int getColumns()</a>    </td>
+    <td headers="h202">Sets or obtains the number of columns displayed by the text field.
+        This is really just a hint for computing the field's preferred width.
+    </td>
+  </tr>
+  <tr>
+    <td headers="h201">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html#setHorizontalAlignment(int)">void setHorizontalAlignment(int);</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html#getHorizontalAlignment()">int getHorizontalAlignment()</a>    </td>
+    <td headers="h202">Sets or obtains how the text is aligned horizontally within its area.
+        You can use <code>JTextField.LEADING</code>,
+        <code>JTextField.CENTER</code>,
+        and <code>JTextField.TRAILING</code> for arguments.
+    </td>
+  </tr>
+</table>
+
+<p>
+
+<table border=1>
+<caption><a name="function"><b>Implementing the Field's Functionality</b></a></caption>
+<tr>
+<th id="h301">Method
+</th>
+<th id="h302">Purpose
+ 
+</th>
+</tr>
+  <tr>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html#addActionListener(java.awt.event.ActionListener)">void addActionListener(ActionListener)</a>    <br>
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JTextField.html#removeActionListener(java.awt.event.ActionListener)">void removeActionListener(ActionListener)</a>    </td>
+    <td headers="h302">Adds or removes an action listener.
+    </td>
+  </tr>
+
+  <tr>
+    <td headers="h301">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/text/JTextComponent.html#selectAll()">void selectAll()</a><br>
+<em>(defined in <code>JTextComponent</code>)</em>
+    </td>
+    <td headers="h302">Selects all characters in the text field.
+    </td>
+  </tr>
+</table>
+
+
+<h2>
+<a name="eg">Examples That Use Text Fields</a>
+</h2>
+
+This table shows a few of the examples that use text fields
+and points to where those examples are described.
+For examples of code that are similar among all varieties of text fields
+such as dealing with layout,
+look at the example lists for related components such as
+<a href="formattedtextfield.html#eg">formatted text fields</a> and
+<a href="spinner.html#eg">spinners</a>.
+
+<p>
+<table summary="Information about examples">
+<tr>
+<th id="h401" align=left> Example
+</th>
+<th id="h402" align=left> Where Described
+</th>
+<th id="h403" align=left> Notes
+</th>
+</tr>
+
+<tr>
+<td headers="h401" valign=top> <a href="../examples/components/index.html#TextDemo">TextDemo</a>
+</td>
+<td headers="h402" valign=top> This section
+</td>
+<td headers="h403" valign=top> An application that uses a basic text field with an action listener.
+</td>
+</tr>
+
+<tr>
+<td headers="h401" valign=top> <a href="../examples/components/index.html#TextFieldDemo">TextFieldDemo</a>
+</td>
+<td headers="h402" valign=top> This section
+</td>
+<td headers="h403" valign=top> An application that uses a text field and a text area.
+A search is made in the text area to find an entry from the text field.
+
+</td>
+</tr>
+
+
+<tr>
+<td headers="h401" valign=top> 
+<a href="../examples/components/index.html#DialogDemo">DialogDemo</a>
+</td>
+<td headers="h402" valign=top> <a href="dialog.html">How to Make Dialogs</a>
+</td>
+<td headers="h403" valign=top> <code>CustomDialog.java</code> includes a text field
+     whose value is checked.
+     You can bring up the dialog by clicking the More Dialogs tab,
+     selecting the Input-validating dialog option,
+     and then clicking the Show it! button.
+</td>
+</tr>
+
+<tr>
+<td headers="h401" valign=top>
+<a href="../examples/components/index.html#TextSamplerDemo">TextSamplerDemo</a>
+</td>
+<td headers="h402" valign=top> 
+<a href="text.html">Using Text Components</a>
+</td>
+<td headers="h403" valign=top> Lays out label-text field pairs using a <code>GridBagLayout</code>
+     and a convenience method:
+<div class="codeblock"><pre>
+addLabelTextRows(JLabel[] <em>labels</em>,
+		 JTextField[] <em>textFields</em>,
+		 GridBagLayout <em>gridbag</em>,
+		 Container <em>container</em>)
+</pre></div>
+
+<tr>
+<td headers="h401" valign=top>
+<a href="../examples/components/index.html#TextInputDemo">TextInputDemo</a>
+</td>
+<td headers="h402" valign=top> 
+<a href="formattedtextfield.html">How to Use Formatted Text Fields</a>
+</td>
+<td headers="h403" valign=top> Lays out label-text field pairs using a <code>SpringLayout</code>
+     and a <code>SpringUtilities</code> convenience method:
+<div class="codeblock"><pre>
+makeCompactGrid(Container <em>parent</em>,
+                int <em>rows</em>, int <em>cols</em>,
+                int <em>initialX</em>, int <em>initialY</em>,
+                int <em>xPad</em>, int <em>yPad</em>)
+</pre></div>
+</table>
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=textarea.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=toolbar.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h501" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h501" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h502" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Use Text Areas
+        <br><b>Next page:</b> How to Use Tool Bars
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

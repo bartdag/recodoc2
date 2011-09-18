@@ -1,0 +1,1251 @@
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>The Synth Look and Feel (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Modifying the Look and Feel)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Modifying the Look and Feel
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Modifying the Look and Feel</a></div>
+<div class="linkAHEAD"><a href="plaf.html">How to Set the Look and Feel</a></div>
+<div class="nolinkAHEAD">The Synth Look and Feel</div>
+<div class="linkBHEAD"><a href="synthExample.html">A Synth Example</a></div>
+<div class="linkAHEAD"><a href="nimbus.html">Nimbus Look and Feel</a></div>
+<div class="linkBHEAD"><a href="custom.html">Changing the Look of Nimbus</a></div>
+<div class="linkBHEAD"><a href="size.html">Resizing a Component</a></div>
+<div class="linkBHEAD"><a href="color.html">Changing the Color Theme</a></div>
+<div class="linkBHEAD"><a href="info.html">For More Information</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Modifying the Look and Feel</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=plaf.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=synthExample.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>The Synth Look and Feel</h1></div>
+            <div id=PageContent>
+<!--  Synth look and Feel -->
+
+Creating a custom look and feel, or modifying an existing one,
+can be a daunting task. The 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/plaf/synth/package-summary.html"><code>javax.swing.plaf.synth</code></a> package can be used to create a custom look and feel with much less effort.
+You can create a Synth look and feel 
+either programatically or through the use of an external XML file.
+The discussion below is devoted to the 
+creation of a Synth look and feel using an external XML file.
+Creating a Synth c programatically is discussed in the API 
+documentation.
+<p>
+With the Synth look and feel, you provide the "look." Synth itself 
+provides the "feel." Thus, you can think of the Synth L&amp;F as a "skin."
+<P>
+<h2>The Synth Architecture</h2>
+<p>
+<!--Recall from the previous topic that it is the responsibility of each L&amp;F to provide a concrete 
+implementation for each of the many <code>ComponentUI</code> subclasses defined by Swing. With the Synth L&amp;F, 
+by comparison, you must create a 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/plaf/synth/SynthStyle.html"><code>SynthStyle</code></a> for every component.
+<p>
+In order to use Synth you need to provide a 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/plaf/synth/SynthStyleFactory.html"><code>SynthStyleFactory</code></a>and <code>SynthStyles</code>, either directly 
+(that is, programatically) or indirectly (from an XML file). Synth itself creates the necessary 
+<code>ComponentUI</code> implementations from the <code>SynthStyles</code>. 
+<P>
+Each <code>ComponentUI</code> implementation in Synth derives from one <code>SynthStyle</code> per 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/plaf/synth/Region.html"><code>Region</code></a>&mdash;most components only have one <code>Region</code> and therefor only one 
+<code>SynthStyle</code>. <code>SynthStyle</code> is 
+ used to access all style related properties: fonts, colors and other component properties. 
+ In addition <code>SynthStyles</code> are used to obtain 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/plaf/synth/SynthPainter.html"><code>SynthPainters</code></a> for painting the background, 
+ border, focus and other portions of a component. 
+ <p>
+The <code>ComponentUIs</code> obtain <code>SynthStyles</code> from the 
+<code>getStyle(JComponent c, Region id)</code> method of a 
+<code>SynthStyleFactory</code>. A <code>SynthStyleFactory</code> can be provided directly 
+(programatically) by
+<div class="codeblock"><pre>
+SynthLookAndFeel.setStyleFactory(javax.swing.plaf.synth.SynthStyleFactory)
+</pre></div>
+ or indirectly (external file) by:
+<div class="codeblock"><pre>
+SynthLookAndFeel.load(java.io.InputStream, java.lang.Class)
+</pre></div>
+<p>When you use an external XML file, you define &lt;style&gt; elements which Synth maps to the <code>SynthStyles</code>.
+<P>-->
+
+Recall from the previous topic that it is the responsibility of each
+L&amp;F to provide a concrete implementation for each of the many
+<code>ComponentUI</code> subclasses defined by Swing. The Synth L&amp;F takes care of
+this for you. To use Synth, you need not create any <code>ComponentUI</code>s&mdash;rather 
+you need only specify how each component is painted, along with 
+various properties that effect the layout and size.
+<p>
+Synth operates at a more granular level than a component&mdash;this granular level 
+is called a "region." Each component has one or more regions. Many components have
+only one region, such as <code>JButton</code>. Others have multiple regions, such
+as <code>JScrollBar</code>. Each of the <code>ComponentUIs</code> provided by Synth associates a
+<code>SynthStyle</code> with each of the regions defined by the <code>ComponentUI</code>. For
+example, Synth defines three regions for <code>JScrollBar</code>: the track, the
+thumb and the scroll bar itself. The <code>ScrollBarUI</code> (the <code>ComponentUI</code>
+subclass defined for <code>JScrollBar</code>) implementation for Synth associates a
+<code>SynthStyle</code> with each of these regions.
+<p>
+<p><center><IMG SRC="../../figures/uiswing/lookandfeel/synthArch.gif" WIDTH="672" HEIGHT="531" ALIGN="BOTTOM" ALT="Synth Architecture Drawing."></center></p><p>
+<code>SynthStyle</code> provides style information used by the Synth <code>ComponentUI</code>
+implementation. For example, <code>SynthStyle</code> defines the foreground and
+background color, font information, and so forth. In addition, each <code>SynthStyle</code>
+has a <code>SynthPainter</code> that is used to paint the region. For example,
+<code>SynthPainter</code> defines the two methods <code>paintScrollBarThumbBackground</code> and
+<code>paintScrollBarThumbBorder</code>, which are used to paint the scroll bar
+thumb regions.
+<p>
+Each of the <code>ComponentUIs</code> in Synth obtain <code>SynthStyles</code> using a
+<code>SynthStyleFactory</code>. There are two ways to define a <code>SynthStyleFactory</code>: 
+through a Synth XML file, or programatically. The following code
+shows how to load an XML file dictating the look of Synth&mdash;beneath the
+covers this creates a <code>SynthStyleFactory</code> implementation populated with
+<code>SynthStyles</code> from the XML file:
+<p>
+<div class="codeblock"><pre>
+  SynthLookAndFeel laf = new SynthLookAndFeel();
+  laf.load(MyClass.class.getResourceAsStream("laf.xml"), MyClass.class);
+  UIManager.setLookAndFeel(laf);
+</pre></div>
+<p>
+The programmatic route involves creating an implementation of
+<code>SynthStyleFactory</code> that returns <code>SynthStyles</code>. The following code
+creates a custom <code>SynthStyleFactory</code> that returns distinct <code>SynthStyles</code>
+for buttons and trees:
+<div class="codeblock"><pre>
+ class MyStyleFactory extends SynthStyleFactory {
+     public SynthStyle getStyle(JComponent c, Region id) {
+         if (id == Region.BUTTON) {
+             return buttonStyle;
+         }
+         else if (id == Region.TREE) {
+             return treeStyle;
+         }
+         return defaultStyle;
+     }
+ }
+ SynthLookAndFeel laf = new SynthLookAndFeel();
+ UIManager.setLookAndFeel(laf);
+ SynthLookAndFeel.setStyleFactory(new MyStyleFactory());
+</pre></div>
+<!--
+<h2>Using an External XML File</h2>
+<p>
+Choosing a Synth look and feel for your application is simple. This code loads the XML file into Synth from an input 
+stream and then sets the current look and feel to Synth:
+<div class="codeblock"><pre>
+SynthLookAndFeel laf = new SynthLookAndFeel();
+laf.load(MyApp.class.getResourceAsStream("synth_def.xml"), MyApp.class);
+UIManager.setLookAndFeel(laf);
+</pre></div>
+
+<p>
+The Synth feel (or, "skin"), is defined in the external file, <code>synth_def.xml</code>, which must be loaded 
+as shown. The second parameter in the <code>load()</code> method defines the path to the XML file and any images used, 
+indicating that they are 
+to be found with the same path as the <code>MyApp.class</code> file.
+<p>
+<div class="note"><hr><strong>Note:</strong>&nbsp;It is also possible to load a Synth XML file from an arbitrary URL:
+<div class="codeblock"><pre>
+SynthLookAndFeel laf = new SynthLookAndFeel();
+laf.load(new URL("file:///C:/java/synth/laf/synth_def.xml"));
+UIManager.setLookAndFeel(laf);
+</pre></div>
+<hr></div>
+
+
+<p>
+The <code>load()</code> method throws a checked exception, <code>ParseException</code>, so the 
+<code>laf.load(MyApp.class.getResourceAsStream("synth_def.xml"), MyApp.class);</code> 
+statement should be in a <code>try</code> block. A more robust example is this <code>initLookAndFeel()</code> 
+method in the <code>MyApp</code> class that will override the default look and feel to 
+create a Synth look and feel from the external XML file.:
+
+<div class="codeblock"><pre>
+private static void initLookAndFeel() {
+   SynthLookAndFeel laf = new SynthLookAndFeel();
+ 
+   try {
+      laf.load(MyApp.class.getResourceAsStream("synth_def.xml"), MyApp.class);
+      UIManager.setLookAndFeel(laf);
+   } 
+
+   catch (ParseException e) {
+      System.err.println("Couldn't get specified look and feel ("
+                                   + lookAndFeel + "), for some reason.");
+      System.err.println("Using the default look and feel.");
+      e.printStackTrace();
+   }
+
+}
+</pre></div>
+
+If the load method fails, or the XML file is not well formed, the Synth look and feel will not be installed and 
+you will get the default look and feel.
+-->
+
+<P>
+<h2>The XML File</h2>
+An explanation of the DTD for the Synth XML file can be found at 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/plaf/synth/doc-files/synthFileFormat.html"><code>javax.swing.plaf.synth/doc-files/synthFileFormat.html</code>.</a><p>
+When you load a Synth look and feel, only those GUI components (or regions) for which there is a definition (a "style" bound 
+to the region, as discussed below) are rendered. There is no default 
+behavior for any components&mdash;without style definitions in the Synth XML file, the GUI is a blank canvas.
+<p>
+To specify the rendering of a component (or region), your XML file must contain a &lt;style&gt; element, which is then <i>bound</i> 
+to the region using the &lt;bind&gt; element. As an example, let's define a style that includes the 
+font, foreground color, and background color, and then bind that style to all components. It is a good idea 
+to include such an element in your Synth XML file while you are developing it&mdash;then, any components you haven't yet defined will at 
+least have colors and a font:
+<p>
+
+<div class="codeblock"><pre>
+&lt;synth&gt;
+  &lt;style id="basicStyle"&gt;
+    &lt;font name="Verdana" size="16"/&gt;
+    &lt;state&gt;
+      &lt;color value="WHITE" type="BACKGROUND"/&gt;
+      &lt;color value="BLACK" type="FOREGROUND"/&gt;
+    &lt;/state&gt;
+  &lt;/style&gt;
+  &lt;bind style="basicStyle" type="region" key=".*"/&gt;
+&lt;/synth&gt;
+</pre></div>
+<p>
+Let's analyse this style definition:
+<ol>
+<li><p>
+The &lt;style&gt; element is the basic building block of the Synth XML file. It contains all the information needed to 
+describe a region's rendering. A &lt;style&gt; element can describe more than one region, as is done here. In 
+general, though, it is best to create a &lt;style&gt; element for each component or region. Note that the &lt;style&gt; element 
+is given an 
+identifier, the string "basicStyle." This identifier will be used later in the &lt;bind&gt; element.</p>
+</li>
+<li><p>
+The &lt;font&gt; element of the &lt;style&gt; element sets the font to Verdana, size 16.</p>
+</li>
+<li><p>
+The &lt;state&gt; element of the &lt;style&gt; element will be discussed below. The &lt;state&gt; element of a region 
+can have one, or a mixture, of seven possible values. When the value is not specified, the definition applies to all states, 
+which is 
+the intention here. Therefore, the background and foreground colors "for all states" are defined in this element.</p>
+</li>
+<li><p>
+Finally, the &lt;style&gt; element with the identifier "basicStyle" that has just been defined is <i>bound</i> to all regions. 
+The &lt;bind&gt; element binds "basicStyle" to "region" types. Which region type or types the binding applies to is given by 
+the "key" attribute, which is ".*" in this case, the regular expression for "all."</p>
+</li>
+</ol>
+<p>
+
+<p>
+Let's look at the pieces of the Synth XML file before creating some working examples. We'll start with the 
+&lt;bind&gt; element, showing how a given &lt;style&gt; is applied to a component or region.
+<h2>The &lt;bind&gt; Element</h2>
+Whenever a &lt;style&gt; element is defined, it must be bound to one or more components or regions before it has an effect. The &lt;bind&gt; element is used for this purpose. It requires three attributes:
+<ol>
+<li><p>
+<code>style</code> is the unique identifier of a previously defined style.</p>
+</li>
+<li><p> 
+<code>type</code> is either "name" or "region." If <code>type</code> is a name, obtain the name with the <code>component.getName()</code> method. 
+If <code>type</code> is a region, use the appropriate constant defined in the <code>Region</code> class in the <code>javax.swing.plaf.synth</code> package.</p>
+</li>
+<li><p> 
+<code>key</code> is a regular expression used to determine which components or regions the style is bound to.</p> 
+</li>
+</ol>
+<p>
+<!--
+A "region" is a distinct rendering area of a Swing component. Some components have only one 
+region, such as a button. Other components have more than one region&mdash;for example, a scrollbar has three region 
+constants: SCROLL_BAR, SCROLL_BAR_THUMB, and SCROLL_BAR_TRACK.
+-->
+<p>
+A Region is a way of identifying a component or part of a component. Regions are based on 
+the constants in the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/plaf/synth/Region.html"><code>Region</code></a>
+
+ class, modified by stripping out underscores:
+<p>
+
+For example, to identify the SPLIT_PANE region you would use SPLITPANE, splitpane, or SplitPane (case insensitive).
+<p>
+<!--
+Here is a table of a few of the region constants defined in the <code>Region</code> class.
+<p>
+
+<table WIDTH=60% BORDER=1 CELLPADDING=4 CELLSPACING=3>
+<caption><b>Some Region Constants and Their Synth Format</b></caption>
+<tr>
+<th id="h1">
+Region Constant
+</th>
+<th id="h2" width=50%>
+Synth File Format
+</th>
+</tr>
+<code>
+<tr>
+<td headers="h1">
+ARROW_BUTTON 
+</td>
+<td headers="h2">
+ArrowButton
+</td>
+</tr>
+<tr>
+<td headers="h1">
+BUTTON 
+</td>
+<td headers="h2">
+Button
+</td>
+</tr>
+<tr>
+<td headers="h1">
+CHECK_BOX
+</td>
+<td headers="h2">
+CheckBox
+</td>
+</tr>
+<tr>
+<td headers="h1">
+CHECK_BOX_MENU_ITEM 
+</td>
+<td headers="h2">
+CheckBoxMenuItem
+</td>
+</tr>
+<tr>
+<td headers="h1">
+COLOR_CHOOSER
+</td>
+<td headers="h2">
+ColorChooser
+</td>
+</tr>
+<tr>
+<td headers="h1">
+COMBO_BOX
+</td>
+<td headers="h2">
+ComboBox
+</td>
+</tr>
+<tr>
+<td headers="h1">
+DESKTOP_ICON
+</td>
+<td headers="h2">
+DesktopIcon
+</td>
+</tr>
+<tr>
+<td headers="h1">
+DESKTOP_PANE 
+</td>
+<td headers="h2">
+DesktopPane
+</td>
+</tr>
+<tr>
+<td headers="h1">
+EDITOR_PANE
+</td>
+<td headers="h2">
+EditorPane
+</td>
+</tr>
+<tr>
+<td headers="h1">
+FILE_CHOOSER
+</td>
+<td headers="h2">
+FileChooser
+</td>
+</tr>
+<tr>
+<td headers="h1">
+FORMATTED_TEXT_FIELD
+</td>
+<td headers="h2">
+FormattedTextField
+</td>
+</tr>
+</code>
+</table>
+-->
+<p>
+When you bind a style to a region, that style will apply to <i>all</i> of the components with that region. You can bind a 
+style to more than one 
+region, and you can bind more than one style to a region. For example,
+<div class="codeblock"><pre>
+&lt;style id="styleOne"&gt;
+   &lt;!-- styleOne definition goes here --&gt;
+&lt;/style&gt;
+
+&lt;style id="styleTwo"&gt;
+   &lt;!-- styleTwo definition goes here --&gt;
+&lt;/style&gt;
+
+&lt;bind style="styleOne" type="region" key="Button"/&gt;
+&lt;bind style="styleOne" type="region" key="RadioButton"/&gt;
+&lt;bind style="styleOne" type="region" key="ArrowButton"/&gt;
+
+&lt;bind style="styleTwo" type="region" key="ArrowButton"/&gt;
+
+
+</pre></div>
+<p>
+You can bind to individual, named components, whether or not they are <i>also</i> bound as regions. For example, suppose you want to have the "OK" and 
+"Cancel" buttons in your GUI 
+treated differently than all the other buttons. First, you would give the OK and Cancel buttons names, using the 
+<code>component.setName()</code> method. Then, you would define three styles: one for buttons in general (region = "Button"), 
+one for the OK button (name = "OK"), 
+and one for the Cancel button (name = "Cancel"). Finally, you would bind these styles like this:
+<div class="codeblock"><pre>
+&lt;bind style="styleButton" type="region" key="Button"&gt;
+&lt;bind style="styleOK" type="name" key="OK"&gt;
+&lt;bind style="styleCancel" type="name" key="Cancel"&gt;
+</pre></div>
+<p>
+As a result, the "OK" button is bound to <i>both</i> "styleButton" and "styleOK," while the "Cancel" button is 
+bound to <i>both</i> "styleButton" and "styleCancel."
+<p>
+When a component or region is bound to more than one style, the styles are merged
+<p>
+<div class="note"><hr><strong>Note:</strong>&nbsp;Just as a style can be bound to multiple regions or names, multiple styles can be bound to a region or name. These multiple 
+styles are merged for the region or name. Precedence is given to styles defined later in the file.
+<hr></div>
+<p>
+<h2>The &lt;state&gt; Element</h2>
+<p>
+The &lt;state&gt; element allows you to define a look for a region that depends on its "state." For example, you will 
+usually want a button that has been <code>PRESSED</code> to look different than the button in its <code>ENABLED</code> state. There are seven 
+possible values for &lt;state&gt; that are defined in the Synth XML DTD. They are:
+<ol>
+<li>
+ENABLED
+</li>
+<li>
+MOUSE_OVER
+</li>
+<li>
+PRESSED
+</li>
+<li>
+DISABLED
+</li>
+<li>
+FOCUSED
+</li>
+<li>
+SELECTED
+</li>
+<li>
+DEFAULT
+</li>
+</ol>
+<p>
+You can also have composite states, separated by 'and'&mdash;for example, ENABLED and FOCUSED. If you do not specify a value, 
+the defined look will apply to all states. 
+<p>
+As an example, here is a style that specifies painters per state. All buttons are painted a certain way, unless the state is "PRESSED," 
+in which case they are painted differently:
+<div class="codeblock"><pre>
+&lt;style id="buttonStyle"&gt;
+  &lt;property key="Button.textShiftOffset" type="integer" value="1"/&gt;
+  &lt;insets top="10" left="10" right="10" bottom="10"/&gt;
+
+  &lt;state&gt;
+    &lt;imagePainter method="buttonBackground" path="images/button.png"
+                         sourceInsets="10 10 10 10"/&gt;
+  &lt;/state&gt;
+  &lt;state value="PRESSED"&gt;
+    &lt;color value="#9BC3B1" type="BACKGROUND"/&gt;
+    &lt;imagePainter method="buttonBackground" path="images/button2.png"
+                        sourceInsets="10 10 10 10"/&gt;
+  &lt;/state&gt;
+&lt;/style&gt;
+&lt;bind style="buttonStyle" type="region" key="Button"/&gt;
+
+</pre></div>
+<p>
+Ignoring the &lt;property&gt; and &lt;insets&gt; elements for the moment, you can see that a pressed button is 
+painted differently than an unpressed button.
+<p>
+The &lt;state&gt; value that is used is the defined state that most closely matches the state of the region. 
+Matching is determined by the number of values that match the state of the region. If none of the 
+state values match, then the state with no value is used. If there are matches, the state with the most individual 
+matches will be chosen. For example, the following code defines three states: 
+<div class="codeblock"><pre>
+&lt;state id="zero"&gt;
+  &lt;color value="RED" type="BACKGROUND"/&gt;
+&lt;/state&gt;
+&lt;state value="SELECTED and PRESSED" id="one"&gt;
+  &lt;color value="RED" type="BACKGROUND"/&gt;
+&lt;/state&gt;
+&lt;state value="SELECTED" id="two"&gt;
+  &lt;color value="BLUE" type="BACKGROUND"/&gt;
+&lt;/state&gt;
+</pre></div>
+<P>
+If the state of the region contains at least SELECTED and PRESSED, state one will 
+be chosen. If the state contains SELECTED, but not does not contain PRESSED, state two will be used. If 
+the state contains neither SELECTED nor PRESSED, state zero will be used.
+<p>
+When the current state matches the same number of values for two state definitions, the one that is used is 
+the first one defined in the style. 
+For example, the <code>MOUSE_OVER</code> state is always true of a <code>PRESSED</code> button (you can't press a button 
+unless the mouse is over it). So, if the 
+<code>MOUSE_OVER</code> state is declared first, it will always be chosen over <code>PRESSED</code>, and any painting 
+defined for <code>PRESSED</code> will not be done. 
+<div class="codeblock"><pre>
+&lt;state value="PRESSED"&gt; 
+   &lt;imagePainter method="buttonBackground" path="images/button_press.png"
+	                  sourceInsets="9 10 9 10" /&gt;
+   &lt;color type="TEXT_FOREGROUND" value="#FFFFFF"/&gt;      
+&lt;/state&gt;
+      
+&lt;state value="MOUSE_OVER"&gt;    
+   &lt;imagePainter method="buttonBackground" path="images/button_on.png"
+	                  sourceInsets="10 10 10 10" /&gt;
+   &lt;color type="TEXT_FOREGROUND" value="#FFFFFF"/&gt;
+&lt;/state&gt;
+</pre></div>
+The code above will work properly. However, if you reverse the order of the <code>MOUSE_OVER</code> 
+and <code>PRESSED</code> states in the file, the <code>PRESSED</code> state will never be used. This is because any 
+state that is <code>PRESSED</code> state is <i>also</i> a <code>MOUSE_OVER</code> state. Since the 
+<code>MOUSE_OVER</code> state was defined first, it is the one that will be used.
+
+<p>
+<h2>Colors and Fonts</h2>
+<p>
+The &lt;color&gt; element requires two attributes:
+<ol>
+<li><p>
+<code>value</code> can be any one of the <code>java.awt.Color</code> constants, such as RED, WHITE, BLACK, BLUE, etc. It can also be a hex representation of 
+RGB values, such as #FF00FF or #326A3B.</p>
+</li>
+<li><p>
+<code>type</code> describes where the color applies&mdash;it can be BACKGROUND, FOREGROUND, FOCUS, TEXT_BACKGROUND, 
+OR TEXT_FOREGROUND.</p>
+</li>
+</ol>
+<P>
+For example:
+<div class="codeblock"><pre>
+  &lt;style id="basicStyle"&gt;
+    &lt;state&gt;
+      &lt;color value="WHITE" type="BACKGROUND"/&gt;
+      &lt;color value="BLACK" type="FOREGROUND"/&gt;
+    &lt;/state&gt;
+  &lt;/style&gt;
+</pre></div>
+<p>
+The &lt;font&gt; element has three attributes:
+<ol>
+<li><p>
+<code>name</code>&mdash;the name of the font. For example, Arial or Verdana.</p>
+</li>
+<li><p>
+<code>size</code>&mdash;the size of the font in pixels.</p>
+</li>
+<li><p>
+<code>style</code> (optional)&mdash;BOLD, ITALIC, OR BOLD ITALIC. If omitted, you get a normal font.</p>
+</li>
+</ol>
+<p>
+For example:
+<div class="codeblock"><pre>
+  &lt;style id="basicStyle"&gt;
+    &lt;font name="Verdana" size="16"/&gt;
+  &lt;/style&gt;
+</pre></div>
+<p>
+Each of the &lt;color&gt; element and the &lt;font&gt; element has an alternate usage. Each can have an 
+<code>id</code> attribute or an <code>idref</code> attribute. Using the <code>id</code> attribute, you can 
+define a color that you can reuse later by using the <code>idref</code> attribute. For example,
+<div class="codeblock"><pre>
+&lt;color id="backColor" value="WHITE" type="BACKGROUND"/&gt;
+&lt;font id="textFont" name="Verdana" size="16"/&gt;
+...
+...
+...
+&lt;color idref="backColor"/&gt;
+&lt;font idref="textFont"/&gt;
+</pre></div>
+<p>
+<h2>Insets</h2>
+<p>
+The <code>insets</code> add to the size of a component as it is drawn. For example, without insets, 
+a button with a caption of <code>Cancel</code> will be just large enough to contain the caption 
+in the chosen font. With an &lt;insets&gt; element like this
+<div class="codeblock"><pre>
+&lt;insets top="15" left="20" right="20" bottom="15"/&gt;,
+</pre></div>
+the button will be made larger by 15 pixels above and below the caption and 20 pixels to the left and 
+right of the caption.
+<p>
+<h2>Painting With Images</h2>
+<p>
+Synth's file format allows customizing the painting by way of images. Synth's image painter breaks an image 
+into nine distinct areas: top, top right, right, bottom right, bottom, bottom left, left, top left, 
+and center. Each of the these areas is painted into the destination. The top, left, bottom, and right 
+edges are tiled or stretched, while the corner portions 
+(<code>sourceInsets</code>) remain fixed. 
+<p>
+<div class="note"><hr><strong>Note:</strong>&nbsp;There is no relation between the &lt;insets&gt; element and the <code>sourceInsets</code> attribute. The 
+&lt;insets&gt; element defines the space taken up by a region, while the <code>sourceInsets</code> attributes 
+define how to paint an image. The &lt;insets&gt; and <code>sourceInsets</code> will often be similar, but 
+they need not be.
+<hr></div>
+<p>
+You can specify whether the center 
+area should be painted with the <code>paintCenter</code> attribute. The following image shows the nine areas: 
+
+<p><center><IMG SRC="../../figures/uiswing/lookandfeel/regions.gif" WIDTH="223" HEIGHT="222" ALIGN="BOTTOM" ALT="Nine Image Areas."></center></p>
+Let's create a button as an example. To do this we can 
+use the following image (shown larger than its actual size): 
+
+
+<p><center><IMG SRC="../../figures/uiswing/lookandfeel/bigButton.png" WIDTH="500" HEIGHT="200" ALIGN="BOTTOM" ALT="Button Image."></center></p>The red box at the upper left corner is 10 pixels square (including the box border)&mdash;it shows the 
+corner region that should not be stretched when painting. To achieve this, the top and 
+left <code>sourceInsets</code> should be set to 10.
+
+We'll use the following style and binding: 
+<div class="codeblock"><pre>
+&lt;style id="buttonStyle"&gt;
+   &lt;insets top="15" left="20" right="20" bottom="15"/&gt;
+   &lt;state&gt;
+      &lt;imagePainter method="buttonBackground" path="images/button.png"
+        sourceInsets="10 10 10 10"/&gt;
+   &lt;/state&gt;
+&lt;/style&gt;
+&lt;bind style="buttonStyle" type="region" key="button"/&gt;
+</pre></div>
+
+<p>
+The lines inside the &lt;state&gt; element specify that the background of buttons should be painted using the 
+image <code>images/button.png</code>. That path is relative to the Class that is passed into 
+SynthLookAndFeel's load method. The <code>sourceInsets</code> 
+attribute specifies the areas of the image that are not to be stretched. In this case the top, left, bottom, and right insets 
+are each 10. This will cause the painter not to stretch a 10 x 10 pixel area at each corner of the image.
+<p>
+The &lt;bind&gt; binds <code>buttonStyle</code> to all buttons.
+<p>
+The &lt;imagePainter&gt; element provides all the information needed to render a portion of a region. 
+It requires only a few attributes: 
+<ul>
+<li><p>
+method&mdash;this specifies which of the methods in the <code>javax.swing.plaf.synth.SynthPainter</code> 
+class is to be used for painting. The <code>SynthPainter</code> class contains about 100 methods that 
+ begin with <code>paint</code>. When you determine which one you need, you remove the <code>paint</code> 
+prefix, change the remaining first letter to lowercase, and use the result as the <code>method</code> attribute. 
+For example, the <code>SynthPainter</code> method <code>paintButtonBackground</code> becomes the attribute 
+<code>buttonBackground</code>.</p>
+</li>
+<li><p>
+path&mdash;the path to the image to be used, relative to the Class that is passed into 
+SynthLookAndFeel's load method.</p> 
+</li>
+<li><p>
+sourceInsets&mdash;the insets in pixels, representing the width and height of the corner areas that 
+should not be stretched 
+They map to the top, left, bottom, and right, in that order.</p> 
+</li>
+
+<li><p>
+paintCenter (optional) : This attribute lets you keep the center of an image 
+or get rid of it (in a text field, for example, 
+so text can be drawn).</p> 
+</li>
+</ul>
+<p>
+
+The listing below shows the XML code for loading different images depending on the &lt;state&gt; 
+of the button
+
+<div class="codeblock"><pre>
+  &lt;style id="buttonStyle"&gt;
+    &lt;property key="Button.textShiftOffset" type="integer" value="1"/&gt;
+    &lt;insets top="15" left="20" right="20" bottom="15"/&gt;
+    &lt;state&gt;
+      &lt;imagePainter method="buttonBackground" path="images/button.png"
+                    sourceInsets="10 10 10 10"/&gt;
+    &lt;/state&gt;
+    &lt;state value="PRESSED"&gt;
+      &lt;imagePainter method="buttonBackground" path="images/button2.png"
+                    sourceInsets="10 10 10 10"/&gt;
+    &lt;/state&gt;
+  &lt;/style&gt;
+  &lt;bind style="buttonStyle" type="region" key="button"/&gt;
+</pre></div>
+button2.png shows the depressed version of button.png, shifted one pixel to the right. The line
+<div class="codeblock"><pre>
+&lt;property key="Button.textShiftOffset" type="integer" value="1"/&gt;
+</pre></div>
+shifts the button text accordingly, as discussed in the next section.
+<p>
+<h2>The &lt;property&gt; Element</h2>
+
+<p>
+&lt;property&gt; elements are used to add key value pairs to a &lt;style&gt; element. Many components use the key 
+value pairs for configuring their visual appearance. 
+<p>
+The &lt;property&gt; element has three attributes:
+<ul>
+<li><p>
+<code>key</code>&mdash;the name of the property.</p>
+</li>
+<li><p>
+<code>type</code>&mdash;the data type of the property.</p>
+</li>
+<li><p>
+<code>value</code>&mdash;the value of the property.</p>
+</li>
+</ul>
+<p>
+There is a property table (<code>componentProperties.html</code>) that lists the properties each component supports:
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/plaf/synth/doc-files/componentProperties.html"><code>javax/swing/plaf/synth/doc-files/componentProperties.html</code></a>.
+<p>
+Since the button2.png image shifts the visual button one pixel when it is depressed, we should also shift the 
+button text. There is a button property that does this:
+<div class="codeblock"><pre>
+&lt;property key="Button.textShiftOffset" type="integer" value="1"/&gt;
+</pre></div>
+<p>
+<h2>An Example</h2>
+<p>Here is an example, using the button style defined above. The button style, plus a "backing style" 
+ with definitions of font and colors that are bound to all regions (similar to the "basicStyle" shown 
+ in the section titled "The XML File," above) are combined in 
+<a class="SourceLink" target="_blank" href="../examples/lookandfeel/SynthApplicationProject/src/lookandfeel/buttonSkin.xml"><code><code>buttonSkin.xml</code></code></a>Here is a listing of <code>buttonSkin.xml</code>:
+<div class="codeblock"><pre>
+&lt;!-- Synth skin that includes an image for buttons --&gt;
+&lt;synth&gt;
+  &lt;!-- Style that all regions will use --&gt;
+  &lt;style id="backingStyle"&gt;
+    &lt;!-- Make all the regions that use this skin opaque--&gt;
+    &lt;opaque value="TRUE"/&gt;
+    &lt;font name="Dialog" size="12"/&gt;
+    &lt;state&gt;
+      &lt;!-- Provide default colors --&gt;
+      &lt;color value="#9BC3B1" type="BACKGROUND"/&gt;
+      &lt;color value="RED" type="FOREGROUND"/&gt;
+    &lt;/state&gt;
+  &lt;/style&gt;
+  &lt;bind style="backingStyle" type="region" key=".*"/&gt;
+  &lt;style id="buttonStyle"&gt;
+    &lt;!-- Shift the text one pixel when pressed --&gt;
+    &lt;property key="Button.textShiftOffset" type="integer" value="1"/&gt;
+    &lt;insets top="15" left="20" right="20" bottom="15"/&gt;
+    &lt;state&gt;
+      &lt;imagePainter method="buttonBackground" path="images/button.png"
+                    sourceInsets="10 10 10 10"/&gt;
+    &lt;/state&gt;
+    &lt;state value="PRESSED"&gt;
+      &lt;imagePainter method="buttonBackground" path="images/button2.png"
+                    sourceInsets="10 10 10 10"/&gt;
+    &lt;/state&gt;
+  &lt;/style&gt;
+  &lt;!-- Bind buttonStyle to all JButtons --&gt;
+  &lt;bind style="buttonStyle" type="region" key="button"/&gt; 
+&lt;/synth&gt;
+</pre></div>
+We can load this XML file to use the Synth look and feel for a simple application called 
+<code>SynthApplication.java</code>. The GUI for this application includes a button and a label. Every time the 
+button is clicked, the label increments. 
+<p>
+<div class="note"><hr><strong>Note:</strong>&nbsp;The label is painted, even though <code>buttonSkin.xml</code> does not contain a style for it. This is because 
+there is a general "backingStyle" that includes a font and colors.
+<hr></div>
+<p>
+Here is the listing of the
+<a class="SourceLink" target="_blank" href="../examples/lookandfeel/SynthApplicationProject/src/lookandfeel//SynthApplication.java"><code><code>SynthApplication.java</code></code></a>file.
+<p>
+<div class="note"><hr><strong>Try this:</strong>&nbsp;
+Click the Launch button to run the SynthApplication example using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a> (<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+     Alternatively, to compile and run the example yourself,
+     consult the
+     <a href="../examples/lookandfeel/index.html#SynthApplication">example index</a>.
+<p>
+
+<center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/lookandfeel/ex6/SynthApplication.jnlp"><img src="../../images/jws-launch-button.png" width="88" height="23" align="bottom" alt="Launches the SynthApplication example"></a></center>
+<hr></div>
+
+<p>
+<h2>Painting With Icons</h2>
+<p>
+Radio buttons and check boxes typically render their state by fixed-size icons. For these, you
+can create an icon and bind it to the appropriate property (refer to the properties table, 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/plaf/synth/doc-files/componentProperties.html"><code>javax/swing/plaf/synth/doc-files/componentProperties.html</code></a>).
+For example, to paint radio buttons that are selected or unselected, use this code:
+<div class="codeblock"><pre>
+&lt;style id="radioButton"&gt;
+   &lt;imageIcon id="radio_off" path="images/radio_button_off.png"/&gt;
+   &lt;imageIcon id="radio_on" path="images/radio_button_on.png"/&gt;
+   &lt;property key="RadioButton.icon" value="radio_off"/&gt;
+   &lt;state value="SELECTED"&gt;   
+      &lt;property key="RadioButton.icon" value="radio_on"/&gt;
+   &lt;/state&gt;
+&lt;/style&gt;
+&lt;bind style="radioButton" type="region" key="RadioButton"/&gt;	 
+</pre></div>
+<p>
+<h2>Custom Painters</h2>
+<p>
+Synth's file format allows for embedding arbitrary objects by way of the 
+<a class="SourceLink" target="_blank" href="http://java.sun.com/products/jfc/tsc/articles/persistence3"><code>long-term persistence of JavaBeans components</code></a>
+
+. This ability is particularly useful in providing your own painters 
+beyond the image-based ones Synth provides. For example, the following XML code specifies that 
+a gradient should be rendered in the background of text fields: 
+<div class="codeblock"><pre>
+&lt;synth&gt;
+  &lt;object id="gradient" class="GradientPainter"/&gt;
+  &lt;style id="textfield"&gt;
+    &lt;painter method="textFieldBackground" idref="gradient"/&gt;
+  &lt;/style&gt;
+  &lt;bind style="textfield" type="region" key="textfield"/&gt;
+&lt;/synth&gt;
+</pre></div>
+Where the GradientPainter class looks like this: 
+<div class="codeblock"><pre>
+public class GradientPainter extends SynthPainter {
+   public void paintTextFieldBackground(SynthContext context,
+                                        Graphics g, int x, int y,
+                                        int w, int h) {
+      // For simplicity this always recreates the GradientPaint. In a
+      // real app you should cache this to avoid garbage.
+      Graphics2D g2 = (Graphics2D)g;
+      g2.setPaint(new GradientPaint((float)x, (float)y, Color.WHITE,
+                 (float)(x + w), (float)(y + h), Color.RED));
+      g2.fillRect(x, y, w, h);
+      g2.setPaint(null);
+   }
+}
+</pre></div>
+<h2>Conclusion</h2>
+<p>
+In this lesson, we have covered the use of the <code>javax.swing.plaf.synth</code> package to create 
+a custom look and feel. The emphasis of the lesson has been on using an external XML file to define the 
+look and feel. The next lesson presents a sample application that creates a search dialog box using the Synth 
+framework with an XML file.
+        </div>
+        <div class=NavBit>
+            <a target=_top href=plaf.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=synthExample.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h101" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h101" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h102" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Set the Look and Feel
+        <br><b>Next page:</b> A Synth Example
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

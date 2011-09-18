@@ -1,0 +1,548 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>A Visual Guide to Swing Components (Windows Look and Feel) (The Java&trade; Tutorials &gt;        
+            Graphical User Interfaces &gt; Swing Features)
+</title>
+
+     <meta name="description" content="This Java Tutorial describes the Swing toolkit at a high level" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Graphical User Interfaces
+        <br><b>Lesson:</b> Swing Features
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Swing Features</a></div>
+<div class="linkAHEAD"><a href="components.html">A Visual Guide to Swing Components (Java Look and Feel)</a></div>
+<div class="nolinkAHEAD">A Visual Guide to Swing Components (Windows Look and Feel)</div>
+<div class="linkAHEAD"><a href="plaf.html">Pluggable Look and Feel</a></div>
+<div class="linkAHEAD"><a href="dnd.html">Data Transfer</a></div>
+<div class="linkAHEAD"><a href="i18n.html">Internationalization and Localization</a></div>
+<div class="linkAHEAD"><a href="access.html">Accessibility</a></div>
+<div class="linkAHEAD"><a href="desktop.html">Integrating with the Desktop</a></div>
+<div class="linkAHEAD"><a href="tray.html">System Tray Icon Support</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Graphical User Interfaces</a>
+                &gt;
+                <a href=index.html target=_top>Swing Features</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=components.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=plaf.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>A Visual Guide to Swing Components (Windows Look and Feel)</h1></div>
+            <div id=PageContent>
+<p>This page shows Swing components in the Windows look and feel.
+The previous page shows the same components in the 
+<a class="TutorialLink" target="_top" href="components.html">Java look and feel</a>.
+</p>
+
+<h2>Basic Controls</h2>
+
+<p>Simple components that are used primarily to get input from the user; they may also show simple state.</p>
+
+<IMG SRC="../../figures/ui/ui-ButtonW.png" WIDTH="95" HEIGHT="47" ALT="Button image"><p><A HREF="../../uiswing/components/button.html" TARGET="_top">JButton</A></p> 
+
+<IMG SRC="../../figures/ui/ui-CheckBoxW.png" WIDTH="147" HEIGHT="89" ALT="CheckBox image">
+<p><A HREF="../../uiswing/components/button.html#checkbox" TARGET="_top">JCheckBox</A></p> 
+
+<IMG SRC="../../figures/ui/ui-ComboBoxW.png" WIDTH="177" HEIGHT="104" ALT="Combo box image">
+<p><A HREF="../../uiswing/components/combobox.html" TARGET="_top">JComboBox</A></p>
+ 
+<IMG SRC="../../figures/ui/ui-ListW.png" WIDTH="176" HEIGHT="112" ALT="List image">
+<p><A HREF="../../uiswing/components/list.html" TARGET="_top">JList</A></p>
+
+<IMG SRC="../../figures/ui/ui-MenuW.png" WIDTH="215" HEIGHT="216" ALT="Menu image">
+<p><A HREF="../../uiswing/components/menu.html" TARGET="_top">JMenu</A></p>
+
+<IMG SRC="../../figures/ui/ui-RadioButtonW.png" WIDTH="207" HEIGHT="121" ALT="Radio Button image">
+<p><A HREF="../../uiswing/components/button.html#radiobutton" TARGET="_top">JRadioButton</A></p>
+ 
+<IMG SRC="../../figures/ui/ui-SliderW.png" WIDTH="244" HEIGHT="63" ALT="Slider image">
+<p><A HREF="../../uiswing/components/slider.html" TARGET="_top">JSlider</A></p>
+
+<IMG SRC="../../figures/ui/ui-SpinnerW.png" WIDTH="126" HEIGHT="20" ALT="Spinner image">
+<p><A HREF="../../uiswing/components/spinner.html" TARGET="_top">JSpinner</A></p>
+
+<IMG SRC="../../figures/ui/ui-TextFieldW.png" WIDTH="159" HEIGHT="20" ALT="Text field image">
+<p><A HREF="../../uiswing/components/textfield.html" TARGET="_top">JTextField</A></p>
+
+<IMG SRC="../../figures/ui/ui-PasswordFieldW.png" WIDTH="196" HEIGHT="20" ALT="Password field image">
+<p><A HREF="../../uiswing/components/passwordfield.html" TARGET="_top">JPasswordField</A></p>
+
+<h2>Interactive Displays of Highly Formatted Information</h2>
+
+<p>These components display highly formatted information that (if you choose) can be modified by the user.</p>
+
+<IMG SRC="../../figures/ui/ui-ColorChooserW.png" WIDTH="433" HEIGHT="345" ALT="Color Chooser Image">
+<p><A HREF="../../uiswing/components/colorchooser.html" TARGET="_top">JColorChooser</A></p>
+ 
+<IMG SRC="../../figures/ui/ui-TextPaneW.png" WIDTH="274" HEIGHT="271" ALT="Text pane Image">
+<p><A HREF="../../uiswing/components/editorpane.html" TARGET="_top">JEditorPane</A> and <a href="../../uiswing/components/editorpane.html" target="_top">JTextPane</a></p>
+
+<IMG SRC="../../figures/ui/ui-FileChooserW.png" WIDTH="391" HEIGHT="213" ALT="File Chooser Image">
+<p><A HREF="../../uiswing/components/filechooser.html" TARGET="_top">JFileChooser</A></p>
+         
+<IMG SRC="../../figures/ui/ui-TableW.png" WIDTH="382" HEIGHT="102" ALT="Table Image">
+<p><A HREF="../../uiswing/components/table.html" TARGET="_top">JTable</A></p>
+
+<IMG SRC="../../figures/ui/ui-TextAreaW.png" WIDTH="224" HEIGHT="136" ALT="Text Image">
+<p><A HREF="../../uiswing/components/text.html" TARGET="_top">JTextArea</A></p>
+ 
+<IMG SRC="../../figures/ui/ui-TreeW.png" WIDTH="141" HEIGHT="124" ALT="Tree Image">
+<p><A HREF="../../uiswing/components/tree.html" TARGET="_top">JTree</A></p>
+
+<h2>Uneditable Information Displays</h2>
+<p>These components exist solely to give the user information.</p>
+
+<IMG SRC="../../figures/ui/ui-LabelW.png" WIDTH="158" HEIGHT="118" ALT="Label image"><p><A HREF="../../uiswing/components/label.html" TARGET="_top">JLabel</A></p>
+ 
+<IMG SRC="../../figures/ui/ui-ProgressBarW.png" WIDTH="100" HEIGHT="17" ALT="Progress bar image">
+<p><A HREF="../../uiswing/components/progress.html" TARGET="_top">JProgressBar</A></p> 
+
+<IMG SRC="../../figures/ui/ui-SeparatorW.png" WIDTH="213" HEIGHT="24" ALT="Separator image">
+<p><A HREF="../../uiswing/components/separator.html" TARGET="_top">JSeparator</A></p>
+
+<IMG SRC="../../figures/ui/ui-ToolTipW.png" WIDTH="132" HEIGHT="128" ALT="Tool tip image">
+<p><A HREF="../../uiswing/components/tooltip.html" TARGET="_top">JToolTip</A></p> 
+
+<h2>Top-Level Containers</h2>
+
+<p>At least one of these components must be present in any Swing application.</p>
+
+<IMG SRC="../../figures/ui/ui-Applet.png" WIDTH="85" HEIGHT="77" ALT="Applet image">
+<p><A HREF="../../uiswing/components/applet.html" TARGET="_top">JApplet</A></p>
+
+<IMG SRC="../../figures/ui/ui-DialogW.png" WIDTH="268" HEIGHT="122" ALT="Dialog image">
+<p><A HREF="../../uiswing/components/dialog.html" TARGET="_top">JDialog</A></p>
+
+<IMG SRC="../../figures/ui/ui-FrameW.png" WIDTH="192" HEIGHT="95" ALT="Frame image">
+<p><A HREF="../../uiswing/components/frame.html" TARGET="_top">JFrame</A></p>
+ 
+<h2>General-Purpose Containers</h2>
+
+<p>These general-purpose containers are used in most Swing applications.</p>
+
+<IMG SRC="../../figures/ui/ui-PanelW.png" WIDTH="276" HEIGHT="83" ALT="Panel image">
+<p><A HREF="../../uiswing/components/panel.html" TARGET="_top">JPanel</A></p>
+ 
+<IMG SRC="../../figures/ui/ui-ScrollPaneW.png" WIDTH="264" HEIGHT="214" ALT="Scroll pane image">
+<p><A HREF="../../uiswing/components/scrollpane.html" TARGET="_top">JScrollPane</A></p>
+ 
+<IMG SRC="../../figures/ui/ui-SplitPaneW.png" WIDTH="290" HEIGHT="145" ALT="Split pane image"><p><A HREF="../../uiswing/components/splitpane.html" TARGET="_top">JSplitPane</A></p>
+ 
+<IMG SRC="../../figures/ui/ui-TabbedPaneW.png" WIDTH="234" HEIGHT="77" ALT="Tabbed pane image">
+<p><A HREF="../../uiswing/components/tabbedpane.html" TARGET="_top">JTabbedPane</A></p>
+
+<IMG SRC="../../figures/ui/ui-ToolBarW.png" WIDTH="98" HEIGHT="31" ALT="ToolBar image"><p><A HREF="../../uiswing/components/toolbar.html" TARGET="_top">JToolBar</A></p>
+
+<h2>Special-Purpose Containers</h2>
+<p>These special-purpose containers play specific roles in the UI.</p>
+
+<IMG SRC="../../figures/ui/ui-InternalFrameW.png" WIDTH="263" HEIGHT="171" ALT="Internal frame image">
+<p><A HREF="../../uiswing/components/internalframe.html" TARGET="_top">JInternalFrame</A></p> 
+
+<IMG SRC="../../figures/ui/ui-LayeredPaneW.png" WIDTH="308" HEIGHT="201" ALT="Layered pane image">
+<p><A HREF="../../uiswing/components/layeredpane.html" TARGET="_top">JLayeredPane</A></p> 
+
+<IMG SRC="../../figures/ui/ui-rootPane.gif" WIDTH="367" HEIGHT="166" ALT="Root pane image">
+<p><A HREF="../../uiswing/components/rootpane.html" TARGET="_top">Root pane</A></p>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=components.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=plaf.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> A Visual Guide to Swing Components (Java Look and Feel)
+        <br><b>Next page:</b> Pluggable Look and Feel
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

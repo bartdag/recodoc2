@@ -1,0 +1,720 @@
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>How to Use Modality in Dialogs (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Using Other Swing Features)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Using Other Swing Features
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Using Other Swing Features</a></div>
+<div class="linkAHEAD"><a href="desktop.html">How to Integrate with the Desktop Class</a></div>
+<div class="linkAHEAD"><a href="trans_shaped_windows.html">How to Create Translucent and Shaped Windows</a></div>
+<div class="linkAHEAD"><a href="jlayer.html">How to Decorate Components with the JLayer Class</a></div>
+<div class="linkAHEAD"><a href="action.html">How to Use Actions</a></div>
+<div class="linkAHEAD"><a href="timer.html">How to Use Swing Timers</a></div>
+<div class="linkAHEAD"><a href="access.html">How to Support Assistive Technologies</a></div>
+<div class="linkAHEAD"><a href="focus.html">How to Use the Focus Subsystem</a></div>
+<div class="linkAHEAD"><a href="keybinding.html">How to Use Key Bindings</a></div>
+<div class="nolinkAHEAD">How to Use Modality in Dialogs</div>
+<div class="linkAHEAD"><a href="printtable.html">How to Print Tables</a></div>
+<div class="linkAHEAD"><a href="printtext.html">How to Print Text</a></div>
+<div class="linkAHEAD"><a href="splashscreen.html">How to Create a Splash Screen</a></div>
+<div class="linkAHEAD"><a href="systemtray.html">How to Use the System Tray</a></div>
+<div class="linkAHEAD"><a href="problems.html">Solving Common Problems Using Other Swing Features</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Using Other Swing Features</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=keybinding.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=printtable.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>How to Use Modality in Dialogs</h1></div>
+            <div id=PageContent>
+<p>
+Java&trade; SE 6 has resolved modality issues that arose in earlier versions of the platform.
+The new modality model enables the developer to scope, or limit, a dialog box's modality blocking.
+</p>
+<p>Before proceding with the new modality model, review the following terms:
+<ul>
+<li>Dialog box &mdash; A top-level pop-up window with a title and a border that 
+typically takes some form of input from the user. A dialog box can be modal or modeless.
+For more information about dialog boxes, see
+<a class="TutorialLink" target="_top" href="../components/dialog.html#overview">An Overview of Dialogs</a> in the 
+<a class="TutorialLink" target="_top" href="../components/dialog.html">How to Make Dialogs</a> page.</li>
+<li>Modal dialog box &mdash; A dialog box that blocks input to some other top-level windows
+in the application, except for windows created with the dialog box as their owner.
+The modal dialog box captures the window focus until it is closed, usually in response to a button press.</li>
+<li>Modeless dialog box &mdash; A dialog box that enables you to operate with other windows while this dialog box is shown.</li>
+</ul>
+</p>
+<p>
+In Java SE 6 the behavior of both modal and modeless dialog boxes has 
+been changed so that they always appear on top of both not only of their parent windows and of all blocked windows as well. 
+</p>
+<p>The following modality types are supported in Java SE 6:
+<ul>
+<li><strong>Modeless type</strong> &mdash; A modeless dialog box does not block any other window while it is visible.</li>
+<li><strong>Document-modal type</strong> &mdash; A document-modal dialog box blocks all windows from the 
+same document, except windows from its child hierarchy. In this context, a document 
+is a hierarchy of windows that share a common ancestor, called the document root, which is the closest 
+ancestor window without an owner.</li>
+<li><strong>Application-modal type</strong> &mdash; An application-modal dialog box blocks 
+all windows from the same application, except windows from its child hierarchy. 
+If several applets are launched in a browser environment, the browser is allowed 
+to treat them either as separate applications or as a single application. 
+This behavior is implementation-dependent.</li>
+<li><strong>Toolkit-modal type</strong> &mdash; A toolkit-modal dialog box blocks all windows 
+that run in the same toolkit, except windows from its child hierarchy. If several 
+applets are launched, all of them run with the same toolkit. Hence, a toolkit-modal 
+dialog box shown from an applet may affect other applets and all windows of the browser 
+instance that embeds the Java runtime environment for this toolkit.</li>
+</ul>
+<p>Additionally, you can set up the modality exclusion mode:
+<ul>
+<li><strong>Exclusion mode</strong> &mdash; Any top-level window can be marked not to be blocked by modal dialogs. This property enables you to set up the <em>modal exclusion</em> mode. The <code>Dialog.ModalExclusionType</code> enum specifies the possible modal exclusion types.</li> 
+</ul>
+<div class="note"><hr><strong>Note :</strong>&nbsp;The new modality model does not implement a system modality, which blocks 
+all applications (including Java applications) that are displayed on the desktop while a modal dialog box is active.
+<hr></div>
+</p>
+
+<p>The ModalityDemo example demonstrates the first three of the four modality types mentioned above.
+<p><center><a href="../../figures/uiswing/misc/modalityDemo.png" target="_top"><IMG SRC="../../figures/uiswing/misc/modalityDemo.png" WIDTH="684" HEIGHT="434" ALIGN="BOTTOM" ALT="Four frames to demonstrate different modality types "></a><br><em>This figure has been reduced to fit on the page. <br> Click the image to view it at its natural size.</em></center></p><div class="note"><hr><strong>Try this:</strong>&nbsp;<ol>
+<li>Click the Launch button
+to run ModalityDemo using
+<a class="TutorialLink" target="_top" href="http://java.sun.com/products/javawebstart/index.jsp">Java&trade; Web Start</a>
+(<a href="http://java.sun.com/javase/downloads/index.jsp">download JDK 6</a>).
+Alternatively, to compile and run the example yourself,
+consult the
+<a href="../examples/misc/index.html#ModalityDemo">example index</a>.
+<p><center>
+<a href="http://download.oracle.com/javase/tutorialJWS/uiswing/misc/ex6/ModalityDemo.jnlp">
+<img src="../../images/jws-launch-button.png"
+width="88" heigth="23" align="bottom"
+alt="Launches the ModalityDemo application"></a></center></p>
+
+<li> The following dialog boxes will appear:
+             <ul>
+	     	<li>Book 1 (parent frame)</li>
+		<li>Book 2 (parent frame)</li>
+		<li>Feedback (parent frame)</li>
+		<li>Classics (excluded frame)</li>
+	     </ul>
+
+<li>Switch to the Book 1 frame and choose the Biography title for the book, 
+then select OK.</li>
+<li>The Biography title will be displayed in the title of the dialog box.
+Enter the name, for example - &ldquo;John&rdquo;, into the text field.</li> 
+<li>Switch to the Book 1 frame and change the title to Funny Tale, then select OK.
+Since the dialog box for entering the name is <em>modeless</em>, you can easily switch to 
+its <em>parent</em> frame.</li>
+<div class="note"><hr><strong>Note :</strong>&nbsp;The modeless dialog box title has been changed to Funny Tale.
+<hr></div>
+
+<li> Select OK in the modeless dialog box.</li>
+<li> The Funny tale document-modal dialog box appears.</li> 
+<li>Type some text in the 
+text field. Notice that it is signed by the name you entered in the modeless dialog box.</li>
+<li> Switch to the modeless dialog box and try to change your name. You will not be able
+to do so, because the document-modal dialog box
+blocks all windows in its parent hierarchy.</li>
+<li>Perform the same sequence of operations (steps 3 - 9) for the Book 2 parent frame.</li>
+<li>Try switching to different dialog boxes. You will notice that you can
+switch either to the Classics frame or to the Feedback frame as well as to the
+dialog box of either the Book 1 frame or the Book 2 frame.</li>
+<li>Switch to the Feedback parent frame. Select Rate Yourself. </li>
+<li>The confirmation dialog box will appear. Try switching to different dialog boxes.
+You are only enabled to switch to the Classics dialog box because the standard confirmation dialog box
+is an application-modal dialog box and it blocks all windows from the same application.
+However, you will notice that you can select your favorite classical author in the
+Classics frame. This frame has been created by using the <code>APPLICATION_EXCLUDE</code>
+modality exclusion type, which prevents all top-level windows from being blocked by any application-modal 
+dialog boxes.</li>
+</ol>
+<hr></div>
+
+<p> The following code snippet shows how to create dialog boxes of different modality
+types:
+<div class="codeblock"><pre>
+//The Book 1 parent frame
+f1 = new JFrame("Book 1 (parent frame)");
+
+...
+
+//The modeless dialog box
+d2 = new JDialog(f1);
+
+...
+	
+//The document-modal dialog box
+d3 = new JDialog(d2, "", Dialog.ModalityType.DOCUMENT_MODAL);
+
+...
+
+	//The Book2 parent frame
+f4 = new JFrame("Book 2 (parent frame)");
+
+...
+
+//The modeless dialog box
+d5 = new JDialog(f4);
+
+...
+
+//The document-modality dialog box
+d6 = new JDialog(d5, "", Dialog.ModalityType.DOCUMENT_MODAL);
+	
+...
+
+//The excluded frame
+f7 = new JFrame("Classics (excluded frame)");
+f7.setModalityExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDED);
+	
+...
+
+//The Feedback parent frame and Confirm Dialog box
+f8 = new JFrame("Feedback (parent frame)");
+...
+
+JButton b8 = new JButton("Rate yourself");
+b8.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+        JOptionPane.showConfirmationDialog(null,
+                                           "I really like my book",
+                                           "Question (application-modal dialog)", 
+                                           JOptionPane.Yes_NO_OPTION,
+                                           JOptionPane.QUESTION_MESSAGE); 
+    }
+});
+
+</pre></div>
+
+Find the demo's complete code in the
+
+<a class="SourceLink" target="_blank" href="../examples/misc/ModalityDemoProject/src/misc/ModalityDemo.java"><code>ModalityDemo.java</code></a> file.
+
+<p>
+In Java SE 6 you can create a document-modal dialog box without a parent. 
+Because the <code>Dialog</code> class is a subclass of the <code>Window</code> class,
+a <code>Dialog</code> instance automatically becomes the root of the document if it has no owner. 
+Thus, if such a dialog box is document-modal, its scope of blocking is empty, and it behaves as if it were 
+a modeless dialog box.</p>	
+	
+ 
+ 
+<h2>
+<a name="api">The Modality API</a>
+</h2>
+
+<p align=center>The <code>JDialog</code> class constructors enable you to create dialog boxes of various modality types.</p>
+<table border=1 summary="JDialog class constructors that support modality types">
+<tr>
+<th id="h1" align=left>Constructor</th>
+<th id="h2" align=left>Purpose</th>
+</tr>
+
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JDialog.html#JDialog(java.awt.Dialog)">JDialog(Dialog owner)</a></td>
+<td headers="h2">Creates a modeless dialog box with the specified <code>Dialog</code> owner but 
+without a title.
+</td>
+</tr>
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JDialog.html#JDialog(java.awt.Dialog,%20boolean)">JDialog(Dialog owner, boolean modal)</a></td>
+<td headers="h2">Creates a dialog box with the specified <code>Dialog</code> owner and modality.
+</td>
+</tr>
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JDialog.html#JDialog(java.awt.Dialog,%20java.lang.String)">JDialog(Dialog owner, String title)</a></td>
+<td headers="h2">Creates a modeless dialog box with the specified  <code>Dialog</code> owner and title.
+</td>
+</tr>
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JDialog.html#JDialog(java.awt.Dialog,%20java.lang.String,%20boolean)">JDialog(Dialog owner, String title, boolean modal)</a></td>
+<td headers="h2">Creates a dialog box with the specified <code>Dialog</code> owner, title, and modality.
+</td>
+</tr>
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JDialog.html#JDialog(java.awt.Dialog,%20java.lang.String,%20boolean,%20java.awt.GraphicsConfiguration)">JDialog(Dialog owner, String title, boolean modal, GraphicsConfiguration gc)</a></td>
+<td headers="h2">Creates a dialog box with the specified <code>Dialog</code> owner, title, modality, and graphics configuration.
+</td>
+</tr>
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JDialog.html#JDialog(java.awt.Frame)">JDialog(Frame owner)</a></td>
+<td headers="h2">Creates a modeless dialog box without a title with the specified <code>Frame</code> owner. 
+If the value for the owner is null, a shared, hidden frame will be set as the owner of the dialog box.
+</td>
+</tr>
+<tr>
+<td headers="h1">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/swing/JDialog.html#JDialog(java.awt.Window,%20java.lang.String,%20java.awt.Dialog.ModalityType)">JDialog(Window owner, String title, Dialog.ModalityType modalityType)</a></td>
+<td headers="h2">Creates a dialog box with the specified <code>Window</code> owner, title, and modality.
+</td>
+</tr>
+</table>
+
+<p align=center>The following table lists methods inherited from the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Dialog.html"><code>java.awt.Dialog</code></a> class.</p>
+<table border=1 summary="methods inherited from java.awt.Dialog">
+<tr>
+<th id="h101" align=left>Method</th>
+<th id="h102" align=left>Purpose</th>
+</tr>
+<tr>
+<td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Dialog.html#getModalityType()">getModalityType</a></td>
+<td headers="h102">
+Returns the modality type for this dialog box.
+</td>
+</tr>
+<tr>
+<td headers="h101">
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Dialog.html#setModalityType(java.awt.Dialog.ModalityType)">setModalityType</a></td>
+<td headers="h102">
+Sets the modality type for this dialog box. See 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/awt/Dialog.ModalityType.html">ModalityType</a> for possible modality types. If the given modality type is not supported, then the <code>MODELESS</code> type is used. 
+ To ensure that the modality type has been set, call the <code>getModalityType()</code> method after calling this method. 
+</td>
+</tr>
+</table>
+</p>
+<a name="eg">
+<h2>Examples That Use Modality API</h2>
+</a>
+The following table lists the
+example that uses modality in dialogs.
+<p>
+
+<table summary="list of examples that uses modality in dialogs">
+<tr>
+<th id="h201" align=left> Example</th>
+<th id="h202" align=left> Where Described</th>
+<th id="h203" align=left> Notes</th>
+</tr>
+
+<tr valign=top>
+<td headers="h201"> <a href="../examples/misc/index.html#ModalityDemo"><code>ModalityDemo</code></a>
+</td>
+<td headers="h202"> This section
+</td>
+<td headers="h203"> Creates dialog boxes of different modality types, demonstrates scope blocking for 
+those types.
+</td>
+</tr>
+</table>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=keybinding.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=printtable.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h301" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h301" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h302" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Use Key Bindings
+        <br><b>Next page:</b> How to Print Tables
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

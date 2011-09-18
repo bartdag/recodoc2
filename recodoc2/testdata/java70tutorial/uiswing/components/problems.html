@@ -1,0 +1,678 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Solving Common Component Problems (The Java&trade; Tutorials &gt;        
+            Creating a GUI With JFC/Swing &gt; Using Swing Components)
+</title>
+
+     <meta name="description" content="This Swing Java Tutorial describes developing graphical user interfaces (GUIs) for applications and applets using Swing components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java swing, java ui, java user interface, swing components, swing events, swing layout  " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Creating a GUI With JFC/Swing
+        <br><b>Lesson:</b> Using Swing Components
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Using Swing Components</a></div>
+<div class="linkAHEAD"><a href="toplevel.html">Using Top-Level Containers</a></div>
+<div class="linkAHEAD"><a href="jcomponent.html">The JComponent Class</a></div>
+<div class="linkAHEAD"><a href="text.html">Using Text Components</a></div>
+<div class="linkBHEAD"><a href="generaltext.html">Text Component Features</a></div>
+<div class="linkBHEAD"><a href="textapi.html">The Text Component API</a></div>
+<div class="linkAHEAD"><a href="componentlist.html">How to Use Various Components</a></div>
+<div class="linkBHEAD"><a href="applet.html">How to Make Applets</a></div>
+<div class="linkBHEAD"><a href="button.html">How to Use Buttons, Check Boxes, and Radio Buttons</a></div>
+<div class="linkBHEAD"><a href="buttongroup.html">How to Use the ButtonGroup Component</a></div>
+<div class="linkBHEAD"><a href="colorchooser.html">How to Use Color Choosers</a></div>
+<div class="linkBHEAD"><a href="combobox.html">How to Use Combo Boxes</a></div>
+<div class="linkBHEAD"><a href="dialog.html">How to Make Dialogs</a></div>
+<div class="linkBHEAD"><a href="editorpane.html">How to Use Editor Panes and Text Panes</a></div>
+<div class="linkBHEAD"><a href="filechooser.html">How to Use File Choosers</a></div>
+<div class="linkBHEAD"><a href="formattedtextfield.html">How to Use Formatted Text Fields</a></div>
+<div class="linkBHEAD"><a href="frame.html">How to Make Frames (Main Windows)</a></div>
+<div class="linkBHEAD"><a href="internalframe.html">How to Use Internal Frames</a></div>
+<div class="linkBHEAD"><a href="label.html">How to Use Labels</a></div>
+<div class="linkBHEAD"><a href="layeredpane.html">How to Use Layered Panes</a></div>
+<div class="linkBHEAD"><a href="list.html">How to Use Lists</a></div>
+<div class="linkBHEAD"><a href="menu.html">How to Use Menus</a></div>
+<div class="linkBHEAD"><a href="panel.html">How to Use Panels</a></div>
+<div class="linkBHEAD"><a href="passwordfield.html">How to Use Password Fields</a></div>
+<div class="linkBHEAD"><a href="progress.html">How to Use Progress Bars</a></div>
+<div class="linkBHEAD"><a href="rootpane.html">How to Use Root Panes</a></div>
+<div class="linkBHEAD"><a href="scrollpane.html">How to Use Scroll Panes</a></div>
+<div class="linkBHEAD"><a href="separator.html">How to Use Separators</a></div>
+<div class="linkBHEAD"><a href="slider.html">How to Use Sliders</a></div>
+<div class="linkBHEAD"><a href="spinner.html">How to Use Spinners</a></div>
+<div class="linkBHEAD"><a href="splitpane.html">How to Use Split Panes</a></div>
+<div class="linkBHEAD"><a href="tabbedpane.html">How to Use Tabbed Panes</a></div>
+<div class="linkBHEAD"><a href="table.html">How to Use Tables</a></div>
+<div class="linkBHEAD"><a href="textarea.html">How to Use Text Areas</a></div>
+<div class="linkBHEAD"><a href="textfield.html">How to Use Text Fields</a></div>
+<div class="linkBHEAD"><a href="toolbar.html">How to Use Tool Bars</a></div>
+<div class="linkBHEAD"><a href="tooltip.html">How to Use Tool Tips</a></div>
+<div class="linkBHEAD"><a href="tree.html">How to Use Trees</a></div>
+<div class="linkAHEAD"><a href="html.html">How to Use HTML in Swing Components</a></div>
+<div class="linkAHEAD"><a href="model.html">How to Use Models</a></div>
+<div class="linkAHEAD"><a href="icon.html">How to Use Icons</a></div>
+<div class="linkAHEAD"><a href="border.html">How to Use Borders</a></div>
+<div class="nolinkAHEAD">Solving Common Component Problems</div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Creating a GUI With JFC/Swing</a>
+                &gt;
+                <a href=index.html target=_top>Using Swing Components</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=border.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../QandE/questions-ch3.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Solving Common Component Problems</h1></div>
+            <div id=PageContent>
+This section discusses problems that you might encounter
+while using components.
+If you do not find your problem in this section,
+consult
+the following sections:
+
+<ul>
+<li>
+<a class="TutorialLink" target="_top" href="../misc/problems.html">Solving Common Problems Using Other Swing Features</a><li>
+<a class="TutorialLink" target="_top" href="../layout/problems.html">Solving Common Layout Problems</a><li>
+<a class="TutorialLink" target="_top" href="../events/problems.html">Solving Common Event-Handling Problems</a><li>
+<a class="TutorialLink" target="_top" href="../painting/problems.html">Solving Common Painting Problems</a></ul>
+
+<p>
+
+<strong>Problem:</strong> 
+I am having trouble implementing a model
+(or some other code that is similar to something 
+already in Java SE Platform, Standard Edition).
+<ul>
+<li> Look at the Java SE source code.
+It is distributed with the JDK,
+and it is a great resource for finding code examples
+of implementing models, firing events, and the like.
+</ul>
+
+<strong>Problem:</strong> 
+Whenever the text in my text field updates,
+the text field's size changes.
+<ul>
+<li> You should specify the preferred width
+     of the text field
+     by specifying the number of columns it should have room to display.
+     To do this, you can use either an <code>int</code> argument 
+     to the <code>JTextField</code> constructor
+     or the <code>setColumns</code> method.
+</ul>
+
+<strong>Problem:</strong> 
+Certain areas of the content pane look weird when they are repainted.
+<ul>
+<li> If you set the content pane,
+     make sure it is opaque.
+     You can do this by invoking
+     <code>setOpaque(true)</code> on your content pane.
+     Note that although <code>JPanel</code>s are opaque in most look and feels,
+     that is not true in the GTK+ look and feel.
+     See <a href="toplevel.html#contentpane">Adding Components 
+     to the Content Pane</a> for details.
+<li> If one or more of your components performs custom painting,
+     make sure you implemented it correctly.
+     See
+<a class="TutorialLink" target="_top" href="../painting/problems.html">Solving Common Painting Problems</a>     for help.
+<li> You might have a thread safety problem.
+     See the next entry.
+</ul>
+
+<p>
+<strong>Problem:</strong> 
+My program is exhibiting weird symptoms
+that sometimes seem to be related to timing.
+<ul>
+<li> Make sure your code is thread-safe. See
+<a class="TutorialLink" target="_top" href="../concurrency/index.html">Concurrency in Swing</a>     for details.
+</ul>
+
+
+
+<p>
+<strong>Problem:</strong>
+My modal dialog gets lost behind other windows.
+<ul>
+<li> If the dialog has a null parent component,
+     try setting it to a valid frame or component when you create it.
+<li> This bug was fixed in the 6.0 release.  For more information, see
+<a class="OutsideLink" target="_blank" href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4255200">4255200</a>.
+</ul>
+
+
+<p>
+<strong>Problem:</strong>
+The scroll bar policies do not seem to be working as advertised.
+<ul>
+<li> Some Swing releases contain bugs in the implementations for
+     the <code>VERTICAL_SCROLLBAR_AS_NEEDED</code>
+     and the <code>HORIZONTAL_SCROLLBAR_AS_NEEDED</code> policies.
+     If feasible for your project,
+     use the most recent release of Swing.
+<li> If the scroll pane's client can change size dynamically,
+     the program should set the client's preferred size
+     and then call <code>revalidate</code> on the client.
+<li> Make sure you specified the policy you intended
+     for the orientation you intended.
+</ul>
+
+<strong>Problem:</strong>
+My scroll pane has no scroll bars.
+<ul>
+<li> If you want a scroll bar to appear all the time,
+     specify either <code>VERTICAL_SCROLLBAR_ALWAYS</code> or
+     <code>HORIZONTAL_SCROLLBAR_ALWAYS</code> for the scroll bar
+     policy as appropriate.
+<li> If you want the scroll bars to appear as needed,
+     and you want to force the scroll bars to be needed
+     when the scroll pane is created, you have two choices:
+     either set the preferred size of scroll pane or its container,
+     or implement a scroll-savvy class and return a value
+     smaller than the component's standard preferred size
+     from the <code>getPreferredScrollableViewportSize</code> method.
+     Refer to
+     <a href="scrollpane.html#sizing">Sizing a Scroll Pane</a>
+     for information.
+</ul>
+
+<strong>Problem:</strong>
+The divider in my split pane does not move!
+<ul>
+<li> You need to set the minimum size of at least
+     one of the components in the split pane.
+     Refer to 
+     <a href="splitpane.html#divider">Positioning the Divider
+     and Restricting Its Range</a>
+     for information.
+</ul>
+
+<strong>Problem:</strong>
+The <code>setDividerLocation</code> method 
+of <code>JSplitPane</code>
+does not work.
+<ul>
+<li> The <code>setDividerLocation(double)</code> method
+     has no effect if the split pane has no size
+     (typically true if it is not onscreen yet).
+     You can either use <code>setDividerLocation(int)</code>
+     or specify the preferred sizes of
+     the split pane's contained components 
+     and the split pane's resize weight instead.
+     Refer to 
+     <a href="splitpane.html#divider">Positioning the Divider
+     and Restricting Its Range</a>
+     for information.
+</ul>
+
+<a name="nestedborders">
+<strong>Problem:</strong>
+The borders on nested split panes look too wide.
+<ul>
+<li> If you nest split panes,
+     the borders accumulate &mdash; the border of the inner split
+     panes display next to the border of the outer split pane
+     causing borders that look extra wide.
+     The problem is particularly noticeable
+     when nesting many split panes.
+     The workaround is to set the border to null on any split
+     pane that is placed within another split pane.
+     For information,
+     see bug #
+<a class="OutsideLink" target="_blank" href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4131528">4131528</a>     in the Bug Database at the Sun Developer Network (SDN).
+</ul>
+</a>
+
+<strong>Problem:</strong>
+The buttons in my tool bar are too big.
+<ul>
+<li> Try reducing the margin for the buttons.
+     For example:
+
+<div class="codeblock"><pre>
+button.setMargin(new Insets(0,0,0,0));
+</pre></div>
+</ul>
+
+<a name="layeredpane">
+<strong>Problem:</strong>
+</a>
+The components in my layered pane
+are not layered correctly.
+In fact, the layers seem to be inversed &mdash; the
+lower the depth the higher the component.
+<ul>
+<li> This can happen if you use an <code>int</code>
+     instead of an <code>Integer</code>
+     when adding components to a layered pane.
+     To see what happens,
+     in the  <code>LayeredPaneDemo</code> class, change 
+     <br />
+     <code>layeredPane.add(label, new Integer(i));</code> 
+     <br />
+     to 
+     <br />
+     <code>layeredPane.add(label, <strong>i</strong>);</code>.
+</li>
+
+</ul>
+
+<p>
+<strong>Problem:</strong>
+The method call 
+<code><em>colorChooser</em>.setPreviewPanel(null)</code> 
+does not remove the color chooser's preview panel as expected.
+<ul>
+<li> A <code>null</code> argument specifies the default preview panel.
+     To remove the preview panel, specify a standard panel with no
+     size, like this:
+     <code><em>colorChooser</em>.setPreviewPanel(new JPanel());</code>
+</ul>
+
+<p>
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=border.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=../QandE/questions-ch3.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> How to Use Borders
+        <br><b>Next page:</b> Questions and Exercises: Using Swing Components
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

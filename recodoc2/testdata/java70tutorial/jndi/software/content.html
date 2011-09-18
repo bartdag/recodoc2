@@ -1,0 +1,657 @@
+
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>LDAP Setup (The Java&trade; Tutorials &gt;        
+            Java Naming and Directory Interface(TM). &gt; Software Setup)
+</title>
+
+     <meta name="description" content="This JNDI Java tutorial describes Java Naming and Directory Interface (JNDI) technology, naming and directory operations, and LDAP" />
+     <meta name="keywords" content="java programming, learn java, java sample code, jndi, ldap, jndi service provider" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Java Naming and Directory Interface(TM).
+        <br><b>Lesson:</b> Software Setup
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Software Setup</a></div>
+<div class="nolinkAHEAD">LDAP Setup</div>
+<div class="linkAHEAD"><a href="package.html">Java Application Setup</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Java Naming and Directory Interface(TM).</a>
+                &gt;
+                <a href=index.html target=_top>Software Setup</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=package.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>LDAP Setup</h1></div>
+            <div id=PageContent>
+Below are the steps involved in building a Java Application
+that accesses an LDAP Directory Server.
+<ol>
+<li> Install the <a href=http://java.sun.com/javase/6/>Java Platform</a> Software
+<li> Get the Directory Server software as discussed 
+<a href=index.html#SERVER> earlier</a> 
+<li> Configure the Directory Server with the desired schema. For using
+     the examples in this tutorial a special
+     <a href=#SCHEMA>schema</a> needs to be configured on the server.
+<li> Populate the directory server with the desired content.
+     For using the examples in this tutorial a special
+     <a href=#LDIF>content</a> needs to be populated on the server.
+<li> Write a JNDI application to access the Directory, compile
+     and run it against the Directory Server to get your desired
+     results. The JNDI examples are covered in the next
+     <a href=../../jndi/ops/index.html>lesson</a>. 
+</ol>
+
+The <em>first two</em> steps are covered in the previous section.
+The rest of this lesson discusses steps <em>three</em> and part
+of step <em>four</em>. The step <em>five</em> that involves writing
+a JNDI application is covered in the next lesson that shows how to
+write JNDI applications to perform various operations on the directory.
+<p>
+Once you've set up the directory, or have
+directed your program to communicate with an existing directory,
+what sort of information can you expect to find there?
+<p>
+The directory can be viewed as consisting of name-to-object bindings. 
+That is, each object in the directory has a corresponding name.
+You can retrieve an object in the directory by looking up its name.
+
+<p>
+Also stored in the directory are attributes.
+An object in the directory, in addition to having a name,
+also has an optional set of attributes.
+You can ask the directory for an object's attributes, 
+as well as ask it to search for an object that
+has certain attributes.
+
+<a name=SCHEMA><h2>Step 3: Directory Schema</h2></a>
+
+A schema specifies the types of objects that a directory may contain.
+This tutorial populates the directory with entries, some of which
+require special schema definitions.
+To accommodate these entries,
+you must first either turn off schema-checking in the
+server or add the schema files that accompany this tutorial to the server.
+Both of these tasks are typically performed by the directory
+server's administrator.
+<p>
+This tutorial comes with two schema files that must be installed:
+<ul>
+<li><a href=../../jndi/software/config/java.schema>Schema for Java objects</a>
+<li><a href=../../jndi/software/config/corba.schema>Schema for CORBA objects</a>
+</ul>
+
+The format of these files is a formal description that
+possibly cannot be directly copied and pasted
+into server configuration files.
+Specifically, the attribute syntaxes are described in terms of
+<A HREF="http://ietf.org/rfc/rfc2252.txt">RFC 2252</A>.
+
+<p>
+Different directory servers have different ways of configuring
+their schema. This tutorial includes some tools for installing
+the Java and CORBA schemas on directory servers that permit
+their schemas to be modified via the LDAP.
+Following is a list of tasks the tools can perform.
+<p>
+<ol>
+<li><a href=../../jndi/software/config/CreateJavaSchema.java>Create Java Schema</a>
+<li><a href=../../jndi/software/config/CreateCorbaSchema.java>Create CORBA Schema</a>
+</ol>
+Follow the instructions in the accompanying 
+<a href=../../jndi/software/config/README-SCHEMA.TXT>README file</a>
+to run these programs.
+
+<hr>
+<strong>Note: Windows Active Directory.</strong>
+Active Directory manages its schema by using an internal format.
+To update the schema, you can use either
+the Active Directory Management Console snap-in, <tt>ADSIEdit</tt>,
+or the <tt>CreateJavaSchema</tt> utility, 
+following the instructions for Active Directory.
+<hr>
+
+<h2>Step 4: Providing Directory Content for This Tutorial</h2>
+
+<a name=LDIF>
+In the examples of this trail, the results shown reflect how
+the LDAP directory has been set up using the configuration file
+(<a href=../../jndi/software/config/tutorial.ldif>tutorial.ldif</a>) 
+that accompanies this tutorial.
+If you are using an existing server, or a server with
+a different setup, then you might see different results.
+Before you can load the configuration file
+(<a href=../../jndi/software/config/tutorial.ldif>tutorial.ldif</a>) into the 
+directory server,
+you must follow the instructions for updating the
+server's schema or you can use <em>ldapadd</em> or <em>ldapmodify</em> command
+if available on your UNIX system.
+<p>
+For example, using ldapmodify you could do (by plugging in appropriate values
+for the hostname, administrator DN (-D option), and the password):
+
+<div class="codeblock"><pre>
+ldapmodify -a -c -v -h hostname -p 389\
+        -D "cn=Administrator, cn=users, dc=xxx, dc=xxx"\
+        -w passwd -f tutorial.ldif
+</pre></div>
+<p>
+<hr>
+<strong>Installation Note: Access Control.</strong>
+Different directory servers handle access control differently.
+Some examples in this tutorial perform updates to the directory.
+Also, the part of the namespace where you have installed the tutorial
+might have read access restrictions.
+Therefore, you need to take server-specific actions to make the
+directory readable and/or updatable in order for those examples to work. 
+For the <a href="http://www.sun.com/">Sun Java Directory Server</a>
+add the <tt>aci</tt> entry suggested in the 
+<a href=../../jndi/software/config/sunds.aci.ldif><tt>sunds.aci.ldif</tt></a> file
+to the <tt>dn: o=JNDITutorial</tt> entry to make the entire directory 
+readable and updatable.
+Alternatively, you may change the examples so that they authenticate
+to the directory. Details of how to do this are described in the 
+<a target="_top" href="../../jndi/ldap/security.html">Adavanced Topics for LDAP users </a> <a target="_top" href="../../jndi/ldap/security.html"></a> lesson.
+<p>
+<strong>Installation Note: Namespace Setup.</strong>
+The entries in the 
+<a href=../../jndi/software/config/tutorial.ldif>tutorial.ldif</a>
+file use the distinguished name (DN) "o=JNDITutorial" for the root naming
+context. If you have not configured your directory server to have
+"o=JNDITutorial" as a root naming context, then your attempt
+to import <tt>tutorial.ldif</tt> will fail.
+The easiest way to get around this problem is to add the DN of
+an existing root naming context to each "dn:" line in the <tt>tutorial.ldif</tt>
+file.
+For example, if your server already has the root naming context
+"dc=imc,dc=org", then you should change the line
+<div class="codeblock"><pre>
+dn: o=JNDITutorial
+</pre></div>
+to
+<div class="codeblock"><pre>
+dn: o=JNDITutorial, dc=imc, dc=org
+</pre></div>
+Make this change for each line that begins with "dn:" in the file.
+Then, in all of the examples in this tutorial, wherever it uses
+"o=JNDITutorial", use "o=JNDITutorial,dc=imc,dc=org" instead.
+<p>
+<strong>Installation Note: File Format.</strong>
+Depending on the operating system platform that you 
+are using, you might need to edit <tt>tutorial.ldif</tt> so that it contains
+the correct newline characters for that platform.
+For example, if you find that <tt>tutorial.ldif</tt> contains
+Windows-style newline characters (CRLF) and you are importing this file
+into a directory server that is running
+on a Unix platform, then you need to edit the file and replace
+CRLF with LF. A symptom of this problem is that the directory server
+rejects all of the entries in <tt>tutorial.ldif</tt>.
+<p>
+<strong>Installation Note: Windows Active Directory.</strong>
+<ol>
+<li>
+The root naming context is not going to be "o=jnditutorial".
+It will be of the form "dc=x,dc=y,dc=z". You need to follow the
+previous <strong>Namespace Setup</strong> note.
+<li>
+Add the object classes and related attributes for the
+"inetOrgPerson" and "groupOfUniqueNames" object classes to the 
+Active Directory schema by using
+the Active Directory Management Console snap-in, <tt>ADSIEdit</tt>.
+"groupOfUniqueNames" is defined in 
+<A HREF="http://ietf.org/rfc/rfc2256.txt">RFC 2256</A>,
+"inetOrgPerson" in  
+<A HREF="http://ietf.org/rfc/rfc2798.txt">RFC 2798</A>
+<li>
+Some of hierarchical relationships used by the tutorial are not
+allowed by default in Active Directory. To enable these relationships, 
+add them by using
+the Active Directory Management Console snap-in, <tt>ADSIEdit</tt>.
+<div class="codeblock"><pre>
+objectclass: organizationalUnit
+possible superiors: domainDNS
+                    inetOrgPerson
+                    organizaton
+                    organizationalPerson
+                    organizationalUnit
+                    person
+                    top
+
+objectclass: groupOfUniqueNames
+possible superiors: top
+
+objectclass: inetOrgPerson
+possible superiors: container
+                    organizationalPerson
+                    person
+                    top
+</pre></div>
+<li>
+Delete one of the two "sn" attributes from the Mark Twain entry in 
+<tt>tutorial.ldif</tt>.
+Active Directory defines "sn" to be a single-valued attribute, 
+contrary to <A HREF="http://ietf.org/rfc/rfc2256.txt">RFC 2256</A>. 
+<li>
+Use the <tt>ldifde</tt> command-line utility to load the modified 
+<tt>tutorial.ldif</tt> file.
+BEGINCODE
+# ldifde -i -v -k -f tutorial.ldif
+</pre></div>
+<li>
+Most of the examples assume that the directory has been set up to permit
+unauthenticated read and update access. Your Active Directory setup
+might not allow you to do that. 
+See the <strong>Access Control</strong> installation note.
+<li>
+Reading an entry sometimes produces more attributes than are shown
+in the tutorial because Active Directory often returns some internal
+attributes.
+<li>
+Creation of entries might require the specification of additional
+Active Directory-specific attributes or the use of other object classes.
+</ol>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=index.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=package.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Software Setup
+        <br><b>Next page:</b> Java Application Setup
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

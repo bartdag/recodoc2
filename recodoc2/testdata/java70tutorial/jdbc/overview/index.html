@@ -1,0 +1,908 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Lesson: JDBC Introduction (The Java&trade; Tutorials &gt; JDBC(TM) Database Access)</title>
+     <meta name="description" content="This JDBC Java tutorial describes how to use JDBC API to create, insert into, update, and query tables. You will also learn how to use simple and prepared statements, stored procedures and perform transactions" />
+     <meta name="keywords" content="java programming, learn java, java sample code, jdbc, prepared statement, result set" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                    <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                        <br>
+                        <a href="javascript:toggleLeft()"
+                            id="ToggleLeft">Hide the TOC</a>
+                    </div> 
+                </div> </div> </div> </div> </div>
+
+    <div id=LeftBar>
+        <div id=Contents>
+            <div class="nolinkLESSON">JDBC Introduction</div>
+<div class="linkAHEAD"><a href="architecture.html">JDBC Architecture</a></div>
+<div class="linkAHEAD"><a href="database.html">A Relational Database Overview</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+        <div class=PrintHeaders>
+            <b>Trail:</b> JDBC(TM) Database Access
+        </div>
+        <div id=BreadCrumbs>
+            <a href=../../index.html target=_top>Home Page</a>
+        &gt;
+            <a href=../index.html target=_top>JDBC(TM) Database Access</a>
+        </div>
+        <div class=NavBit>
+                <a target=_top href=../index.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=architecture.html>Next&nbsp;&raquo;</a>
+        </div>
+        <div id=PageTitle><h1>Lesson: JDBC Introduction</h1></div>
+        <div id=PageContent>
+<P>The JDBC API is a Java API that can access any kind of tabular data, especially data stored in a <a href="#relational">Relational Database. </a> </p>
+
+<p><a name="1007905"> </a>
+JDBC helps you to write java applications that manage these three programming activities:
+</p>
+
+<ol>
+
+<li><a name="1001514"> </a>Connect to a data source, like a database</li>
+
+<li><a name="1001493"> </a>Send queries and update statements to the database</li>
+
+<li><a name="1001498"> </a>Retrieve and process the results received from the database in answer to your query</li>
+
+</ol>
+
+<p>The following simple code fragment gives a simple example of these three steps:</p>
+
+
+<div class="codeblock"><pre>
+
+public void connectToAndQueryDatabase(String username, String password) {
+
+  Connection con = DriverManager.getConnection
+    ("jdbc:myDriver:myDatabase", username, password);
+
+  Statement stmt = con.createStatement();
+  ResultSet rs = stmt.executeQuery("SELECT a, b, c FROM Table1");
+  while (rs.next()) {
+    int x = rs.getInt("a");
+    String s = rs.getString("b");
+    float f = rs.getFloat("c");
+  }
+  // ...
+</pre></div>
+
+<p>This short code fragment instantiates a <code>DriverManager</code> object to connect to a database driver and log into the database, instantiates a <code>Statement</code> object that carries your SQL language query to the database; instantiates a <code>ResultSet</code> object that retrieves the results of your query, and executes a simple <code>while</code> loop, which retrieves and displays those results. It's that simple.</p>
+
+<h2>JDBC Product Components</h2>
+
+<P>JDBC includes four components:
+
+<ol><li><p><b>The JDBC API</b>&nbsp;&mdash;&nbsp;
+
+The JDBC&trade; API provides programmatic access to relational data from the Java&trade;
+programming language. Using the JDBC API, applications can execute SQL statements, retrieve results, and propagate
+changes back to an underlying data source. The JDBC API can also
+interact with multiple data sources in a distributed, heterogeneous environment.</p>
+
+<p>The JDBC API is part of the Java platform, which includes the <i>Java&trade; Standard
+Edition</i> (Java&trade; SE ) and the <i>Java&trade; Enterprise Edition</i> (Java&trade; EE). The JDBC 4.0 API
+is divided into two packages: <code>java.sql</code> and <code>javax.sql. </code> Both packages are
+included in the Java SE and Java EE platforms.</p>
+
+</li>
+
+<li><p><b>JDBC Driver Manager</b>&nbsp;&mdash;&nbsp;
+
+The JDBC <code>DriverManager</code> class defines objects which can connect Java applications to a JDBC driver.  <Code>DriverManager</code> has traditionally been the backbone of the JDBC architecture. It is quite small and simple.</p>
+
+<p>The Standard Extension packages<code> javax.naming </code>and<code> javax.sql </code>let you  use a <code>DataSource</code> object registered with a <i>Java Naming and Directory Interface</i>&trade; (JNDI) naming service to establish a connection with a data source. You can use either connecting mechanism, but using a <code>DataSource</code> object is recommended whenever possible.</p>
+
+
+</li>
+<li><p><b>JDBC Test Suite</b>&nbsp;&mdash;&nbsp;
+
+The JDBC driver test suite helps you to determine that JDBC drivers will run your program. These tests are not comprehensive or exhaustive, but they do exercise many of the important features in the JDBC API.</p>
+</li>
+
+<li><p><b>JDBC-ODBC Bridge</b>&nbsp;&mdash;&nbsp;
+
+The Java Software bridge provides JDBC access via ODBC drivers. Note that you need to load ODBC binary code onto each client machine that uses this driver. As a result, the ODBC driver is most appropriate on a corporate network where client installations are not a major problem, or for application server code written in Java in a three-tier architecture.</p>
+
+</li>
+
+</ol>
+
+<p>This Trail uses the first two of these these four JDBC components to connect to a database and then build a java program that uses SQL commands to communicate with a test Relational Database. The last two components are used in specialized environments to test web applications, or to communicate with ODBC-aware DBMSs. </p>
+
+
+
+
+<h2>JDBC Architecture</h2>
+
+
+<a name="teir"> </a>
+<h3>Two-tier and Three-tier Processing Models</h3>
+
+<P>The JDBC API supports both two-tier and three-tier processing models for database access. </p>
+
+
+<a name="fig1"> </a>
+<center><p><b><i>Figure 1:  Two-tier Architecture for Data Access. </i></b></p></center>
+
+
+<a name="1012830"></a>
+<center><img alt="The DBMS-proprietary protocol provides two-way communication between the client machine and the database server" src="intro.anc2.gif"></center>
+
+
+<p>
+
+In the two-tier model, a Java applet or application talks directly to the data source. This requires a JDBC driver that can communicate with the particular data source being accessed. A user's commands are delivered to the database or other data source, and the results of those statements are sent back to the user. The data source may be located on another machine to which the user is connected via a network. This is referred to as a client/server configuration, with the user's machine as the client, and the machine housing the data source as the server. The network can be an intranet, which, for example, connects employees within a corporation, or it can be the Internet.
+</p>
+
+<p><a name="1018848"> </a>
+In the three-tier model, commands are sent to a "middle tier" of services, which then sends the commands to the data source. The data source processes the commands and sends the results back to the middle tier, which then sends them to the user. MIS directors find the three-tier model very attractive because the middle tier makes it possible to maintain control over access and the kinds of updates that can be made to corporate data. Another advantage is that it simplifies the deployment of applications. Finally, in many cases, the three-tier architecture can provide performance advantages.</p>
+
+
+
+
+
+<a name="fig2"> </a>
+<center><p><b><i>Figure 2:  Three-tier Architecture for Data Access. </i></b></p></center>
+
+
+<a name="1011843"></a>
+<center><img alt="The DBMS-proprietary protocol provides two-way communication between the database server and the server machine. HTTP, RMI, CORBA or other calls provide two way communication between the server machine and the client machine" src="intro.anc1.gif"></center>
+
+
+
+
+<p><a name="1018844"> </a>
+Until recently, the middle tier has often been written in languages such as C or C++, which offer fast performance. However, with the introduction of optimizing compilers that translate Java bytecode into efficient machine-specific code and technologies such as Enterprise JavaBeans&trade;, the Java platform is fast becoming the standard platform for middle-tier development. This is a big plus, making it possible to take advantage of Java's robustness, multithreading, and security features.
+</p><p><a name="1011844"> </a>
+With enterprises increasingly using the Java programming language for writing server code, the JDBC API is being used more and more in the middle tier of a three-tier architecture. Some of the features that make JDBC a server technology are its support for connection pooling, distributed transactions, and disconnected rowsets. The JDBC API is also what allows access to a data source from a Java middle tier.
+</p>
+
+<a name="relational"> </a>
+<h2>A Relational Database Overview</h2>
+
+<p>
+A database is a means of storing information in such a way that information can be retrieved from it. In simplest terms, a relational database is one that presents information in tables with rows and columns. A table is referred to as a relation in the sense that it is a collection of objects of the same type (rows). Data in a table can be related according to common keys or concepts, and the ability to retrieve related data from a table is the basis for the term relational database. A Database Management System (DBMS) handles the way data is stored, maintained, and retrieved. In the case of a relational database, a Relational Database Management System (RDBMS) performs these tasks. DBMS as used in this book is a general term that includes RDBMS.
+</p>
+
+<a name="integrity"> </a>
+<h3>
+Integrity Rules</h3>
+
+<p>Relational tables follow certain integrity rules to ensure that the data they contain stay accurate and are always accessible. First, the rows in a relational table should all be distinct. If there are duplicate rows, there can be problems resolving which of two possible selections is the correct one. For most DBMSs, the user can specify that duplicate rows are not allowed, and if that is done, the DBMS will prevent the addition of any rows that duplicate an existing row.
+</p>
+
+<p>A second integrity rule of the traditional relational model is that column values must not be repeating groups or arrays. A third aspect of data integrity involves the concept of a null value. A database takes care of situations where data may not be available by using a null value to indicate that a value is missing. It does not equate to a blank or zero. A blank is considered equal to another blank, a zero is equal to another zero, but two null values are not considered equal.
+</p>
+
+<p>When each row in a table is different, it is possible to use one or more columns to identify a particular row. This unique column or group of columns is called a primary key. Any column that is part of a primary key cannot be null; if it were, the primary key containing it would no longer be a complete identifier. This rule is referred to as entity integrity.
+</p>
+
+<p>Table 1.2 illustrates some of these relational database concepts. It has five columns and six rows, with each row representing a different employee.
+</p>
+
+<a name="employees"> </a>
+<p class="center">Table 1.2: Employees</p>
+
+
+<table border="1" summary="Employees, sample database table">
+
+<tr>
+  <th id="h1">Employee_Number</th>
+  <th id="h2">First_name </th>
+  <th id="h3">Last_Name </th>
+  <th id="h4">Date_of_Birth </th>
+  <th id="h5">Car_Number</th>
+</tr>
+
+<tr>
+  <td headers="h1">10001 </td>
+  <td headers="h2">Axel </td>
+  <td headers="h3">Washington </td>
+  <td headers="h4">28-Aug-43 </td>
+  <td headers="h5">5</td>
+</tr>
+
+<tr>
+  <td headers="h1">10083 </td>
+  <td headers="h2">Arvid </td>
+  <td headers="h3">Sharma </td>
+  <td headers="h4">24-Nov-54 </td>
+  <td headers="h5">null</td>
+</tr>
+
+<tr>
+  <td headers="h1">10120 </td>
+  <td headers="h2">Jonas </td>
+  <td headers="h3">Ginsberg </td>
+  <td headers="h4">01-Jan-69 </td>
+  <td headers="h5">null</td>
+</tr>
+
+<tr>
+  <td headers="h1">10005 </td>
+  <td headers="h2">Florence </td>
+  <td headers="h3">Wojokowski </td>
+  <td headers="h4">04-Jul-71 </td>
+  <td headers="h5">12</td>
+</tr>
+
+<tr>
+  <td headers="h1">10099 </td>
+  <td headers="h2">Sean </td>
+  <td headers="h3">Washington </td>
+  <td headers="h4">21-Sep-66 </td>
+  <td headers="h5">null</td>
+</tr>
+
+<tr>
+  <td headers="h1">10035 </td>
+  <td headers="h2">Elizabeth </td>
+  <td headers="h3">Yamaguchi </td>
+  <td headers="h4">24-Dec-59 </td>
+  <td headers="h5">null</td>
+</tr>
+
+
+</table>
+
+
+<p>The primary key for this table would generally be the employee number because each one is guaranteed to be different. (A number is also more efficient than a string for making comparisons.) It would also be possible to use First_Name and Last_Name because the combination of the two also identifies just one row in our sample database. Using the last name alone would not work because there are two employees with the last name of "Washington." In this particular case the first names are all different, so one could conceivably use that column as a primary key, but it is best to avoid using a column where duplicates could occur. If Elizabeth Taylor gets a job at this company and the primary key is First_Name, the RDBMS will not allow her name to be added (if it has been specified that no duplicates are permitted). Because there is already an Elizabeth in the table, adding a second one would make the primary key useless as a way of identifying just one row. Note that although using First_Name and Last_Name is a unique composite key for this example, it might not be unique in a larger database. Note also that Table 1.2 assumes that there can be only one car per employee.
+</p>
+
+<a name="select"> </a>
+<h3><code>SELECT</code> Statements</h3>
+
+<p>SQL is a language designed to be used with relational databases. There is a set of basic SQL commands that is considered standard and is used by all RDBMSs. For example, all RDBMSs use the SELECT statement.
+</p>
+
+<p>A SELECT statement, also called a query, is used to get information from a table. It specifies one or more column headings, one or more tables from which to select, and some criteria for selection. The RDBMS returns rows of the column entries that satisfy the stated requirements. A SELECT statement such as the following will fetch the first and last names of employees who have company cars:
+</p>
+
+<div class="codeblock"><pre>
+SELECT First_Name, Last_Name
+FROM Employees
+WHERE Car_Number IS NOT NULL
+</pre></div>
+
+<p>
+The result set (the set of rows that satisfy the requirement of not having null in the Car_Number column) follows. The first name and last name are printed for each row that satisfies the requirement because the SELECT statement (the first line) specifies the columns First_Name and Last_Name. The FROM clause (the second line) gives the table from which the columns will be selected.
+</p>
+
+<div class="codeblock"><pre>
+FIRST_NAME                LAST_NAME
+----------                -----------
+Axel                      Washington
+Florence                  Wojokowski
+</pre></div>
+
+<p>
+The following code produces a result set that includes the whole table because it asks for all of the columns in the table Employees with no restrictions (no <code>WHERE</code> clause). Note that <code>SELECT *</code> means "SELECT all columns."
+</p>
+
+<div class="codeblock"><pre>
+SELECT *
+FROM Employees
+</pre></div>
+
+<a name="where"> </a>
+<h3>
+<code>WHERE</code> Clauses </h3>
+
+<p>The <code>WHERE</code> clause in a <code>SELECT</code> statement provides the criteria for selecting values. For example, in the following code fragment, values will be selected only if they occur in a row in which the column Last_Name begins with the string 'Washington'.
+</p>
+
+<div class="codeblock"><pre>
+SELECT First_Name, Last_Name
+FROM Employees
+WHERE Last_Name LIKE 'Washington%'
+</pre></div>
+
+<p>
+The keyword <code>LIKE</code> is used to compare strings, and it offers the feature that patterns containing wildcards can be used. For example, in the code fragment above, there is a percent sign (%) at the end of 'Washington', which signifies that any value containing the string 'Washington' plus zero or more additional characters will satisfy this selection criterion. So 'Washington' or 'Washingtonian' would be matches, but 'Washing' would not be. The other wildcard used in <code>LIKE</code> clauses is an underbar (_), which stands for any one character. For example,
+</p>
+
+<div class="codeblock"><pre>
+WHERE Last_Name LIKE 'Ba_man'
+</pre></div>
+
+<p>
+would match 'Batman', 'Barman', 'Badman', 'Balman', 'Bagman', 'Bamman', and so on.
+</p>
+
+<p>The code fragment below has a <code>WHERE</code> clause that uses the equal sign (=) to compare numbers. It selects the first and last name of the employee who is assigned car 12.
+</p>
+
+<div class="codeblock"><pre>
+SELECT First_Name, Last_Name
+FROM Employees
+WHERE Car_Number = 12
+</pre></div>
+
+<p>
+The next code fragment selects the first and last names of employees whose employee number is greater than 10005:
+</p>
+
+<div class="codeblock"><pre>
+SELECT First_Name, Last_Name
+FROM Employees
+WHERE Employee_Number > 10005
+</pre></div>
+
+<p>
+<code>WHERE</code> clauses can get rather elaborate, with multiple conditions and, in some DBMSs, nested conditions. This overview will not cover complicated <code>WHERE</code> clauses, but the following code fragment has a <code>WHERE</code> clause with two conditions; this query selects the first and last names of employees whose employee number is less than 10100 and who do not have a company car.
+</p>
+
+<div class="codeblock"><pre>
+SELECT First_Name, Last_Name
+FROM Employees
+WHERE Employee_Number &lt; 10100 and Car_Number IS NULL
+</pre></div>
+
+<p>
+A special type of <code>WHERE</code> clause involves a join, which is explained in the next section.
+</p>
+
+<a name="joins"> </a>
+<h3>
+Joins </h3>
+
+<p>A distinguishing feature of relational databases is that it is possible to get data from more than one table in what is called a join. Suppose that after retrieving the names of employees who have company cars, one wanted to find out who has which car, including the make, model, and year of car. This information is stored in another table, Cars, shown in Table 1.3.
+</p>
+
+<a name="cars"> </a>
+<p class="center">Table 1.3. Cars</p>
+
+<table border="1" summary="Cars, sample database table">
+
+<tr>
+  <th id="h101">Car Number</th>
+  <th id="h102">Make</th>
+  <th id="h103">Model</th>
+  <th id="h104">Year</th>
+</tr>
+
+<tr>
+  <td headers="h101">5</td>
+  <td headers="h102">Honda </td>
+  <td headers="h103">Civic DX </td>
+  <td headers="h104">1996 </td>
+</tr>
+
+<tr>
+  <td headers="h101">12</td>
+  <td headers="h102">Toyota </td>
+  <td headers="h103">Corolla </td>
+  <td headers="h104">1999 </td>
+</tr>
+
+</table>
+
+
+
+<p>There must be one column that appears in both tables in order to relate them to each other. This column, which must be the primary key in one table, is called the foreign key in the other table. In this case, the column that appears in two tables is Car_Number, which is the primary key for the table Cars and the foreign key in the table Employees. If the 1996 Honda Civic were wrecked and deleted from the Cars table, then Car_Number 5 would also have to be removed from the Employees table in order to maintain what is called referential integrity. Otherwise, the foreign key column (Car_Number) in Employees would contain an entry that did not refer to anything in Cars. A foreign key must either be null or equal to an existing primary key value of the table to which it refers. This is different from a primary key, which may not be null. There are several null values in the Car_Number column in the table Employees because it is possible for an employee not to have a company car.</p>
+
+<p>The following code asks for the first and last names of employees who have company cars and for the make, model, and year of those cars. Note that the <code>FROM</code> clause lists both Employees and Cars because the requested data is contained in both tables. Using the table name and a dot (.) before the column name indicates which table contains the column.</p>
+
+
+<div class="codeblock"><pre>
+SELECT Employees.First_Name, Employees.Last_Name, Cars.Make,
+           Cars.Model, Cars.Year
+FROM Employees, Cars
+WHERE Employees.Car_Number = Cars.Car_Number
+</pre></div>
+
+<p>
+This returns a result set that will look similar to the following:
+</p>
+
+<div class="codeblock"><pre>
+FIRST_NAME   LAST_NAME      MAKE        MODEL     YEAR
+-----------  ------------   --------   ---------  -------
+Axel         Washington     Honda       CivicDX   1996
+Florence     Wojokowski     Toyota      Corolla   1999
+
+</pre></div>
+
+<a name="commands"> </a>
+<h3>
+Common SQL Commands</h3>
+
+<p>SQL commands are divided into categories, the two main ones being Data Manipulation Language (DML) commands and Data Definition Language (DDL) commands. DML commands deal with data, either retrieving it or modifying it to keep it up-to-date. DDL commands create or change tables and other database objects such as views and indexes.</p>
+
+<p>A list of the more common DML commands follows:</p>
+
+<ul>
+
+  <li><p>   <code>SELECT&nbsp;&mdash;&nbsp;</code> used to query and display data from a database. The <code>SELECT</code> statement specifies which columns to include in the result set. The vast majority of the SQL commands used in applications are <code>SELECT</code> statements.</p></li>
+
+
+<li><p>   <code>INSERT&nbsp;&mdash;&nbsp;</code> adds new rows to a table. <code>INSERT</code> is used to populate a newly created table or to add a new row (or rows) to an already-existing table.</p></li>
+
+
+<li><p>   <code>DELETE&nbsp;&mdash;&nbsp;</code> removes a specified row or set of rows from a table</p></li>
+
+<li><p><code>UPDATE&nbsp;&mdash;&nbsp;</code> changes an existing value in a column or group of columns in a table</p></li>
+
+</ul>
+
+<p>The more common DDL commands follow:</p>
+
+<ul>
+
+<li><p><code>CREATE TABLE&nbsp;&mdash;&nbsp;</code>
+creates a table with the column names the user provides.
+The user also needs to specify a type for the data in each column.
+Data types vary from one RDBMS to another, so a user might need
+to use metadata to establish the data types used by a particular database.
+<code>CREATE TABLE</code> is normally used less often
+than the data manipulation commands because a table is created only once,
+whereas adding or deleting rows or changing individual values generally
+occurs more frequently.</p>
+</li>
+
+<li><p><code>DROP TABLE&nbsp;&mdash;&nbsp;</code> deletes all rows and removes the table definition from the database. A JDBC API implementation is required to support the DROP TABLE command as specified by SQL92, Transitional Level. However, support for the  <code>CASCADE</code> and  <code>RESTRICT</code> options of  <code>DROP TABLE</code> is optional. In addition, the behavior of  <code>DROP TABLE</code> is implementation-defined when there are views or integrity constraints defined that reference the table being dropped.</p></li>
+
+<li><p><code>ALTER TABLE&nbsp;&mdash;&nbsp;</code> adds or removes a column from a table. It also adds or drops table constraints and alters column attributes</p></li>
+
+</ul>
+
+<a name="result"> </a>
+<h3>Result Sets and Cursors</h3>
+
+<p>The rows that satisfy the conditions of a query are called the result set. The number of rows returned in a result set can be zero, one, or many. A user can access the data in a result set one row at a time, and a cursor provides the means to do that. A cursor can be thought of as a pointer into a file that contains the rows of the result set, and that pointer has the ability to keep track of which row is currently being accessed. A cursor allows a user to process each row of a result set from top to bottom and consequently may be used for iterative processing. Most DBMSs create a cursor automatically when a result set is generated.</p>
+
+<p>Earlier JDBC API versions added new capabilities for a result set's cursor, allowing it to move both forward and backward and also allowing it to move to a specified row or to a row whose position is relative to another row.</p>
+
+<a name="transactions"> </a>
+<h3>
+Transactions</h3>
+
+<p>When one user is accessing data in a database, another user may be accessing the same data at the same time. If, for instance, the first user is updating some columns in a table at the same time the second user is selecting columns from that same table, it is possible for the second user to get partly old data and partly updated data. For this reason, DBMSs use transactions to maintain data in a consistent state (data consistency) while allowing more than one user to access a database at the same time (data concurrency).
+</p>
+
+<p>A transaction is a set of one or more SQL statements that make up a logical unit of work. A transaction ends with either a commit or a rollback, depending on whether there are any problems with data consistency or data concurrency. The commit statement makes permanent the changes resulting from the SQL statements in the transaction, and the rollback statement undoes all changes resulting from the SQL statements in the transaction.
+</p>
+
+<p>A lock is a mechanism that prohibits two transactions from manipulating the same data at the same time. For example, a table lock prevents a table from being dropped if there is an uncommitted transaction on that table. In some DBMSs, a table lock also locks all of the rows in a table. A row lock prevents two transactions from modifying the same row, or it prevents one transaction from selecting a row while another transaction is still modifying it.
+</p>
+
+<a name="stored"> </a>
+<h3>
+Stored Procedures </h3>
+
+
+
+<p>A stored procedure is a group of SQL statements that can be called by name. In other words, it is executable code, a mini-program, that performs a particular task that can be invoked the same way one can call a function or method. Traditionally, stored procedures have been written in a DBMS-specific programming language. The latest generation of database products allows stored procedures to be written using the Java programming language and the JDBC API. Stored procedures written in the Java programming language are bytecode portable between DBMSs. Once a stored procedure is written, it can be used and reused because a DBMS that supports stored procedures will, as its name implies, store it in the database.
+</p>
+
+<p>The following code is an example of how to create a very simple stored procedure using the Java programming language. Note that the stored procedure is just a static Java method that contains normal JDBC code. It accepts two input parameters and uses them to change an employee's car number.
+</p>
+
+
+<p>Do not worry if you do not understand the example at this point. The code example below is presented only to illustrate what a stored procedure looks like. You will learn how to write the code in this example in the tutorials that follow.
+</p>
+
+<div class="codeblock"><pre>
+import java.sql.*;
+
+public class UpdateCar {
+
+    public static void UpdateCarNum(int carNo, int empNo)
+                                              throws SQLException {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+
+        try {
+          con = DriverManager.getConnection("jdbc:default:connection");
+
+            pstmt = con.prepareStatement(
+                        "UPDATE EMPLOYEES SET CAR_NUMBER = ? " +
+                        "WHERE EMPLOYEE_NUMBER = ?");
+            pstmt.setInt(1, carNo);
+            pstmt.setInt(2, empNo);
+            pstmt.executeUpdate();
+        }
+        finally {
+            if (pstmt != null) pstmt.close();
+        }
+    }
+}
+</pre></div>
+
+<a name="metadata"> </a>
+<h3>Metadata</h3>
+
+<p>Databases store user data, and they also store information about the database itself. Most DBMSs have a set of system tables, which list tables in the database, column names in each table, primary keys, foreign keys, stored procedures, and so forth. Each DBMS has its own functions for getting information about table layouts and database features. JDBC provides the interface <code>DatabaseMetaData</code>, which a driver writer must implement so that its methods return information about the driver and/or DBMS for which the driver is written. For example, a large number of methods return whether or not the driver supports a particular functionality. This interface gives users and tools a standardized way to get metadata.
+</p>
+
+<p>In general, developers writing tools and drivers are the ones most likely to be concerned with metadata.
+</p>
+
+        </div>
+    <div class=NavBit>
+        <a href=../index.html>&laquo; Previous</a>
+        &bull;
+        <a href=../TOC.html>Trail</a>
+        &bull;
+        <a href=architecture.html>Next &raquo;</a>
+    </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h201" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h201" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h202" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Table of Contents
+        <br><b>Next page:</b> JDBC Architecture
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

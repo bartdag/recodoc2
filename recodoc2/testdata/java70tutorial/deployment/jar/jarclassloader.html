@@ -1,0 +1,603 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>The JarClassLoader Class (The Java&trade; Tutorials &gt;        
+            Deployment &gt; Packaging Programs in JAR Files)
+</title>
+
+     <meta name="description" content="This deployment Java tutorial describes development and deployment of applets, Java Web Start applications, rich Internet applications, and JAR related tools" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java applet, java web start, rich internet application, RIA, jar, plugin, plug-in" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Deployment
+        <br><b>Lesson:</b> Packaging Programs in JAR Files
+        <br><b>Section:</b> Using JAR-related APIs
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Packaging Programs in JAR Files</a></div>
+<div class="linkAHEAD"><a href="basicsindex.html">Using JAR Files: The Basics</a></div>
+<div class="linkBHEAD"><a href="build.html">Creating a JAR File</a></div>
+<div class="linkBHEAD"><a href="view.html">Viewing the Contents of a JAR File</a></div>
+<div class="linkBHEAD"><a href="unpack.html">Extracting the Contents of a JAR File</a></div>
+<div class="linkBHEAD"><a href="update.html">Updating a JAR File</a></div>
+<div class="linkBHEAD"><a href="run.html">Running JAR-Packaged Software</a></div>
+<div class="linkAHEAD"><a href="manifestindex.html">Working with Manifest Files: The Basics</a></div>
+<div class="linkBHEAD"><a href="defman.html">Understanding the Default Manifest</a></div>
+<div class="linkBHEAD"><a href="modman.html">Modifying a Manifest File</a></div>
+<div class="linkBHEAD"><a href="appman.html">Setting an Application's Entry Point</a></div>
+<div class="linkBHEAD"><a href="downman.html">Adding Classes to the JAR File's Classpath</a></div>
+<div class="linkBHEAD"><a href="packageman.html">Setting Package Version Information</a></div>
+<div class="linkBHEAD"><a href="sealman.html">Sealing Packages within a JAR File</a></div>
+<div class="linkAHEAD"><a href="signindex.html">Signing and Verifying JAR Files</a></div>
+<div class="linkBHEAD"><a href="intro.html">Understanding Signing and Verification</a></div>
+<div class="linkBHEAD"><a href="signing.html">Signing JAR Files</a></div>
+<div class="linkBHEAD"><a href="verify.html">Verifying Signed JAR Files</a></div>
+<div class="linkAHEAD"><a href="apiindex.html">Using JAR-related APIs</a></div>
+<div class="nolinkBHEAD">The JarClassLoader Class</div>
+<div class="linkBHEAD"><a href="jarrunner.html">The JarRunner Class</a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Deployment</a>
+                &gt;
+                <a href=index.html target=_top>Packaging Programs in JAR Files</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=apiindex.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=jarrunner.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>The JarClassLoader Class</h1></div>
+            <div id=PageContent>
+The <tt>JarClassLoader</tt> class extends <tt>java.net.URLClassLoader</tt>. As its name implies, <tt>URLClassLoader</tt> is designed to be 
+used for loading classes and resources that are accessed by searching a 
+set of URLs.  The URLs can refer either to directories or to JAR files. 
+<p>
+In addition to subclassing <tt>URLClassLoader</tt>, <tt>JarClassLoader</tt> 
+also makes use of features in two other new JAR-related APIs, the 
+<tt>java.util.jar</tt> package and the <tt>java.net.JarURLConnection</tt> 
+class. In this section, we'll look in detail at the constructor and two 
+methods of <tt>JarClassLoader</tt>.
+</p>
+<h2>The JarClassLoader Constructor</h2>
+The constructor takes an instance of <tt>java.net.URL</tt> as an 
+argument. The URL passed to this constructor will be used elsewhere in 
+<tt>JarClassLoader</tt> to find the JAR file from which classes are to 
+be loaded.
+<div class="codeblock"><pre>
+public JarClassLoader(URL url) {
+    super(new URL[] { url });
+    this.url = url;
+}
+</pre></div>
+The <tt>URL</tt> object is passed to the constructor of the 
+superclass, <tt>URLClassLoader</tt>, which takes a <tt>URL[]</tt> array, 
+rather than a single <tt>URL</tt> instance, as an argument. 
+
+<h2>The getMainClassName Method</h2>
+Once a <tt>JarClassLoader</tt> object is constructed with the URL of 
+a JAR-bundled application, it's going to need a way to determine which 
+class in the JAR file is the application's entry point.  That's the 
+job of the <tt>getMainClassName</tt> method:
+<div class="codeblock"><pre>
+public String getMainClassName() throws IOException {
+    URL u = new URL("jar", "", url + "!/");
+    JarURLConnection uc = (JarURLConnection)u.openConnection();
+    Attributes attr = uc.getMainAttributes();
+    return attr != null
+                   ? attr.getValue(Attributes.Name.MAIN_CLASS)
+                   : null;
+}
+</pre></div>
+You may recall from a <a href="run.html#1.2">previous lesson</a> 
+that a JAR-bundled application's entry point is specified by the 
+<tt>Main-Class</tt> header of the JAR file's manifest. To understand how 
+<tt>getMainClassName</tt> accesses the <tt>Main-Class</tt> header value, 
+let's look at the method in detail, paying special attention to the 
+new JAR-handling features that it uses:
+
+<h2>The JarURLConnection class and JAR URLs</h2>
+The <tt>getMainClassName</tt> method uses the JAR URL format specified 
+by the <tt>java.net.JarURLConnection</tt> class. The syntax for the URL 
+of a JAR file is as in this example:
+<div class="codeblock"><pre>
+jar:http://www.example.com/jarfile.jar!/
+</pre></div>
+The terminating <tt>!/</tt> separator indicates that the URL refers to 
+an entire JAR file.  Anything following the separator refers to 
+specific JAR-file contents, as in this example: 
+<div class="codeblock"><pre>
+jar:http://www.example.com/jarfile.jar!/mypackage/myclass.class</tt>
+</pre></div>
+<p>
+The first line in the <tt>getMainClassName</tt> method is:
+<div class="codeblock"><pre>
+URL u = new URL("jar", "", url + "!/");
+</pre></div>
+This statement constructs a new <tt>URL</tt> object representing a JAR URL, 
+appending the <tt>!/</tt> separator to the URL that was used in creating the 
+<tt>JarClassLoader</tt> instance.
+</p>
+<h2>The java.net.JarURLConnection class</h2>
+This class represents a communications 
+link between an application and a JAR file. It has methods for accessing 
+the JAR file's manifest. The second line 
+of <tt>getMainClassName</tt> is:
+<div class="codeblock"><pre>
+JarURLConnection uc = (JarURLConnection)u.openConnection();
+</pre></div>
+In this statement, <tt>URL</tt> instance created in the first line opens a 
+<tt>URLConnection</tt>. The <tt>URLConnection</tt> instance is then cast 
+to <tt>JarURLConnection</tt> so it can take advantage of 
+<tt>JarURLConnection</tt>'s JAR-handling features.
+
+
+<h2>Fetching Manifest Attributes: java.util.jar.Attributes</h2>
+With a <tt>JarURLConnection</tt> open to a JAR file, you can access 
+the header information in the JAR file's manifest by using 
+the <tt>getMainAttributes</tt> method of <tt>JarURLConnection</tt>. This 
+method returns an instance of <tt>java.util.jar.Attributes</tt>, 
+a class that maps header names in JAR-file manifests 
+with their associated string values. The third line in 
+<tt>getMainClassName</tt> creates an <tt>Attributes</tt> object:
+<div class="codeblock"><pre>
+Attributes attr = uc.getMainAttributes();
+</pre></div>
+<p>
+To get the value of the manifest's <tt>Main-Class</tt> header, 
+the fourth line of <tt>getMainClassName</tt> invokes the 
+<tt>Attributes.getValue</tt> method:
+<div class="codeblock"><pre>
+return attr != null
+               ? attr.getValue(Attributes.Name.MAIN_CLASS)
+               : null;
+</pre></div>
+</p>
+The method's argument, <tt>Attributes.Name.MAIN_CLASS</tt>, specifies 
+that it's the value of the <tt>Main-Class</tt> header that you want.  
+(The <tt>Attributes.Name</tt> class also provides static fields such 
+as <tt>MANIFEST_VERSION</tt>, <tt>CLASS_PATH</tt>, and <tt>SEALED</tt> 
+for specifying other standard manifest headers.)
+
+<h2>The invokeClass Method</h2>
+We've seen how <tt>JarURLClassLoader</tt> can identify the main class 
+in a JAR-bundled application.  The last method to consider,  
+<tt>JarURLClassLoader.invokeClass</tt>, enables that main 
+class to be invoked to launch the JAR-bundled application:
+<div class="codeblock"><pre>
+public void invokeClass(String name, String[] args)
+    throws ClassNotFoundException,
+           NoSuchMethodException,
+           InvocationTargetException
+{
+    Class c = loadClass(name);
+    Method m = c.getMethod("main", new Class[] { args.getClass() });
+    m.setAccessible(true);
+    int mods = m.getModifiers();
+    if (m.getReturnType() != void.class || !Modifier.isStatic(mods) ||
+        !Modifier.isPublic(mods)) {
+        throw new NoSuchMethodException("main");
+    }
+    try {
+        m.invoke(null, new Object[] { args });
+    } catch (IllegalAccessException e) {
+        // This should not happen, as we have disabled access checks
+    }
+}
+</pre></div>
+<p>
+The <tt>invokeClass</tt> method takes two arguments: the name of the 
+application's entry-point class and an array of string arguments to 
+pass to the entry-point class's <tt>main</tt> method.  First, the 
+main class is loaded: 
+<div class="codeblock"><pre>
+Class c = loadClass(name);
+</pre></div>
+The <tt>loadClass</tt> method is inherited from 
+<tt>java.lang.ClassLoader</tt>.
+</p>
+<p>
+Once the main class is loaded, the reflection API of the 
+<tt>java.lang.reflect</tt> package is used to pass the arguments to 
+the class and launch it. You can refer to the tutorial on 
+<a href="../../reflect/index.html">The Reflection API</a> for a 
+review of reflection. 
+</p>
+
+
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=apiindex.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=jarrunner.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Using JAR-related APIs
+        <br><b>Next page:</b> The JarRunner Class
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

@@ -1,0 +1,671 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Transmitting and Receiving MIDI Messages (The Java&trade; Tutorials &gt;        
+            Sound)
+</title>
+
+     <meta name="description" content="" />
+     <meta name="keywords" content="java programming, learn java, java sample code, " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Sound
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkAHEAD"><a href="sampled-overview.html">Overview of the Sampled Package</a></div>
+<div class="linkAHEAD"><a href="accessing.html">Accessing Audio System Resources</a></div>
+<div class="linkAHEAD"><a href="playing.html">Playing Back Audio</a></div>
+<div class="linkAHEAD"><a href="capturing.html">Capturing Audio</a></div>
+<div class="linkAHEAD"><a href="controls.html">Processing Audio with Controls</a></div>
+<div class="linkAHEAD"><a href="converters.html">Using Files and Format Converters</a></div>
+<div class="linkAHEAD"><a href="overview-MIDI.html">Overview of the MIDI Package</a></div>
+<div class="linkAHEAD"><a href="accessing-MIDI.html">Accessing MIDI System Resources</a></div>
+<div class="nolinkAHEAD">Transmitting and Receiving MIDI Messages</div>
+<div class="linkAHEAD"><a href="MIDI-seq-intro.html">Introduction to Sequencers</a></div>
+<div class="linkAHEAD"><a href="MIDI-seq-methods.html">Using Sequencer Methods</a></div>
+<div class="linkAHEAD"><a href="MIDI-seq-adv.html">Using Advanced Sequencer Features</a></div>
+<div class="linkAHEAD"><a href="MIDI-synth.html">Synthesizing Sound</a></div>
+<div class="linkAHEAD"><a href="SPI-intro.html">Introduction to the Service Provider Interfaces</a></div>
+<div class="linkAHEAD"><a href="SPI-providing-sampled.html">Providing Sampled-Audio Services</a></div>
+<div class="linkAHEAD"><a href="SPI-providing-MIDI.html">Providing MIDI Services</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=./index.html target=_top>Sound</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=accessing-MIDI.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=./TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=MIDI-seq-intro.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Transmitting and Receiving MIDI Messages</h1></div>
+            <div id=PageContent>
+<p><a name="120461"> </a>
+
+<h2>Understanding Devices, Transmitters, and Receivers</h2>
+
+The Java Sound API specifies a message-routing architecture for MIDI data that's flexible and easy to use, once you understand how it works. The system is based on a module-connection design: distinct modules, each of which performs a specific task, can be interconnected (networked), enabling data to flow from one module to another.
+</p><p><a name="121778"> </a>
+The base module in the Java Sound API's messaging system is the 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/midi/MidiDevice.html"><code>MidiDevice</code></a>
+interface. <code>MidiDevices</code> include sequencers (which record, play, load, and edit sequences of time-stamped MIDI messages), synthesizers (which generate sounds when triggered by MIDI messages), and MIDI input and output ports, through which data comes from and goes to external MIDI devices.   The functionality typically required of MIDI ports is described by the base <code>MidiDevice</code> interface. The 
+
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/midi/Sequencer.html"><code>Sequencer</code></a>
+and 
+
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/midi/Synthesizer.html"><code>Synthesizer</code></a>
+ interfaces extend the <code>MidiDevice</code>  interface to describe the additional functionality characteristic of MIDI sequencers and synthesizers, respectively.  Concrete classes that function as sequencers or synthesizers should implement these interfaces.  
+
+</p><p><a name="121816"> </a>
+A <code>MidiDevice</code> typically owns one or more ancillary  objects that implement the <code>Receiver</code> or <code>Transmitter</code> interfaces. These interfaces represent the "plugs" or "portals" that connect devices together, permitting data to flow into and out of them.   By connecting a <code>Transmitter</code> of one <code>MidiDevice</code> to a <code>Receiver</code> of another, you can create a network of modules in which data flows from one to another. 
+
+</p><p><a name="121833"> </a>
+The <code>MidiDevice</code> interface includes methods for determining how many transmitter and receiver objects the device can support concurrently, and other methods for accessing those objects.  A MIDI output port normally has at least one <code>Receiver</code> through which the outgoing messages may be received; similarly, a synthesizer normally responds to messages sent to its <code>Receiver</code> or <code>Receivers</code>.  A MIDI input port normally has at least one <code>Transmitter</code>, which propagates the incoming messages.  A full-featured sequencer supports both <code>Receivers</code>, which receive messages during recording, and <code>Transmitters</code>, which send messages during playback.
+
+</p><p><a name="120470"> </a>
+The <code>Transmitter</code> interface includes methods for setting and querying the receivers to which the transmitter sends its <code>MidiMessages</code>. Setting the receiver establishes the connection between the two. The <code>Receiver</code> interface contains a method that sends a <code>MidiMessage</code> to the receiver. Typically, this method is invoked by a <code>Transmitter</code>. Both the <code>Transmitter</code> and <code>Receiver</code> interfaces include a <code>close</code> method that frees up a previously connected transmitter or receiver, making it available for a different connection.
+
+</p><p><a name="120474"> </a>
+We'll now examine how to use transmitters and receivers. Before getting to the typical case of connecting two devices (such as hooking a sequencer to a synthesizer), we'll examine the simpler case where you send a MIDI message directly from your application program to a device. Studying this simple scenario should make it easier to understand how the Java Sound API arranges for sending MIDI messages between two devices. 
+</p>
+<a name="sending"> </a> 
+<h2> Sending a Message to a Receiver without Using a Transmitter</h2>
+<p><a name="121187"> </a>
+Let's say you want to create a MIDI message from scratch and then send it to some receiver. You can create a new, blank <code>ShortMessage</code> and then fill it with MIDI data using the following <code>ShortMessage</code> method:
+
+</p>
+<div class="codeblock"><pre>
+void setMessage(int command, int channel, int data1,
+         int data2) 
+</pre></div>
+
+Once you have a message ready to send, you can send it to a <code>Receiver</code> object, using this <code>Receiver</code> method:
+
+<div class="codeblock"><pre>
+void send(MidiMessage message, long timeStamp)
+</pre></div>
+
+The time-stamp argument will be explained momentarily. For now, we'll just mention that its value can be set to -1 if you don't care about specifying a precise time. In this case, the device receiving the message will try to respond to the message as soon as possible. 
+
+</p><p><a name="121753"> </a>
+An application program can obtain a receiver for a <code>MidiDevice</code> by invoking the device's <code>getReceiver</code> method.  If the device can't provide a receiver to the program (typically because all the device's receivers are already in use), a <code>MidiUnavailableException</code> is thrown.  Otherwise, the receiver returned from this method is available for immediate use by the program.  When the program has finished using the receiver, it should call the receiver's <code>close</code> method.  If the program attempts to invoke methods on a receiver after calling <code>close</code>, an <code>IllegalStateException</code> may be thrown.
+
+</p><p><a name="121858"> </a>
+As a concrete simple example of sending a message without using a transmitter, let's send a Note On message to the default receiver, which is typically associated with a device such as the MIDI output port or a synthesizer. We do this by creating a suitable <code>ShortMessage</code> and passing it as an argument to <code>Receiver's</code> <code>send</code> method: 
+
+<div class="codeblock"><pre>
+  ShortMessage myMsg = new ShortMessage();
+  // Start playing the note Middle C (60), 
+  // moderately loud (velocity = 93).
+  myMsg.setMessage(ShortMessage.NOTE_ON, 0, 60, 93);
+  long timeStamp = -1;
+  Receiver	 rcvr = MidiSystem.getReceiver();
+  rcvr.send(myMsg, timeStamp);
+</pre></div>
+
+This code uses a static integer field of <code>ShortMessage</code>, namely, <code>NOTE_ON</code>, for use as the MIDI message's status byte. The other parts of the MIDI message are given explicit numeric values as arguments to the <code>setMessage</code> method. The zero indicates that the note is to be played using MIDI channel number 1; the 60 indicates the note Middle C; and the 93 is an arbitrary key-down velocity value, which typically indicates that the synthesizer that eventually plays the note should play it somewhat loudly. (The MIDI specification leaves the exact interpretation of velocity up to the synthesizer's implementation of its current instrument.) This MIDI message is then sent to the receiver with a time stamp of -1. We now need to examine exactly what the time stamp parameter means, which is the subject of the next section.
+</p>
+<a name="understanding_time"> </a> 
+<h2> Understanding Time Stamps</h2>
+<p><a name="120509"> </a> 
+
+As you already know, the MIDI specification has different parts. 
+  One part describes MIDI "wire" protocol (messages sent between devices in real 
+  time), and another part describes Standard MIDI Files (messages stored as events 
+  in "sequences"). In the latter part of the specification, each event stored 
+  in a standard MIDI file is tagged with a timing value that indicates when that 
+  event should be played. By contrast, messages in MIDI wire protocol are always 
+  supposed to be processed immediately, as soon as they're received by a device, 
+  so they have no accompanying timing values. </p>
+
+<p><a name="120511"> </a> The Java Sound API adds an additional twist. It comes 
+  as no surprise that timing values are present in the <code>MidiEvent</code> 
+  objects that are stored in sequences (as might be read from a MIDI file), just 
+  as in the Standard MIDI Files specification. But in the Java Sound API, even 
+  the messages sent between devices&#151;in other words, the messages that correspond 
+  to MIDI wire protocol&#151;can be given timing values, known as <em>time stamps</em>. 
+  It is these time stamps that concern us here. 
+
+
+<h3> Time Stamps on Messages Sent to Devices</h3>
+<p><a name="120519"> </a>
+The time stamp that can optionally accompany messages sent between devices in the Java Sound API is quite different from the timing values in a standard MIDI file.  The timing values in a MIDI file are often based on musical concepts such as beats and tempo, and each event's timing measures the time elapsed since the previous event.  In contrast, the time stamp on a message sent to a device's <code>Receiver</code> object always measures absolute time in microseconds.  Specifically, it measures the number of microseconds elapsed since the device that owns the receiver was opened.
+</p><p><a name="120521"> </a>
+This kind of time stamp is designed to help compensate for latencies introduced by the operating system or by the application program. It's important to realize that these time stamps are used for minor adjustments to timing, not to implement complex queues that can schedule events at completely arbitrary times (as <code>MidiEvent</code> timing values do). 
+</p><p><a name="122050"> </a>
+
+The time stamp on a message sent to a device (through a <code>Receiver</code>) can provide precise timing information to the device.  The device might use this information when it processes the message.  For example, it might adjust the event's timing by a few milliseconds to match the information in the time stamp.  On the other hand, not all devices support time stamps, so the device might completely ignore the message's time stamp.
+</p>
+<p><a name="122051"> </a> Even if a device supports time stamps, it might not 
+  schedule the event for exactly the time that you requested. You can't expect 
+  to send a message whose time stamp is very far in the future and have the device 
+  handle it as you intended, and you certainly can't expect a device to correctly 
+  schedule a message whose time stamp is in the past! It's up to the device to 
+  decide how to handle time stamps that are too far off in the future or are in 
+  the past. The sender doesn't know what the device considers to be too far off, 
+  or whether the device had any problem with the time stamp. This ignorance mimics 
+  the behavior of external MIDI hardware devices, which send messages without 
+  ever knowing whether they were received correctly. (MIDI wire protocol is unidirectional.) 
+</p>
+<p><a name="120527"> </a>
+Some devices send time-stamped messages (via a <code>Transmitter</code>).  For example, the messages sent by a MIDI input port might be stamped with the time the incoming message arrived at the port.  On some systems, the event-handling mechanisms cause  a certain amount of timing precision to be lost during subsequent processing of the message.  The message's time stamp allows the original timing information to be preserved.
+</p><p><a name="122114"> </a>
+To learn whether a device supports time stamps, invoke the following method of <code>MidiDevice</code>:
+
+</p>
+<div class="codeblock"><pre>
+    long getMicrosecondPosition()
+</pre></div>
+
+This method returns -1 if the device ignores time stamps. Otherwise, it returns the device's current notion of time, which you as the sender can use as an offset when determining the time stamps for messages you subsequently send. For example, if you want to send a message with a time stamp for five milliseconds in the future, you can get the device's current position in microseconds, add 5000 microseconds, and use that as the time stamp. Keep in mind that the <code>MidiDevice's</code> notion of time always places time zero at the time the device was opened.
+</p><p><a name="120533"> </a>
+Now, with all that explanation of time stamps as a background, let's return to the <code>send</code> method of <code>Receiver</code>:
+
+<div class="codeblock"><pre>
+void send(MidiMessage message, long timeStamp)
+</pre></div>
+
+The <code>timeStamp</code> argument is expressed in microseconds, according to the receiving device's notion of time. If the device doesn't support time stamps, it simply ignores the <code>timeStamp</code> argument.  You aren't required to time-stamp the messages you send to a receiver.  You can use -1 for the <code>timeStamp</code> argument to indicate that you don't care about adjusting the exact timing; you're just leaving it up to the receiving device to process the message as soon as it can.  However, it's not advisable to send -1 with some messages and explicit time stamps with other messages sent to the same receiver.  Doing so is likely to cause irregularities in the resultant timing.
+</p><a name="122132"> </a>
+<h2> Connecting Transmitters to Receivers</h2>
+
+<p><a name="120542"> </a>
+We've seen how you can send a MIDI message directly to a receiver, without using a transmitter. Now let's look at the more common case, where you aren't creating MIDI messages from scratch, but are simply connecting devices together so that one of them can send MIDI messages to the other. 
+</p><a name="120544"> </a>
+<h3> Connecting to a Single Device</h3>
+<p><a name="120546"> </a> The specific case we'll take as our first example is 
+  connecting a sequencer to a synthesizer. After this connection is made, starting 
+  the sequencer running will cause the synthesizer to generate audio from the 
+  events in the sequencer's current sequence. For now, we'll ignore the process 
+  of loading a sequence from a MIDI file into the sequencer. Also, we won't go 
+  into the mechanism of playing the sequence. Loading and playing sequences is 
+  discussed in detail in 
+
+
+<a class="TutorialLink" target="_top" href="MIDI-seq-intro.html">Playing, Recording, and Editing MIDI Sequences</a>.
+
+ Loading instruments into the synthesizer is 
+  discussed in 
+
+<a class="TutorialLink" target="_top" href="MIDI-synth.html">Synthesizing Sound</a>.
+
+
+
+  For now, all we're interested in is how to make the connection between the sequencer 
+  and the synthesizer. This will serve as an illustration of the more general 
+  process of connecting one device's transmitter to another device's receiver. 
+</p>
+<p><a name="121529"> </a> For simplicity, we'll use the default sequencer and 
+  the default synthesizer. 
+
+
+<div class="codeblock"><pre>
+    Sequencer    	seq;
+    Transmitter  	seqTrans;
+    Synthesizer  	synth;
+    Receiver	     synthRcvr;
+    try {
+          seq	  = MidiSystem.getSequencer();
+          seqTrans = seq.getTransmitter();
+          synth	  = MidiSystem.getSynthesizer();
+          synthRcvr = synth.getReceiver(); 
+          seqTrans.setReceiver(synthRcvr);	
+    } catch (MidiUnavailableException e) {
+          // handle or throw exception
+    }
+</pre></div>
+
+An implementation might actually have a single object that serves as both the default sequencer and the default synthesizer.  In other words, the implementation might use a class that implements both the <code>Sequencer</code> interface and the <code>Synthesizer</code> interface.   In that case, it probably wouldn't be necessary to make the explicit connection that we did in the code above. For portability, though, it's safer not to assume such a configuration.  If desired, you can test for this condition, of course:
+
+<div class="codeblock"><pre>
+if (seq instanceof Synthesizer)
+</pre></div>
+<p><a name="122187"> </a>
+
+although the explicit connection above should work in any case.
+</p><a name="120569"> </a>
+<h3> Connecting to More than One Device</h3>
+<p><a name="121563"> </a>
+The previous code example illustrated a one-to-one connection between a transmitter and a receiver. But, what if you need to send the same MIDI message to multiple receivers? For example, suppose you want to capture MIDI data from an external device to drive the internal synthesizer while simultaneously recording the data to a sequence. This form of connection, sometimes referred to as "fan out" or as a "splitter," is straightforward. The following statements show how to create a fan-out connection, through which the MIDI messages arriving at the MIDI input port are sent to both a <code>Synthesizer</code> object and a <code>Sequencer</code> object. We assume you've already obtained and opened the three devices: the input port, sequencer, and synthesizer. (To obtain the input port, you'll need to iterate over all the items returned by <code>MidiSystem.getMidiDeviceInfo</code>.)
+
+</p>
+<div class="codeblock"><pre>
+    Synthesizer  synth;
+    Sequencer    seq;
+    MidiDevice   inputPort;
+    // [obtain and open the three devices...]
+    Transmitter	  inPortTrans1, inPortTrans2;
+    Receiver     	synthRcvr;
+    Receiver     	seqRcvr;
+    try {
+          inPortTrans1 = inputPort.getTransmitter();
+          synthRcvr = synth.getReceiver(); 
+          inPortTrans1.setReceiver(synthRcvr);
+          inPortTrans2 = inputPort.getTransmitter();
+          seqRcvr = seq.getReceiver(); 
+          inPortTrans2.setReceiver(seqRcvr);
+    } catch (MidiUnavailableException e) {
+          // handle or throw exception
+    }
+</pre></div>
+
+This code introduces a dual invocation of the <code>MidiDevice.getTransmitter</code> method, assigning the results to <code>inPortTrans1</code> and <code>inPortTrans2</code>. As mentioned earlier, a device can own multiple transmitters and receivers. Each time <code>MidiDevice.getTransmitter()</code> is invoked for a given device, another transmitter is returned, until no more are available, at which time an exception will be thrown. 
+
+</p><p><a name="122228"> </a>
+To learn how many transmitters and receivers a device supports, you can use the following <code>MidiDevice</code> method:
+<div class="codeblock"><pre>
+    int getMaxTransmitters()
+    int <code>getMaxReceivers</code>()
+</pre></div>
+
+These methods return the total number owned by the device, not the number currently available.
+</p><p><a name="120602"> </a>
+
+A transmitter can transmit MIDI messages to only one receiver at a time. (Every time you call <code>Transmitter's setReceiver</code> method, the existing <code>Receiver</code>, if any, is replaced by the newly specified one. You can tell whether the transmitter currently has a receiver by invoking <code>Transmitter.getReceiver</code>.) However, if a device has multiple transmitters, it can send data to more than one device at a time, by connecting each transmitter to a different receiver, as we saw in the case of the input port above. 
+</p><p><a name="122286"> </a>
+Similarly, a device can use its multiple receivers to receive from more than one device at a time. The multiple-receiver code that's required is straightforward, being directly analogous to the multiple-transmitter code above.  It's also possible for a single receiver to receive messages from more than one transmitter at a time.
+</p><a name="120605"> </a>
+<h3> Closing Connections</h3>
+<p><a name="120607"> </a>
+
+Once you're done with a connection, you can free up its resources by invoking the <code>close</code> method for each transmitter and receiver that you've obtained. The <code>Transmitter</code> and <code>Receiver</code> interfaces each have a <code>close </code>method.   Note that invoking <code>Transmitter.setReceiver </code>doesn't close the transmitter's current receiver.  The receiver is left open, and it can still receive messages from any other transmitter that's connected to it. 
+</p><p><a name="122314"> </a>
+If you're also done with the devices, you can similarly make them available to other application programs by invoking<code> MidiDevice.close()</code>.  Closing a device automatically closes all its transmitters and receivers. 
+</p>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=accessing-MIDI.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=./TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=MIDI-seq-intro.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Accessing MIDI System Resources
+        <br><b>Next page:</b> Introduction to Sequencers
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

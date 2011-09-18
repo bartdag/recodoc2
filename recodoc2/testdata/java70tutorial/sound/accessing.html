@@ -1,0 +1,714 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Accessing Audio System Resources (The Java&trade; Tutorials &gt;        
+            Sound)
+</title>
+
+     <meta name="description" content="" />
+     <meta name="keywords" content="java programming, learn java, java sample code, " />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Sound
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkAHEAD"><a href="sampled-overview.html">Overview of the Sampled Package</a></div>
+<div class="nolinkAHEAD">Accessing Audio System Resources</div>
+<div class="linkAHEAD"><a href="playing.html">Playing Back Audio</a></div>
+<div class="linkAHEAD"><a href="capturing.html">Capturing Audio</a></div>
+<div class="linkAHEAD"><a href="controls.html">Processing Audio with Controls</a></div>
+<div class="linkAHEAD"><a href="converters.html">Using Files and Format Converters</a></div>
+<div class="linkAHEAD"><a href="overview-MIDI.html">Overview of the MIDI Package</a></div>
+<div class="linkAHEAD"><a href="accessing-MIDI.html">Accessing MIDI System Resources</a></div>
+<div class="linkAHEAD"><a href="MIDI-messages.html">Transmitting and Receiving MIDI Messages</a></div>
+<div class="linkAHEAD"><a href="MIDI-seq-intro.html">Introduction to Sequencers</a></div>
+<div class="linkAHEAD"><a href="MIDI-seq-methods.html">Using Sequencer Methods</a></div>
+<div class="linkAHEAD"><a href="MIDI-seq-adv.html">Using Advanced Sequencer Features</a></div>
+<div class="linkAHEAD"><a href="MIDI-synth.html">Synthesizing Sound</a></div>
+<div class="linkAHEAD"><a href="SPI-intro.html">Introduction to the Service Provider Interfaces</a></div>
+<div class="linkAHEAD"><a href="SPI-providing-sampled.html">Providing Sampled-Audio Services</a></div>
+<div class="linkAHEAD"><a href="SPI-providing-MIDI.html">Providing MIDI Services</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=./index.html target=_top>Sound</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=sampled-overview.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=./TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=playing.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Accessing Audio System Resources</h1></div>
+            <div id=PageContent>
+The Java Sound API takes a flexible approach to system configuration. Different sorts of audio devices (mixers) can be installed on a computer. The API makes few assumptions about what devices have been installed and what their capabilities are. Instead, it provides ways for the system to report about the available audio components, and ways for your program to access them.
+</p>
+<p><a name="113098"> </a>
+
+The following sections show how your program can learn what sampled-audio resources have been installed on the computer, and how it can gain access to the available resources. Among other things, the resources include mixers and the various types of lines owned by the mixers.
+</p><a name="113101"> </a>
+
+<h2> The AudioSystem Class</h2>
+<p><a name="113103"> </a>
+The 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/AudioSystem.html"><code>AudioSystem</code></a>
+class acts as a clearinghouse for audio components, including built-in services and separately installed services from third-party providers. <code>AudioSystem</code> serves as an application program's entry point for accessing these installed sampled-audio resources. You can query the <code>AudioSystem</code> to learn what sorts of resources have been installed, and then you can obtain access to them. For example, an application program might start out by asking the <code>AudioSystem</code> class whether there is a mixer that has a certain configuration, such as one of the input or output configurations illustrated earlier in the discussion of lines. From the mixer, the program would then obtain data lines, and so on.
+
+</p>
+<p>
+Here are some of the resources an application program can obtain from the <code>AudioSystem</code>:
+<ul>
+<li>Mixers &mdash;
+A system typically has multiple mixers installed. There is usually at
+least one for audio input and one for audio output. There might also
+be mixers that don't have I/O ports but instead accept audio from an
+application program and deliver the mixed audio back to the program.
+The <code>AudioSystem</code> class provides a list of all of the
+installed mixers.
+
+<li>Lines &mdash;
+Even though every line is associated with a mixer, an application program can get a line directly from the <code>AudioSystem</code>, without dealing explicitly with mixers.
+<li>Format conversions &mdash;
+An application program can use format conversions to translate 
+audio data from one format to another. 
+
+<li>Files and streams &mdash;
+The <code>AudioSystem</code> class provides methods for translating 
+between audio files and audio streams. It can also report the file format 
+of a sound file and can write files in different formats. 
+</ul>
+
+<h2> Information Objects</h2>
+
+<p><a name="113125"> </a>
+Several classes in the Java Sound API provide useful information about associated interfaces. For example, 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/Mixer.Info.html"><code>Mixer.Info</code></a>
+
+
+provides details about an installed mixer, such as the mixer's vendor, name, description, and version. 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/Line.Info.html"><code>Line.Info</code></a>
+
+
+obtains the class of a specific line. Subclasses of <code>Line.Info</code> include 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/Port.Info.html"><code>Port.Info</code></a>
+ and 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/DataLine.Info.html"><code>DataLine.Info</code></a>
+, which obtain details relevant to a specific port and data line, respectively. Each of these classes is described further in the appropriate section below. It's important not to confuse the <code>Info</code> object with the mixer or line object that it describes.
+
+</p><a name="113128"> </a>
+
+<H3>Getting a Mixer</H3>
+
+
+Usually, one of the first things a program that uses the Java Sound API needs to do is to obtain a mixer, or at least one line of a mixer, so that you can get sound into or out of the computer. Your program might need a specific kind of mixer, or you might want to display a list of all the available mixers so that the user can select one. In either case, you need to learn what kinds of mixers are installed. <code>AudioSystem</code> provides the following method:
+</p>
+<div class="codeblock"><pre>
+static Mixer.Info[] getMixerInfo()
+</pre></div>
+
+Each 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/Mixer.Info.html"><code>Mixer.Info</code></a>
+object returned by this method identifies one type of mixer that is installed. (Usually a system has at most one mixer of a given type. If there happens to be more than one of a given type, the returned array still only has one <code>Mixer.Info</code> for that type.) An application program can iterate over the <code>Mixer.Info</code> objects to find an appropriate one, according to its needs. The <code>Mixer.Info</code> includes the following strings to identify the kind of mixer:
+
+<p>
+<ul>
+<li>Name
+<li>Version
+<li>Vendor
+<li>Description
+</ul>
+
+These are arbitrary strings, so an application program that needs a
+specific mixer must know what to expect and what to compare the strings to.
+The company that provides the mixer should include this information in its
+documentation. Alternatively, and perhaps more typically,
+the application program will display all the <code>Mixer.Info</code>
+objects' strings to the user and let the user choose the corresponding mixer.
+
+<p></p><p><a name="113143"> </a>
+Once an appropriate mixer is found, the application program invokes the following <code>AudioSystem</code> method to obtain the desired mixer: 
+</p>
+<div class="codeblock"><pre>
+static Mixer getMixer(Mixer.Info info)
+</pre></div>
+
+What if your program needs a mixer that has certain capabilities, but it doesn't need a specific mixer made by a specific vendor? And what if you can't depend on the user's knowing which mixer should be chosen? In that case, the information in the <code>Mixer.Info</code> objects won't be of much use. Instead, you can iterate over all the <code>Mixer.Info</code> objects returned by <code>getMixerInfo</code>, get a mixer for each by invoking <code>getMixer</code>, and query each mixer for its capabilities. For example, you might need a mixer that can write its mixed audio data to a certain number of target data lines simultaneously. In that case, you would query each mixer using this <CODE>Mixer</CODE> method:
+
+<div class="codeblock"><pre>
+int getMaxLines<code>(Line.Info info)
+</pre></div>
+
+
+<p><a name="115024"> </a>
+Here, the 
+
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/Line.Info.html"><code>Line.Info</code></a>
+would specify a <code>TargetDataLine</code>. The <code>Line.Info</code> class is discussed in the next section. 
+</p><a name="113154"> </a>
+
+
+<H3>Getting a Line of a Desired Type</H3>
+
+
+<p>
+There are two ways to get a line: 
+<ul>
+<li>Directly from the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/AudioSystem.html"><code>AudioSystem</code></a> object
+<li>From a mixer that you have already obtained from the
+<code>AudioSystem</code> object
+</ul>
+
+<h3> Getting a Line Directly from the AudioSystem</h3>
+<p><a name="113161"> </a>
+Let's assume you haven't obtained a mixer, and your program is a simple one that really only needs a certain kind of line; the details of the mixer don't matter to you. You can use the <code>AudioSystem</code> method: 
+</p>
+<div class="codeblock"><pre>
+static Line getLine(Line.Info info)
+</pre></div>
+
+which is analogous to the <code>getMixer</code> method discussed previously. Unlike 
+
+
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/Mixer.Info.html"><code>Mixer.Info</code></a>
+, the 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/Line.Info.html"><code>Line.Info</code></a>
+
+ used as an argument doesn't store textual information to specify the desired line. Instead, it stores information about the class of line desired.
+
+<p></p><p><a name="114553"> </a>
+<code>Line.Info</code> is an abstract class, so you use one of its subclasses
+(
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/Port.Info.html"><code>Port.Info</code></a>
+or 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/DataLine.Info.html"><code>DataLine.Info</code></a>
+) to obtain a line. The following code excerpt uses the <code>DataLine.Info</code> subclass to obtain and open a target data line:
+</p>
+
+<div class="codeblock"><pre>
+TargetDataLine line;
+DataLine.Info info = new DataLine.Info(TargetDataLine.class, 
+    format); // format is an AudioFormat object
+if (!AudioSystem.isLineSupported(info)) {
+    // Handle the error.
+    }
+    // Obtain and open the line.
+try {
+    line = (TargetDataLine) AudioSystem.getLine(info);
+    line.open(format);
+} catch (LineUnavailableException ex) {
+   	// Handle the error.
+    //... 
+}
+</pre></div>
+This code obtains a 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/TargetDataLine.html"><code>TargetDataLine</code></a>
+object without specifying any attributes other than its class and its audio format. You can use analogous code to obtain other kinds of lines. For a <code>SourceDataLine</code> or a <code>Clip</code>, just substitute that class for <code>TargetDataLine</code> as the class of the line variable, and also in the first argument to the <code>DataLine.Info</code> constructor. 
+
+<p></p><p><a name="113191"> </a>
+For a <code>Port</code>, you can use static instances of <code>Port.Info</code>, in code like the following:
+<div class="codeblock"><pre>
+if (AudioSystem.isLineSupported(Port.Info.MICROPHONE)) {
+    try {
+        line = (Port) AudioSystem.getLine(
+            Port.Info.MICROPHONE);
+    }
+}
+</pre></div>
+Note the use of the method <code>isLineSupported</code> to see whether the mixer even has a line of the desired type. 
+<p></p>
+<p><a name="113199"> </a> Recall that a source line is an input to a mixer&#151;namely, 
+  a <code>Port</code> object if the mixer represents an audio-input device, and 
+  a <code>SourceDataLine</code> or <code>Clip</code> object if the mixer represents 
+  an audio-output device. Similarly, a target line is an output of the mixer: 
+  a <code>Port</code> object for an audio-output mixer, and a <code>TargetDataLine</code> 
+  object for an audio-input mixer. What if a mixer doesn't connect to any external 
+  hardware device at all? For example, consider an internal or software-only mixer 
+  that gets audio from an application program and delivers its mixed audio back 
+  to the program. This kind of mixer has <code>SourceDataLine</code> or <code>Clip</code> 
+  objects for its input lines and <code>TargetDataLine</code> objects for its 
+  output lines. </p>
+
+<p><a name="113201"> </a>
+You can also use the following <code>AudioSystem</code> methods to learn more about source and target lines of a specified type that are supported by any installed mixer:
+<div class="codeblock"><pre>
+static Line.Info[] getSourceLineInfo(Line.Info info)
+static Line.Info[] getTargetLineInfo(Line.Info info)
+</pre></div>
+Note that the array returned by each of these methods indicates unique types of lines, not necessarily all the lines. For example, if two of a mixer's lines, or two lines of different mixers, have identical <code>Line.Info</code> objects, the two lines will represented by only one <code>Line.Info</code> in the returned array.
+
+<p></p><a name="113208"> </a>
+<h3> Getting a Line from a Mixer</h3>
+<p><a name="113210"> </a>
+The <code>Mixer</code> interface includes variations on the <code>AudioSystem</code> access methods for source and target lines, described above. These <code>Mixer</code> methods include ones that take <code>Line.Info</code> arguments, just as <code>AudioSystem's</code> methods do. However, <code>Mixer</code> also includes these variants, which take no arguments:
+
+</p>
+<div class="codeblock"><pre>
+Line.Info[] getSourceLineInfo()
+Line.Info[] getTargetLineInfo()
+</pre></div>
+
+These methods return arrays of all the <code>Line.Info</code> objects for the particular mixer. Once you've obtained the arrays, you can iterate over them, calling <code>Mixer's</code> <code>getLine</code> method to obtain each line, followed by <code>Line's</code> <code>open</code> method to reserve use of each line for your program.
+
+<p></p><a name="113216"> </a>
+
+
+<H3>Selecting Input and Output Ports</H3>
+
+
+<p><a name="113217"> </a>
+The previous section, regarding how to obtain a line of a desired type, applies to ports as well as other types of lines. You can obtain all of the source (i.e., input) and target (i.e, output) ports by passing a <code>Port.Info</code> object to the <code>AudioSystem</code> (or <code>Mixer</code>) methods <code>getSourceLineInfo</code> and <code>getTargetLineInfo</code> that take a <code>Line.Info</code> argument. You then iterate over the returned array of objects and invoke Mixer's <code>getLine</code> method to get each port.
+
+</p>
+<p><a name="113219"> </a> You can then open each <code>Port</code> by invoking 
+  <code>Line's</code> <code>open</code> method. Opening a port means you turn 
+  it on&#151;that is, you allow sound to come in or out the port. Similarly, you 
+  can close ports that you don't want sound to travel through, because some ports 
+  might already be open before you even obtain them. Some platforms leave all 
+  ports on by default; or a user or system administrator might have selected certain 
+  ports to be on or off, using another application program or operating-system 
+  software. </p>
+<p><a name="113220"> </a>
+<strong>Warning:</strong> If you want to select a certain port and make sure that the sound is actually going in or out the port, you can open the port as described. However, this can be considered user-hostile behavior! For example, a user might have the speaker port turned off so as not to disturb her co-workers. She would be rather upset if your program suddenly overrode her wishes and started blaring music. As another example, a user might want to be assured that his computer's microphone is never turned on without his knowledge, to avoid eavesdropping. In general, it is recommended not to open or close ports unless your program is responding to the user's intentions, as expressed through the user interface. Instead, respect the settings that the user or the operating system has already selected.
+
+</p><p><a name="113221"> </a>
+It isn't necessary to open or close a port before the mixer it's attached to will function correctly. For example, you can start playing back sound into an audio-output mixer, even though all its output ports are closed. The data still flows into the mixer; the playback isn't blocked. The user just won't hear anything. As soon as the user opens an output port, the sound will be audible through that port, starting at whatever point in the media the playback has already reached.
+</p><p><a name="113222"> </a>
+Also, you don't need to access the ports to learn whether the mixer has certain ports. To learn whether a mixer is actually an audio-output mixer, for example, you can invoke <code>getTargetLineInfo</code> to see whether it has output ports. There's no reason to access the ports themselves unless you want to change their settings (such as their open-or-closed state, or the settings of any controls they might have).
+</p><a name="113223"> </a>
+
+<H3>Permission to Use Audio Resources</H3>
+
+
+<p><a name="115642"> </a>
+The Java Sound API includes an 
+
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/sound/sampled/AudioPermission.html"><code>AudioPermission</code></a>
+class that indicates what kinds of access an applet (or an application
+running with a security manager) can have to the sampled-audio system.
+Permission to record sound is controlled separately. This permission
+should be granted with care, to help prevent security risks such as
+unauthorized eavesdropping. By default, applets and applications are
+granted permissions as follows:
+
+<ul>
+<li>An <em>applet</em> running with the applet security manager can play,
+but not record, audio.
+<li>An <em>application</em> running with no security manager can both
+play and record audio.
+<li>An application running with the default security manager can play,
+but not record, audio.
+</ul>
+
+In general, applets are run under the scrutiny of a security manager and aren't permitted to record sound. Applications, on the other hand, don't automatically install a security manager, and are able to record sound. (However, if the default security manager is invoked explicitly for an application, the application isn't permitted to record sound.) 
+<p></p><p><a name="115660"> </a>
+Both applets and applications can record sound even when running with a security manager if they have been granted explicit permission to do so.
+</p><p><a name="113244"> </a>
+If your program doesn't have permission to record (or play) sound, an exception will be thrown when it attempts to open a line. There is nothing you can do about this in your program, other than to catch the exception and report the problem to the user, because permissions can't be changed through the API. (If they could, they would be pointless, because nothing would be secure!) Generally, permissions are set in one or more policy configuration files, which a user or system administrator can edit using a text editor or the Policy Tool program. 
+</p>
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=sampled-overview.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=./TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=playing.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Overview of the Sampled Package
+        <br><b>Next page:</b> Playing Back Audio
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

@@ -1,0 +1,785 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Creating a Custom JMX Client (The Java&trade; Tutorials &gt;        
+            Java Management Extensions (JMX) &gt; Remote Management)
+</title>
+
+     <meta name="description" content="This JMX Java tutorial describes the Java Management Extensions (JMX) technology - mbeans, notifications, and remote management " />
+     <meta name="keywords" content="java programming, learn java, java sample code, jmx, java management extension, mbeans, mxbeans" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Java Management Extensions (JMX)
+        <br><b>Lesson:</b> Remote Management
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Remote Management</a></div>
+<div class="linkAHEAD"><a href="jconsole.html">Exposing a Resource for Remote Management By JConsole</a></div>
+<div class="nolinkAHEAD">Creating a Custom JMX Client</div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Java Management Extensions (JMX)</a>
+                &gt;
+                <a href=index.html target=_top>Remote Management</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=jconsole.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=../end.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Creating a Custom JMX Client</h1></div>
+            <div id=PageContent>
+
+
+The previous lessons in this trail have shown you how to create JMX technology MBeans and MXBeans, and register them with a JMX agent. However, all the previous examples have used an existing JMX client, JConsole. This lesson will demonstrate how to create your own custom JMX client.
+
+
+<p>An example of a custom JMX client,
+
+<a class="SourceLink" target="_blank" href="../examples/Client.java"><code>Client</code></a>
+
+ is included in 
+
+<a class="SourceLink" target="_blank" href="../examples/jmx_examples.zip"><code>jmx_examples.zip</code></a>. This JMX client interacts with the same MBean, MXBean and JMX agent as were seen in the previous lessons. Due to the size of the <code>Client</code> class, it will be examined in chunks, in the following sections.
+
+<h2>Importing the JMX Remote API Classes</h2>
+
+<p>To be able to create connections to JMX agents that are running remotely from the JMX client, you need to use the classes from the 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/remote/package-summary.html"><code>javax.management.remote</code></a>.
+
+<div class="codeblock"><pre>
+
+package com.example;
+
+[...]
+
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+
+public class Client {
+
+    [...]
+
+</pre></div>
+
+<p>The <code>Client</code> class will be creating 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/remote/JMXConnector.html"><code>JMXConnector</code></a>
+ instances, for which it will need a 
+ 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/remote/JMXConnectorFactory.html"><code>JMXConnectorFactory</code></a>
+ 
+ and a 
+ 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/remote/JMXServiceURL.html"><code>JMXServiceURL</code></a>.
+
+
+
+<h2>Creating a Notification Listener</h2>
+
+<p>The JMX client needs a notification handler, to listen for and to process any notifications that might be sent by the MBeans that are registered in the JMX agent's MBean server. The JMX client's notification handler is an instance of the 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/NotificationListener.html"><code>NotificationListener</code></a>
+ interface, as shown below.
+
+<div class="codeblock"><pre>
+
+    [...]
+    
+    
+    public static class ClientListener implements NotificationListener {
+        public void handleNotification(Notification notification,
+                                       Object handback) {
+            echo("\nReceived notification:");
+            echo("\tClassName: " + notification.getClass().getName());
+            echo("\tSource: " + notification.getSource());
+            echo("\tType: " + notification.getType());
+            echo("\tMessage: " + notification.getMessage());
+            if (notification instanceof AttributeChangeNotification) {
+                AttributeChangeNotification acn =
+                    (AttributeChangeNotification) notification;
+                echo("\tAttributeName: " + acn.getAttributeName());
+                echo("\tAttributeType: " + acn.getAttributeType());
+                echo("\tNewValue: " + acn.getNewValue());
+                echo("\tOldValue: " + acn.getOldValue());
+            }
+        }
+    }
+    
+    [...]
+        
+
+</pre></div>
+
+<p>This notification listener determines the origin of any notifications it receives, and retrieves the information stored in the notification. It then performs different actions with the notification information according to the type of notification received. In this case, when the listener receives notifications of the type 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/AttributeChangeNotification.html"><code>AttributeChangeNotification</code></a> it will obtain the name and type of the MBean attribute that has changed, as well as its old and new values, by calling the <code>AttributeChangeNotification</code> methods <code>getAttributeName</code>, <code>getAttributeType</code>, <code>getNewValue</code> and <code>getOldValue</code>.
+ 
+ <p>A new <code>ClientListener</code> instance is created by later in the code.
+
+<div class="codeblock"><pre>
+ 
+ ClientListener listener = new ClientListener();
+
+</pre></div>
+
+<h2>Creating an RMI Connector Client</h2>
+
+<p>The <code>Client</code> class creates an RMI connector client that is configured to connect to an RMI connector server that you will launch when you start the JMX agent, <code>Main</code>. This will allow the JMX client to interact with the JMX agent as if they were running on the same machine.
+
+<div class="codeblock"><pre>
+
+    [...]
+    
+    public static void main(String[] args) throws Exception {
+
+        echo("\nCreate an RMI connector client and " +
+             "connect it to the RMI connector server");
+        JMXServiceURL url =
+            new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:9999/jmxrmi");
+        JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
+
+	[...]
+	
+	
+</pre></div>
+
+
+
+<p>As you can see, the <code>Client</code> defines a 
+
+ 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/remote/JMXServiceURL.html"><code>JMXServiceURL</code></a>
+ named <code>url</code>, that represents the location at which the connector client expects to find the connector server. This URL allows the connector client to retrieve the RMI connector server stub <code>jmxrmi</code> from the RMI registry running on port 9999 of the local host, and to connect to the RMI connector server.
+
+<p>With the RMI registry thus identified, the connector client can be created. The connector client, <code>jmxc</code>, is an instance of the interface 
+
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/remote/JMXConnector.html"><code>JMXConnector</code></a>, created by the <code>connect()</code> method of 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/remote/JMXConnectorFactory.html"><code>JMXConnectorFactory</code></a>. The <code>connect()</code> method is passed the parameters <code>url</code> and a null environment map when it is called.
+
+
+
+
+<h2>Connecting to the Remote MBean Server</h2>
+
+<p>With the RMI connection in place, the JMX client must connect to the remote MBean server, so that it can interact with the various MBeans registered in it by the remote JMX agent.
+
+
+<div class="codeblock"><pre>
+
+        [...]
+	
+        MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
+		
+        [...]
+	
+
+
+</pre></div>
+
+<p>An instance of 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/MBeanServerConnection.html"><code>MBeanServerConnection</code></a>, named mbsc, is then created by calling the <code>getMBeanServerConnection()</code> method of the <code>JMXConnector</code> instance <code>jmxc</code>.
+
+<p>The connector client is now connected to the MBean server created by the JMX agent, and can register MBeans and perform operations on them with the connection remaining completely transparent to both ends.
+
+<p>To start with, the client defines some simple operations to discover information about the MBeans found in the agent's MBean server.
+
+<div class="codeblock"><pre>
+
+        [...]
+	
+        echo("\nDomains:");
+        String domains[] = mbsc.getDomains();
+        Arrays.sort(domains);
+        for (String domain : domains) {
+            echo("\tDomain = " + domain);
+        }
+	
+        [...]
+	
+        echo("\nMBeanServer default domain = " + mbsc.getDefaultDomain());
+
+        echo("\nMBean count = " + mbsc.getMBeanCount());
+        echo("\nQuery MBeanServer MBeans:");
+        Set<ObjectName> names =
+            new TreeSet<ObjectName>(mbsc.queryNames(null, null));
+        for (ObjectName name : names) {
+            echo("\tObjectName = " + name);
+        }
+	
+	[...]
+	
+</pre></div>
+
+<p>The client calls various methods of <code>MBeanServerConnection</code> in order to obtain the domains in which the different MBeans are operating, the number of MBeans registered in the MBean server, and the object names for each of the MBeans it discovers.
+
+<h2>Performing Operations on Remote MBeans via Proxies</h2>
+
+<p>The client accesses the <code>Hello</code> MBean in the MBean server through the MBean server connection by creating an MBean <strong>proxy</strong>. This MBean proxy is local to the client, and emulates the remote MBean.
+
+<div class="codeblock"><pre>
+
+        [...]
+
+        ObjectName mbeanName = new ObjectName("com.example:type=Hello");
+
+        HelloMBean mbeanProxy =
+            JMX.newMBeanProxy(mbsc, mbeanName, HelloMBean.class, true);
+
+        echo("\nAdd notification listener...");
+	mbsc.addNotificationListener(mbeanName, listener, null, null);
+
+        echo("\nCacheSize = " + mbeanProxy.getCacheSize());
+
+        mbeanProxy.setCacheSize(150);
+
+        echo("\nWaiting for notification...");
+        sleep(2000);
+
+        echo("\nCacheSize = " + mbeanProxy.getCacheSize());
+        echo("\nInvoke sayHello() in Hello MBean...");
+        mbeanProxy.sayHello();
+
+        echo("\nInvoke add(2, 3) in Hello MBean...");
+        echo("\nadd(2, 3) = " + mbeanProxy.add(2, 3));
+
+        waitForEnterPressed();
+	
+	[...]
+	
+</pre></div>	
+	
+
+
+<p>MBean proxies allow you to access an MBean through a Java interface, allowing you to make calls on the proxy rather than having to write lengthy code to access a remote MBean. An MBean proxy for <code>Hello</code> is created here by calling the method <code>newMBeanProxy()</code> in the 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/JMX.html"><code>javax.management.JMX</code></a> class, passing it the MBean's <code>MBeanServerConnection</code>, object name, the class name of the MBean interface and <code>true</code>, to signify that the proxy must behave as a 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/NotificationBroadcaster.html"><code>NotificationBroadcaster</code></a>. The JMX client can now perform the operations defined by <code>Hello</code> as if they were the operations of a locally registered MBean. The JMX client also adds a notification listener and changes the MBean's <code>CacheSize</code> attribute, to make it send a notification.
+
+
+
+<h2>Performing Operations on Remote MXBeans via Proxies</h2>
+
+<p>You can create proxies for MXBeans in exactly the same way as you create MBean proxies.
+	
+<div class="codeblock"><pre>
+	[...]
+	
+        ObjectName mxbeanName =
+            new ObjectName("com.example:type=QueueSampler");
+        QueueSamplerMXBean mxbeanProxy =
+            JMX.newMXBeanProxy(mbsc, mxbeanName, QueueSamplerMXBean.class);
+        QueueSample queue1 = mxbeanProxy.getQueueSample();
+        echo("\nQueueSample.Date = " + queue1.getDate());
+        echo("QueueSample.Head = " + queue1.getHead());
+        echo("QueueSample.Size = " + queue1.getSize());
+        echo("\nInvoke clearQueue() in QueueSampler MXBean...");
+        mxbeanProxy.clearQueue();
+
+        QueueSample queue2 = mxbeanProxy.getQueueSample();
+        echo("\nQueueSample.Date = " + queue2.getDate());
+        echo("QueueSample.Head = " + queue2.getHead());
+        echo("QueueSample.Size = " + queue2.getSize());
+
+	[...]
+
+</pre></div>
+
+<p>As shown above, to create a proxy for an MXBean, all you have to do is call 
+
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/JMX.html#newMXBeanProxy(javax.management.MBeanServerConnection,%20javax.management.ObjectName,%20java.lang.Class)"><code>JMX.newMXBeanProxy</code></a> instead of <code>newMBeanProxy</code>. The MXBean proxy <code>mxbeanProxy</code> allows the client to invoke the <code>QueueSample</code> MXBean's operations as if they were the operations of a locally registered MXBean.
+ 
+
+<h2>Closing the Connection</h2> 
+
+<p>Once the JMX client has obtained all the information it needs and performed all the required operations on the MBeans in the remote JMX agent's MBean server, the connection must be closed down.
+
+<div class="codeblock"><pre>
+
+        jmxc.close();
+
+</pre></div>
+
+<p>The connection is closed with a call to the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/management/remote/JMXConnector.html#close()"><code>JMXConnector.close</code></a>
+ method.
+
+
+<h3>To Run the Custom JMX Client Example</h3>
+
+<p>This example requires version 6 of the Java SE platform. To monitor the <code>Main</code> JMX agent remotely using a the custom JMX client 
+<a class="SourceLink" target="_blank" href="../examples/Client.java"><code>Client</code></a>, follow these steps:
+
+<ol>
+<li>If you have not done so already, save 
+<a class="SourceLink" target="_blank" href="../examples/jmx_examples.zip"><code>jmx_examples.zip</code></a> into your <code><i>work_dir</i></code> directory.
+ <p>
+</li>
+
+<li>Unzip the bundle of sample classes by using the following command in a terminal window.
+<div class="codeblock"><pre>
+unzip jmx_examples.zip
+</pre></div>
+</li>
+ 
+<li>Compile the example Java classes from within the <code><i>work_dir</i></code> directory.
+<div class="codeblock"><pre>
+javac com/example/*.java
+</pre></div>
+</li>
+
+<li>Start the <code>Main</code> application, specifying the properties that expose <code>Main</code> for remote management:
+<div class="codeblock"><pre>
+java -Dcom.sun.management.jmxremote.port=9999
+     -Dcom.sun.management.jmxremote.authenticate=false
+     -Dcom.sun.management.jmxremote.ssl=false 
+     com.example.Main
+</pre></div>     
+<p>A confirmation that <code>Main</code> is waiting for something to happen is generated.
+     
+</li>
+
+<li>Start the <code>Client</code> application in a different terminal window:
+<div class="codeblock"><pre>
+java com.example.Client
+</pre></div>
+<p>A confirmation that an <code>MBeanServerConnection</code> has been obtained is displayed.
+</li>
+
+<li>Press Enter.
+<p>The domains in which all the MBeans that are registered in the MBean server started by <code>Main</code> are displayed. 
+</li>
+
+<li>Press Enter again.
+<p>The number of MBeans that are registered in the MBean server is displayed, as well as the object names of all these MBeans. The MBeans displayed include all the standard platform MXBeans running in the Java VM, as well as the <code>Hello</code> MBean and the <code>QueueSampler</code> MXBean that were registered in the MBean server by <code>Main</code>.
+</li>
+
+<li>Press Enter again.
+<p>The <code>Hello</code> MBean's operations are invoked by <code>Client</code>, with the following results:
+
+	<ul>
+	<li>A notification listener is added to <code>Client</code> to listen for notifications from <code>Main</code>.</li>
+	<li>The value of the <code>CacheSize</code> attribute is changed from 200 to 150.</li>
+	<li>In the terminal window in which you started <code>Main</code>, confirmation of the <code>CacheSize</code> attribute change is displayed.</li>
+	<li>In the terminal window in which you started <code>Client</code>, a notification from <code>Main</code> is displayed, informing <code>Client</code> of the <code>CacheSize</code> attribute change.</li>
+	<li>The <code>Hello</code> MBean's <code>sayHello</code> operation is invoked.</li>
+	<li>In the terminal window in which you started <code>Main</code>, the message "Hello world" is displayed.</li>
+	<li>The <code>Hello</code> MBean's <code>add</code> operation is invoked, with the values 2 and 3 as parameters. The result is displayed by <code>Client</code>.</li>
+	</ul>
+	<p>
+</li>
+
+<li>Press Enter again.
+<p>The <code>QueueSampler</code> MXBean's operations are invoked by <code>Client</code>, with the following results:
+
+	<ul>
+	<li>The <code>QueueSample</code> values <code>date</code>, <code>head</code>, and <code>size</code> are displayed.</li>
+	<li>The <code>clearQueue</code> operation is invoked.</li>
+	</ul><p>
+</li>
+
+<li>Press Enter again.
+<p>The <code>Client</code> closes the connection to the MBean server and a confirmation is displayed.
+</li>
+</ol>
+
+        </div>
+        <div class=NavBit>
+            <a target=_top href=jconsole.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=../end.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Exposing a Resource for Remote Management By JConsole
+        <br><b>Next page:</b> End of Trail
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

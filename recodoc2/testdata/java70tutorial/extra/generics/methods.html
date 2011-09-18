@@ -1,0 +1,617 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Generic Methods (The Java&trade; Tutorials &gt;        
+            Bonus &gt; Generics)
+</title>
+
+     <meta name="description" content="This Java tutorial describes generics, full screen mode API, and Java certification related resources" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java generics, full screen mode API, certification" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Bonus
+        <br><b>Lesson:</b> Generics
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Generics</a></div>
+<div class="linkAHEAD"><a href="intro.html">Introduction</a></div>
+<div class="linkAHEAD"><a href="simple.html">Defining Simple Generics</a></div>
+<div class="linkAHEAD"><a href="subtype.html">Generics and Subtyping</a></div>
+<div class="linkAHEAD"><a href="wildcards.html">Wildcards</a></div>
+<div class="nolinkAHEAD">Generic Methods</div>
+<div class="linkAHEAD"><a href="legacy.html">Interoperating with Legacy Code</a></div>
+<div class="linkAHEAD"><a href="fineprint.html">The Fine Print</a></div>
+<div class="linkAHEAD"><a href="literals.html">Class Literals as Runtime-Type Tokens</a></div>
+<div class="linkAHEAD"><a href="morefun.html">More Fun with Wildcards</a></div>
+<div class="linkAHEAD"><a href="convert.html">Converting Legacy Code to Use Generics</a></div>
+<div class="linkAHEAD"><a href="acknowledgements.html">Acknowledgements</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Bonus</a>
+                &gt;
+                <a href=index.html target=_top>Generics</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=wildcards.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=legacy.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Generic Methods</h1></div>
+            <div id=PageContent>
+<!--Generic Methods-->
+
+Consider writing a method that takes an array of objects and a collection and 
+puts  all objects in the array into the collection. Here's a first attempt:
+
+<div class="codeblock"><pre>
+<b>static void</b> fromArrayToCollection(Object[] a, Collection&lt;?&gt; c) {
+    <b>for</b> (Object o : a) { 
+        c.add(o); // <i>Compile time error</i>
+    }
+}
+</pre></div>
+
+By now, you will have learned to avoid the beginner's mistake of trying to 
+use
+<code>Collection&lt;Object&gt;</code> as the type of the collection parameter.
+You may or may not have recognized that using <code>Collection&lt;?&gt;</code> isn't
+going to work either.  Recall that you cannot just shove objects into a
+collection of unknown type. 
+<P>
+The way to do deal with these problems is to use <i>generic methods</I>.
+Just like type declarations, method declarations can be generic--that is,
+parameterized by one or more type parameters.
+
+<div class="codeblock"><pre>
+<b>static</b> &lt;T&gt; <b>void</b> fromArrayToCollection(T[] a, Collection&lt;T&gt; c) {
+    <b>for</b> (T o : a) {
+        c.add(o); // <i>Correct</i>
+    }
+}
+</pre></div>
+
+We can call this method with any kind of collection whose element type
+is a supertype of the element type of the array.
+
+<div class="codeblock"><pre>
+Object[] oa = new Object[100];
+Collection&lt;Object&gt; co = new ArrayList&lt;Object&gt;();
+fromArrayToCollection(oa, co); // <i>T inferred to be Object</i>
+
+String[] sa = new String[100];
+Collection&lt;String&gt; cs = new ArrayList&lt;String&gt;();
+fromArrayToCollection(sa, cs); // <i>T inferred to be String</i>
+fromArrayToCollection(sa, co); // <i>T inferred to be Object</i>
+
+Integer[] ia = new Integer[100];
+Float[] fa = new Float[100];
+Number[] na = new Number[100];
+Collection&lt;Number&gt; cn = new ArrayList&lt;Number&gt;();
+fromArrayToCollection(ia, cn); // <i>T inferred to be Number</i>
+fromArrayToCollection(fa, cn); // <i>T inferred to be Number</i>
+fromArrayToCollection(na, cn); // <i>T inferred to be Number</i>
+fromArrayToCollection(na, co); // <i>T inferred to be Object</i>
+
+fromArrayToCollection(na, cs); // <i>compile-time error</i>
+</pre></div>
+
+Notice that we don't have to pass an actual type argument to a generic method.
+The compiler infers the type argument for us, based on the types of the
+actual arguments. It will generally infer the
+most specific type argument that will make the call type-correct.
+
+<!--
+% show examples from library
+
+% show wildcard examples and show how they could be done using
+% type parameters, and explain when to use generic methods and when not
+-->
+
+<P>
+One question that arises is: when should I use generic methods, and when
+should I use wildcard types? To understand the answer, let's examine
+a few methods from the <code>Collection</code> libraries.
+
+
+<div class="codeblock"><pre>
+<b>interface</b> Collection&lt;E&gt; {
+    <b>public boolean</b> containsAll(Collection&lt;?&gt; c);
+    <b>public boolean</b> addAll(Collection&lt;? <b>extends E</b>&gt; c);
+}
+</pre></div>
+
+We could have used generic methods here instead:
+
+<div class="codeblock"><pre>
+<b>interface</b> Collection&lt;E&gt; {
+    <b>public</b> &lt;T&gt; <b>boolean</b> containsAll(Collection&lt;T&gt; c);
+    <b>public</b> &lt;T <b>extends</b> E&gt; <b>boolean</b> addAll(Collection&lt;T&gt; c);
+    // <i>Hey, type variables can have bounds too!</i>
+}
+</pre></div>
+
+However, in both <code>containsAll</code> and <code>addAll</code>, the type parameter
+<code>T</code> is used only once. The return type doesn't depend on
+the type parameter, nor does any other argument to the method (in this case,
+there simply is only one argument). This tells us that the type argument
+is being used for polymorphism; its only effect is to allow a variety of
+actual argument types to be used at different invocation sites. If that is
+the case, one should use wildcards. Wildcards are designed to support
+flexible subtyping, which is what we're trying to express here.
+<P>
+Generic methods allow type parameters to be used to express dependencies
+among the types of one or more arguments to a method and/or its
+return type. If there isn't such a dependency, a generic method should
+not be used.
+<P>
+It is possible to use both generic methods and wildcards in tandem. Here is 
+the method <code>Collections.copy()</code>:
+
+<div class="codeblock"><pre>
+<b>class</b> Collections {
+    <b>public static</b> &lt;T&gt; <b>void</b> copy(List&lt;T&gt; dest, List&lt;? <b>extends</b> T&gt; src) {
+    ...
+}
+</pre></div>
+
+Note the dependency between the types of the two parameters. Any object
+copied from the source list, <code>src</code>, must be assignable to the
+element type <code>T</code> of the destination list, <code>dst</code>. So the 
+element type of <code>src</code> can be any subtype of <code>T</code>--we don't
+care which. The signature of <code>copy</code> expresses the dependency using
+a type parameter, but uses a wildcard for the element type of the second
+parameter.
+<P>
+We could have written the signature for this method another way,
+without using wildcards at all:
+
+<div class="codeblock"><pre>
+<b>class</b> Collections {
+    <b>public static</b> &lt;T, S <b>extends</b> T&gt; 
+           <b>void</b> copy(List&lt;T&gt; dest, List&lt;S&gt; src) {
+    ...
+}
+</pre></div>
+
+This is fine, but while the first type parameter is used both in the type
+of <code>dst</code> and in the bound of the second type parameter, <code>S</code>, 
+<code>S</code> itself is only used once, in the type of <code>src</code>--nothing else 
+depends on it. This is a sign that we can replace <code>S</code> with a wildcard.
+Using wildcards is clearer and more concise than declaring explicit type 
+parameters, and should therefore be preferred whenever possible. 
+<P>
+Wildcards
+also have the advantage that they can be used outside of method signatures,
+as the types of fields, local variables and arrays. Here is an example.
+<P>
+Returning to our shape drawing problem, suppose we want to keep a history of 
+drawing requests. We can maintain the history in a static variable inside
+class <code>Shape</code>, and have <code>drawAll()</code>
+store its incoming argument into the history field.
+
+<div class="codeblock"><pre>
+<b>static</b> List&lt;List&lt;? extends Shape&gt;&gt; history = 
+			new ArrayList&lt;List&lt;? extends Shape&gt;&gt;();
+<b>public void</b> drawAll(List&lt;? <b>extends</b> Shape&gt; shapes) {
+    history.addLast(shapes);
+    <b>for</b> (Shape s: shapes) {
+        s.draw(<b>this</b>);
+    }
+}
+</pre></div>
+
+Finally, again let's take note of the naming convention used for
+the type parameters. We use <code>T</code> for type, whenever there isn't
+anything more specific about the type to distinguish it. This is often
+the case in generic methods. If there are multiple type parameters,
+we might use letters that neighbor <code>T</code> in the alphabet, such as
+ <code>S</code>. If a generic method appears inside a generic class,
+it's a good idea to avoid using the same names for the type parameters
+of the method and class, to avoid confusion. The same applies to
+nested generic classes.
+
+<!--
+% somewhere figure out how to explain ``any'' and ``some'' -
+% subtlety between taking any type and some unknown type, why each 
+% occurence of ? is different.
+
+% more details - definitions with bounds, multiple type params
+
+
+% interfacing with legacy code - raw types
+-->
+        </div>
+        <div class=NavBit>
+            <a target=_top href=wildcards.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=legacy.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Wildcards
+        <br><b>Next page:</b> Interoperating with Legacy Code
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

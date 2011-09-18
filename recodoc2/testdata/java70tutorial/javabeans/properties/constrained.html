@@ -1,0 +1,602 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Constrained Properties (The Java&trade; Tutorials &gt;        
+            JavaBeans(TM) &gt; Properties)
+</title>
+
+     <meta name="description" content="This JavaBean Java tutorial describes using the JavaBeans API to develop JavaBean components" />
+     <meta name="keywords" content="java programming, learn java, java sample code, javabean, bean persistence, java introspection, beancontext" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> JavaBeans(TM)
+        <br><b>Lesson:</b> Properties
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Properties</a></div>
+<div class="linkAHEAD"><a href="properties.html">Simple Properties</a></div>
+<div class="linkAHEAD"><a href="bound.html">Bound Properties</a></div>
+<div class="nolinkAHEAD">Constrained Properties</div>
+<div class="linkAHEAD"><a href="indexed.html">Indexed Properties</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>JavaBeans(TM)</a>
+                &gt;
+                <a href=index.html target=_top>Properties</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=bound.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=indexed.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Constrained Properties</h1></div>
+            <div id=PageContent>
+<p>
+
+A bean property is <EM class="Emphasis">constrained</EM> if the 
+bean supports the
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/VetoableChangeListener.html"><code>VetoableChangeListener</code></a>(in the API reference documentation) and
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/PropertyChangeEvent.html"><code>PropertyChangeEvent</code></a>(in the API reference documentation) classes, and if the set method for this property throws a 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/java/beans/PropertyVetoException.html"><code>PropertyVetoException</code></a>(in the API reference documentation).
+<P>
+Constrained properties are more complicated than bound properties because they 
+also support property change listeners which happen to be <EM class="Emphasis">vetoers</EM>.
+<P>The following operations in the <CODE>set<EM class="Emphasis">XXX</EM></CODE> method for the
+constrained property must be implemented in this order:
+<OL>
+	<LI>Save the old value in case the change is vetoed.</LI>
+	<LI>Notify listeners of the new proposed value, allowing them to veto the 
+change.</LI>
+	<LI>If no listener vetoes the change (no exception is thrown), set the 
+property to the new value.</LI>
+</OL>
+<P>The accessor methods for a constrained property are defined in the same way as 
+those for simple properties, with the addition that the
+<CODE>set<EM class="Emphasis">XXX</EM></CODE> method throws a <CODE>PropertyVetoException</CODE> 
+exception. The syntax is as follows:
+<div class="codeblock"><pre>
+	public void setPropertyName(PropertyType pt)
+	throws PropertyVetoException {code}
+</pre></div>
+<h2>Handling Vetoes</h2>
+If a registered listener vetoes a proposed property change by throwing a 
+<CODE>PropertyVetoException</CODE> exception, the source bean with the constrained
+property is responsible for the following actions:
+<UL>
+	<LI>Catching exceptions.</LI>
+	<LI>Reverting to the old value for the property.</LI>
+	<LI>Issuing a new <CODE>VetoableChangeListener.vetoableChange</CODE> call to all listeners 
+to report the reversion. </LI>
+</UL>
+The <CODE>VetoableChangeListener</CODE> class throws a <CODE>PropertyVetoException</CODE>
+and handles the <CODE>PropertyChangeEvent</CODE> event fired by the bean with the
+constrained property.
+<P>
+The <CODE>VetoableChangeSupport</CODE> provides the following operations:
+<UL>
+	<LI>Keeping track of <CODE>VetoableChangeListener</CODE> objects.</LI>
+	<LI>Issuing the <CODE>vetoableChange</CODE> method on all registered listeners.</LI>
+	<LI>Catching any vetoes (exceptions) thrown by listeners.</LI>
+	<LI>Informing all listeners of a veto by calling <CODE>vetoableChange</CODE> again, but 
+with the old property value as the proposed "new" value.</LI>
+</UL>
+<h2>Creating a Constrained Property</h2>
+<P>To create a constrained property, set 
+the appropriate option in the New Property Pattern form as shown on the 
+following figure.
+<p><center><IMG SRC="../../figures/javabeans/constrained-property.gif" WIDTH="240" HEIGHT="376" ALIGN="BOTTOM" ALT="Setting a constrained option for the radius property. "></center></p>Note that the Multicast Source Event Pattern - vetoableChangeListener was added 
+to the Bean Patterns hierarchy.
+<P>You can also modify the existing code generated in the previous lesson to make 
+the <CODE>title</CODE> and <CODE>lines</CODE> properties constrained as follows (where newly added code is 
+shown in bold):
+<div class="codeblock"><pre>
+<strong>
+import java.io.Serializable;
+</strong>import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+<strong>import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.beans.VetoableChangeSupport;</strong>
+<strong>import java.awt.Graphics;</strong>
+import javax.swing.JComponent;
+
+/**
+ * Bean with constrained properties.
+ */
+public class MyBean
+        extends JComponent
+        implements Serializable
+{
+    private String title;
+    private String[] lines = new String[10];
+
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
+    <strong>private final VetoableChangeSupport vcs = new VetoableChangeSupport( this );</strong>
+
+    public String getTitle()
+    {
+        return this.title;
+    }
+/**
+ * This method was modified to throw the PropertyVetoException
+ * if some vetoable listeners reject the new title value
+ */
+    public void setTitle( String title )
+            <strong>throws PropertyVetoException</strong>
+    {
+        String old = this.title;
+        <strong>this.vcs.fireVetoableChange( "title", old, title );</strong>
+        this.title = title;
+        this.pcs.firePropertyChange( "title", old, title );
+    }
+
+    public String[] getLines()
+    {
+        return this.lines.clone();
+    }
+
+    public String getLines( int index )
+    {
+        return this.lines[index];
+    }
+/**
+ * This method throws the PropertyVetoException
+ * if some vetoable listeners reject the new lines value
+ */
+    public void setLines( String[] lines )
+            <strong>throws PropertyVetoException</strong>
+    {
+        String[] old = this.lines;
+        <strong>this.vcs.fireVetoableChange( "lines", old, lines );</strong>
+        this.lines = lines;
+        this.pcs.firePropertyChange( "lines", old, lines );
+    }
+
+    public void setLines( int index, String line )
+            throws PropertyVetoException
+    {
+        String old = this.lines[index];
+        <strong>this.vcs.fireVetoableChange( "lines", old, line );</strong>
+        this.lines[index] = line;
+        this.pcs.fireIndexedPropertyChange( "lines", index, old, line );
+    }
+
+    public void addPropertyChangeListener( PropertyChangeListener listener )
+    {
+        this.pcs.addPropertyChangeListener( listener );
+    }
+
+    public void removePropertyChangeListener( PropertyChangeListener listener )
+    {
+        this.pcs.removePropertyChangeListener( listener );
+    }
+/**
+ * Registration of the VetoableChangeListener
+ */
+    <strong>public void addVetoableChangeListener( VetoableChangeListener listener )
+    {
+        this.vcs.addVetoableChangeListener( listener );
+    }
+
+    public void removeVetoableChangeListener( VetoableChangeListener listener )
+    {
+        this.vcs.removeVetoableChangeListener( listener );</strong>
+    }
+
+    protected void paintComponent( Graphics g )
+    {
+        g.setColor( getForeground() );
+
+        int height = g.getFontMetrics().getHeight();
+        paintString( g, this.title, height );
+
+        if ( this.lines != null )
+        {
+            int step = height;
+            for ( String line : this.lines )
+                paintString( g, line, height += step );
+        }
+    }
+
+    private void paintString( Graphics g, String str, int height )
+    {
+        if ( str != null )
+            g.drawString( str, 0, height );
+    }
+}
+</pre></div>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=bound.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=indexed.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Bound Properties
+        <br><b>Next page:</b> Indexed Properties
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

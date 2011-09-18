@@ -1,0 +1,537 @@
+
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Create and Destroy Subcontexts (The Java&trade; Tutorials &gt;        
+            Java Naming and Directory Interface(TM). &gt; Naming and Directory Operations)
+</title>
+
+     <meta name="description" content="This JNDI Java tutorial describes Java Naming and Directory Interface (JNDI) technology, naming and directory operations, and LDAP" />
+     <meta name="keywords" content="java programming, learn java, java sample code, jndi, ldap, jndi service provider" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Java Naming and Directory Interface(TM).
+        <br><b>Lesson:</b> Naming and Directory Operations
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Naming and Directory Operations</a></div>
+<div class="linkAHEAD"><a href="exception.html">Naming Exceptions</a></div>
+<div class="linkAHEAD"><a href="lookup.html">Lookup an Object</a></div>
+<div class="linkAHEAD"><a href="list.html">List the Context</a></div>
+<div class="linkAHEAD"><a href="bind.html">Add, Replace or Remove a Binding</a></div>
+<div class="linkAHEAD"><a href="rename.html">Rename</a></div>
+<div class="nolinkAHEAD">Create and Destroy Subcontexts</div>
+<div class="linkAHEAD"><a href="attrnames.html">Attribute Names</a></div>
+<div class="linkAHEAD"><a href="getattrs.html">Read Attributes</a></div>
+<div class="linkAHEAD"><a href="modattrs.html">Modify Attributes</a></div>
+<div class="linkAHEAD"><a href="bindattr.html">Add, Replace Bindings with Attributes</a></div>
+<div class="linkAHEAD"><a href="search.html">Search</a></div>
+<div class="linkBHEAD"><a href="basicsearch.html">Basic Search</a></div>
+<div class="linkBHEAD"><a href="filter.html">Filters</a></div>
+<div class="linkBHEAD"><a href="scope.html">Scope</a></div>
+<div class="linkBHEAD"><a href="countlimit.html">Result Count</a></div>
+<div class="linkBHEAD"><a href="timelimit.html">Time Limit</a></div>
+<div class="linkAHEAD"><a href="faq.html">Trouble Shooting Tips</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Java Naming and Directory Interface(TM).</a>
+                &gt;
+                <a href=index.html target=_top>Naming and Directory Operations</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=rename.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=attrnames.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Create and Destroy Subcontexts</h1></div>
+            <div id=PageContent>
+The <tt>Context</tt> interface contains methods for 
+<a href=#CREATE>creating</a> and <a href=#DESTROY>destroying</a>
+a <em>subcontext</em>, a context that is bound in another
+context of the same type.
+<p>
+This examples here use an object that has <em>attributes</em>
+and create a subcontext in the directory.
+You can use these <tt>DirContext</tt> methods to associate
+attributes with the object at the time that the binding or subcontext
+is added to the namespace.
+For example, you might create a <tt>Person</tt> object and bind it to
+the namespace and at the same time associate attributes about that
+<tt>Person</tt> object.
+The naming equivalent will have no attributes.
+<p>
+The createSubcontext() differs from bind() in that it creates a new
+Object i.e a new Context to be bound to the directory while as bind()
+binds the given Object in the directory.
+</p>
+
+<h2><a name=CREATE>Creating a Context</a></h2>
+
+To create a naming context, you supply to
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/Context.html#createSubcontext(javax.naming.Name)"><tt>createSubcontext()</tt></a>    the name of the context that you want to create.
+
+To create a context that has attributes, you supply to
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/directory/DirContext.html#createSubcontext(javax.naming.Name, javax.naming.directory.Attributes)"><tt>DirContext.createSubcontext()</tt></a> the name of the context that you want to create and its attributes.
+
+
+<hr>
+<strong>Before you go on:</strong>
+The examples in this lesson require that you make additions to the schema.
+You must either turn off schema-checking in the LDAP
+server or add <a href=../../jndi/software/config/java.schema>
+the schema</a> that accompanies this tutorial to the server.
+Both of these tasks are typically performed by the directory
+server's administrator. See the
+
+    lesson.
+
+<hr>
+
+
+
+<div class="codeblock"><pre>
+// Create attributes to be associated with the new context
+Attributes attrs = new BasicAttributes(true); // case-ignore
+Attribute objclass = new BasicAttribute("objectclass");
+objclass.add("top");
+objclass.add("organizationalUnit");
+attrs.put(objclass);
+
+// Create the context
+Context result = ctx.createSubcontext("NewOu", attrs);
+</pre></div>
+
+
+<a href=examples/Create.java>This example</a> creates a new context called <tt>"ou=NewOu"</tt>
+that has an attribute <tt>"objectclass"</tt> with two values, 
+<tt>"top"</tt> and <tt>"organizationalUnit"</tt>,
+in the context <tt>ctx</tt>.
+
+<div class="codeblock"><pre>
+# java Create
+ou=Groups: javax.naming.directory.DirContext
+ou=People: javax.naming.directory.DirContext
+ou=NewOu: javax.naming.directory.DirContext
+</pre></div>
+
+
+<p><a href=examples/Create.java>This example</a> creates a new context, called <tt>"NewOu"</tt>,
+that is a child of <tt>ctx</tt>.</p>
+
+
+<p><center><IMG SRC="../../figures/jndi/create.gif" WIDTH="456" HEIGHT="368" ALIGN="BOTTOM" ALT="Diagram shows new subcontext."></center></p>
+
+<h2><a name=DESTROY>Destroying a Context</a></h2>
+
+To destroy a context, you supply to
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/api/javax/naming/Context.html#destroySubcontext(javax.naming.Name)"><tt>destroySubcontext()</tt></a>    the name of the context to destroy.
+
+
+<div class="codeblock"><pre>
+// Destroy the context
+ctx.destroySubcontext("NewOu");
+</pre></div>
+
+
+<a href=examples/Destroy.java>This example</a> destroys the context 
+<tt>"NewOu"</tt>
+in the context <tt>ctx</tt>.
+        </div>
+        <div class=NavBit>
+            <a target=_top href=rename.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=attrnames.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> Rename
+        <br><b>Next page:</b> Attribute Names
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 

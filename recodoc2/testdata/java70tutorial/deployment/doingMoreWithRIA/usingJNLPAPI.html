@@ -1,0 +1,654 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang="en-US">
+    <head>
+        <title>Accessing the Client Using JNLP API (The Java&trade; Tutorials &gt;        
+            Deployment &gt; Doing More With Java Rich Internet Applications)
+</title>
+
+     <meta name="description" content="This deployment Java tutorial describes development and deployment of applets, Java Web Start applications, rich Internet applications, and JAR related tools" />
+     <meta name="keywords" content="java programming, learn java, java sample code, java applet, java web start, rich internet application, RIA, jar, plugin, plug-in" />
+        
+<style type="text/css">
+    .FigureCaption   { 
+        margin-left: 1in; 
+        margin-right: 1in; 
+        font-family: sans-serif; 
+        font-size: smaller; 
+        text-align: justify;
+    }
+    #TopBar_bl {
+        background: url(../../images/java_bar_bl.gif) 0 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_br {
+        background: url(../../images/java_bar_br.gif) 100% 100% no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tl {
+        background: url(../../images/java_bar_tl.gif) 0 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar_tr {
+        background: url(../../images/java_bar_tr.gif) 100% 0 no-repeat;
+        width: 100%;
+        height: 60px;
+    }
+    #TopBar {
+        background: #35556B url(../../images/java_bar.gif);
+        margin: 10px 10px 0 10px;
+        height:60px;
+        min-width:700px;
+        color: white;
+        font-family: sans-serif; 
+        font-weight: bold;
+    }
+    @media print {
+        #BreadCrumbs, #Download {
+            display: none;
+        }
+    }
+    #TopBar_right {
+        line-height: 14px;
+        float: right;
+        padding-top: 2px;
+        padding-right: 30px;
+        text-align: center;
+    }
+    @media print {
+        #TopBar_right {
+            display: none;
+        }
+    }
+    #TopBar_right a {
+        font-size: 12px;
+        margin: 3px;
+        padding: 0;
+    }
+    #TopBar a:visited, #TopBar a:link {
+        color: white;
+        text-decoration: none;
+    }
+    #TopBar a:hover, #TopBar a:active  {
+        background-color: white;
+        color: #35556B;
+    }
+    #BreadCrumbs {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+        float: right;
+    }
+    #BreadCrumbs a {
+        color: blue;
+    }
+    #BreadCrumbs a:visited, #BreadCrumbs a:link {
+        text-decoration: none;
+    }
+    #BreadCrumbs a:hover, #BreadCrumbs a:active {
+        text-decoration: underline;
+    }
+    #PageTitle {
+        margin: 0 5px 0.5em 0;
+        color: #F90000;
+    }    
+    #PageContent{
+        margin: 0 5px 0 20px;
+    }
+    .LeftBar_shown {
+        width: 13em;
+        float: left;
+        margin-left: 10px;
+        margin-top: 4px;
+        margin-bottom: 2em;
+        margin-right: 10px;
+    }
+    @media print {
+        .LeftBar_shown {
+            display: none;
+        }
+    }
+    .LeftBar_hidden {
+        display: none;
+    }
+    #Footer {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .footertext {
+        font-size: 10px;
+        font-family: sans-serif; 
+        margin-top: 1px;
+    }
+    
+    #Footer2 {
+        padding-top: 10px;
+        padding-left: 10px;
+        margin-right: 10px;
+    }
+    .NavBit  {
+        padding: 4px 5px 0.5em 0;
+        font-family: sans-serif; 
+    }
+    @media print {
+        .NavBit {
+            display: none;
+        }
+    }
+    #TagNotes {
+        text-align: right;        
+    }
+    
+    @media print {
+        #TagNotes a:visited, #TagNotes a:link {
+            color: #35556B;
+            text-decoration: none;
+        }
+    }
+    #Contents a, .NavBit a, #TagNotes a {
+        color: blue
+    }
+    #TagNotes a:visited, #TagNotes a:link,
+    #Contents a:visited, #Contents a:link,
+    .NavBit a:visited, .NavBit a:link {
+        text-decoration: none;
+    }
+    #TagNotes a:hover, #TagNotes a:active,   
+    #Contents a:hover, #Contents a:active,   
+    .NavBit a:hover, .NavBit a:active {  
+        text-decoration: underline;
+    }
+    #Contents {
+        float: left;
+        font-family: sans-serif; 
+    }
+    @media print {
+        #Contents {
+            display: none;
+        }
+    }
+    @media screen {
+        div.PrintHeaders {
+            display: none;
+        }
+    }
+    .linkLESSON, .nolinkLESSON {
+        margin-left: 0.5em;
+        text-indent: -0.5em
+    }
+    .linkAHEAD, .nolinkAHEAD, .linkQUESTIONS, .nolinkQUESTIONS   {
+        margin-left: 1.5em; 
+        text-indent: -0.5em
+    }
+    .linkBHEAD, .nolinkBHEAD   {
+        margin-left: 2.5em;
+        text-indent: -0.5em
+    }
+    .linkCHEAD, .nolinkCHEAD   {
+        margin-left: 3.5em;
+        text-indent: -0.5em
+    }
+    .nolinkLESSON, .nolinkAHEAD, .nolinkBHEAD, .nolinkCHEAD,
+    .nolinkQUESTIONS {
+        font-weight: bold;
+        color: #F90000;
+    }
+    .MainFlow_indented {
+        margin-right: 10px;
+        margin-left: 15em;
+        margin-bottom: 2em;
+
+    }
+    .MainFlow_wide {
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 2em;
+
+    }
+    @media print {
+        .MainFlow_indented, .MainFlow_wide {
+            padding-top: 0;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+    }
+    h1, h2, h3, h4, h5 {
+        color: #F90000;
+        font-family: sans-serif;
+    }
+
+    h1 {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    h3 {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+
+    #ToggleLeft {
+        display: none;
+    }
+    
+    .note {
+        margin: 0 30px 0px 30px;
+    }
+    
+    .codeblock {
+        margin: 0 30px 0px 30px;
+    }
+
+    /t
+
+</style>
+<script type="text/javascript">
+    function leftBar() {
+        var nameq = 'tutorial_showLeftBar='
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookieString = cookies[i];
+            while (cookieString.charAt(0) == ' ') {
+                cookieString = cookieString.substring(1, cookieString.length);
+            }
+            if (cookieString.indexOf(nameq) == 0) {
+                cookieValue =  cookieString.substring(nameq.length,
+                        cookieString.length);
+                return cookieValue == 'yes';
+            }
+        }
+        return true;
+    }
+
+    function showLeft(b) {
+        var contents = document.getElementById("LeftBar");
+        var main = document.getElementById("MainFlow");
+        var toggle = document.getElementById("ToggleLeft");
+        if (b) {
+            contents.className = "LeftBar_shown";
+            main.className = "MainFlow_indented";
+            toggle.innerHTML = "Hide the TOC";
+            document.cookie = 'tutorial_showLeftBar=yes; path=/';
+        } else {
+            contents.className = "LeftBar_hidden";
+            main.className = "MainFlow_wide";
+            toggle.innerHTML = "Show the TOC";
+            document.cookie = 'tutorial_showLeftBar=no; path=/';
+        }
+    }
+
+    function toggleLeft() {
+        showLeft(document.getElementById("LeftBar").className ==
+                "LeftBar_hidden");
+        document.getElementById("ToggleLeft").blur();
+    }
+
+    function load() {
+        showLeft(leftBar());
+        document.getElementById("ToggleLeft").style.display="inline";
+    }
+    
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+    </head>
+<body onload="load()">
+    <div id=TopBar> <div id=TopBar_tr> <div id=TopBar_tl> <div id=TopBar_br> <div id=TopBar_bl> 
+                        <div id=TopBar_right> 
+                            <a target="_blank"
+                                href="http://java.sun.com/javase/6/download.jsp">Download
+                                the JDK</a>
+                            <br>
+                            <a href="../../search.html" target="_blank">Search the
+                                Tutorials</a>
+                            <br>
+                            <a href="javascript:toggleLeft()"
+                                id="ToggleLeft">Hide the TOC</a>
+                        </div>
+                    </div> </div> </div> </div> </div>
+    <div class=PrintHeaders>
+        <b>Trail:</b> Deployment
+        <br><b>Lesson:</b> Doing More With Java Rich Internet Applications
+        <br><b>Section:</b> JNLP API
+    </div>
+
+    <div id=LeftBar class=LeftBar_shown>
+        <div id=Contents>
+            <div class="linkLESSON"><a href="index.html">Doing More With Java Rich Internet Applications</a></div>
+<div class="linkAHEAD"><a href="settingArgsProperties.html">Setting Trusted Arguments and Secure Properties</a></div>
+<div class="linkBHEAD"><a href="properties.html">System Properties</a></div>
+<div class="linkAHEAD"><a href="jnlpAPI.html">JNLP API</a></div>
+<div class="nolinkBHEAD">Accessing the Client Using JNLP API</div>
+<div class="linkAHEAD"><a href="cookies.html">Cookies</a></div>
+<div class="linkBHEAD"><a href="accessingCookies.html">Accessing Cookies</a></div>
+<div class="linkAHEAD"><a href="customizeRIALoadingExperience.html">Customizing the Loading Experience</a></div>
+<div class="linkAHEAD"><a href="security.html">Security in Rich Internet Applications </a></div>
+<div class="linkQUESTIONS"><a href="QandE/questions.html">Questions and Exercises</a></div>
+</div>
+    </div>
+    <div id=MainFlow class=MainFlow_indented>
+            <span id=BreadCrumbs>
+                <a href=../../index.html target=_top>Home Page</a>
+                &gt;
+                <a href=../index.html target=_top>Deployment</a>
+                &gt;
+                <a href=index.html target=_top>Doing More With Java Rich Internet Applications</a>
+            </span>
+            <div class=NavBit>
+                <a target=_top href=jnlpAPI.html>&laquo;&nbsp;Previous</a>&nbsp;&bull;&nbsp;<a target=_top href=../TOC.html>Trail</a>&nbsp;&bull;&nbsp;<a target=_top href=cookies.html>Next&nbsp;&raquo;</a>
+            </div>
+            <div id=PageTitle><h1>Accessing the Client Using JNLP API</h1></div>
+            <div id=PageContent>
+<p>When launched by using the Java Network Launch Protocol (JNLP), 
+rich Internet applications (RIAs)  
+can access the client with the user's permission. Consider the 
+Text Editor applet example to understand  how to 
+use JNLP API based services.
+The Text Editor has a text area and buttons labeled Open, Save, and SaveAs. The 
+Text Editor can be used to open an existing text file, edit it, and save it back to disk.
+</p>
+<p>The Text Editor applet is shown next.</p>
+<script src="http://www.java.com/js/deployJava.js"></script>
+<script> 
+    var attributes = { code:'TextEditorApplet.class', 
+    archive:'examples/dist/applet_JNLP_API/applet_JNLP_API.jar',  
+    width:500, height:300} ;
+    var parameters = {jnlp_href: 'examples/dist/applet_JNLP_API/texteditor-applet.jnlp'} ;
+    deployJava.runApplet(attributes, parameters, '1.6');
+</script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+
+<div class="note"><hr><strong>Note:</strong> If you don't see the applet running, you need to install at least the <a href="http://java.sun.com/javase/downloads/index.jsp">Java SE Development Kit (JDK) 6 update 10</a> release.<hr></div><div class="note"><hr><strong>Note:</strong> If you don't see the example running, you might need to enable the JavaScript interpreter in your browser so that the Deployment Toolkit script can function properly.<hr></div>
+
+<p>The 
+<a class="SourceLink" target="_blank" href="examples/applet_JNLP_API/src/TextEditor.java"><code>TextEditor</code></a> and 
+<a class="SourceLink" target="_blank" href="examples/applet_JNLP_API/src/TextEditor.java"><code>TextEditorApplet</code></a> classes lay out the user interface and display it as an applet. The 
+<a class="SourceLink" target="_blank" href="examples/applet_JNLP_API/src/FileHandler.java"><code>FileHandler</code></a> class contains the core functionality with respect to using JNLP API based services. 
+</p> 
+<p>Remember, the techniques 
+described in this topic apply to Java Web Start applications as well.
+</p>
+<p>To make use of a JNLP service, first retrieve a 
+reference to the service. The <code>initialize</code> method of the 
+<code>FileHandler</code> class retrieves references to JNLP services as 
+shown in the following code snippet:
+</p>
+<div class="codeblock"><pre>
+private static synchronized void initialize() {
+    ...
+    try {
+        <b>
+        fos = (FileOpenService) ServiceManager.lookup("javax.jnlp.FileOpenService");
+        fss = (FileSaveService) ServiceManager.lookup("javax.jnlp.FileSaveService");
+        </b>
+    } catch (UnavailableServiceException e) {
+        ...
+    }
+}
+</pre></div>
+
+<p>After you have a reference to the required services, invoke methods on 
+the service to perform the necessary operations. The <code>open</code> method of the 
+<code>FileHandler</code> class invokes the <code>openFileDialog</code> method of the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/jre/api/javaws/jnlp/javax/jnlp/FileOpenService.html"><code>FileOpenService</code></a> class to display a file chooser. The <code>open</code> method returns the contents of the  
+selected file.
+</p>
+<div class="codeblock"><pre>
+public static String open() {
+    initialize();
+    try {
+        <b>fc = fos.openFileDialog(null, null);</b>
+        return readFromFile(fc);
+    } catch (IOException ioe) {
+        ioe.printStackTrace(System.out);
+        return null;
+    }
+}
+</pre></div>
+
+<p>Similarly, the <code>save</code> and <code>saveAs</code> methods 
+of the <code>FileHandler</code> class invoke corresponding methods of the 
+<a class="APILink" target="_blank" href="http://download.oracle.com/javase/7/docs/jre/api/javaws/jnlp/javax/jnlp/FileSaveService.html"><code>FileSaveService</code></a> class to enable the user to select a file name and 
+save the contents of the text area to disk.
+</p>
+
+<div class="codeblock"><pre>
+public static void saveAs(String txt) {
+    initialize();
+    try {
+        if (fc == null) {
+            // If not already saved. Save-as is like save
+            save(txt);
+        } else {
+            <b>fc = fss.saveAsFileDialog(null, null, fc);</b>
+            save(txt);
+        }
+    } catch (IOException ioe) {
+        ioe.printStackTrace(System.out);
+    }
+}
+</pre></div>
+
+<p>At runtime, when the RIA attempts to open or save a file, users  see a 
+security dialog asking them if they want to allow the action. The operation will 
+proceed only if users allow the RIA to access their environment.
+</p>
+<p>The complete source of the  
+<a class="SourceLink" target="_blank" href="examples/applet_JNLP_API/src/FileHandler.java"><code>FileHandler</code></a> class is shown next. You can also see source code for a complete text editor 
+ called WebPad in the <code>sample</code> 
+directory in your JDK installation (<code>your jdk path/sample/jnlp/webpad</code>). WebPad 
+makes  extensive use of the JNLP API.
+</p>
+
+<div class="codeblock"><pre>
+
+// add javaws.jar to the classpath during compilation 
+import javax.jnlp.FileOpenService;
+import javax.jnlp.FileSaveService;
+import javax.jnlp.FileContents;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.UnavailableServiceException;
+import java.io.*;
+
+public class FileHandler {
+
+    static private FileOpenService fos = null;
+    static private FileSaveService fss = null;
+    static private FileContents fc = null;
+
+    // retrieves a reference to the JNLP services
+    private static synchronized void initialize() {
+        if (fss != null) {
+            return;
+        }
+        try {
+            fos = (FileOpenService) ServiceManager.lookup(&quot;javax.jnlp.FileOpenService&quot;);
+            fss = (FileSaveService) ServiceManager.lookup(&quot;javax.jnlp.FileSaveService&quot;);
+        } catch (UnavailableServiceException e) {
+            fos = null;
+            fss = null;
+        }
+    }
+
+    // displays open file dialog and reads selected file using FileOpenService
+    public static String open() {
+        initialize();
+        try {
+            fc = fos.openFileDialog(null, null);
+            return readFromFile(fc);
+        } catch (IOException ioe) {
+            ioe.printStackTrace(System.out);
+            return null;
+        }
+    }
+
+    // displays saveFileDialog and saves file using FileSaveService
+    public static void save(String txt) {
+        initialize();
+        try {
+            // Show save dialog if no name is already given
+            if (fc == null) {
+                fc = fss.saveFileDialog(null, null,
+                        new ByteArrayInputStream(txt.getBytes()), null);
+                // file saved, done
+                return;
+            }
+            // use this only when filename is known
+            if (fc != null) {
+                writeToFile(txt, fc);
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace(System.out);
+        }
+    }
+
+    // displays saveAsFileDialog and saves file using FileSaveService
+    public static void saveAs(String txt) {
+        initialize();
+        try {
+            if (fc == null) {
+                // If not already saved. Save-as is like save
+                save(txt);
+            } else {
+                fc = fss.saveAsFileDialog(null, null, fc);
+                save(txt);
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace(System.out);
+        }
+    }
+
+    private static void writeToFile(String txt, FileContents fc) throws IOException {
+        int sizeNeeded = txt.length() * 2;
+        if (sizeNeeded &gt; fc.getMaxLength()) {
+            fc.setMaxLength(sizeNeeded);
+        }
+        BufferedWriter os = new BufferedWriter(new OutputStreamWriter(fc.getOutputStream(true)));
+        os.write(txt);
+        os.close();
+    }
+
+    private static String readFromFile(FileContents fc) throws IOException {
+        if (fc == null) {
+            return null;
+        }
+        BufferedReader br = new BufferedReader(new InputStreamReader(fc.getInputStream()));
+        StringBuffer sb = new StringBuffer((int) fc.getLength());
+        String line = br.readLine();
+        while (line != null) {
+            sb.append(line);
+            sb.append(&quot;\n&quot;);
+            line = br.readLine();
+        }
+        br.close();
+        return sb.toString();
+    }
+}
+</pre></div>
+
+<div class="note"><hr><strong>Note:</strong>&nbsp;To compile Java code that has a reference to classes in the 
+<code>javax.jnlp</code> package, include 
+<code>&lt;your JDK path&gt;/jre/lib/javaws.jar</code> 
+in your classpath. 
+At runtime, the Java Runtime Environment software automatically makes these 
+classes available to RIAs. 
+<hr></div>
+
+<p>
+<a class="OutsideLink" target="_blank" href="examplesIndex.html#AppletJNLPAPI">Download source code</a> for the <em>Text Editor Applet</em> example to experiment further.
+</p>
+        </div>
+        <div class=NavBit>
+            <a target=_top href=jnlpAPI.html>&laquo; Previous</a>
+            &bull;
+            <a target=_top href=../TOC.html>Trail</a>
+            &bull;
+            <a target=_top href=cookies.html>Next &raquo;</a>
+        </div>
+    </div>
+    <div id=Footer2>
+<hr>
+<div id=TagNotes>
+    <p class="footertext">Problems with the examples? Try <a target="_blank"
+        href=../../information/run-examples.html>Compiling and Running
+        the Examples: FAQs</a>.
+    <br>
+    Complaints? Compliments? Suggestions? <a target="_blank"
+        href="http://download.oracle.com/javase/feedback.html">Give
+    us your feedback</a>.
+    </p>
+</div> 
+
+<div id=Footer>
+<p class="footertext"><a name="license_info">Your use of this</a> page and all the material on pages under &quot;The Java Tutorials&quot; banner,
+and all the material on pages under &quot;The Java Tutorials&quot; banner is subject to the <a href="../../information/license.html">Java SE Tutorial Copyright
+and License</a>.
+Additionally, any example code contained in any of these Java
+Tutorials pages is licensed under the
+<a href="http://developers.sun.com/license/berkeley_license.html">Code
+Sample License</a>.
+</p>
+<table border="0" cellspacing="0" cellpadding="5" summary="">
+    <tr>
+         <td headers="h1" width="20%">
+	 <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td headers="h1" align="center"><img id=duke src=../../images/DukeWave.gif width=55 height=55 alt="duke image"></td>
+              <td headers="h2" align="left" valign="middle"><img id=oracle src=../../images/logo_oracle_footer.gif width=100 height=29 alt="Oracle logo"></td>
+           </tr>
+          </table>
+          </td>
+
+          <td width="55%" valign="middle" align="center">
+		<p class="footertext"><a href="http://www.oracle.com/us/corporate/index.html">About Oracle</a> | <a href="http://www.oracle.com/technology/index.html">Oracle Technology Network</a> | <a href="https://www.samplecode.oracle.com/servlets/CompulsoryClickThrough?type=TermsOfService">Terms of Service</a></p> 
+	 </td>
+          <td width="25%" valign="middle" align="right">
+      		<p class="footertext">Copyright &copy; 1995, 2011 Oracle and/or its affiliates. All rights reserved.</p>
+	 </td>
+     </tr>     
+</table>
+</div>
+    </div>
+    <div class=PrintHeaders>
+        <b>Previous page:</b> JNLP API
+        <br><b>Next page:</b> Cookies
+    </div>
+
+<!-- Start SiteCatalyst code   -->
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code_download.js"></script>
+<script language="JavaScript" src="http://www.oracle.com/ocom/groups/systemobject/@mktg_admin/documents/systemobject/s_code.js"></script>
+<noscript> 
+A browser with JavaScript enabled is required for this page to operate properly.
+</noscript>
+ 
+<!-- ********** DO NOT ALTER ANYTHING BELOW THIS LINE ! *********** -->
+<!--  Below code will send the info to Omniture server -->
+<script language="javascript">var s_code=s.t();if(s_code)document.write(s_code)</script>
+
+ 
+<!-- End SiteCatalyst code -->
+
+</body>
+</html> 
