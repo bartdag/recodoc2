@@ -14,45 +14,47 @@ LOCATION_THRESHOLD = 0.5
 
 OVERLOADED_THRESHOLD = 0.5
 
+VALID_COVERAGE_THRESHOLD = 0.5
 
-def create_family(head, codebase, criterion, first_criterion):
-    family = rmodel.CodeElementFamily(head=head)
+
+def create_pattern(head, codebase, criterion, first_criterion):
+    pattern = rmodel.CodePattern(head=head)
     if first_criterion:
-        family.criterion1 = criterion
+        pattern.criterion1 = criterion
     else:
-        family.criterion2 = criterion
-    family.codebase = codebase
-    family.save()
+        pattern.criterion2 = criterion
+    pattern.codebase = codebase
+    pattern.save()
 
-    return family
+    return pattern
 
 
-def compute_declaration_family(code_elements, first_criterion=True,
+def compute_declaration_pattern(code_elements, first_criterion=True,
         progress_monitor=NullProgressMonitor()):
-    '''Go through all code element and insert it in a family represented by its
-       container.
+    '''Go through all code element and insert it in a pattern represented by
+       its container.
     '''
-    families = {}
+    patterns = {}
 
-    progress_monitor.start('Comp. Declaration Families', size(code_elements))
+    progress_monitor.start('Comp. Declaration patterns', size(code_elements))
 
     for code_element in code_elements:
         kind_pk = code_element.kind.pk
         for container in code_element.containers.all():
             pk = container.pk
             key = '{0}-{1}'.format(pk, kind_pk)
-            if key not in families:
-                families[key] = create_family(container, container.codebase,
+            if key not in patterns:
+                patterns[key] = create_pattern(container, container.codebase,
                         rmodel.DECLARATION, first_criterion)
-                families[key].kind = code_element.kind
-                families[key].save()
-            families[key].members.add(code_element)
+                patterns[key].kind = code_element.kind
+                patterns[key].save()
+            patterns[key].extension.add(code_element)
 
         progress_monitor.work('Code Element processed', 1)
 
     progress_monitor.done()
 
-    return families
+    return patterns
 
 
 def compute_ancestors(code_element, ancestors):
@@ -62,99 +64,99 @@ def compute_ancestors(code_element, ancestors):
             compute_ancestors(parent, ancestors)
 
 
-def compute_hierarchy_family(code_elements, first_criterion=True,
+def compute_hierarchy_pattern(code_elements, first_criterion=True,
         progress_monitor=NullProgressMonitor()):
-    '''Go through all code elements and insert it in a family represented by
-       its direct container. Then, insert it in a family represented by any of
+    '''Go through all code elements and insert it in a pattern represented by
+       its direct container. Then, insert it in a pattern represented by any of
        its ancestor.
     '''
-    families1 = {}
-    familiesd = {}
+    patterns1 = {}
+    patternsd = {}
 
-    progress_monitor.start('Comp. Hierarchy Families', size(code_elements))
+    progress_monitor.start('Comp. Hierarchy Patterns', size(code_elements))
 
     for code_element in code_elements:
         # Hierarchy 1
         for parent in code_element.parents.all():
             pk = parent.pk
-            if pk not in families1:
-                families1[pk] = create_family(parent, parent.codebase,
+            if pk not in patterns1:
+                patterns1[pk] = create_pattern(parent, parent.codebase,
                         rmodel.HIERARCHY, first_criterion)
-            families1[pk].members.add(code_element)
+            patterns1[pk].extension.add(code_element)
 
         # Hierarchy D
         ancestors_list = ctx.get_ancestors_value(code_element)
         ancestors = {ancestor.pk: ancestor for ancestor in ancestors_list}
 
         for ancestor_pk in ancestors:
-            if ancestor_pk not in familiesd:
-                familiesd[ancestor_pk] = create_family(
+            if ancestor_pk not in patternsd:
+                patternsd[ancestor_pk] = create_pattern(
                         ancestors[ancestor_pk],
                         code_element.codebase,
                         rmodel.HIERARCHY_D,
                         first_criterion)
-            familiesd[ancestor_pk].members.add(code_element)
+            patternsd[ancestor_pk].extension.add(code_element)
 
         progress_monitor.work('Code Element processed', 1)
 
     progress_monitor.done()
 
-    return (families1, familiesd)
+    return (patterns1, patternsd)
 
 
-def compute_no_abstract_family(families,
+def compute_no_abstract_pattern(patterns,
         progress_monitor=NullProgressMonitor()):
-    '''Go through all families. If a proper subset of the families is non
-       abstract, create a new family, with non-abstract as a second criteria.
+    '''Go through all patterns. If a proper subset of the patterns is non
+       abstract, create a new pattern, with non-abstract as a second criteria.
     '''
 
-    new_families = {}
-    progress_monitor.start('Comp. No Abstract Families', len(families))
+    new_patterns = {}
+    progress_monitor.start('Comp. No Abstract patterns', len(patterns))
 
-    for head_pk in families:
-        family = families[head_pk]
-        code_elements = family.members.all()
-        new_members = [code_element for code_element in code_elements if
+    for head_pk in patterns:
+        pattern = patterns[head_pk]
+        code_elements = pattern.extension.all()
+        new_extension = [code_element for code_element in code_elements if
                 not code_element.abstract]
-        new_size = len(new_members)
-        if new_size > 0 and new_size < family.members.count():
-            new_family = create_family(family.head, family.codebase,
+        new_size = len(new_extension)
+        if new_size > 0 and new_size < pattern.extension.count():
+            new_pattern = create_pattern(pattern.head, pattern.codebase,
                     rmodel.NO_ABSTRACT, False)
-            new_family.criterion1 = family.criterion1
-            new_family.save()
-            new_family.members.add(*new_members)
-            new_families[new_family.pk] = new_family
-        progress_monitor.work('Family processed', 1)
+            new_pattern.criterion1 = pattern.criterion1
+            new_pattern.save()
+            new_pattern.extension.add(*new_extension)
+            new_patterns[new_pattern.pk] = new_pattern
+        progress_monitor.work('pattern processed', 1)
 
     progress_monitor.done()
 
-    return new_families
+    return new_patterns
 
 
-def compute_token_family_second(families,
+def compute_token_pattern_second(patterns,
         progress_monitor=NullProgressMonitor()):
-    '''For each family, compute sub families based on token.'''
+    '''For each pattern, compute sub patterns based on token.'''
 
-    progress_monitor.start('Computing token for a set of families',
-            len(families))
-    token_families = {}
+    progress_monitor.start('Computing token for a set of patterns',
+            len(patterns))
+    token_patterns = {}
 
-    for head_pk in families:
-        family = families[head_pk]
-        code_elements = family.members.all()
-        sub_families = compute_token_family(code_elements, False,
+    for head_pk in patterns:
+        pattern = patterns[head_pk]
+        code_elements = pattern.extension.all()
+        sub_patterns = compute_token_pattern(code_elements, False,
                 CLIProgressMonitor())
-        for key in sub_families:
-            sub_family = sub_families[key]
-            sub_family.head = family.head
-            sub_family.criterion1 = family.criterion1
-            sub_family.save()
-            token_families[sub_family.pk] = sub_family
-        progress_monitor.work('Family processed.', 1)
+        for key in sub_patterns:
+            sub_pattern = sub_patterns[key]
+            sub_pattern.head = pattern.head
+            sub_pattern.criterion1 = pattern.criterion1
+            sub_pattern.save()
+            token_patterns[sub_pattern.pk] = sub_pattern
+        progress_monitor.work('pattern processed.', 1)
 
     progress_monitor.done()
 
-    return token_families
+    return token_patterns
 
 
 def compute_tokens(code_elements):
@@ -167,15 +169,15 @@ def compute_tokens(code_elements):
     return tokens
 
 
-def compute_token_family(code_elements, first_criterion=True,
+def compute_token_pattern(code_elements, first_criterion=True,
         progress_monitor=NullProgressMonitor()):
-    '''For each token, go through all code elements and create three families:
+    '''For each token, go through all code elements and create three patterns:
        code elements that start with a token, elements that end with a token,
        and elements that have the token in the middle. This is exclusive.
     '''
-    families = {}
+    patterns = {}
     if size(code_elements) == 0:
-        return families
+        return patterns
 
     codebase = code_elements.all()[0].codebase
     tokens = compute_tokens(code_elements)
@@ -200,7 +202,7 @@ def compute_token_family(code_elements, first_criterion=True,
             # Here, we want to avoid mixing classes with methods and fields!
             addt = lambda d, e: d[e.kind.pk].append(e)
         else:
-            # Here, we already know that they are part of the same family, so
+            # Here, we already know that they are part of the same pattern, so
             # they don't mix.
             addt = lambda d, e: d[0].append(e)
 
@@ -218,62 +220,62 @@ def compute_token_family(code_elements, first_criterion=True,
         #print('Debugging {0}: {1} {2} {3}'.format(token, len(start), len(end),
             #len(middle)))
 
-        for start_members in start.values():
-            if len(start_members) > 1:
-                family = create_family(None, codebase, rmodel.TOKEN,
+        for start_extension in start.values():
+            if len(start_extension) > 1:
+                pattern = create_pattern(None, codebase, rmodel.TOKEN,
                         first_criterion)
-                family.token = token
-                family.token_pos = rmodel.PREFIX
-                family.save()
-                family.members.add(*start_members)
-                families[family.pk] = family
+                pattern.token = token
+                pattern.token_pos = rmodel.PREFIX
+                pattern.save()
+                pattern.extension.add(*start_extension)
+                patterns[pattern.pk] = pattern
                 if first_criterion:
-                    family.kind = start_members[0].kind
-                    family.save()
+                    pattern.kind = start_extension[0].kind
+                    pattern.save()
 
-        for end_members in end.values():
-            if len(end_members) > 1:
-                family = create_family(None, codebase, rmodel.TOKEN,
+        for end_extension in end.values():
+            if len(end_extension) > 1:
+                pattern = create_pattern(None, codebase, rmodel.TOKEN,
                         first_criterion)
-                family.token = token
-                family.token_pos = rmodel.SUFFIX
-                family.save()
-                family.members.add(*end_members)
-                families[family.pk] = family
+                pattern.token = token
+                pattern.token_pos = rmodel.SUFFIX
+                pattern.save()
+                pattern.extension.add(*end_extension)
+                patterns[pattern.pk] = pattern
                 if first_criterion:
-                    family.kind = end_members[0].kind
-                    family.save()
+                    pattern.kind = end_extension[0].kind
+                    pattern.save()
 
-        for mid_members in middle.values():
-            if len(mid_members) > 1:
-                family = create_family(None, codebase, rmodel.TOKEN,
+        for mid_extension in middle.values():
+            if len(mid_extension) > 1:
+                pattern = create_pattern(None, codebase, rmodel.TOKEN,
                         first_criterion)
-                family.token = token
-                family.token_pos = rmodel.MIDDLE
-                family.save()
-                family.members.add(*mid_members)
-                families[family.pk] = family
+                pattern.token = token
+                pattern.token_pos = rmodel.MIDDLE
+                pattern.save()
+                pattern.extension.add(*mid_extension)
+                patterns[pattern.pk] = pattern
                 if first_criterion:
-                    family.kind = mid_members[0].kind
-                    family.save()
+                    pattern.kind = mid_extension[0].kind
+                    pattern.save()
 
         progress_monitor.work('Processed a token')
     progress_monitor.done()
-    return families
+    return patterns
 
 
-def compute_coverage(families, source, resource,
+def compute_coverage(patterns, source, resource,
         progress_monitor=NullProgressMonitor):
-    '''For each family, compute coverage (linked elements / total elements).
+    '''For each pattern, compute coverage (linked elements / total elements).
     '''
 
-    progress_monitor.start('Computing Coverage', size(families))
+    progress_monitor.start('Computing Coverage', size(patterns))
 
-    for family in families.all():
-        total = family.members.count()
+    for pattern in patterns.all():
+        total = pattern.extension.count()
         count = 0
         pk = resource.pk
-        for member in family.members.all():
+        for member in pattern.extension.all():
             if cmodel.CodeElementLink.objects.\
                     filter(code_element=member).\
                     filter(index=0).\
@@ -285,12 +287,102 @@ def compute_coverage(families, source, resource,
         else:
             coverage = 0.0
 
-        fam_coverage = rmodel.FamilyCoverage(family=family, resource=resource,
-                source=source, coverage=coverage)
-        fam_coverage.save()
-        progress_monitor.work('Processed a family', 1)
+        pat_coverage = rmodel.CodePatternCoverage(pattern=pattern,
+                resource=resource, source=source, coverage=coverage)
+        pat_coverage.save()
+        progress_monitor.work('Processed a pattern', 1)
 
     progress_monitor.done()
+
+
+def filter_coverage(patterns_query):
+    patterns_query.filter(coverage__lt=VALID_COVERAGE_THRESHOLD).\
+            update(valid=False)
+
+
+def combine_coverage(coverages, progress_monitor=NullProgressMonitor()):
+
+    coverages_list = list(coverages.all())
+    coverages_list.sort(key=lambda c: c.pattern.extension.count(),
+            reverse=True)
+    doc_patterns = []
+    processed_coverage = set()
+    cov_len = len(coverages_list)
+    progress_monitor.start('Processing {0} patterns'.format(cov_len), cov_len)
+
+    for i, coverage in enumerate(coverages_list):
+        if coverage.pk in processed_coverage:
+            progress_monitor.work('Skipped pattern', 1)
+            continue
+
+        current_best_cov = coverage.coverage
+        processed_coverage.add(coverage)
+        doc_pattern = rmodel.DocumentationPattern()
+        doc_pattern.save()
+        doc_pattern.patterns.add(coverage)
+        doc_patterns.append(doc_pattern)
+        extension = list(coverage.pattern.extension.all())
+        count = float(len(extension))
+
+        for tempcoverage in coverages_list[i + 1:]:
+            tempcoverage_value = tempcoverage.coverage
+            if (1.0 - (tempcoverage.pattern.extension.count() / count)) > \
+                    SUPER_REC_THRESHOLD:
+                # We are too much different in terms of members
+                # Go to next
+                if tempcoverage_value > current_best_cov:
+                    # This temp coverage has a better coverage than me, start
+                    # a new doc pattern. There is no way the next will be
+                    # included in this one.
+                    # XXX Is this step even necessary?
+                    break
+            if proper_subset(list(tempcoverage.pattern.extension.all()),
+                    extension):
+                if tempcoverage_value > current_best_cov:
+                    current_best_cov = tempcoverage_value
+                doc_pattern.patterns.add(tempcoverage)
+                processed_coverage.add(tempcoverage.pk)
+
+        doc_pattern.main_pattern = \
+            get_best_pattern(list(doc_pattern.patterns.all()))
+        doc_pattern.save()
+
+        progress_monitor.work('Processed documentation pattern', 1)
+
+    progress_monitor.info('Created {0} documentation patterns'.
+            format(len(doc_patterns)))
+    progress_monitor.done()
+
+    return doc_patterns
+
+
+def get_best_pattern(coverages):
+
+    def snd_crit(coverage):
+        pattern = coverage.pattern
+        if pattern.criterion2 is None:
+            return 1
+        else:
+            return 0
+
+    def fst_crit(coverage):
+        pattern = coverage.pattern
+        if pattern.criterion1 == rmodel.TOKEN:
+            return 0
+        else:
+            return 1
+
+    def cvr(coverage):
+        return coverage.coverage
+
+    # For equal coverage and token/no token, favor no second criterion.
+    coverages.sort(key=snd_crit, reverse=True)
+    # For equal coverage, favor non-token Second.
+    coverages.sort(key=fst_crit, reverse=True)
+    # Favor coverage First.
+    coverages.sort(key=cvr, reverse=True)
+
+    return coverages[0]
 
 
 def compare_coverage(codebase_from, codebase_to, source, resource_pk,
@@ -313,12 +405,12 @@ def compare_coverage(codebase_from, codebase_to, source, resource_pk,
             removed, progress_monitor)
 
     progress_monitor.info('Sorting added/removed')
-    removed.sort(key=lambda f: f.members.count(), reverse=True)
-    added.sort(key=lambda f: f.members.count(), reverse=True)
+    removed.sort(key=lambda f: f.extension.count(), reverse=True)
+    added.sort(key=lambda f: f.extension.count(), reverse=True)
 
     progress_monitor.info('Sorting family diff')
-    heads_family_diff.sort(key=lambda d: d.members_diff)
-    tokens_family_diff.sort(key=lambda d: d.members_diff)
+    heads_family_diff.sort(key=lambda d: d.extension_diff)
+    tokens_family_diff.sort(key=lambda d: d.extension_diff)
 
     heads_coverage_diff = compute_coverage_diff(heads_family_diff, source,
             resource_pk, progress_monitor)
@@ -435,7 +527,7 @@ def report_diff(family_diffs, coverage_diffs, report_title):
     print('Total Family Diffs: {0}'.format(len(family_diffs)))
     for family_diff in family_diffs[:top]:
         print('{0}: From: {1}[{2}]  To: {3} [{4}]'.
-                format(family_diff.members_diff, family_diff.family_from,
+                format(family_diff.extension_diff, family_diff.family_from,
                     family_diff.family_from.pk, family_diff.family_to,
                     family_diff.family_to.pk))
 
@@ -452,7 +544,7 @@ def report_diff(family_diffs, coverage_diffs, report_title):
 
 
 def report_location(coverage):
-    for member in coverage.family.members.all():
+    for member in coverage.family.extension.all():
         for link in member.potential_links.filter(index=0).all():
             if link.code_reference.resource_object_id ==\
                 coverage.resource_object_id and link.code_reference.source ==\
@@ -467,12 +559,12 @@ def report_add_remove(removed, added):
     print()
     print('REPORTING TOP {0} REMOVED FAMILIES\n'.format(top))
     for family in removed[:top]:
-        print('{0}: {1}[{2}]'.format(family.members.count(), family,
+        print('{0}: {1}[{2}]'.format(family.extension.count(), family,
             family.pk))
 
     print('REPORTING TOP {0} ADDED FAMILIES\n'.format(top))
     for family in added[:top]:
-        print('{0}: {1}[{2}]'.format(family.members.count(), family,
+        print('{0}: {1}[{2}]'.format(family.extension.count(), family,
             family.pk))
 
 
@@ -563,8 +655,8 @@ def compute_super_recommendations(recommendations,
 
     for i, rec in enumerate(recommendations):
         if rec.pk in processed_recs:
-            continue
             progress_monitor.work('Skipped rec', 1)
+            continue
 
         current_best_cov = rec.coverage_diff.coverage_from.coverage
         processed_recs.add(rec.pk)
@@ -583,7 +675,7 @@ def compute_super_recommendations(recommendations,
             coverage_from = temprec.coverage_diff.coverage_from.coverage
             if (1.0 - (temprec.new_members.count() / count)) > \
                     SUPER_REC_THRESHOLD:
-                if coverage_from > current_best_cov: 
+                if coverage_from > current_best_cov:
                     break
             if proper_subset(list(temprec.new_members.all()), new_members):
                 if coverage_from > current_best_cov:
@@ -609,6 +701,8 @@ def compute_super_recommendations(recommendations,
 
 
 def check_overloading(super_rec):
+    '''We don't want to recommend a new method that is an overloaded version of
+       an already covered method.'''
     overloaded = 0
     total = 0
     for member in super_rec.best_rec.new_members.all():

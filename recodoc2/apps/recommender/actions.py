@@ -3,11 +3,11 @@ from docutil.progress_monitor import CLIProgressMonitor
 from docutil.commands_util import get_content_type
 from project.models import ProjectRelease
 from codebase.models import CodeBase, CodeElementLink
-from recommender.models import CodeElementFamily, CoverageDiff,\
-    SuperAddRecommendation, RemoveRecommendation
-import recommender.parser.family_coverage as fcoverage
+from recommender.models import CodePattern, CodePatternCoverage,\
+        CoverageDiff, SuperAddRecommendation, RemoveRecommendation
+import recommender.parser.pattern_coverage as pcoverage
 
-def compute_families(pname, bname, release):
+def compute_patterns(pname, bname, release):
     prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
             filter(release=release)[0]
     codebase = CodeBase.objects.filter(project_release=prelease).\
@@ -16,26 +16,54 @@ def compute_families(pname, bname, release):
 
     progress_monitor = CLIProgressMonitor(min_step=1.0)
 
-    dfamilies = fcoverage.compute_declaration_family(code_elements, True,
+    dpatterns = pcoverage.compute_declaration_pattern(code_elements, True,
             progress_monitor)
-    (hfamilies1, hfamiliesd) = fcoverage.\
-            compute_hierarchy_family(code_elements, True, progress_monitor)
+    (hpatterns1, hpatternsd) = pcoverage.\
+            compute_hierarchy_pattern(code_elements, True, progress_monitor)
 
-    fcoverage.compute_no_abstract_family(dfamilies, progress_monitor)
-    fcoverage.compute_no_abstract_family(hfamilies1, progress_monitor)
-    fcoverage.compute_no_abstract_family(hfamiliesd, progress_monitor)
+    pcoverage.compute_no_abstract_pattern(dpatterns, progress_monitor)
+    pcoverage.compute_no_abstract_pattern(hpatterns1, progress_monitor)
+    pcoverage.compute_no_abstract_pattern(hpatternsd, progress_monitor)
 
-    fcoverage.compute_token_family_second(dfamilies, progress_monitor)
+    pcoverage.compute_token_pattern_second(dpatterns, progress_monitor)
 
-    fcoverage.compute_token_family(code_elements, True, progress_monitor)
+    pcoverage.compute_token_pattern(code_elements, True, progress_monitor)
 
 
-def clear_families(pname, bname, release):
+def clear_patterns(pname, bname, release):
     prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
             filter(release=release)[0]
     codebase = CodeBase.objects.filter(project_release=prelease).\
             filter(name=bname)[0]
-    CodeElementFamily.objects.filter(codebase=codebase).delete()
+    CodePattern.objects.filter(codebase=codebase).delete()
+
+
+def filter_patterns(pname, bname, release, source, resource_pk):
+    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    codebase1 = CodeBase.objects.filter(project_release=prelease1).\
+            filter(name=bname)[0]
+
+    coverages = CodePatternCoverage.objects.\
+            filter(pattern__codebase=codebase1).filter(source=source).\
+            filter(resource_object_id=resource_pk)
+
+    pcoverage.filter_coverage(coverages)
+
+
+def combine_patterns(pname, bname, release, source, resource_pk):
+    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    codebase1 = CodeBase.objects.filter(project_release=prelease1).\
+            filter(name=bname)[0]
+
+    coverages = CodePatternCoverage.objects.\
+            filter(pattern__codebase=codebase1).filter(source=source).\
+            filter(resource_object_id=resource_pk).filter(valid=True)
+
+    progress_monitor = CLIProgressMonitor(min_step=1.0)
+
+    pcoverage.combine_coverage(coverages, progress_monitor)
 
 
 def compare_coverage(pname, bname, release1, release2, source, resource_pk):
@@ -50,7 +78,7 @@ def compare_coverage(pname, bname, release1, release2, source, resource_pk):
 
     progress_monitor = CLIProgressMonitor(min_step=1.0)
 
-    fcoverage.compare_coverage(codebase1, codebase2, source, resource_pk,
+    pcoverage.compare_coverage(codebase1, codebase2, source, resource_pk,
             progress_monitor)
 
 
@@ -68,15 +96,15 @@ def compute_addition_reco(pname, bname, release1, release2, source,
     coverage_diffs = CoverageDiff.objects.\
             filter(coverage_from__resource_object_id=resource_pk).\
             filter(coverage_from__source=source).\
-            filter(coverage_from__family__codebase=codebase1).\
+            filter(coverage_from__pattern__codebase=codebase1).\
             filter(coverage_to__resource_object_id=resource_pk).\
             filter(coverage_to__source=source).\
-            filter(coverage_to__family__codebase=codebase2).all()
+            filter(coverage_to__pattern__codebase=codebase2).all()
 
     progress_monitor = CLIProgressMonitor(min_step=1.0)
-    recs = fcoverage.compute_coverage_recommendation(coverage_diffs,
+    recs = pcoverage.compute_coverage_recommendation(coverage_diffs,
             progress_monitor)
-    fcoverage.compute_super_recommendations(recs,
+    pcoverage.compute_super_recommendations(recs,
             progress_monitor)
 
 def show_addition_reco(pname, bname, release1, release2, source, resource_pk):
@@ -95,7 +123,7 @@ def show_addition_reco(pname, bname, release1, release2, source, resource_pk):
             filter(codebase_from=codebase1).\
             filter(codebase_to=codebase2).all()
 
-    fcoverage.report_super(super_recs)
+    pcoverage.report_super(super_recs)
 
 
 def compute_remove_reco(pname, bname, release1, release2, source, resource_pk,

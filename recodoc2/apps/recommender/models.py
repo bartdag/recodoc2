@@ -28,7 +28,7 @@ TOKEN_POS = (
     (MIDDLE, 'Middle'),
 )
 
-FAMILY_CRITERIA = (
+PATTERN_INTENSION = (
     # First criteria
     (DECLARATION, 'Declaration'),
     (HIERARCHY, 'Hierarchy'),
@@ -41,9 +41,10 @@ FAMILY_CRITERIA = (
 
 
 COVERAGE_THRESHOLD = 0.40
-# Create your models here.
-class CodeElementFamily(models.Model):
-    '''A code element family contains all related code element based on a
+
+
+class CodePattern(models.Model):
+    '''A code pattern contains all related code element based on a
        criteria (declaration, hierarchy, token).'''
 
     head = models.ForeignKey(CodeElement, blank=True, null=True,
@@ -54,11 +55,11 @@ class CodeElementFamily(models.Model):
             related_name='families')
     '''att.'''
 
-    criterion1 = models.CharField(max_length=2, choices=FAMILY_CRITERIA,
+    criterion1 = models.CharField(max_length=2, choices=PATTERN_INTENSION,
             blank=True, null=True)
     '''att.'''
 
-    criterion2 = models.CharField(max_length=2, choices=FAMILY_CRITERIA,
+    criterion2 = models.CharField(max_length=2, choices=PATTERN_INTENSION,
             blank=True, null=True, default=UNUSED)
     '''att.'''
 
@@ -70,25 +71,26 @@ class CodeElementFamily(models.Model):
     '''att.'''
 
     kind = models.ForeignKey(CodeElementKind, blank=True, null=True)
-
-    members = models.ManyToManyField(CodeElement, blank=True, null=True,
-            related_name='families_members')
     '''att.'''
 
-    def equiv(self, family):
+    extension = models.ManyToManyField(CodeElement, blank=True, null=True,
+            related_name='patterns')
+    '''att.'''
+
+    def equiv(self, pattern):
         equiv = True
         if self.head is None:
-            equiv = family.head is None
-        elif family.head is None:
+            equiv = pattern.head is None
+        elif pattern.head is None:
             equiv = False
         else:
-            equiv = self.head.human_string() == family.head.human_string()
+            equiv = self.head.human_string() == pattern.head.human_string()
 
-        equiv = equiv and (self.kind == family.kind)
-        equiv = equiv and (self.criterion1 == family.criterion1)
-        equiv = equiv and (self.criterion2 == family.criterion2)
-        equiv = equiv and (self.token == family.token)
-        equiv = equiv and (self.token_pos == family.token_pos)
+        equiv = equiv and (self.kind == pattern.kind)
+        equiv = equiv and (self.criterion1 == pattern.criterion1)
+        equiv = equiv and (self.criterion2 == pattern.criterion2)
+        equiv = equiv and (self.token == pattern.token)
+        equiv = equiv and (self.token_pos == pattern.token_pos)
 
         return equiv
 
@@ -111,24 +113,24 @@ class CodeElementFamily(models.Model):
                 self.get_criterion2_display(),
                 self.token,
                 self.get_token_pos_display(),
-                self.members.count())
+                self.extension.count())
 
     class Meta:
-        verbose_name = 'family'
+        verbose_name = 'code pattern'
 
-        verbose_name_plural = 'families'
+        verbose_name_plural = 'code patterns'
 
 
-class FamilyCoverage(models.Model):
-    '''Coverage information for a code element family'''
+class CodePatternCoverage(models.Model):
+    '''Coverage information for a code pattern'''
 
-    family = models.ForeignKey(CodeElementFamily, blank=True, null=True,
+    pattern = models.ForeignKey(CodePattern, blank=True, null=True,
             related_name='coverage_infos')
     '''att.'''
 
     # E.g., a document or a channel
     resource_content_type = models.ForeignKey(ContentType, null=True,
-            blank=True, related_name='resource_family_coverage')
+            blank=True, related_name='resource_pattern_coverage')
     resource_object_id = models.PositiveIntegerField(null=True, blank=True)
     resource = generic.GenericForeignKey('resource_content_type',
             'resource_object_id')
@@ -140,66 +142,80 @@ class FamilyCoverage(models.Model):
 
     coverage = models.FloatField(default=0.0)
     '''att.'''
+    
+    valid = models.BooleanField(default=True)
+    '''att.'''
 
     def is_interesting(self):
-        return self.family.members.count() > 1 and \
+        return self.pattern.extension.count() > 1 and \
                 self.coverage >= COVERAGE_THRESHOLD
 
     def __unicode__(self):
-        return '{0} - {1}'.format(self.family, self.coverage)
+        return '{0} - {1}'.format(self.pattern, self.coverage)
 
     class Meta:
-        verbose_name = 'family coverage'
+        verbose_name = 'pattern coverage'
 
-        verbose_name_plural = 'family coverages'
+        verbose_name_plural = 'pattern coverages'
 
 
 class CoverageDiff(models.Model):
-    coverage_from = models.ForeignKey(FamilyCoverage, blank=True, null=True,
+    coverage_from = models.ForeignKey(CodePatternCoverage, blank=True, null=True,
             related_name='coverage_diffs_from')
     '''att.'''
 
-    coverage_to = models.ForeignKey(FamilyCoverage, blank=True, null=True,
+    coverage_to = models.ForeignKey(CodePatternCoverage, blank=True, null=True,
             related_name='coverage_diffs_to')
     '''att.'''
 
     coverage_diff = models.FloatField(default=0)
     '''att.'''
 
-    members_diff = models.IntegerField(default=0)
+    extension_diff = models.IntegerField(default=0)
     '''att.'''
 
     def compute_diffs(self):
         self.coverage_diff = \
                 self.coverage_to.coverage - self.coverage_from.coverage
-        self.members_diff = \
-                self.coverage_to.family.members.count() -\
-                self.coverage_from.family.members.count()
+        self.extension_diff = \
+                self.coverage_to.pattern.extension.count() -\
+                self.coverage_from.pattern.extension.count()
 
     def __unicode__(self):
         return '{0} (init: {1}) : {2}'.format(self.coverage_diff,
-                self.coverage_from.coverage, self.coverage_from.family)
+                self.coverage_from.coverage, self.coverage_from.pattern)
 
 
-class FamilyDiff(models.Model):
+class PatternDiff(models.Model):
 
-    family_from = models.ForeignKey(CodeElementFamily, blank=True, null=True,
-            related_name='family_diffs_from')
+    pattern_from = models.ForeignKey(CodePattern, blank=True, null=True,
+            related_name='pattern_diffs_from')
     '''att.'''
 
-    family_to = models.ForeignKey(CodeElementFamily, blank=True, null=True,
-            related_name='family_diffs_to')
+    pattern_to = models.ForeignKey(CodePattern, blank=True, null=True,
+            related_name='pattern_diffs_to')
     '''att.'''
 
-    members_diff = models.IntegerField(default=0)
+    extension_diff = models.IntegerField(default=0)
     '''att.'''
 
     def compute_diffs(self):
-        self.members_diff = self.family_to.members.count() -\
-                self.family_from.members.count()
+        self.extension_diff = self.pattern.extension.count() -\
+                self.pattern.extension.count()
 
     def __unicode__(self):
-        return '{0} : {1}'.format(self.members_diff, self.family_from)
+        return '{0} : {1}'.format(self.extension_diff, self.pattern_from)
+
+
+class DocumentationPattern(models.Model):
+
+    main_pattern = models.ForeignKey(CodePatternCoverage, blank=True,
+            null=True, related_name='doc_pattern_mains')
+    '''att.'''
+
+    patterns = models.ManyToManyField(CodePatternCoverage, blank=True,
+            null=True, related_name='doc_patterns')
+    '''att.'''
 
 
 class AddRecommendation(models.Model):
@@ -303,7 +319,7 @@ class RemoveRecommendation(models.Model):
 
     def human_string(self):
         return self.__unicode__()
-    
+
     def __unicode__(self):
         if self.code_element_to is None:
             return '{0} was deleted in {1}'.\

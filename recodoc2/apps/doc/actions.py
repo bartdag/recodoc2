@@ -10,8 +10,8 @@ from docutil.commands_util import mkdir_safe, dump_model, load_model,\
 from project.models import ProjectRelease
 from project.actions import DOC_PATH
 from codebase.models import CodeBase
-from recommender.models import CodeElementFamily, FamilyCoverage
-from recommender.parser.family_coverage import compute_coverage
+from recommender.models import CodePattern, CodePatternCoverage
+from recommender.parser.pattern_coverage import compute_coverage
 from doc.models import DocumentStatus, Document, Page, Section, DocDiff
 from doc.parser.generic_parser import parse
 from doc.parser.doc_diff import DocDiffer, DocLinkerDiffer
@@ -142,13 +142,13 @@ def compute_family_coverage(pname, bname, release, dname, srelease):
             filter(release=srelease)[0]
     document = Document.objects.filter(project_release=psrelease).\
             filter(title=dname)[0]
-    families = CodeElementFamily.objects.filter(codebase=codebase).all()
+    patterns = CodePattern.objects.filter(codebase=codebase).all()
     progress_monitor = CLIProgressMonitor(min_step=1.0)
 
-    compute_coverage(families, 'd', document, progress_monitor)
+    compute_coverage(patterns, 'd', document, progress_monitor)
 
 
-def clear_family_coverage(pname, bname, release, dname, srelease):
+def clear_pattern_coverage(pname, bname, release, dname, srelease):
     prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
             filter(release=release)[0]
     codebase = CodeBase.objects.filter(project_release=prelease).\
@@ -158,11 +158,11 @@ def clear_family_coverage(pname, bname, release, dname, srelease):
     document = Document.objects.filter(project_release=psrelease).\
             filter(title=dname)[0]
 
-    query = FamilyCoverage.objects.\
+    query = CodePatternCoverage.objects.\
             filter(resource_object_id=document.pk).\
-            filter(family__codebase=codebase)
+            filter(pattern__codebase=codebase)
 
-    print('Deleting {0} family coverages'.format(query.count()))
+    print('Deleting {0} pattern coverages'.format(query.count()))
 
     query.delete()
 
