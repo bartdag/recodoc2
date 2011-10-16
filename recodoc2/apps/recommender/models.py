@@ -142,7 +142,7 @@ class CodePatternCoverage(models.Model):
 
     coverage = models.FloatField(default=0.0)
     '''att.'''
-    
+
     valid = models.BooleanField(default=True)
     '''att.'''
 
@@ -160,8 +160,8 @@ class CodePatternCoverage(models.Model):
 
 
 class CoverageDiff(models.Model):
-    coverage_from = models.ForeignKey(CodePatternCoverage, blank=True, null=True,
-            related_name='coverage_diffs_from')
+    coverage_from = models.ForeignKey(CodePatternCoverage, blank=True,
+            null=True, related_name='coverage_diffs_from')
     '''att.'''
 
     coverage_to = models.ForeignKey(CodePatternCoverage, blank=True, null=True,
@@ -215,6 +215,69 @@ class DocumentationPattern(models.Model):
 
     patterns = models.ManyToManyField(CodePatternCoverage, blank=True,
             null=True, related_name='doc_patterns')
+    '''att.'''
+
+
+class DocumentationPatternSingleLocation(models.Model):
+    location_content_type = models.ForeignKey(ContentType, null=True,
+            blank=True, related_name='doc_pattern_locations')
+    location_object_id = models.PositiveIntegerField(null=True, blank=True)
+    location = generic.GenericForeignKey('location_content_type',
+            'location_object_id')
+    '''att.'''
+
+
+class DocumentationPatternLocation(models.Model):
+
+    doc_pattern = models.ForeignKey(DocumentationPattern, blank=True,
+            null=True, related_name='doc_pattern_locations')
+    '''att.'''
+
+    single_section = models.BooleanField(default=False)
+    '''att.'''
+
+    single_page = models.BooleanField(default=False)
+    '''att.'''
+
+    multi_page = models.BooleanField(default=False)
+    '''att.'''
+
+    location = models.ForeignKey(DocumentationPatternSingleLocation,
+            blank=True, null=True, related_name='doc_pattern_locations')
+    '''att.'''
+
+    locations = models.ManyToManyField(DocumentationPatternSingleLocation,
+            blank=True, null=True, related_name='doc_pattern_multi_locations')
+    '''att.'''
+
+    coverage = models.FloatField(default=0.0)
+    '''att.'''
+
+
+class HighLevelLink(models.Model):
+
+    msg_level = models.BooleanField(default=False)
+    '''att.'''
+
+    no_snippet = models.BooleanField(default=False)
+    '''att.'''
+
+    confidence_level = models.IntegerField(default=1)
+    '''att.'''
+
+    source_content_type = models.ForeignKey(ContentType, null=True,
+            blank=True, related_name='source_high_levels')
+    source_object_id = models.PositiveIntegerField(null=True, blank=True)
+    source = generic.GenericForeignKey('source_content_type',
+            'source_object_id')
+    '''Source is always a documentation artifact, unless the the src and dst
+       are the same.'''
+
+    dst_content_type = models.ForeignKey(ContentType, null=True,
+            blank=True, related_name='dst_high_levels')
+    dst_object_id = models.PositiveIntegerField(null=True, blank=True)
+    dst = generic.GenericForeignKey('dst_content_type',
+            'dst_object_id')
     '''att.'''
 
 

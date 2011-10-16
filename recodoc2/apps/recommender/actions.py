@@ -1,9 +1,11 @@
 from __future__ import unicode_literals
+from django.db import connection, transaction
 from docutil.progress_monitor import CLIProgressMonitor
-from docutil.commands_util import get_content_type
+from docutil.commands_util import get_content_type, dictfetchall
 from project.models import ProjectRelease
 from codebase.models import CodeBase, CodeElementLink
 from recommender.models import CodePattern, CodePatternCoverage,\
+        DocumentationPattern,\
         CoverageDiff, SuperAddRecommendation, RemoveRecommendation
 import recommender.parser.pattern_coverage as pcoverage
 
@@ -64,6 +66,85 @@ def combine_patterns(pname, bname, release, source, resource_pk):
     progress_monitor = CLIProgressMonitor(min_step=1.0)
 
     pcoverage.combine_coverage(coverages, progress_monitor)
+
+
+def doc_patterns_location(pname, bname, release, source, resource_pk):
+    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    codebase1 = CodeBase.objects.filter(project_release=prelease1).\
+            filter(name=bname)[0]
+
+    doc_patterns = DocumentationPattern.objects.\
+            filter(main_pattern__pattern__codebase=codebase1).\
+            filter(main_pattern__source=source).\
+            filter(main_pattern__resource_object_id=resource_pk).\
+            filter(main_pattern__valid=True)
+
+    for doc_pattern in doc_patterns:
+        pcoverage.compute_doc_pattern_location(doc_pattern)
+
+
+def report_doc_patterns(pname, bname, release, source, resource_pk):
+    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    codebase1 = CodeBase.objects.filter(project_release=prelease1).\
+            filter(name=bname)[0]
+
+    doc_patterns = DocumentationPattern.objects.\
+            filter(main_pattern__pattern__codebase=codebase1).\
+            filter(main_pattern__source=source).\
+            filter(main_pattern__resource_object_id=resource_pk).\
+            filter(main_pattern__valid=True).order_by('-main_pattern__coverage')
+
+    for doc_pattern in doc_patterns.iterator():
+        print('DOCUMENTATION PATTERN')
+        pk = doc_pattern.main_pattern.pk
+        print('MAIN PATTERN')
+        report_single_coverage(doc_pattern.main_pattern)
+        print('LOC:')
+        report_location(doc_pattern)
+
+        for coverage in doc_pattern.patterns.all():
+            if coverage.pk == pk:
+                continue
+            print('SUB PATTERN')
+            report_single_coverage(coverage)
+        print('')
+
+
+def report_single_coverage(coverage):
+    print('  coverage: {0}'.format(coverage.coverage))
+    print('  Intension:\n  {0}'.format(coverage.pattern))
+    print('  Extension:')
+    (member_locations, _, _) = pcoverage.get_locations_coverage(coverage)
+    for member in coverage.pattern.extension.all():
+        print('    {0}'.format(member))
+        (sections, pages) = member_locations[member.pk]
+        for section in sections:
+            print('      Section: {0}'.format(section))
+        for page in pages:
+            print('      Page: {0}'.format(page))
+    print('')
+
+
+def report_location(doc_pattern):
+    for location in doc_pattern.doc_pattern_locations.all():
+        if location.single_section:
+            print('  Section: {0} ({1}) - {2}'.format(
+                location.location.location, location.location.location.page,
+                location.coverage))
+        elif location.single_page:
+            print('  Page: {0} - {1}'.format(location.location.location,
+                location.coverage))
+        elif location.multi_page:
+            for loc in location.locations.all():
+                print('  MultiPage: {0}'.format(loc.location))
+    print('')
+
+
+def find_high_level_links_msg(pname, bname, release, pk_global_src,
+        pk_global_dst):
+    pass
 
 
 def compare_coverage(pname, bname, release1, release2, source, resource_pk):
@@ -154,7 +235,7 @@ def compute_remove_reco(pname, bname, release1, release2, source, resource_pk,
                 resource_content_type=get_content_type(source),
                 resource_object_id=resource_pk,
                 source=source)
-        
+
         if equivalent is None:
             rec.save()
             recs.append(rec)

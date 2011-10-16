@@ -29,18 +29,6 @@ class CodePatternCoverageAdmin(admin.ModelAdmin):
         'pattern__criterion2', 'pattern__kind', 'valid')
 
 
-class CodePatternCoverageInlineDoc(admin.TabularInline):
-    model = rmodel.CodePatternCoverage
-    fk_name = 'main_pattern'
-    fields = ('pk', 'coverage', )
-    extra = 0
-
-
-class DocumentationPatternAdmin(admin.ModelAdmin):
-    fields = ('pk')
-    inlines = [CodePatternCoverageInlineDoc]
-
-
 #class CoverageDiffAdmin(admin.ModelAdmin):
     #readonly_fields = ('coverage_from', 'coverage_to')
     #list_display = ('coverage_from', 'coverage_diff', 'extension_diff')
@@ -62,7 +50,6 @@ class DocumentationPatternAdmin(admin.ModelAdmin):
 
 admin.site.register(rmodel.CodePattern, CodePatternAdmin)
 admin.site.register(rmodel.CodePatternCoverage, CodePatternCoverageAdmin)
-admin.site.register(rmodel.DocumentationPattern, DocumentationPatternAdmin)
 #admin.site.register(rmodel.CoverageDiff, CoverageDiffAdmin)
 #admin.site.register(rmodel.FamilyDiff, FamilyDiffAdmin)
 #admin.site.register(rmodel.AddRecommendation, AddRecommendationAdmin)

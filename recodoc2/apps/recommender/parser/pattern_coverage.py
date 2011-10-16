@@ -16,6 +16,8 @@ OVERLOADED_THRESHOLD = 0.5
 
 VALID_COVERAGE_THRESHOLD = 0.5
 
+DOC_PATTERN_LOCATION_THRESHOLD = 0.75
+
 
 def create_pattern(head, codebase, criterion, first_criterion):
     pattern = rmodel.CodePattern(head=head)
@@ -299,6 +301,12 @@ def filter_coverage(patterns_query):
     patterns_query.filter(coverage__lt=VALID_COVERAGE_THRESHOLD).\
             update(valid=False)
 
+    for coverage in patterns_query.filter(valid=True).iterator():
+        count = coverage.pattern.extension.count()
+        if count == 1 or coverage.coverage * count == 1.0:
+            coverage.valid = False
+            coverage.save()
+
 
 def combine_coverage(coverages, progress_monitor=NullProgressMonitor()):
 
@@ -358,9 +366,16 @@ def combine_coverage(coverages, progress_monitor=NullProgressMonitor()):
 
 def get_best_pattern(coverages):
 
-    def snd_crit(coverage):
+    def thd_crit(coverage):
         pattern = coverage.pattern
         if pattern.criterion2 is None:
+            return 1
+        else:
+            return 0
+
+    def snd_crit(coverage):
+        pattern = coverage.pattern
+        if pattern.criterion1 == rmodel.HIERARCHY_D:
             return 1
         else:
             return 0
@@ -376,6 +391,9 @@ def get_best_pattern(coverages):
         return coverage.coverage
 
     # For equal coverage and token/no token, favor no second criterion.
+    coverages.sort(key=thd_crit, reverse=True)
+    # For equal coverage and token/no token, favor hierarchy descendants over
+    # simple hierarchy
     coverages.sort(key=snd_crit, reverse=True)
     # For equal coverage, favor non-token Second.
     coverages.sort(key=fst_crit, reverse=True)
@@ -856,3 +874,113 @@ def get_locations(super_rec):
     page_spread = (len(pages[0][1]) / float(count)) < LOCATION_THRESHOLD
 
     return (sections, pages, section_spread, page_spread)
+
+
+def get_locations_coverage(coverage):
+    sections = ()
+    pages = ()
+
+    sections_objects = {}
+    pages_objects = {}
+
+    sectionsd = defaultdict(list)
+    pagesd = defaultdict(list)
+
+    resource_pk = coverage.resource_object_id
+    source = coverage.source
+
+    count = 0
+
+    member_locations = {}
+
+    for member in coverage.pattern.extension.all():
+        visited_sections = set()
+        visited_pages = set()
+        member_sections = set()
+        member_pages = set()
+        for link in member.potential_links.filter(index=0).all():
+            if link.code_reference.resource_object_id == resource_pk and\
+                    link.code_reference.source == source:
+                section = link.code_reference.local_context
+                page = link.code_reference.global_context
+                member_sections.add(section)
+                member_pages.add(page)
+                if section.pk not in visited_sections:
+                    sections_objects[section.pk] = section
+                    sectionsd[section.pk].append(member)
+                    visited_sections.add(section.pk)
+
+                if page.pk not in visited_pages:
+                    pages_objects[page.pk] = page
+                    pagesd[page.pk].append(member)
+                    visited_pages.add(page.pk)
+        member_locations[member.pk] = (member_sections, member_pages)
+
+        count += 1
+
+    sections = [(sections_objects[pk], sectionsd[pk]) for pk in sectionsd]
+    pages = [(pages_objects[pk], pagesd[pk]) for pk in pagesd]
+
+    # Sort them
+    sections.sort(key=lambda v: len(v[1]), reverse=True)
+    pages.sort(key=lambda v: len(v[1]), reverse=True)
+
+    return (member_locations, sections, pages)
+
+
+def compute_doc_pattern_location(doc_pattern):
+    (member_locations, sections, pages) = \
+        get_locations_coverage(doc_pattern.main_pattern)
+
+    initial_coverage = doc_pattern.main_pattern.coverage * \
+        doc_pattern.main_pattern.pattern.extension.count()
+
+    locations = []
+
+    for (section, members) in sections:
+        section_coverage = float(len(members)) / initial_coverage
+        if section_coverage > DOC_PATTERN_LOCATION_THRESHOLD:
+            single_location = \
+                rmodel.DocumentationPatternSingleLocation(location=section)
+            single_location.save()
+            location = rmodel.DocumentationPatternLocation(
+                    doc_pattern=doc_pattern, single_section=True,
+                    location=single_location, coverage=section_coverage)
+            location.save()
+            locations.append(location)
+
+    if len(locations) > 0:
+        # We found important sections. We're done.
+        return locations
+
+    multi_pages = []
+    for (page, members) in pages:
+        multi_pages.append(page)
+        page_coverage = float(len(members)) / initial_coverage
+        if page_coverage > DOC_PATTERN_LOCATION_THRESHOLD:
+            single_location = \
+                rmodel.DocumentationPatternSingleLocation(location=page)
+            single_location.save()
+            location = rmodel.DocumentationPatternLocation(
+                    doc_pattern=doc_pattern, single_page=True,
+                    location=single_location, coverage=page_coverage)
+            location.save()
+            locations.append(location)
+
+    if len(locations) > 0:
+        # We found important pages. We're done
+        return locations
+
+    location = rmodel.DocumentationPatternLocation(
+            doc_pattern=doc_pattern, multi_page=True,
+            coverage=1.0)
+    location.save()
+    locations.append(location)
+
+    for page in multi_pages:
+        single_location = \
+            rmodel.DocumentationPatternSingleLocation(location=page)
+        single_location.save()
+        location.locations.add(single_location)
+
+    return locations
