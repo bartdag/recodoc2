@@ -166,8 +166,8 @@ def report_doc_patterns(pname, bname, release, source, resource_pk):
             filter(main_pattern__resource_object_id=resource_pk).\
             filter(main_pattern__valid=True).order_by('-main_pattern__coverage')
 
-    for doc_pattern in doc_patterns.iterator():
-        print('DOCUMENTATION PATTERN')
+    for i, doc_pattern in enumerate(doc_patterns.iterator()):
+        print('{0}. DOCUMENTATION PATTERN'.format(i))
         pk = doc_pattern.main_pattern.pk
         print('MAIN PATTERN')
         report_single_coverage(doc_pattern.main_pattern)

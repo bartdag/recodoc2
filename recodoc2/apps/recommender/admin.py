@@ -28,6 +28,11 @@ class CodePatternCoverageAdmin(admin.ModelAdmin):
     list_filter = ('source', 'pattern__codebase', 'pattern__criterion1',
         'pattern__criterion2', 'pattern__kind', 'valid')
 
+class DocumentationPatternAdmin(admin.ModelAdmin):
+    list_display = ('main_pattern', )
+    list_filter = ('main_pattern__pattern__criterion1',
+    'main_pattern__pattern__criterion2', 'main_pattern__pattern__kind')
+
 
 #class CoverageDiffAdmin(admin.ModelAdmin):
     #readonly_fields = ('coverage_from', 'coverage_to')
@@ -50,6 +55,7 @@ class CodePatternCoverageAdmin(admin.ModelAdmin):
 
 admin.site.register(rmodel.CodePattern, CodePatternAdmin)
 admin.site.register(rmodel.CodePatternCoverage, CodePatternCoverageAdmin)
+admin.site.register(rmodel.DocumentationPattern, DocumentationPatternAdmin)
 #admin.site.register(rmodel.CoverageDiff, CoverageDiffAdmin)
 #admin.site.register(rmodel.FamilyDiff, FamilyDiffAdmin)
 #admin.site.register(rmodel.AddRecommendation, AddRecommendationAdmin)
