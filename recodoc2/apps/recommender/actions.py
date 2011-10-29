@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.db import connection, transaction
+from django.contrib.contenttypes.models import ContentType
 from docutil.progress_monitor import CLIProgressMonitor
 from docutil.commands_util import get_content_type, dictfetchall
 from project.models import ProjectRelease
@@ -8,6 +9,75 @@ from recommender.models import CodePattern, CodePatternCoverage,\
         DocumentationPattern,\
         CoverageDiff, SuperAddRecommendation, RemoveRecommendation
 import recommender.parser.pattern_coverage as pcoverage
+
+
+SUB_QUERIES="""
+WITH scts AS (
+    SELECT code1.local_object_id as section_id,
+           link1.code_element_id as section_code_id
+    FROM codebase_singlecodereference as code1, 
+         codebase_codeelementlink as link1, 
+         codebase_codeelement as ce1
+    WHERE link1.index=0 AND link1.code_reference_id = code1.id AND
+          link1.code_element_id = ce1.id AND
+          ce1.codebase_id = {codebase_id} AND
+          code1.resource_object_id={src_resource_id} AND
+          code1.{src_type_type}_content_type_id={src_content_type}
+    GROUP BY code1.local_object_id, link1.code_element_id
+    ),
+
+    msgs AS (
+    SELECT code2.local_object_id as msg_id, 
+           link2.code_element_id as msg_code_id
+    FROM codebase_singlecodereference as code2, 
+         codebase_codeelementlink as link2, 
+         codebase_codeelement as ce2
+    WHERE link2.index=0 AND link2.code_reference_id = code2.id AND
+          link2.code_element_id = ce2.id AND
+          ce2.codebase_id = {codebase_id} AND
+          code2.resource_object_id={dst_resource_id} AND
+          code2.{dst_type_type}_content_type_id={dst_content_type}
+    GROUP BY code2.local_object_id, link2.code_element_id
+    ),
+
+    common AS (
+    SELECT scts.section_id AS section_id,
+           msgs.msg_id AS msg_id,
+           scts.section_code_id as code_id
+    FROM scts, msgs
+    WHERE scts.section_code_id = msgs.msg_code_id
+    ),
+
+    common_size AS (
+    SELECT scts.section_id AS section_id,
+           msgs.msg_id AS msg_id,
+           COUNT(scts.section_code_id) as size
+    FROM scts, msgs
+    WHERE scts.section_code_id = msgs.msg_code_id
+    GROUP BY scts.section_id, msgs.msg_id
+    ),
+    
+    main AS (
+    SELECT common.section_id as section_id,
+           common.msg_id as msg_id,
+           common.code_id as code_id,
+           common_size.size as size
+    FROM common, common_size
+    WHERE common.section_id = common_size.section_id AND
+          common.msg_id = common_size.msg_id
+    ORDER BY section_id, msg_id, code_id
+    )
+"""
+
+MAIN_QUERY="""
+SELECT section_id, msg_id, code_id, size
+FROM main
+WHERE size > {size}
+ORDER BY msg_id, section_id, code_id
+"""
+
+
+
 
 def compute_patterns(pname, bname, release):
     prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
@@ -142,9 +212,19 @@ def report_location(doc_pattern):
     print('')
 
 
-def find_high_level_links_msg(pname, bname, release, pk_global_src,
-        pk_global_dst):
-    pass
+def find_high_level_links_msg(pname, bname, release, pk_resource_src,
+        pk_resource_dst, msg_level, ):
+    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release)[0]
+    codebase1 = CodeBase.objects.filter(project_release=prelease1).\
+            filter(name=bname)[0]
+
+    if msg_level:
+        src_type = ContentType.objects.get(app_label="channel",
+                model="message").pk
+        dst_type = ContentType.objects.get(app_label="doc",
+                model="section").pk
+        
 
 
 def compare_coverage(pname, bname, release1, release2, source, resource_pk):

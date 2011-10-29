@@ -280,6 +280,10 @@ class HighLevelLink(models.Model):
             'dst_object_id')
     '''att.'''
 
+    common_code_elements = models.ManyToManyField(CodeElement, null=True,
+            blank=True, related_name='high_level_links')
+    '''att.'''
+
 
 class AddRecommendation(models.Model):
 
