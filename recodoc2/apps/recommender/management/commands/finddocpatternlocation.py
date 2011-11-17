@@ -30,4 +30,3 @@ class Command(NoArgsCommand):
         source = smart_decode(options.get('source'))
         pk = int(smart_decode(options.get('pk')))
         doc_patterns_location(pname, bname, release, source, pk)
-

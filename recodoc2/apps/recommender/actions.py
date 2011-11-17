@@ -1,15 +1,21 @@
 from __future__ import unicode_literals
-from django.db import connection, transaction
+from django.db import connection
 from django.contrib.contenttypes.models import ContentType
 from docutil.progress_monitor import CLIProgressMonitor
 from docutil.commands_util import get_content_type, dictfetchall
+from docutil.str_util import normalize
 from project.models import ProjectRelease
-from codebase.models import CodeBase, CodeElementLink
+from codebase.models import CodeBase, CodeElementLink, CodeElement
 from recommender.models import CodePattern, CodePatternCoverage,\
         DocumentationPattern,\
-        CoverageDiff, SuperAddRecommendation, RemoveRecommendation
+        CoverageDiff, SuperAddRecommendation, RemoveRecommendation,\
+        HighLink, CodeLink
 import recommender.parser.pattern_coverage as pcoverage
 
+
+SRC_SNIPPET_QUERY = 'AND code1.snippet_id is NULL'
+
+DST_SNIPPET_QUERY = 'AND code2.snippet_id is NULL'
 
 SUB_QUERIES="""
 WITH scts AS (
@@ -23,7 +29,8 @@ WITH scts AS (
           ce1.codebase_id = {codebase_id} AND
           code1.resource_object_id={src_resource_id} AND
           code1.{src_type_type}_content_type_id={src_content_type}
-    GROUP BY code1.local_object_id, link1.code_element_id
+          {src_snippet_query}
+    GROUP BY code1.{src_type_type}_object_id, link1.code_element_id
     ),
 
     msgs AS (
@@ -37,7 +44,8 @@ WITH scts AS (
           ce2.codebase_id = {codebase_id} AND
           code2.resource_object_id={dst_resource_id} AND
           code2.{dst_type_type}_content_type_id={dst_content_type}
-    GROUP BY code2.local_object_id, link2.code_element_id
+          {dst_snippet_query}
+    GROUP BY code2.{src_type_type}_object_id, link2.code_element_id
     ),
 
     common AS (
@@ -213,18 +221,57 @@ def report_location(doc_pattern):
 
 
 def find_high_level_links_msg(pname, bname, release, pk_resource_src,
-        pk_resource_dst, msg_level, ):
-    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+        pk_resource_dst, msg_level, no_snippet, size):
+    prelease = ProjectRelease.objects.filter(project__dir_name=pname).\
             filter(release=release)[0]
-    codebase1 = CodeBase.objects.filter(project_release=prelease1).\
+    codebase = CodeBase.objects.filter(project_release=prelease).\
             filter(name=bname)[0]
 
     if msg_level:
-        src_type = ContentType.objects.get(app_label="channel",
+        dst_type = ContentType.objects.get(app_label="channel",
                 model="message").pk
-        dst_type = ContentType.objects.get(app_label="doc",
+        src_type = ContentType.objects.get(app_label="doc",
                 model="section").pk
-        
+        src_type_type = dst_type_type = 'local'
+    else:
+        dst_type = ContentType.objects.get(app_label="channel",
+                model="supportthread").pk
+        src_type = ContentType.objects.get(app_label="doc",
+                model="page").pk
+        src_type_type = dst_type_type = 'global'
+
+    if no_snippet:
+        src_snippet = SRC_SNIPPET_QUERY
+        dst_snippet = DST_SNIPPET_QUERY
+    else:
+        src_snippet = ''
+        dst_snippet = ''
+
+    params = {
+        'codebase_id': codebase.pk,
+        'src_resource_id': pk_resource_src,
+        'src_type_type': src_type_type,
+        'src_content_type': src_type,
+        'dst_resource_id': pk_resource_dst,
+        'dst_type_type': dst_type_type,
+        'dst_content_type': dst_type,
+        'src_snippet_query': src_snippet,
+        'dst_snippet_query': dst_snippet,
+    }
+    sub_query = SUB_QUERIES.format(**params)
+    main = sub_query + MAIN_QUERY.format(size=size)
+
+    cursor = connection.cursor()
+    cursor.execute(main)
+    result = dictfetchall(cursor)
+
+    (msg_index, section_index, code_index) = index_high_level_links(result,
+            src_type, dst_type)
+    report_msg_high_level(msg_index)
+    report_section_high_level(section_index)
+    report_code_high_level(code_index)
+
+    return result
 
 
 def compare_coverage(pname, bname, release1, release2, source, resource_pk):
@@ -267,6 +314,7 @@ def compute_addition_reco(pname, bname, release1, release2, source,
             progress_monitor)
     pcoverage.compute_super_recommendations(recs,
             progress_monitor)
+
 
 def show_addition_reco(pname, bname, release1, release2, source, resource_pk):
     prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
@@ -439,3 +487,134 @@ def find_deprecated(code_element):
             return find_deprecated(containers[0])
         else:
             return None
+
+
+def index_high_level_links(result, section_type_id, msg_type_id):
+    msgs_index = {}
+    sections_index = {}
+    code_index = {}
+    msg_type = ContentType.objects.get(pk=msg_type_id)
+    section_type = ContentType.objects.get(pk=section_type_id)
+
+    for line in result:
+        msg_id = int(line['msg_id'])
+        section_id = int(line['section_id'])
+        code_id = int(line['code_id'])
+
+        if msg_id in msgs_index:
+            message = msgs_index[msg_id][0]
+        else:
+            message = msg_type.get_object_for_this_type(pk=msg_id)
+            msgs_index[msg_id] = (message, {})
+        if section_id in sections_index:
+            section = sections_index[section_id][0]
+        else:
+            section = section_type.get_object_for_this_type(pk=section_id)
+            sections_index[section_id] = (section, {})
+        if code_id in code_index:
+            code = code_index[code_id][0]
+        else:
+            code = CodeElement.objects.get(pk=code_id)
+            code_index[code_id] = (code, CodeLink(code))
+
+        msg_links = msgs_index[msg_id][1]
+        if section.pk not in msg_links:
+            msg_link = HighLink(message, section)
+            msg_links[section.pk] = msg_link
+        msg_links[section.pk].codes.append(code)
+
+        section_links = sections_index[section_id][1]
+        if message.pk not in section_links:
+            section_link = HighLink(message, section)
+            section_links[message.pk] = section_link
+        section_links[message.pk].codes.append(code)
+
+        code_index[code_id][1].pairs.append((section, message))
+
+    return (msgs_index, sections_index, code_index)
+
+
+def report_msg_high_level(msgs_index):
+    sum_sections = 0
+    size = len(msgs_index)
+    print('\nMESSAGE INDEX\n')
+    for msg_id in msgs_index:
+        (message, links) = msgs_index[msg_id]
+        print('\n  Message {0}'.format(message.pk))
+        print('    {0}: {1} ({2})'.format(message.title.encode('ascii',
+            errors='ignore'), message.index,
+            message.author.__unicode__().encode('ascii', errors='ignore')))
+        print('    url: {0}'.format(message.url))
+        print('\n    SECTIONS:')
+        for section_id in links:
+            sum_sections += 1
+            link = links[section_id]
+            print('    {0} ({1})'.format(link.section.title,
+                link.section.page.title)) 
+            for code in link.codes:
+                print('      {0}'.format(code.fqn))
+
+    if size > 0:
+        average = float(sum_sections) / size
+    else:
+        average = 0.0
+
+    print('\n  MESSAGE INDEX SUMMARY')
+    print('    Number of messages: {0}'.format(size))
+    print('    Average sections per message: {0}'.format(average))
+
+
+def report_section_high_level(sections_index):
+    sum_msgs = 0
+    size = len(sections_index)
+    print('\nSECTION INDEX\n')
+    for section_id in sections_index:
+        (section, links) = sections_index[section_id]
+        print('\n  Section {0}'.format(section.pk))
+        print('    {0}: ({1}))'.format(section.title, section.page.title))
+        print('\n    MESSAGES:')
+        for message_id in links:
+            sum_msgs += 1
+            link = links[message_id]
+            print('    {0}: {1} ({2})'.format(link.msg.title.encode('ascii',
+                errors='ignore'),
+                link.msg.index,
+                link.msg.author.__unicode__().encode('ascii', errors='ignore')))
+            print('    {0}'.format(link.msg.url))
+            for code in link.codes:
+                print('      {0}'.format(code.fqn))
+
+    if size > 0:
+        average = float(sum_msgs) / size
+    else:
+        average = 0.0
+
+    print('\n  SECTION INDEX SUMMARY')
+    print('    Number of sections: {0}'.format(size))
+    print('    Average messages per section: {0}'.format(average))
+
+
+def report_code_high_level(code_index):
+    sum_code = 0
+    size = len(code_index)
+    print('\nCODE INDEX\n')
+    for code_id in code_index:
+        (code, link) = code_index[code_id]
+        print('\n  Code: {0}'.format(code.fqn))
+        print('\n    PAIRS:')
+        for pair in link.pairs:
+            sum_code += 1
+            print('    pair:')
+            print('      {0}: ({1})'.format(pair[0].title, pair[0].page.title))
+            print('      {0}: {1} ({2})'.format(pair[1].title.encode('ascii',
+                errors='ignore'), pair[1].index,
+                pair[1].author.__unicode__().encode('ascii', errors='ignore')))
+
+    if size > 0:
+        average = float(sum_code) / size
+    else:
+        average = 0.0
+    
+    print('\n  CODE INDEX SUMMARY')
+    print('    Number of code elements: {0}'.format(size))
+    print('    Average pairs per code: {0}'.format(average))

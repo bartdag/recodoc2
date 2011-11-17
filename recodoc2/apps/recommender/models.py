@@ -254,35 +254,35 @@ class DocumentationPatternLocation(models.Model):
     '''att.'''
 
 
-class HighLevelLink(models.Model):
+#class HighLevelLink(models.Model):
 
-    msg_level = models.BooleanField(default=False)
-    '''att.'''
+    #msg_level = models.BooleanField(default=False)
+    #'''att.'''
 
-    no_snippet = models.BooleanField(default=False)
-    '''att.'''
+    #no_snippet = models.BooleanField(default=False)
+    #'''att.'''
 
-    confidence_level = models.IntegerField(default=1)
-    '''att.'''
+    #confidence_level = models.IntegerField(default=1)
+    #'''att.'''
 
-    source_content_type = models.ForeignKey(ContentType, null=True,
-            blank=True, related_name='source_high_levels')
-    source_object_id = models.PositiveIntegerField(null=True, blank=True)
-    source = generic.GenericForeignKey('source_content_type',
-            'source_object_id')
-    '''Source is always a documentation artifact, unless the the src and dst
-       are the same.'''
+    #source_content_type = models.ForeignKey(ContentType, null=True,
+            #blank=True, related_name='source_high_levels')
+    #source_object_id = models.PositiveIntegerField(null=True, blank=True)
+    #source = generic.GenericForeignKey('source_content_type',
+            #'source_object_id')
+    #'''Source is always a documentation artifact, unless the the src and dst
+       #are the same.'''
 
-    dst_content_type = models.ForeignKey(ContentType, null=True,
-            blank=True, related_name='dst_high_levels')
-    dst_object_id = models.PositiveIntegerField(null=True, blank=True)
-    dst = generic.GenericForeignKey('dst_content_type',
-            'dst_object_id')
-    '''att.'''
+    #dst_content_type = models.ForeignKey(ContentType, null=True,
+            #blank=True, related_name='dst_high_levels')
+    #dst_object_id = models.PositiveIntegerField(null=True, blank=True)
+    #dst = generic.GenericForeignKey('dst_content_type',
+            #'dst_object_id')
+    #'''att.'''
 
-    common_code_elements = models.ManyToManyField(CodeElement, null=True,
-            blank=True, related_name='high_level_links')
-    '''att.'''
+    #common_code_elements = models.ManyToManyField(CodeElement, null=True,
+            #blank=True, related_name='high_level_links')
+    #'''att.'''
 
 
 class AddRecommendation(models.Model):
@@ -400,3 +400,16 @@ class RemoveRecommendation(models.Model):
             return '{0} was deprecaded in {1}'.\
                     format(self.code_element_from.human_string(),
                             self.codebase_to)
+
+
+class HighLink(object):
+    def __init__(self, msg, section):
+        self.msg = msg
+        self.section = section
+        self.codes = []
+
+
+class CodeLink(object):
+    def __init__(self, code_element):
+        self.code_element = code_element
+        self.pairs = []
