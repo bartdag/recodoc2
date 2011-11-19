@@ -303,6 +303,7 @@ def filter_coverage(patterns_query):
 
     for coverage in patterns_query.filter(valid=True).iterator():
         count = coverage.pattern.extension.count()
+        # Eliminate 2 * 0.5. Others are already elimited.
         if count == 1 or coverage.coverage * count == 1.0:
             coverage.valid = False
             coverage.save()
@@ -406,120 +407,121 @@ def get_best_pattern(coverages):
 def compare_coverage(codebase_from, codebase_to, source, resource_pk,
         progress_monitor=NullProgressMonitor):
     '''First, match head-based (declaration/hierarchy) and token-based
-       families.
-       Then, for each matched family, compare their coverage.
+       patterns.
+       Then, for each matched pattern, compare their coverage.
     '''
 
-    (heads_from, tokens_from) = compute_family_index(codebase_from,
+    (heads_from, tokens_from) = compute_pattern_index(codebase_from,
             progress_monitor)
-    (heads_to, tokens_to) = compute_family_index(codebase_to, progress_monitor)
+    (heads_to, tokens_to) = compute_pattern_index(codebase_to, progress_monitor)
 
     removed = []
     added = []
 
-    heads_family_diff = compute_family_diff(heads_from, heads_to, added,
+    heads_patterns_diff = compute_patterns_diff(heads_from, heads_to, added,
             removed, progress_monitor)
-    tokens_family_diff = compute_family_diff(tokens_from, tokens_to, added,
+    tokens_patterns_diff = compute_patterns_diff(tokens_from, tokens_to, added,
             removed, progress_monitor)
 
     progress_monitor.info('Sorting added/removed')
     removed.sort(key=lambda f: f.extension.count(), reverse=True)
     added.sort(key=lambda f: f.extension.count(), reverse=True)
 
-    progress_monitor.info('Sorting family diff')
-    heads_family_diff.sort(key=lambda d: d.extension_diff)
-    tokens_family_diff.sort(key=lambda d: d.extension_diff)
+    progress_monitor.info('Sorting pattern diff')
+    heads_patterns_diff.sort(key=lambda d: d.extension_diff)
+    tokens_patterns_diff.sort(key=lambda d: d.extension_diff)
 
-    heads_coverage_diff = compute_coverage_diff(heads_family_diff, source,
+    heads_coverage_diff = compute_coverage_diff(heads_patterns_diff, source,
             resource_pk, progress_monitor)
-    tokens_coverage_diff = compute_coverage_diff(tokens_family_diff, source,
+    tokens_coverage_diff = compute_coverage_diff(tokens_patterns_diff, source,
             resource_pk, progress_monitor)
 
     progress_monitor.info('Sorting coverage diff')
+    # Basically, we want to look at coverage the decreased.
     heads_coverage_diff.sort(key=lambda d: d.coverage_diff)
     tokens_coverage_diff.sort(key=lambda d: d.coverage_diff)
 
-    report_diff(heads_family_diff, heads_coverage_diff, 'Head Report')
+    report_diff(heads_patterns_diff, heads_coverage_diff, 'Head Report')
 
-    report_diff(tokens_family_diff, tokens_coverage_diff, 'Token Report')
+    report_diff(tokens_patterns_diff, tokens_coverage_diff, 'Token Report')
 
     report_add_remove(removed, added)
 
 
-def compute_family_index(codebase, progress_monitor):
-    '''Compute an index of the families based on their head or token.'''
+def compute_pattern_index(codebase, progress_monitor):
+    '''Compute an index of the patterns based on their head or token.'''
     heads = defaultdict(list)
     tokens = defaultdict(list)
 
-    families = rmodel.CodeElementFamily.objects.filter(codebase=codebase)
-    progress_monitor.start('Computing family index for codebase {0}'
-            .format(codebase), families.count())
+    patterns = rmodel.CodePattern.objects.filter(codebase=codebase)
+    progress_monitor.start('Computing pattern index for codebase {0}'
+            .format(codebase), patterns.count())
 
-    for family in families.all():
-        if family.head is not None:
-            heads[family.head.human_string()].append(family)
+    for pattern in patterns.all():
+        if pattern.head is not None:
+            heads[pattern.head.human_string()].append(pattern)
         else:
-            tokens[family.token].append(family)
-        progress_monitor.work('Computed a family index', 1)
+            tokens[pattern.token].append(pattern)
+        progress_monitor.work('Computed a pattern index', 1)
 
     progress_monitor.done()
 
     return (heads, tokens)
 
 
-def compute_family_diff(index_from, index_to, added, removed,
+def compute_patterns_diff(index_from, index_to, added, removed,
         progress_monitor):
-    '''For each index and each family, try to find a matching family based on
-       family.equiv.
+    '''For each index and each pattern, try to find a matching pattern based on
+       pattern.equiv.
     '''
     processed = set()
-    family_diffs = []
-    progress_monitor.start('Computing family diff', len(index_from))
+    pattern_diffs = []
+    progress_monitor.start('Computing pattern diff', len(index_from))
 
     for key in index_from:
-        for family_from in index_from[key]:
-            family_to = get_family(family_from, index_to, key)
-            if family_to is None:
-                removed.append(family_from)
+        for pattern_from in index_from[key]:
+            pattern_to = get_pattern(pattern_from, index_to, key)
+            if pattern_to is None:
+                removed.append(pattern_from)
             else:
-                diff = rmodel.FamilyDiff(family_from=family_from,
-                        family_to=family_to)
+                diff = rmodel.PatternDiff(pattern_from=pattern_from,
+                        pattern_to=pattern_to)
                 diff.compute_diffs()
                 diff.save()
-                family_diffs.append(diff)
-                processed.add(family_to.pk)
-        progress_monitor.work('Computed family diffs', 1)
+                pattern_diffs.append(diff)
+                processed.add(pattern_to.pk)
+        progress_monitor.work('Computed pattern diffs', 1)
 
-    progress_monitor.info('Computing added families')
+    progress_monitor.info('Computing added patterns')
 
-    for families_to in index_to.values():
-        for family_to in families_to:
-            if family_to.pk not in processed:
-                added.append(family_to)
+    for patterns_to in index_to.values():
+        for pattern_to in patterns_to:
+            if pattern_to.pk not in processed:
+                added.append(pattern_to)
 
     progress_monitor.done()
 
-    return family_diffs
+    return pattern_diffs
 
 
-def compute_coverage_diff(family_diffs, source, resource_pk, progress_monitor):
-    '''For each family, get the coverage related to a particular resource.
-       Note: a family in a codebase could have coverage for more than one
+def compute_coverage_diff(pattern_diffs, source, resource_pk, progress_monitor):
+    '''For each pattern, get the coverage related to a particular resource.
+       Note: a pattern in a codebase could have coverage for more than one
        document (especially during experimentation/evaluation :-) ).
     '''
     coverage_diffs = []
 
-    progress_monitor.start('Computing coverage diff', len(family_diffs))
+    progress_monitor.start('Computing coverage diff', len(pattern_diffs))
 
-    for family_diff in family_diffs:
-        coverage_from = family_diff.family_from.get_coverage(source,
+    for pattern_diff in pattern_diffs:
+        coverage_from = pattern_diff.pattern_from.get_coverage(source,
                 resource_pk)
-        coverage_to = family_diff.family_to.get_coverage(source,
+        coverage_to = pattern_diff.pattern_to.get_coverage(source,
                 resource_pk)
         if coverage_from is None or coverage_to is None:
             progress_monitor.info('ERROR! One coverage is none: {0} {1}'
-                    .format(family_diff.family_from.pk,
-                        family_diff.family_to.pk))
+                    .format(pattern_diff.pattern_from.pk,
+                        pattern_diff.pattern_to.pk))
             progress_monitor.work('Skipping coverage diff', 1)
             continue
         elif not coverage_from.is_interesting():
@@ -530,24 +532,24 @@ def compute_coverage_diff(family_diffs, source, resource_pk, progress_monitor):
         diff.compute_diffs()
         diff.save()
         coverage_diffs.append(diff)
-        progress_monitor.work('Computing coverage diff', 1)
+        progress_monitor.work('Computed coverage diff', 1)
 
     progress_monitor.done()
 
     return coverage_diffs
 
 
-def report_diff(family_diffs, coverage_diffs, report_title):
+def report_diff(pattern_diffs, coverage_diffs, report_title):
     top = 25
     print()
     print(report_title)
-    print('\nREPORTING TOP {0} FAMILY DIFFS\n'.format(top))
-    print('Total Family Diffs: {0}'.format(len(family_diffs)))
-    for family_diff in family_diffs[:top]:
+    print('\nREPORTING TOP {0} PATTERN DIFFS\n'.format(top))
+    print('Total Pattern Diffs: {0}'.format(len(pattern_diffs)))
+    for pattern_diff in pattern_diffs[:top]:
         print('{0}: From: {1}[{2}]  To: {3} [{4}]'.
-                format(family_diff.extension_diff, family_diff.family_from,
-                    family_diff.family_from.pk, family_diff.family_to,
-                    family_diff.family_to.pk))
+                format(pattern_diff.extension_diff, pattern_diff.pattern_from,
+                    pattern_diff.pattern_from.pk, pattern_diff.pattern_to,
+                    pattern_diff.pattern_to.pk))
 
     print('\nREPORTING TOP {0} COVERAGE DIFFS\n'.format(top))
     print('Total coverage diffs: {0}'.format(len(coverage_diffs)))
@@ -562,7 +564,7 @@ def report_diff(family_diffs, coverage_diffs, report_title):
 
 
 def report_location(coverage):
-    for member in coverage.family.extension.all():
+    for member in coverage.pattern.extension.all():
         for link in member.potential_links.filter(index=0).all():
             if link.code_reference.resource_object_id ==\
                 coverage.resource_object_id and link.code_reference.source ==\
@@ -575,31 +577,31 @@ def report_location(coverage):
 def report_add_remove(removed, added):
     top = 25
     print()
-    print('REPORTING TOP {0} REMOVED FAMILIES\n'.format(top))
-    for family in removed[:top]:
-        print('{0}: {1}[{2}]'.format(family.extension.count(), family,
-            family.pk))
+    print('REPORTING TOP {0} REMOVED PATTERNS\n'.format(top))
+    for pattern in removed[:top]:
+        print('{0}: {1}[{2}]'.format(pattern.extension.count(), pattern,
+            pattern.pk))
 
-    print('REPORTING TOP {0} ADDED FAMILIES\n'.format(top))
-    for family in added[:top]:
-        print('{0}: {1}[{2}]'.format(family.extension.count(), family,
-            family.pk))
+    print('REPORTING TOP {0} ADDED PATTERNS\n'.format(top))
+    for pattern in added[:top]:
+        print('{0}: {1}[{2}]'.format(pattern.extension.count(), pattern,
+            pattern.pk))
 
 
-def get_family(family, index, key):
+def get_pattern(pattern, index, key):
     if key not in index:
         return None
     else:
-        for temp_family in index[key]:
-            if family.equiv(temp_family):
-                return temp_family
+        for temp_pattern in index[key]:
+            if pattern.equiv(temp_pattern):
+                return temp_pattern
     return None
 
 
 def compute_coverage_recommendation(coverage_diffs,
         progress_monitor=NullProgressMonitor()):
     '''For each coverage diff, check if there is at least one new element in a
-       family that was not there before (release 1) and that is not documented
+       pattern that was not there before (release 1) and that is not documented
        now (release 2).
 
        For each such coverage diff, create a recommendation.
@@ -636,14 +638,14 @@ def compute_coverage_recommendation(coverage_diffs,
     return recommendations
 
 
-def get_members(fam_coverage):
-    family = fam_coverage.family
-    pk = fam_coverage.resource_object_id
-    source = fam_coverage.source
+def get_members(pattern_coverage):
+    pattern = pattern_coverage.pattern
+    pk = pattern_coverage.resource_object_id
+    source = pattern_coverage.source
     covered_members = {}
     uncovered_members = {}
 
-    for member in family.members.all():
+    for member in pattern.extension.all():
         if cmodel.CodeElementLink.objects.\
                 filter(code_element=member).\
                 filter(index=0).\
@@ -679,8 +681,8 @@ def compute_super_recommendations(recommendations,
         current_best_cov = rec.coverage_diff.coverage_from.coverage
         processed_recs.add(rec.pk)
         super_rec = rmodel.SuperAddRecommendation(initial_rec=rec,
-                codebase_from=rec.coverage_diff.coverage_from.family.codebase,
-                codebase_to=rec.coverage_diff.coverage_to.family.codebase,
+                codebase_from=rec.coverage_diff.coverage_from.pattern.codebase,
+                codebase_to=rec.coverage_diff.coverage_to.pattern.codebase,
                 resource=rec.coverage_diff.coverage_from.resource,
                 source=rec.coverage_diff.coverage_from.source)
         super_rec.save()
@@ -742,16 +744,23 @@ def proper_subset(members1, members2):
 
 def get_best_rec(recommendations):
 
+    def thd_crit(rec):
+        pattern = rec.coverage_diff.coverage_from.pattern
+        if pattern.criterion2 is None:
+            return 1
+        else:
+            return 0
+
     def snd_crit(rec):
-        fam = rec.coverage_diff.coverage_from.family
-        if fam.criterion2 is None:
+        pattern = rec.coverage_diff.coverage_from.pattern
+        if pattern.criterion1 == rmodel.HIERARCHY_D:
             return 1
         else:
             return 0
 
     def fst_crit(rec):
-        fam = rec.coverage_diff.coverage_from.family
-        if fam.criterion1 == rmodel.TOKEN:
+        pattern = rec.coverage_diff.coverage_from.pattern
+        if pattern.criterion1 == rmodel.TOKEN:
             return 0
         else:
             return 1
@@ -759,6 +768,7 @@ def get_best_rec(recommendations):
     def cvr(rec):
         return rec.coverage_diff.coverage_from.coverage
 
+    recommendations.sort(key=thd_crit, reverse=True)
     recommendations.sort(key=snd_crit, reverse=True)
     recommendations.sort(key=fst_crit, reverse=True)
     recommendations.sort(key=cvr, reverse=True)
@@ -768,15 +778,15 @@ def get_best_rec(recommendations):
 
 def sort_super_recs(super_recommendations):
     def snd_crit(super_rec):
-        fam = super_rec.best_rec.coverage_diff.coverage_from.family
-        if fam.criterion2 is None:
+        pattern = super_rec.best_rec.coverage_diff.coverage_from.pattern
+        if pattern.criterion2 is None:
             return 1
         else:
             return 0
 
     def fst_crit(super_rec):
-        fam = super_rec.best_rec.coverage_diff.coverage_from.family
-        if fam.criterion1 == rmodel.TOKEN:
+        pattern = super_rec.best_rec.coverage_diff.coverage_from.pattern
+        if pattern.criterion1 == rmodel.TOKEN:
             return 0
         else:
             return 1

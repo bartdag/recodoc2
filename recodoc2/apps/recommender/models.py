@@ -148,7 +148,8 @@ class CodePatternCoverage(models.Model):
 
     def is_interesting(self):
         return self.pattern.extension.count() > 1 and \
-                self.coverage >= COVERAGE_THRESHOLD
+                self.coverage >= COVERAGE_THRESHOLD and \
+                self.valid
 
     def __unicode__(self):
         return '{0} - {1}'.format(self.pattern, self.coverage)
@@ -200,8 +201,8 @@ class PatternDiff(models.Model):
     '''att.'''
 
     def compute_diffs(self):
-        self.extension_diff = self.pattern.extension.count() -\
-                self.pattern.extension.count()
+        self.extension_diff = self.pattern_to.extension.count() -\
+                self.pattern_from.extension.count()
 
     def __unicode__(self):
         return '{0} : {1}'.format(self.extension_diff, self.pattern_from)
