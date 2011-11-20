@@ -832,6 +832,10 @@ def report_super(super_recs):
         if section_spread:
             print('\n  **New members will probably be added in new sections**')
 
+        if not section_spread and not page_spread:
+            print('\n **New members will probably be added in most popular '
+                'section**')
+
         for rec in super_rec.recommendations.all():
             print('  subrec: {0}'.format(rec))
 

@@ -9,7 +9,7 @@ from docutil.commands_util import mkdir_safe, dump_model, load_model,\
     import_clazz
 from project.models import ProjectRelease
 from project.actions import DOC_PATH
-from codebase.models import CodeBase
+from codebase.models import CodeBase, CodeBaseDiff
 from recommender.models import CodePattern, CodePatternCoverage
 from recommender.parser.pattern_coverage import compute_coverage
 from doc.models import DocumentStatus, Document, Page, Section, DocDiff
@@ -182,6 +182,44 @@ def remove_page(pname, dname, release, url_regex):
         page.delete()
 
     print('{0} pages deleted'.format(len(to_delete)))
+
+
+def show_new_new_links(pname, bname, dname, release1, release2):
+    prelease1 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release1)[0]
+    document_from = Document.objects.filter(project_release=prelease1).\
+            filter(title=dname)[0]
+    prelease2 = ProjectRelease.objects.filter(project__dir_name=pname).\
+            filter(release=release2)[0]
+    document_to = Document.objects.filter(project_release=prelease2).\
+            filter(title=dname)[0]
+    doc_diff = DocDiff.objects.filter(document_from=document_from).\
+            get(document_to=document_to)
+
+    codebase1 = CodeBase.objects.filter(project_release=prelease1).\
+            filter(name=bname)[0]
+    codebase2 = CodeBase.objects.filter(project_release=prelease2).\
+            filter(name=bname)[0]
+    code_diff = CodeBaseDiff.objects.filter(codebase_from=codebase1).\
+            filter(codebase_to=codebase2)[0]
+
+    # We only care about these kinds for now.
+    types = set(code_diff.added_types.all())
+    methods = set(code_diff.added_methods.all())
+    fields = set(code_diff.added_fields.all())
+    all_elements = types.union(methods).union(fields)
+    links = doc_diff.link_changes.filter(link_from__isnull=True).all()
+    for link in links:
+        code_element = link.link_to.code_element
+        container = code_element.containers.all()[0]
+        section_title = link.link_to.code_reference.local_context.title
+        page_title = link.link_to.code_reference.global_context.title
+        if code_element in all_elements:
+            print('Link to {0} was added in {1} ({2})'.format(code_element,
+                section_title, page_title))
+        elif container in types:
+            print('Link to {0} was added in {1} ({2}'.format(code_element,
+                section_title, page_title))
 
 
 # Functions
