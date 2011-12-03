@@ -331,6 +331,16 @@ class ParameterNumberFilter(object):
 
             if len(new_potentials) > 0:
                 result = FilterResult(self, True, new_potentials)
+        else:
+            try:
+                # Sort by number of params, favoring shorter methods!
+                new_potentials = sorted(potentials,
+                        key=lambda me: me.parameters_length)
+                if len(new_potentials) > 0:
+                    result = FilterResult(self, True, new_potentials)
+            except AttributeError:
+                # This isn't a method!
+                pass
 
         return result
 

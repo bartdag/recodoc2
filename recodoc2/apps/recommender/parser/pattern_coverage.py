@@ -689,14 +689,14 @@ def compute_super_recommendations(recommendations,
         super_rec.recommendations.add(rec)
         super_recs.append(super_rec)
         new_members = list(rec.new_members.all())
-        count = float(len(new_members))
+        #count = float(len(new_members))
 
         for temprec in recommendations[i + 1:]:
             coverage_from = temprec.coverage_diff.coverage_from.coverage
-            if (1.0 - (temprec.new_members.count() / count)) > \
-                    SUPER_REC_THRESHOLD:
-                if coverage_from > current_best_cov:
-                    break
+            #if (1.0 - (temprec.new_members.count() / count)) > \
+                    #SUPER_REC_THRESHOLD:
+                #if coverage_from > current_best_cov:
+                    #break
             if proper_subset(list(temprec.new_members.all()), new_members):
                 if coverage_from > current_best_cov:
                     current_best_cov = coverage_from

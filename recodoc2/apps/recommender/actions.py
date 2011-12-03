@@ -452,7 +452,8 @@ def code_element_linked(code_element, source, resource_pk):
 def get_code_element_links(code_element, source, resource_pk):
     return  CodeElementLink.objects.filter(code_element=code_element).\
             filter(code_reference__source=source).\
-            filter(code_reference__resource_object_id=resource_pk)
+            filter(code_reference__resource_object_id=resource_pk).\
+            filter(index=0)
 
 
 def find_equivalent(code_element, codebase):

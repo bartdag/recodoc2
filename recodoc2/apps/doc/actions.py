@@ -209,6 +209,7 @@ def show_new_new_links(pname, bname, dname, release1, release2):
     fields = set(code_diff.added_fields.all())
     all_elements = types.union(methods).union(fields)
     links = doc_diff.link_changes.filter(link_from__isnull=True).all()
+    print('Total links: {0}'.format(links.count()))
     for link in links:
         code_element = link.link_to.code_element
         container = code_element.containers.all()[0]
@@ -220,6 +221,9 @@ def show_new_new_links(pname, bname, dname, release1, release2):
         elif container in types:
             print('Link to {0} was added in {1} ({2}'.format(code_element,
                 section_title, page_title))
+        #else:
+            #print('OLD: Link to {0} was added in {1} ({2}'.format(code_element,
+                #section_title, page_title))
 
 
 # Functions
