@@ -66,7 +66,11 @@ class PHPBBForumSyncer(ThreadSyncer):
     def _clean_url(self, url):
         index = url.find('&sid=')
         if index > -1:
-            url = url[:index]
+            index2 = url.find('&', index+1)
+            if index2 > -1:
+                url = url[:index] + url[index2:]
+            else:
+                url = url[:index]
         return url
 
     def _get_number_of_pages(self, url):

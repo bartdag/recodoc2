@@ -166,8 +166,6 @@ def toc_download_entries(pname, cname, start=None, end=None, force=False):
         try:
             syncer.download_entry(entry, channel_path)
             dump_model(model, pname, STHREAD_PATH, cname)
-
-            print('Downloaded {0}'.format(entry.url))
         except Exception:
             logger.exception('Error while downloading entry')
 
