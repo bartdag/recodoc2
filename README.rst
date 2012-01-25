@@ -195,7 +195,7 @@ Step 2. Install the required dependencies
   pip install MySQL-python
 
   # For PostgreSQL (requires gcc. otherwise download the binary)
-  pip install psycopg2
+  pip install psycopg2==2.4.1
 
 If you want to install pyscopg2 without compiling it (e.g., on windows),
 download the `binary package <http://www.initd.org/psycopg/download/>`_.
