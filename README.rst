@@ -182,17 +182,14 @@ Step 2. Install the required dependencies
 
 ::
   
-  pip install django
-  pip install lxml
-  pip install pyenchant
-  pip install Py4J
-  pip install chardet
-  pip install django-devserver
-  pip install pylibmc
-  pip install ipython
-
-  # For MySQL
-  pip install MySQL-python
+  pip install django==1.3.1
+  pip install lxml==2.3.4
+  pip install pyenchant==1.6.5
+  pip install Py4J==0.7
+  pip install chardet==1.0.1
+  pip install django-devserver==0.3.1
+  pip install pylibmc==1.2.0
+  pip install ipython==0.10
 
   # For PostgreSQL (requires gcc. otherwise download the binary)
   pip install psycopg2==2.4.1
