@@ -203,7 +203,7 @@ Step 3. Install the optional dependencies
 
 These dependencies are only required if you want to analyze Java code. First,
 install Py4J in Eclipse using the following update site:
-``http://py4j.sourceforge.net/py4j_eclipse``.
+``http://py4j.sourceforge.net/py4j_eclipse``. **Note: the update site is no longer maintained. Please rebuild the site locally from this release: https://github.com/bartdag/py4j-eclipse/archive/62663131a0ba7df42ef9f038f77f2f8e1c655fc0.zip**
 
 Then, install PPA in Eclipse using the following update site:
 ``http://www.sable.mcgill.ca/ppa/site_1.2.x``.
