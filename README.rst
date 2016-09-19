@@ -614,8 +614,37 @@ in the linker...), execute these commands:
 Recommendations
 ~~~~~~~~~~~~~~~
 
-This section will be filled after I submit my PhD thesis :-)
+Here we will generate recommendations for version 4.1 by analyzing the documents of both versions 4.0 and 4.1 of the client tutorial.
 
+::
+
+  # To clear all the links.
+  ./manage.py clearlinks --pname hclient --release 4.0 --source d
+  
+  # Link for version 4.0 to 4.0
+  ./manage.py linkall --pname hclient --bname main --release 4.0  --srelease 4.0 --source d
+  # Link for version 4.1 to 4.1
+  ./manage.py linkall --pname hclient --bname main --release 4.1  --srelease 4.1 --source d
+  # Link against previous version
+  ./manage.py linkall --pname hclient --bname main --release 4.1  --srelease 4.0 --source d
+  
+  # Computes link differences
+  ./manage.py doclinkdiff --pname hclient --bname main --release1 4.0  --release2 4.1
+  
+  # Compute and compare coverage
+  ./manage.py computefamilies --pname hclient --bname main --release 4.0
+  ./manage.py computefamilies --pname hclient --bname main --release 4.1
+  ./manage.py computedoccoverage --pname hclient --bname main --release 4.0 --dname clienttut --srelease 4.0
+  ./manage.py computedoccoverage --pname hclient --bname main --release 4.1 --dname clienttut --srelease 4.0
+  ./manage.py comparecoverage --pname hclient --bname main --release1 4.0 --release2 4.1 --source d --pk 1
+  
+  # Compute and show addition recommendations
+  ./manage.py computeaddrecs --pname hclient --bname main --release1 4.0 --release2 4.1 --source d --pk 1
+  ./manage.py showaddrecs --pname hclient --bname main --release1 4.0 --release2 4.1 --source d --pk 1
+  
+  # Compute and show deletion recommendations
+  ./manage.py computeremoverecs --pname hclient --bname main --release1 4.0 --release2 4.1 --source d --pk 1
+  ./manage.py showremoverecs --pname hclient --bname main --release1 4.0 --release2 4.1 --source d --pk 1
 
 List of Implemented Parsers and Syncers
 ---------------------------------------
